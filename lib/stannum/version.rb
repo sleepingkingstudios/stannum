@@ -52,5 +52,6 @@ module Stannum
     end
   end
 
+  # The current version of the gem in Rubygems format.
   VERSION = Version.to_gem_version
 end
