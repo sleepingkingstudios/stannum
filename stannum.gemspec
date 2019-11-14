@@ -28,4 +28,6 @@ Gem::Specification.new do |gem|
 
   gem.add_development_dependency 'rspec', '~> 3.9'
   gem.add_development_dependency 'rspec-sleeping_king_studios', '~> 2.5'
+  gem.add_development_dependency 'rubocop', '~> 0.76.0'
+  gem.add_development_dependency 'rubocop-rspec', '~> 1.36'
 end
