@@ -48,6 +48,7 @@ Style/DoubleNegation:
 
 Style/NestedParenthesizedCalls:
   Exclude:
+    - 'spec/**/*_examples.rb'
     - 'spec/**/*_spec.rb'
 
 Style/SingleLineBlockParams:

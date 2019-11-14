@@ -37,4 +37,9 @@
 - update #size to add @children.reduce { |sum, child| sum + child.size }
   - should include each child's size
 
+### RSpec
+
+- MatchConstraint matcher (#match_constraint macro)
+- Matcher mixin - use a constraint in place of an RSpec matcher!
+
 ### Structs
