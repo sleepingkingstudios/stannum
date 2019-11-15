@@ -35,6 +35,8 @@
 
 #### Type Constraints
 
+- .instance method (caches instance by params (if any))
+  - a large application does not need 50 Type::String objects
 - Types::Array
 - Types::ArrayOf(type [class or constraint])
 - Types::Boolean
