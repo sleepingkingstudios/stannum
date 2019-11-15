@@ -1,0 +1,38 @@
+# frozen_string_literal: true
+
+require 'stannum/constraints'
+
+module Stannum::Constraints
+  # A presence constraint asserts that the object is not nil and not empty.
+  class Presence < Stannum::Constraint
+    # The :type of the error generated for a matching object.
+    NEGATED_TYPE = 'stannum.constraints.present'
+
+    # The :type of the error generated for a non-matching object.
+    TYPE = 'stannum.constraints.absent'
+
+    # Checks that the object is not nil and not empty.
+    #
+    # @return [true, false] false if the object is nil or empty, otherwise true.
+    #
+    # @see Stannum::Constraint#matches?
+    def matches?(actual)
+      return false if actual.nil?
+
+      return false if actual.respond_to?(:empty?) && actual.empty?
+
+      true
+    end
+    alias match? matches?
+
+    # @return [String] the error type generated for a matching object.
+    def negated_type
+      NEGATED_TYPE
+    end
+
+    # @return [String] the error type generated for a non-matching object.
+    def type
+      TYPE
+    end
+  end
+end

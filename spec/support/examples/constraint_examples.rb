@@ -31,6 +31,22 @@ module Spec::Support::Examples
       end
     end
 
+    shared_examples 'should match' do |value, as: nil|
+      describe '#match' do
+        describe "with #{as || value.inspect}" do
+          let(:actual) { value }
+
+          include_examples 'should match the value'
+        end
+      end
+
+      describe '#matches?' do
+        describe "with #{as || value.inspect}" do
+          it { expect(constraint.matches? value).to be true }
+        end
+      end
+    end
+
     shared_examples 'should not match' do |value, as: nil|
       describe '#errors_for' do
         describe "with #{as || value.inspect}" do
@@ -65,6 +81,30 @@ module Spec::Support::Examples
           let(:actual) { value }
 
           include_examples 'should match the value', negated: true
+        end
+      end
+    end
+
+    shared_examples 'should not match when negated' do |value, as: nil|
+      describe '#does_not_match?' do
+        describe "with #{as || value.inspect}" do
+          it { expect(constraint.does_not_match? value).to be false }
+        end
+      end
+
+      describe '#negated_errors_for' do
+        describe "with #{as || value.inspect}" do
+          it 'should return the errors' do
+            expect(constraint.negated_errors_for(value)).to be == negated_errors
+          end
+        end
+      end
+
+      describe '#negated_match' do
+        describe "with #{as || value.inspect}" do
+          let(:actual) { value }
+
+          include_examples 'should not match the value', negated: true
         end
       end
     end

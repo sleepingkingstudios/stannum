@@ -58,9 +58,17 @@ RSpec.describe Stannum::Constraint do
 
   include_examples 'should match when negated', 'a string'
 
+  include_examples 'should not match', '', 'an empty string'
+
+  include_examples 'should match when negated', '', 'an empty string'
+
   include_examples 'should not match', :a_symbol
 
   include_examples 'should match when negated', :a_symbol
+
+  include_examples 'should not match', [], 'an empty array'
+
+  include_examples 'should match when negated', [], 'an empty array'
 
   include_examples 'should not match', %w[a b c], 'an array'
 

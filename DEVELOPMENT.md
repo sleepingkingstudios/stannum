@@ -16,6 +16,11 @@
   - #matches? always returns false
 - Constraints::Nil
   - asserts actual.nil?
+- Constraints::Numeric
+  - asserts actual is numeric value
+  - options for integer, greater/less than
+- Constraints::Range
+  - asserts actual in range
 - Constraints::Predicate
   - takes block, e.g. Constraints::Predicate.new(&:persisted?)
   - asserts block.call(actual)
