@@ -31,7 +31,7 @@ module Spec::Support::Examples
       end
     end
 
-    shared_examples 'should match' do |value, as: nil|
+    shared_examples 'should match' do |value, as: nil, reversible: false|
       describe '#match' do
         describe "with #{as || value.inspect}" do
           let(:actual) { value }
@@ -45,9 +45,13 @@ module Spec::Support::Examples
           it { expect(constraint.matches? value).to be true }
         end
       end
+
+      if reversible
+        include_examples 'should not match when negated', value, as: nil
+      end
     end
 
-    shared_examples 'should not match' do |value, as: nil|
+    shared_examples 'should not match' do |value, as: nil, reversible: false|
       describe '#errors_for' do
         describe "with #{as || value.inspect}" do
           it { expect(constraint.errors_for(value)).to be == expected_errors }
@@ -67,6 +71,8 @@ module Spec::Support::Examples
           it { expect(constraint.matches? value).to be false }
         end
       end
+
+      include_examples 'should match when negated', value, as: nil if reversible
     end
 
     shared_examples 'should match when negated' do |value, as: nil|

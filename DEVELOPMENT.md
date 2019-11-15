@@ -6,6 +6,10 @@
 
 ### Constraints
 
+- #initialize takes block argument, sets definition of #matches?
+
+#### Pre-Defined Constraints
+
 - Constraints::Always
   - #does_not_match? and #matches? always return true
 - Constraints::Anything
@@ -14,18 +18,33 @@
   - #does_not_match? and #matches? always return false
 - Constraints::Nothing
   - #matches? always returns false
-- Constraints::Nil
-  - asserts actual.nil?
+- Constraints::Length
+  - options for :is, :max, :min - delegate to Constraints::Range?
 - Constraints::Numeric
   - asserts actual is numeric value
   - options for integer, greater/less than
 - Constraints::Range
   - asserts actual in range
+  - initialize with range or params
+    - max and/or min, gt/gte and/or lt/lte
 - Constraints::Predicate
   - takes block, e.g. Constraints::Predicate.new(&:persisted?)
   - asserts block.call(actual)
 - Constraints::Type
   - asserts that actual is_a? expected
+
+#### Type Constraints
+
+- Types::Array
+- Types::ArrayOf(type [class or constraint])
+- Types::Boolean
+- Types::Float
+- Types::Hash
+- Types::HashOf(keyType, valueType)
+- Types::Integer
+- Types::Nil
+- Types::String
+- Types::Symbol
 
 ### Contracts
 

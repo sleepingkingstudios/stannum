@@ -4,6 +4,20 @@ require 'stannum/constraints'
 
 module Stannum::Constraints
   # A presence constraint asserts that the object is not nil and not empty.
+  #
+  # @example Using a Presence constraint
+  #   constraint = Stannum::Constraints::Presence.new
+  #
+  #   constraint.matches?(nil) #=> false
+  #   constraint.matches?(Object.new)  #=> false
+  #
+  # @example Using a Presence constraint with an Array
+  #   constraint.matches?([])        #=> false
+  #   constraint.matches?([1, 2, 3]) #=> true
+  #
+  # @example Using a Presence constraint with an Hash
+  #   constraint.matches?({})               #=> false
+  #   constraint.matches?({ key: 'value' }) #=> true
   class Presence < Stannum::Constraint
     # The :type of the error generated for a matching object.
     NEGATED_TYPE = 'stannum.constraints.present'
