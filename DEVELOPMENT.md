@@ -6,6 +6,22 @@
 
 ### Constraints
 
+- Constraints::Always
+  - #does_not_match? and #matches? always return true
+- Constraints::Anything
+  - #matches? always returns true
+- Constraints::Never
+  - #does_not_match? and #matches? always return false
+- Constraints::Nothing
+  - #matches? always returns false
+- Constraints::Nil
+  - asserts actual.nil?
+- Constraints::Predicate
+  - takes block, e.g. Constraints::Predicate.new(&:persisted?)
+  - asserts block.call(actual)
+- Constraints::Type
+  - asserts that actual is_a? expected
+
 ### Contracts
 
 ### Errors
