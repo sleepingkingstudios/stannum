@@ -12,6 +12,7 @@ module Stannum
   #
   # Internally, an errors object is an Array of errors. Each error is
   # represented by a Hash containing the keys :data, :message and :type.
+  # represented by a Hash containing the keys :data, :message, :path and :type.
   #
   # - The :type of the error is a short, unique symbol or string that identifies
   #   the type of the error, such as 'invalid' or 'not_found'. The type is
@@ -26,6 +27,13 @@ module Stannum
   #   type: 'out_of_range' and data { min: 0, max: 10 }, indicating that the
   #   expected values were between 0 and 10. If the data key is missing or the
   #   value is empty, there is no additional information about the error.
+  # - The :path of the error reflects the steps to resolve the relevant property
+  #   from the given data object. The path is an Array with keys of either
+  #   Symbols/Strings (for object properties or Hash keys) or Integers (for
+  #   Array indices). For example, given the hash { companies: [{ teams: [] }] }
+  #   and an expecation that a company's team must not be empty, the resulting
+  #   error would have path: [:companies, 0, :teams]. if the path key is missing
+  #   or the value is empty, the error refers to the root object.
   #
   # @example Creating An Errors Object
   #   errors = Stannum::Errors.new
@@ -111,11 +119,11 @@ module Stannum
     #   Iterates through the errors, yielding each error to the provided block.
     #
     #   @yieldparam error [Hash<Symbol=>Object>] The error object. Each error
-    #     is a hash containing the keys :data, :message and :type.
+    #     is a hash containing the keys :data, :message, :path and :type.
     def each
       return to_enum(:each) { size } unless block_given?
 
-      @errors.each { |item| yield item }
+      @errors.each { |item| yield item.merge(path: []) }
     end
 
     # Checks if the errors object contains any errors.
@@ -137,7 +145,7 @@ module Stannum
 
     # Generates an array of error objects.
     #
-    # Each error is a hash containing the keys :data, :message and :type.
+    # Each error is a hash containing the keys :data, :message, :path and :type.
     #
     # @return [Array<Hash>] the error objects.
     def to_a
@@ -147,7 +155,7 @@ module Stannum
     private
 
     def compare_hashed_errors(other_errors)
-      hashes       = Set.new(@errors.map(&:hash))
+      hashes       = Set.new(map(&:hash))
       other_hashes = Set.new(other_errors.map(&:hash))
 
       hashes == other_hashes
