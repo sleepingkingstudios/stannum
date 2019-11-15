@@ -7,17 +7,21 @@ RSpec.describe Stannum::Errors do
     let(:raw_errors) do
       [
         { type: 'blank' },
-        { type: 'invalid' },
+        { type: 'invalid',  data: { key: 'value' } },
         { type: 'inverted', message: 'is upside down' }
       ]
     end
     let(:expected_errors) do
-      raw_errors.map { |err| err.merge(message: err[:message] || nil) }
+      raw_errors.map do |err|
+        err
+          .merge(data:    err[:data]    || {})
+          .merge(message: err[:message] || nil)
+      end
     end
 
     before(:example) do
-      raw_errors.each do |message: nil, type:|
-        errors.add(type, message: message)
+      raw_errors.each do |data: {}, message: nil, type:|
+        errors.add(type, message: message, **data)
       end
     end
   end
@@ -100,7 +104,9 @@ RSpec.describe Stannum::Errors do
 
       describe 'with an array with matching errors' do
         before(:example) do
-          errors.each { |message:, type:| other.add(type, message: message) }
+          errors.each do |data:, message:, type:|
+            other.add(type, message: message, **data)
+          end
         end
 
         it { expect(errors.send(method_name, other.to_a)).to be true }
@@ -108,7 +114,9 @@ RSpec.describe Stannum::Errors do
 
       describe 'with an errors object with matching errors' do
         before(:example) do
-          errors.each { |message:, type:| other.add(type, message: message) }
+          errors.each do |data:, message:, type:|
+            other.add(type, message: message, **data)
+          end
         end
 
         it { expect(errors.send(method_name, other)).to be true }
@@ -130,7 +138,11 @@ RSpec.describe Stannum::Errors do
 
   describe '#add' do
     it 'should define the method' do
-      expect(errors).to respond_to(:add).with(1).argument.and_keywords(:message)
+      expect(errors)
+        .to respond_to(:add)
+        .with(1).argument
+        .and_keywords(:message)
+        .and_any_keywords
     end
 
     def rescue_exception
@@ -187,7 +199,7 @@ RSpec.describe Stannum::Errors do
     end
 
     describe 'with a string' do
-      let(:expected) { { message: nil, type: 'some_error' } }
+      let(:expected) { { data: {}, message: nil, type: 'some_error' } }
 
       it { expect(errors.add 'some_error').to be errors }
 
@@ -198,7 +210,7 @@ RSpec.describe Stannum::Errors do
     end
 
     describe 'with a symbol' do
-      let(:expected) { { message: nil, type: 'some_error' } }
+      let(:expected) { { data: {}, message: nil, type: 'some_error' } }
 
       it { expect(errors.add :some_error).to be errors }
 
@@ -209,7 +221,7 @@ RSpec.describe Stannum::Errors do
     end
 
     describe 'with message: nil' do
-      let(:expected) { { message: nil, type: 'some_error' } }
+      let(:expected) { { data: {}, message: nil, type: 'some_error' } }
 
       it { expect(errors.add 'some_error', message: nil).to be errors }
 
@@ -263,7 +275,7 @@ RSpec.describe Stannum::Errors do
 
     describe 'with message: a string' do
       let(:message)  { 'something went wrong' }
-      let(:expected) { { message: message, type: 'some_error' } }
+      let(:expected) { { data: {}, message: message, type: 'some_error' } }
 
       it { expect(errors.add 'some_error', message: message).to be errors }
 
@@ -273,9 +285,22 @@ RSpec.describe Stannum::Errors do
       end
     end
 
+    describe 'with data' do
+      let(:expected) do
+        { data: { min: 0, max: 10 }, message: nil, type: 'some_error' }
+      end
+
+      it { expect(errors.add 'some_error', min: 0, max: 10).to be errors }
+
+      it 'should add the error' do
+        expect { errors.add 'some_error', min: 0, max: 10 }
+          .to change(errors, :to_a).to include expected
+      end
+    end
+
     wrap_context 'when the errors has many root errors' do
       describe 'with a string' do
-        let(:expected) { { message: nil, type: 'some_error' } }
+        let(:expected) { { data: {}, message: nil, type: 'some_error' } }
 
         it { expect(errors.add 'some_error').to be errors }
 
@@ -287,12 +312,25 @@ RSpec.describe Stannum::Errors do
 
       describe 'with message: a string' do
         let(:message)  { 'something went wrong' }
-        let(:expected) { { message: message, type: 'some_error' } }
+        let(:expected) { { data: {}, message: message, type: 'some_error' } }
 
         it { expect(errors.add 'some_error', message: message).to be errors }
 
         it 'should add the error' do
           expect { errors.add 'some_error', message: message }
+            .to change(errors, :to_a).to include expected
+        end
+      end
+
+      describe 'with data' do
+        let(:expected) do
+          { data: { min: 0, max: 10 }, message: nil, type: 'some_error' }
+        end
+
+        it { expect(errors.add 'some_error', min: 0, max: 10).to be errors }
+
+        it 'should add the error' do
+          expect { errors.add 'some_error', min: 0, max: 10 }
             .to change(errors, :to_a).to include expected
         end
       end
