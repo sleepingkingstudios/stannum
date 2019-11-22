@@ -11,6 +11,10 @@ AllCops:
     - 'tmp/**/*'
     - 'vendor/**/*'
 
+Layout/AlignArguments:
+  EnforcedStyle: with_fixed_indentation
+  IndentationWidth: ~
+
 Layout/AlignHash:
   EnforcedColonStyle: table
   EnforcedHashRocketStyle: table
@@ -18,6 +22,14 @@ Layout/AlignHash:
 Layout/AlignParameters:
   EnforcedStyle: with_fixed_indentation
   IndentationWidth: ~
+
+Metrics/BlockLength:
+  Exclude:
+    - 'spec/**/*_spec.rb'
+
+Metrics/ModuleLength:
+  Exclude:
+    - 'spec/**/*_examples.rb'
 
 RSpec/ExampleWithoutDescription:
   EnforcedStyle: single_line_only
@@ -37,6 +49,11 @@ Style/ClassAndModuleChildren:
 
 Style/DoubleNegation:
   Enabled: false
+
+Style/NestedParenthesizedCalls:
+  Exclude:
+    - 'spec/**/*_examples.rb'
+    - 'spec/**/*_spec.rb'
 
 Style/SingleLineBlockParams:
   # Prefer descriptive block param names.
