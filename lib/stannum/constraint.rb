@@ -33,8 +33,6 @@ module Stannum
       !matches?(actual)
     end
 
-    # @overload errors_for(actual)
-    #
     # Generates an errors object for the given object.
     #
     # The errors object represents the difference between the given object and
@@ -57,8 +55,8 @@ module Stannum
     #
     # @see #matches?
     # @see #negated_errors_for
-    def errors_for(_actual)
-      Stannum::Errors.new.add(type)
+    def errors_for(actual)
+      update_errors_for(actual: actual, errors: Stannum::Errors.new)
     end
 
     # Checks the given object against the constraint and returns errors, if any.
@@ -116,8 +114,6 @@ module Stannum
     end
     alias match? matches?
 
-    # @overload negated_errors_for(actual)
-    #
     # Generates an errors object for the given object when negated.
     #
     # The errors object represents the difference between the given object and
@@ -141,8 +137,8 @@ module Stannum
     #
     # @see #does_not_match?
     # @see #errors_for
-    def negated_errors_for(_actual)
-      Stannum::Errors.new.add(negated_type)
+    def negated_errors_for(actual)
+      update_negated_errors_for(actual: actual, errors: Stannum::Errors.new)
     end
 
     # Checks the given object against the constraint and returns errors, if any.
@@ -185,5 +181,17 @@ module Stannum
     def type
       TYPE
     end
+
+    protected
+
+    # rubocop:disable Lint/UnusedMethodArgument
+    def update_errors_for(actual:, errors:)
+      errors.add(type)
+    end
+
+    def update_negated_errors_for(actual:, errors:)
+      errors.add(negated_type)
+    end
+    # rubocop:enable Lint/UnusedMethodArgument
   end
 end

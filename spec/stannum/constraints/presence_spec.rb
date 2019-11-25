@@ -44,19 +44,25 @@ RSpec.describe Stannum::Constraints::Presence do
 
   include_examples 'should match', Object.new.freeze, reversible: true
 
-  include_examples 'should not match', '', 'an empty string', reversible: true
+  include_examples 'should not match',
+    '',
+    as:         'an empty string',
+    reversible: true
 
   include_examples 'should match', 'a string', reversible: true
 
   include_examples 'should match', :a_symbol, reversible: true
 
-  include_examples 'should not match', [], 'an empty array', reversible: true
+  include_examples 'should not match',
+    [],
+    as:         'an empty array',
+    reversible: true
 
-  include_examples 'should match', %w[a b c], 'an array', reversible: true
+  include_examples 'should match', %w[a b c], as: 'an array', reversible: true
 
-  include_examples 'should not match', {}, 'an empty hash', reversible: true
+  include_examples 'should not match', {}, as: 'an empty hash', reversible: true
 
-  include_examples 'should match', { a: 'a' }, 'a hash', reversible: true
+  include_examples 'should match', { a: 'a' }, as: 'a hash', reversible: true
 
   describe '#negated_type' do
     include_examples 'should define reader',

@@ -66,17 +66,17 @@ RSpec.describe Stannum::Constraint do
 
   include_examples 'should match when negated', :a_symbol
 
-  include_examples 'should not match', [], 'an empty array'
+  include_examples 'should not match', [], as: 'an empty array'
 
-  include_examples 'should match when negated', [], 'an empty array'
+  include_examples 'should match when negated', [], as: 'an empty array'
 
-  include_examples 'should not match', %w[a b c], 'an array'
+  include_examples 'should not match', %w[a b c], as: 'an array'
 
-  include_examples 'should match when negated', %w[a b c], 'an array'
+  include_examples 'should match when negated', %w[a b c], as: 'an array'
 
-  include_examples 'should not match', { a: 'a' }, 'a hash'
+  include_examples 'should not match', { a: 'a' }, as: 'a hash'
 
-  include_examples 'should match when negated', { a: 'a' }, 'a hash'
+  include_examples 'should match when negated', { a: 'a' }, as: 'a hash'
 
   describe '#does_not_match?' do
     context 'when #matches? returns false' do

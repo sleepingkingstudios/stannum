@@ -46,11 +46,6 @@ module Stannum::Constraints
     #   to.
     attr_reader :expected_type
 
-    # (see Stannum::Constraint#errors_for)
-    def errors_for(_actual)
-      Stannum::Errors.new.add(type, type: expected_type)
-    end
-
     # Checks that the object is an instance of the expected type.
     #
     # @return [true, false] true if the object is an instance of the expected
@@ -62,11 +57,6 @@ module Stannum::Constraints
     end
     alias match? matches?
 
-    # (see Stannum::Constraint#negated_errors_for)
-    def negated_errors_for(_actual)
-      Stannum::Errors.new.add(negated_type, type: expected_type)
-    end
-
     # @return [String] the error type generated for a matching object.
     def negated_type
       NEGATED_TYPE
@@ -76,6 +66,18 @@ module Stannum::Constraints
     def type
       TYPE
     end
+
+    protected
+
+    # rubocop:disable Lint/UnusedMethodArgument
+    def update_errors_for(actual:, errors:)
+      errors.add(type, type: expected_type)
+    end
+
+    def update_negated_errors_for(actual:, errors:)
+      errors.add(negated_type, type: expected_type)
+    end
+    # rubocop:enable Lint/UnusedMethodArgument
 
     private
 

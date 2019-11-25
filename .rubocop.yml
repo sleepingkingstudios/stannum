@@ -25,6 +25,7 @@ Layout/AlignParameters:
 
 Metrics/BlockLength:
   Exclude:
+    - 'spec/**/*_examples.rb'
     - 'spec/**/*_spec.rb'
 
 Metrics/LineLength:
