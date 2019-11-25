@@ -1,10 +1,10 @@
 # frozen_string_literal: true
 
-require 'stannum/constraint'
+require 'stannum/constraints/base'
 
 require 'support/examples/constraint_examples'
 
-RSpec.describe Stannum::Constraint do
+RSpec.describe Stannum::Constraints::Base do
   include Spec::Support::Examples::ConstraintExamples
 
   subject(:constraint) { described_class.new }

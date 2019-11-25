@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-require 'stannum/constraints'
+require 'stannum/constraints/base'
 
 module Stannum::Constraints
   # A type constraint asserts that the object is of the expected type.
@@ -28,7 +28,7 @@ module Stannum::Constraints
   #   constraint.matches?(Object.new)        # => false
   #   constraint.matches?(StandardError.new) # => true
   #   constraint.matches?(RuntimeError.new)  # => true
-  class Type < Stannum::Constraint
+  class Type < Stannum::Constraints::Base
     # The :type of the error generated for a matching object.
     NEGATED_TYPE = 'stannum.constraints.is_type'
 

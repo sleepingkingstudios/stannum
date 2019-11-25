@@ -1,10 +1,10 @@
 # frozen_string_literal: true
 
-require 'stannum'
+require 'stannum/constraints'
 
-module Stannum
+module Stannum::Constraints
   # A constraint codifies a particular expectation about an object.
-  class Constraint
+  class Base
     # The :type of the error generated for a matching object.
     NEGATED_TYPE = 'stannum.constraints.valid'
 

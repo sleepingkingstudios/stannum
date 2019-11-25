@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-require 'stannum/constraints'
+require 'stannum/constraints/base'
 
 module Stannum::Constraints
   # An example constraint that does not match any object, even nil.
@@ -11,7 +11,7 @@ module Stannum::Constraints
   #   #=> false
   #   constraint.does_not_match?(Object.new)
   #   #=> true
-  class Nothing < Stannum::Constraint
+  class Nothing < Stannum::Constraints::Base
     # The :type of the error generated for a matching object.
     NEGATED_TYPE = 'stannum.constraints.nothing'
 
