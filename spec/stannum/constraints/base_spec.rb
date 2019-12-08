@@ -34,49 +34,39 @@ RSpec.describe Stannum::Constraints::Base do
 
   include_examples 'should implement the Constraint interface'
 
-  include_examples 'should not match', nil
+  include_examples 'should not match', nil, reversible: true
 
-  include_examples 'should match when negated', nil
+  include_examples 'should not match', true, reversible: true
 
-  include_examples 'should not match', true
+  include_examples 'should not match', false, reversible: true
 
-  include_examples 'should match when negated', true
+  include_examples 'should not match',
+    0,
+    as:         'an integer',
+    reversible: true
 
-  include_examples 'should not match', false
+  include_examples 'should not match', Object.new.freeze, reversible: true
 
-  include_examples 'should match when negated', false
+  include_examples 'should not match', 'a string', reversible: true
 
-  include_examples 'should not match', 0, as: 'an integer'
+  include_examples 'should not match', '', 'an empty string', reversible: true
 
-  include_examples 'should match when negated', 0, as: 'an integer'
+  include_examples 'should not match', :a_symbol, reversible: true
 
-  include_examples 'should not match', Object.new.freeze
+  include_examples 'should not match',
+    [],
+    as:         'an empty array',
+    reversible: true
 
-  include_examples 'should match when negated', Object.new.freeze
+  include_examples 'should not match',
+    %w[a b c],
+    as:         'an array',
+    reversible: true
 
-  include_examples 'should not match', 'a string'
-
-  include_examples 'should match when negated', 'a string'
-
-  include_examples 'should not match', '', 'an empty string'
-
-  include_examples 'should match when negated', '', 'an empty string'
-
-  include_examples 'should not match', :a_symbol
-
-  include_examples 'should match when negated', :a_symbol
-
-  include_examples 'should not match', [], as: 'an empty array'
-
-  include_examples 'should match when negated', [], as: 'an empty array'
-
-  include_examples 'should not match', %w[a b c], as: 'an array'
-
-  include_examples 'should match when negated', %w[a b c], as: 'an array'
-
-  include_examples 'should not match', { a: 'a' }, as: 'a hash'
-
-  include_examples 'should match when negated', { a: 'a' }, as: 'a hash'
+  include_examples 'should not match',
+    { a: 'a' },
+    as:         'a hash',
+    reversible: true
 
   describe '#does_not_match?' do
     context 'when #matches? returns false' do

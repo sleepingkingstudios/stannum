@@ -45,6 +45,9 @@ RSpec/ExampleWording:
 RSpec/HookArgument:
   EnforcedStyle: example
 
+RSpec/NestedGroups:
+  Max: 4
+
 Style/ClassAndModuleChildren:
   # Checks the style of children definitions at classes and modules.
   #

@@ -54,6 +54,8 @@ module Spec::Support::Examples
     shared_examples 'should not match' do |value, as: nil, reversible: false|
       describe '#errors_for' do
         describe "with #{as || value.inspect}" do
+          let(:actual) { value }
+
           it { expect(subject.errors_for(value)).to be == expected_errors }
         end
       end
@@ -100,6 +102,8 @@ module Spec::Support::Examples
 
       describe '#negated_errors_for' do
         describe "with #{as || value.inspect}" do
+          let(:actual) { value }
+
           it 'should return the errors' do
             expect(subject.negated_errors_for(value)).to be == negated_errors
           end

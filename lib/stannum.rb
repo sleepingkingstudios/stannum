@@ -2,5 +2,6 @@
 
 # A library for specifying and validating data structures.
 module Stannum
-  autoload :Errors, 'stannum/errors'
+  autoload :Constraint, 'stannum/constraint'
+  autoload :Errors,     'stannum/errors'
 end
