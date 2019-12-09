@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-require 'stannum/constraints'
+require 'stannum/constraints/base'
 
 module Stannum::Constraints
   # A presence constraint asserts that the object is not nil and not empty.
@@ -18,7 +18,7 @@ module Stannum::Constraints
   # @example Using a Presence constraint with an Hash
   #   constraint.matches?({})               #=> false
   #   constraint.matches?({ key: 'value' }) #=> true
-  class Presence < Stannum::Constraint
+  class Presence < Stannum::Constraints::Base
     # The :type of the error generated for a matching object.
     NEGATED_TYPE = 'stannum.constraints.present'
 

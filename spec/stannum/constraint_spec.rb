@@ -7,178 +7,135 @@ require 'support/examples/constraint_examples'
 RSpec.describe Stannum::Constraint do
   include Spec::Support::Examples::ConstraintExamples
 
-  subject(:constraint) { described_class.new }
+  subject(:constraint) { described_class.new(**options) }
 
-  let(:expected_errors) do
-    Stannum::Errors.new.add(constraint.type)
-  end
-  let(:negated_errors) do
-    Stannum::Errors.new.add(constraint.negated_type)
-  end
-
-  describe '::NEGATED_TYPE' do
-    include_examples 'should define frozen constant',
-      :NEGATED_TYPE,
-      'stannum.constraints.valid'
-  end
-
-  describe '::TYPE' do
-    include_examples 'should define frozen constant',
-      :TYPE,
-      'stannum.constraints.invalid'
-  end
+  let(:options) { {} }
 
   describe '.new' do
-    it { expect(described_class).to be_constructible.with(0).arguments }
+    it 'should define the constructor' do
+      expect(described_class)
+        .to be_constructible
+        .with(0).arguments
+        .and_keywords(:negated_type, :type)
+        .and_a_block
+    end
   end
 
   include_examples 'should implement the Constraint interface'
-
-  include_examples 'should not match', nil
-
-  include_examples 'should match when negated', nil
-
-  include_examples 'should not match', true
-
-  include_examples 'should match when negated', true
-
-  include_examples 'should not match', false
-
-  include_examples 'should match when negated', false
-
-  include_examples 'should not match', 0, as: 'an integer'
-
-  include_examples 'should match when negated', 0, as: 'an integer'
-
-  include_examples 'should not match', Object.new.freeze
-
-  include_examples 'should match when negated', Object.new.freeze
-
-  include_examples 'should not match', 'a string'
-
-  include_examples 'should match when negated', 'a string'
-
-  include_examples 'should not match', '', 'an empty string'
-
-  include_examples 'should match when negated', '', 'an empty string'
-
-  include_examples 'should not match', :a_symbol
-
-  include_examples 'should match when negated', :a_symbol
-
-  include_examples 'should not match', [], 'an empty array'
-
-  include_examples 'should match when negated', [], 'an empty array'
-
-  include_examples 'should not match', %w[a b c], 'an array'
-
-  include_examples 'should match when negated', %w[a b c], 'an array'
-
-  include_examples 'should not match', { a: 'a' }, 'a hash'
-
-  include_examples 'should match when negated', { a: 'a' }, 'a hash'
-
-  describe '#does_not_match?' do
-    context 'when #matches? returns false' do
-      let(:actual) { nil }
-
-      before(:example) do
-        allow(constraint) # rubocop:disable RSpec/SubjectStub
-          .to receive(:matches?)
-          .and_return(false)
-      end
-
-      it { expect(constraint.does_not_match? actual).to be true }
-    end
-
-    context 'when #matches? returns true' do
-      let(:actual) { nil }
-
-      before(:example) do
-        allow(constraint) # rubocop:disable RSpec/SubjectStub
-          .to receive(:matches?)
-          .and_return(true)
-      end
-
-      it { expect(constraint.does_not_match? actual).to be false }
-    end
-  end
-
-  describe '#errors_for' do
-    it 'should return an errors object' do
-      expect(constraint.errors_for nil).to be_a Stannum::Errors
-    end
-  end
-
-  describe '#match' do
-    context 'when #matches? returns false' do
-      let(:actual) { nil }
-
-      before(:example) do
-        allow(constraint) # rubocop:disable RSpec/SubjectStub
-          .to receive(:matches?)
-          .and_return(false)
-      end
-
-      include_examples 'should not match the value'
-    end
-
-    context 'when #matches? returns true' do
-      let(:actual) { nil }
-
-      before(:example) do
-        allow(constraint) # rubocop:disable RSpec/SubjectStub
-          .to receive(:matches?)
-          .and_return(true)
-      end
-
-      include_examples 'should match the value'
-    end
-  end
-
-  describe '#negated_errors_for' do
-    it 'should return an errors object' do
-      expect(constraint.negated_errors_for nil).to be_a Stannum::Errors
-    end
-
-    it { expect(constraint.negated_errors_for nil).to be == negated_errors }
-  end
-
-  describe '#negated_match' do
-    context 'when #does_not_match? returns false' do
-      let(:actual) { nil }
-
-      before(:example) do
-        allow(constraint) # rubocop:disable RSpec/SubjectStub
-          .to receive(:does_not_match?)
-          .and_return(false)
-      end
-
-      include_examples 'should not match the value', negated: true
-    end
-
-    context 'when #does_not_match? returns true' do
-      let(:actual) { nil }
-
-      before(:example) do
-        allow(constraint) # rubocop:disable RSpec/SubjectStub
-          .to receive(:does_not_match?)
-          .and_return(true)
-      end
-
-      include_examples 'should match the value', negated: true
-    end
-  end
 
   describe '#negated_type' do
     include_examples 'should define reader',
       :negated_type,
       'stannum.constraints.valid'
+
+    context 'when initialized with a negated type' do
+      let(:negated_type) { 'spec.custom_negated_type' }
+      let(:options)      { super().merge(negated_type: negated_type) }
+
+      it { expect(constraint.negated_type).to be negated_type }
+    end
   end
 
   describe '#type' do
     include_examples 'should define reader',
       :type,
       'stannum.constraints.invalid'
+
+    context 'when initialized with a type' do
+      let(:type)    { 'spec.custom_type' }
+      let(:options) { super().merge(type: type) }
+
+      it { expect(constraint.type).to be type }
+    end
+  end
+
+  context 'when initialized without a block' do
+    let(:expected_errors) do
+      Stannum::Errors.new.add(constraint.type)
+    end
+
+    include_examples 'should not match', nil, reversible: true
+
+    include_examples 'should not match', true, reversible: true
+
+    include_examples 'should not match', false, reversible: true
+
+    include_examples 'should not match',
+      0,
+      as:         'an integer',
+      reversible: true
+
+    include_examples 'should not match', Object.new.freeze, reversible: true
+
+    include_examples 'should not match', 'a string', reversible: true
+
+    include_examples 'should not match', '', 'an empty string', reversible: true
+
+    include_examples 'should not match', :a_symbol, reversible: true
+
+    include_examples 'should not match',
+      [],
+      as:         'an empty array',
+      reversible: true
+
+    include_examples 'should not match',
+      %w[a b c],
+      as:         'an array',
+      reversible: true
+
+    include_examples 'should not match',
+      { a: 'a' },
+      as:         'a hash',
+      reversible: true
+
+    context 'when initialized with a type' do
+      let(:type)    { 'spec.custom_type' }
+      let(:options) { super().merge(type: type) }
+
+      include_examples 'should not match', nil, reversible: true
+    end
+  end
+
+  context 'when initialized with a block' do
+    subject(:constraint) { described_class.new(**options, &block) }
+
+    let(:block) { ->(actual) { actual.nil? } }
+    let(:expected_errors) do
+      Stannum::Errors.new.add(constraint.type)
+    end
+    let(:negated_errors) do
+      Stannum::Errors.new.add(constraint.negated_type)
+    end
+
+    include_examples 'should match', nil, reversible: true
+
+    include_examples 'should not match',
+      Object.new.freeze,
+      as:         'a non-nil object',
+      reversible: true
+
+    context 'when initialized with a type' do
+      let(:type)    { 'spec.custom_type' }
+      let(:options) { super().merge(type: type) }
+
+      include_examples 'should match', nil, reversible: true
+
+      include_examples 'should not match',
+        Object.new.freeze,
+        as:         'a non-nil object',
+        reversible: true
+    end
+
+    context 'when initialized with a negated type' do
+      let(:negated_type) { 'spec.custom_negated_type' }
+      let(:options)      { super().merge(negated_type: negated_type) }
+
+      include_examples 'should match', nil, reversible: true
+
+      include_examples 'should not match',
+        Object.new.freeze,
+        as:         'a non-nil object',
+        reversible: true
+    end
   end
 end

@@ -12,7 +12,7 @@ module Spec::Support::Examples
       method_name = negated ? :negated_match : :match
 
       it 'should return true', :aggregate_failures do
-        success, errors = constraint.send(method_name, actual)
+        success, errors = subject.send(method_name, actual)
 
         expect(success).to be true
         expect(errors).to  be nil
@@ -24,10 +24,10 @@ module Spec::Support::Examples
       errors_name = negated ? :negated_errors_for : :errors_for
 
       it 'should return false and the errors', :aggregate_failures do
-        success, errors = constraint.send(method_name, actual)
+        success, errors = subject.send(method_name, actual)
 
         expect(success).to be false
-        expect(errors).to  be == constraint.send(errors_name, actual)
+        expect(errors).to  be == subject.send(errors_name, actual)
       end
     end
 
@@ -42,19 +42,21 @@ module Spec::Support::Examples
 
       describe '#matches?' do
         describe "with #{as || value.inspect}" do
-          it { expect(constraint.matches? value).to be true }
+          it { expect(subject.matches? value).to be true }
         end
       end
 
       if reversible
-        include_examples 'should not match when negated', value, as: nil
+        include_examples 'should not match when negated', value, as: as
       end
     end
 
     shared_examples 'should not match' do |value, as: nil, reversible: false|
       describe '#errors_for' do
         describe "with #{as || value.inspect}" do
-          it { expect(constraint.errors_for(value)).to be == expected_errors }
+          let(:actual) { value }
+
+          it { expect(subject.errors_for(value)).to be == expected_errors }
         end
       end
 
@@ -68,7 +70,7 @@ module Spec::Support::Examples
 
       describe '#matches?' do
         describe "with #{as || value.inspect}" do
-          it { expect(constraint.matches? value).to be false }
+          it { expect(subject.matches? value).to be false }
         end
       end
 
@@ -78,7 +80,7 @@ module Spec::Support::Examples
     shared_examples 'should match when negated' do |value, as: nil|
       describe '#does_not_match?' do
         describe "with #{as || value.inspect}" do
-          it { expect(constraint.does_not_match? value).to be true }
+          it { expect(subject.does_not_match? value).to be true }
         end
       end
 
@@ -94,14 +96,16 @@ module Spec::Support::Examples
     shared_examples 'should not match when negated' do |value, as: nil|
       describe '#does_not_match?' do
         describe "with #{as || value.inspect}" do
-          it { expect(constraint.does_not_match? value).to be false }
+          it { expect(subject.does_not_match? value).to be false }
         end
       end
 
       describe '#negated_errors_for' do
         describe "with #{as || value.inspect}" do
+          let(:actual) { value }
+
           it 'should return the errors' do
-            expect(constraint.negated_errors_for(value)).to be == negated_errors
+            expect(subject.negated_errors_for(value)).to be == negated_errors
           end
         end
       end
@@ -118,33 +122,85 @@ module Spec::Support::Examples
     shared_examples 'should implement the Constraint interface' do
       describe '#does_not_match?' do
         it 'should define the method' do
-          expect(constraint).to respond_to(:does_not_match?).with(1).argument
+          expect(subject).to respond_to(:does_not_match?).with(1).argument
         end
       end
 
       describe '#errors_for' do
-        it { expect(constraint).to respond_to(:errors_for).with(1).argument }
+        let(:actual) { Object.new.freeze }
+
+        it { expect(subject).to respond_to(:errors_for).with(1).argument }
+
+        # rubocop:disable Lint/RedundantCopDisableDirective
+        # rubocop:disable Lint/UnusedBlockArgument
+        # rubocop:disable RSpec/ExampleLength
+        it 'should delegate to #update_errors_for', :aggregate_failures do
+          allow(subject) # rubocop:disable RSpec/SubjectStub
+            .to receive(:update_errors_for) do |actual:, errors:|
+              errors.add('spec.example_error')
+            end
+
+          errors = subject.errors_for actual
+
+          expect(errors).to be_a Stannum::Errors
+          expect(errors)
+            .to include(be >= { type: 'spec.example_error' })
+
+          expect(subject) # rubocop:disable RSpec/SubjectStub
+            .to have_received(:update_errors_for)
+            .with(actual: actual, errors: an_instance_of(Stannum::Errors))
+        end
+        # rubocop:enable Lint/RedundantCopDisableDirective
+        # rubocop:enable Lint/UnusedBlockArgument
+        # rubocop:enable RSpec/ExampleLength
       end
 
       describe '#match' do
-        it { expect(constraint).to respond_to(:match).with(1).argument }
+        it { expect(subject).to respond_to(:match).with(1).argument }
       end
 
       describe '#matches?' do
-        it { expect(constraint).to respond_to(:matches?).with(1).argument }
+        it { expect(subject).to respond_to(:matches?).with(1).argument }
 
-        it { expect(constraint).to alias_method(:matches?).as(:match?) }
+        it { expect(subject).to alias_method(:matches?).as(:match?) }
       end
 
       describe '#negated_errors_for' do
+        let(:actual) { Object.new.freeze }
+
         it 'should define the method' do
-          expect(constraint).to respond_to(:negated_errors_for).with(1).argument
+          expect(subject).to respond_to(:negated_errors_for).with(1).argument
         end
+
+        # rubocop:disable Lint/RedundantCopDisableDirective
+        # rubocop:disable Lint/UnusedBlockArgument
+        # rubocop:disable RSpec/ExampleLength
+        it 'should delegate to #update_negated_errors_for',
+          :aggregate_failures \
+        do
+          allow(subject) # rubocop:disable RSpec/SubjectStub
+            .to receive(:update_negated_errors_for) do |actual:, errors:|
+              errors.add('spec.example_error')
+            end
+
+          errors = subject.negated_errors_for actual
+
+          expect(errors).to be_a Stannum::Errors
+          expect(errors)
+            .to include(be >= { type: 'spec.example_error' })
+
+          expect(subject) # rubocop:disable RSpec/SubjectStub
+            .to have_received(:update_negated_errors_for)
+            .with(actual: actual, errors: an_instance_of(Stannum::Errors))
+        end
+        # rubocop:enable Lint/RedundantCopDisableDirective
+        # rubocop:enable Lint/UnusedBlockArgument
+        # rubocop:enable RSpec/ExampleLength
       end
 
       describe '#negated_match' do
         it 'should define the method' do
-          expect(constraint).to respond_to(:negated_match).with(1).argument
+          expect(subject).to respond_to(:negated_match).with(1).argument
         end
       end
     end

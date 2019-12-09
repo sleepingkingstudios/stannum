@@ -25,7 +25,12 @@ Layout/AlignParameters:
 
 Metrics/BlockLength:
   Exclude:
+    - 'spec/**/*_examples.rb'
     - 'spec/**/*_spec.rb'
+
+Metrics/LineLength:
+  IgnoredPatterns:
+    - '\A\s*#'
 
 Metrics/ModuleLength:
   Exclude:
@@ -39,6 +44,9 @@ RSpec/ExampleWording:
 
 RSpec/HookArgument:
   EnforcedStyle: example
+
+RSpec/NestedGroups:
+  Max: 4
 
 Style/ClassAndModuleChildren:
   # Checks the style of children definitions at classes and modules.

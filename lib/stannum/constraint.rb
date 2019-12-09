@@ -1,189 +1,72 @@
 # frozen_string_literal: true
 
-require 'stannum'
+require 'stannum/constraints/base'
 
 module Stannum
-  # A constraint codifies a particular expectation about an object.
-  class Constraint
-    # The :type of the error generated for a matching object.
-    NEGATED_TYPE = 'stannum.constraints.valid'
-
-    # The :type of the error generated for a non-matching object.
-    TYPE = 'stannum.constraints.invalid'
-
-    # Checks that the given object does not match the constraint.
+  # Constraint class for defining a custom or one-off constraint instance.
+  #
+  # The Stannum::Constraint class allows you to define a constraint instance
+  # with a block, and optionally a type and negated type when generating errors
+  # for non-matching objects.
+  #
+  # If your use case is more complicated, such as a constraint with multiple
+  # expectations and thus different errors depending on the given object, use
+  # a subclass of the Stannum::Constraints::Base class instead. For example, an
+  # is_odd constraint that checks if an object is an odd integer might have
+  # different errors when passed a non-integer object and when passed an even
+  # integer, even though both are failing matches.
+  #
+  # Likewise, if you want to define a custom constraint class, it is recommended
+  # that you use Stannum::Constraints::Base as the base class for all but the
+  # simplest constraints.
+  #
+  # @example Defining a Custom Constraint
+  #   is_integer = Stannum::Constraint.new { |actual| actual.is_a?(Integer) }
+  #   is_integer.matches?(nil) #=> false
+  #   is_integer.matches?(3)   #=> true
+  #   is_integer.matches?(3.5) #=> false
+  #
+  # @example Defining a Custom Constraint With Errors
+  #   is_even_integer = Stannum::Constraint.new(
+  #     negated_type: 'examples.an_even_integer',
+  #     type:         'examples.not_an_even_integer'
+  #   ) { |actual| actual.is_a?(Integer) && actual.even? }
+  #
+  #   is_even_integer.matches?(nil) #=> false
+  #   is_even_integer.matches?(2)   #=> true
+  #   is_even_integer.matches?(3)   #=> false
+  #
+  # @see Stannum::Constraints::Base
+  class Constraint < Stannum::Constraints::Base
+    # @overload initialize(negated_type: nil, type: nil)
+    #   @param negated_type [String] The error type generated for a matching
+    #     object.
+    #   @param type [String] The error type generated for a non-matching object.
     #
-    # @example Checking a matching object.
-    #   constraint = CustomConstraint.new
-    #   object     = MatchingObject.new
+    #   @yield The definition for the constraint. Each time #matches? is called
+    #     for this constraint, the given object will be passed to this block and
+    #     the result of the block will be returned.
+    #   @yieldparam actual [Object] The object to check against the constraint.
+    #   @yieldreturn [true, false] true if the given object matches the
+    #     constraint, otherwise false.
     #
-    #   constraint.does_not_match?(object) #=> false
-    #
-    # @example Checking a non-matching object.
-    #   constraint = CustomConstraint.new
-    #   object     = NonMatchingObject.new
-    #
-    #   constraint.does_not_match?(object) #=> true
-    #
-    # @return [true, false] false if the object matches the expected properties
-    #   or behavior, otherwise true.
-    #
-    # @see #matches?
-    def does_not_match?(actual)
-      !matches?(actual)
-    end
-
-    # @overload errors_for(actual)
-    #
-    # Generates an errors object for the given object.
-    #
-    # The errors object represents the difference between the given object and
-    # the expected properties or behavior. It may be the same for all objects,
-    # or different based on the details of the object or the constraint.
-    #
-    # @example Generating errors for a non-matching object.
-    #   constraint = CustomConstraint.new
-    #   object     = NonMatchingObject.new
-    #   errors     = constraint.errors_for(object)
-    #
-    #   errors.class #=> Stannum::Errors
-    #   errors.to_a  #=> [{ type: 'some_error', message: 'some error message' }]
-    #
-    # @note This method should only be called for an object that does not match
-    #   the constraint. Generating errors for a matching object can result in
-    #   undefined behavior.
-    #
-    # @return [Stannum::Errors] the generated errors object.
-    #
-    # @see #matches?
-    # @see #negated_errors_for
-    def errors_for(_actual)
-      Stannum::Errors.new.add(type)
-    end
-
-    # Checks the given object against the constraint and returns errors, if any.
-    #
-    # This method checks the given object against the expected properties or
-    # behavior. If the object matches the constraint, #match will return true.
-    # If the object does not match the constraint, #match will return false and
-    # the generated errors for that object.
-    #
-    # @example Checking a matching object.
-    #   constraint = CustomConstraint.new
-    #   object     = MatchingObject.new
-    #
-    #   success, errors = constraint.match(object)
-    #   success #=> true
-    #   errors  #=> nil
-    #
-    # @example Checking a non-matching object.
-    #   constraint = CustomConstraint.new
-    #   object     = NonMatchingObject.new
-    #
-    #   success, errors = constraint.match(object)
-    #   success      #=> false
-    #   errors.class #=> Stannum::Errors
-    #   errors.to_a  #=> [{ type: 'some_error', message: 'some error message' }]
-    #
-    # @see #errors_for
-    # @see #matches?
-    def match(actual)
-      matches?(actual) ? true : [false, errors_for(actual)]
-    end
-
-    # @overload matches?(actual)
-    #
-    # Checks that the given object matches the constraint.
-    #
-    # @example Checking a matching object.
-    #   constraint = CustomConstraint.new
-    #   object     = MatchingObject.new
-    #
-    #   constraint.matches?(object) #=> true
-    #
-    # @example Checking a non-matching object.
-    #   constraint = CustomConstraint.new
-    #   object     = NonMatchingObject.new
-    #
-    #   constraint.matches?(object) #=> false
-    #
-    # @return [true, false] true if the object matches the expected properties
-    #   or behavior, otherwise false.
-    #
-    # @see #does_not_match?
-    def matches?(_actual)
-      false
-    end
-    alias match? matches?
-
-    # @overload negated_errors_for(actual)
-    #
-    # Generates an errors object for the given object when negated.
-    #
-    # The errors object represents the difference between the given object and
-    # the expected properties or behavior when the constraint is negated. It may
-    # be the same for all objects, or different based on the details of the
-    # object or the constraint.
-    #
-    # @example Generating errors for a matching object.
-    #   constraint = CustomConstraint.new
-    #   object     = MatchingObject.new
-    #   errors     = constraint.negated_errors_for(object)
-    #
-    #   errors.class #=> Stannum::Errors
-    #   errors.to_a  #=> [{ type: 'some_error', message: 'some error message' }]
-    #
-    # @note This method should only be called for an object that matches the
-    #   constraint. Generating errors for a matching object can result in
-    #   undefined behavior.
-    #
-    # @return [Stannum::Errors] the generated errors object.
-    #
-    # @see #does_not_match?
-    # @see #errors_for
-    def negated_errors_for(_actual)
-      Stannum::Errors.new.add(negated_type)
-    end
-
-    # Checks the given object against the constraint and returns errors, if any.
-    #
-    # This method checks the given object against the expected properties or
-    # behavior. If the object matches the constraint, #negated_match will return
-    # false and the generated errors for that object. If the object does not
-    # match the constraint, #negated_match will return true.
-    #
-    # @example Checking a matching object.
-    #   constraint = CustomConstraint.new
-    #   object     = MatchingObject.new
-    #
-    #   success, errors = constraint.negated_match(object)
-    #   success      #=> false
-    #   errors.class #=> Stannum::Errors
-    #   errors.to_a  #=> [{ type: 'some_error', message: 'some error message' }]
-    #
-    # @example Checking a non-matching object.
-    #   constraint = CustomConstraint.new
-    #   object     = NonMatchingObject.new
-    #
-    #   success, errors = constraint.negated_match(object)
-    #   success #=> true
-    #   errors  #=> nil
-    #
-    # @see #does_not_match?
-    # @see #match
-    # @see #negated_errors_for
-    def negated_match(actual)
-      does_not_match?(actual) ? true : [false, negated_errors_for(actual)]
+    #   @see #matches?
+    def initialize(negated_type: nil, type: nil, &block)
+      @negated_type = negated_type || Stannum::Constraints::Base::NEGATED_TYPE
+      @type         = type         || Stannum::Constraints::Base::TYPE
+      @definition   = block
     end
 
     # @return [String] the error type generated for a matching object.
-    def negated_type
-      NEGATED_TYPE
-    end
+    attr_reader :negated_type
 
     # @return [String] the error type generated for a non-matching object.
-    def type
-      TYPE
+    attr_reader :type
+
+    # (see Stannum::Constraints::Base#matches?)
+    def matches?(actual)
+      @definition ? @definition.call(actual) : super
     end
+    alias match? matches?
   end
 end

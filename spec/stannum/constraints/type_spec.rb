@@ -65,17 +65,17 @@ RSpec.describe Stannum::Constraints::Type do
 
     include_examples 'should not match',
       Object.new.freeze,
-      'an object',
+      as:         'an object',
       reversible: true
 
     include_examples 'should match',
       StandardError.new,
-      'an instance of the class',
+      as:         'an instance of the class',
       reversible: true
 
     include_examples 'should match',
       RuntimeError.new,
-      'an instance of a subclass',
+      as:         'an instance of a subclass',
       reversible: true
   end
 
@@ -88,17 +88,17 @@ RSpec.describe Stannum::Constraints::Type do
 
     include_examples 'should not match',
       Object.new.freeze,
-      'an object',
+      as:         'an object',
       reversible: true
 
     include_examples 'should match',
       StandardError.new,
-      'an instance of the class',
+      as:         'an instance of the class',
       reversible: true
 
     include_examples 'should match',
       RuntimeError.new,
-      'an instance of a subclass',
+      as:         'an instance of a subclass',
       reversible: true
   end
 
@@ -109,17 +109,17 @@ RSpec.describe Stannum::Constraints::Type do
 
     include_examples 'should not match',
       Object.new.freeze,
-      'an object',
+      as:         'an object',
       reversible: true
 
     include_examples 'should match',
       [],
-      'an instance of a class including the module',
+      as:         'an instance of a class including the module',
       reversible: true
 
     include_examples 'should match',
       Object.new.extend(Enumerable).freeze,
-      'an object extending the module',
+      as:         'an object extending the module',
       reversible: true
   end
 
@@ -132,17 +132,17 @@ RSpec.describe Stannum::Constraints::Type do
 
     include_examples 'should not match',
       Object.new.freeze,
-      'an object',
+      as:         'an object',
       reversible: true
 
     include_examples 'should match',
       [],
-      'an instance of a class including the module',
+      as:         'an instance of a class including the module',
       reversible: true
 
     include_examples 'should match',
       Object.new.extend(Enumerable).freeze,
-      'an object extending the module',
+      as:         'an object extending the module',
       reversible: true
   end
 

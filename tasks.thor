@@ -2,6 +2,8 @@ require 'sleeping_king_studios/tasks'
 
 SleepingKingStudios::Tasks.configure do |config|
   config.ci do |ci|
+    ci.rspec.update format: 'progress'
+
     ci.steps =
       if ENV['CI']
         %i[rspec rspec_each rubocop simplecov]

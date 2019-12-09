@@ -1,10 +1,10 @@
 # frozen_string_literal: true
 
-require 'stannum/constraints/presence'
+require 'stannum/constraints/nothing'
 
 require 'support/examples/constraint_examples'
 
-RSpec.describe Stannum::Constraints::Presence do
+RSpec.describe Stannum::Constraints::Nothing do
   include Spec::Support::Examples::ConstraintExamples
 
   subject(:constraint) { described_class.new }
@@ -12,20 +12,17 @@ RSpec.describe Stannum::Constraints::Presence do
   let(:expected_errors) do
     Stannum::Errors.new.add(constraint.type)
   end
-  let(:negated_errors) do
-    Stannum::Errors.new.add(constraint.negated_type)
-  end
 
   describe '::NEGATED_TYPE' do
     include_examples 'should define frozen constant',
       :NEGATED_TYPE,
-      'stannum.constraints.present'
+      'stannum.constraints.nothing'
   end
 
   describe '::TYPE' do
     include_examples 'should define frozen constant',
       :TYPE,
-      'stannum.constraints.absent'
+      'stannum.constraints.anything'
   end
 
   describe '.new' do
@@ -36,43 +33,49 @@ RSpec.describe Stannum::Constraints::Presence do
 
   include_examples 'should not match', nil, reversible: true
 
-  include_examples 'should match', true, reversible: true
+  include_examples 'should not match', true, reversible: true
 
-  include_examples 'should match', false, reversible: true
+  include_examples 'should not match', false, reversible: true
 
-  include_examples 'should match', 0, as: 'an integer', reversible: true
+  include_examples 'should not match', 0, as: 'an integer', reversible: true
 
-  include_examples 'should match', Object.new.freeze, reversible: true
+  include_examples 'should not match', Object.new.freeze, reversible: true
 
   include_examples 'should not match',
     '',
     as:         'an empty string',
     reversible: true
 
-  include_examples 'should match', 'a string', reversible: true
+  include_examples 'should not match', 'a string', reversible: true
 
-  include_examples 'should match', :a_symbol, reversible: true
+  include_examples 'should not match', :a_symbol, reversible: true
 
   include_examples 'should not match',
     [],
     as:         'an empty array',
     reversible: true
 
-  include_examples 'should match', %w[a b c], as: 'an array', reversible: true
+  include_examples 'should not match',
+    %w[a b c],
+    as:         'an array',
+    reversible: true
 
   include_examples 'should not match', {}, as: 'an empty hash', reversible: true
 
-  include_examples 'should match', { a: 'a' }, as: 'a hash', reversible: true
+  include_examples 'should not match',
+    { a: 'a' },
+    as:         'a hash',
+    reversible: true
 
   describe '#negated_type' do
     include_examples 'should define reader',
       :negated_type,
-      'stannum.constraints.present'
+      'stannum.constraints.nothing'
   end
 
   describe '#type' do
     include_examples 'should define reader',
       :type,
-      'stannum.constraints.absent'
+      'stannum.constraints.anything'
   end
 end
