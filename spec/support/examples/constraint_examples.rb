@@ -34,7 +34,7 @@ module Spec::Support::Examples
     shared_examples 'should match' do |value, as: nil, reversible: false|
       describe '#match' do
         describe "with #{as || value.inspect}" do
-          let(:actual) { value }
+          let(:actual) { value.is_a?(Proc) ? instance_exec(&value) : value }
 
           include_examples 'should match the value'
         end
@@ -42,7 +42,9 @@ module Spec::Support::Examples
 
       describe '#matches?' do
         describe "with #{as || value.inspect}" do
-          it { expect(subject.matches? value).to be true }
+          let(:actual) { value.is_a?(Proc) ? instance_exec(&value) : value }
+
+          it { expect(subject.matches? actual).to be true }
         end
       end
 
@@ -54,15 +56,15 @@ module Spec::Support::Examples
     shared_examples 'should not match' do |value, as: nil, reversible: false|
       describe '#errors_for' do
         describe "with #{as || value.inspect}" do
-          let(:actual) { value }
+          let(:actual) { value.is_a?(Proc) ? instance_exec(&value) : value }
 
-          it { expect(subject.errors_for(value)).to be == expected_errors }
+          it { expect(subject.errors_for(actual)).to be == expected_errors }
         end
       end
 
       describe '#match' do
         describe "with #{as || value.inspect}" do
-          let(:actual) { value }
+          let(:actual) { value.is_a?(Proc) ? instance_exec(&value) : value }
 
           include_examples 'should not match the value'
         end
@@ -70,7 +72,9 @@ module Spec::Support::Examples
 
       describe '#matches?' do
         describe "with #{as || value.inspect}" do
-          it { expect(subject.matches? value).to be false }
+          let(:actual) { value.is_a?(Proc) ? instance_exec(&value) : value }
+
+          it { expect(subject.matches? actual).to be false }
         end
       end
 
@@ -80,13 +84,15 @@ module Spec::Support::Examples
     shared_examples 'should match when negated' do |value, as: nil|
       describe '#does_not_match?' do
         describe "with #{as || value.inspect}" do
+          let(:actual) { value.is_a?(Proc) ? instance_exec(&value) : value }
+
           it { expect(subject.does_not_match? value).to be true }
         end
       end
 
       describe '#negated_match' do
         describe "with #{as || value.inspect}" do
-          let(:actual) { value }
+          let(:actual) { value.is_a?(Proc) ? instance_exec(&value) : value }
 
           include_examples 'should match the value', negated: true
         end
@@ -96,23 +102,25 @@ module Spec::Support::Examples
     shared_examples 'should not match when negated' do |value, as: nil|
       describe '#does_not_match?' do
         describe "with #{as || value.inspect}" do
-          it { expect(subject.does_not_match? value).to be false }
+          let(:actual) { value.is_a?(Proc) ? instance_exec(&value) : value }
+
+          it { expect(subject.does_not_match? actual).to be false }
         end
       end
 
       describe '#negated_errors_for' do
         describe "with #{as || value.inspect}" do
-          let(:actual) { value }
+          let(:actual) { value.is_a?(Proc) ? instance_exec(&value) : value }
 
           it 'should return the errors' do
-            expect(subject.negated_errors_for(value)).to be == negated_errors
+            expect(subject.negated_errors_for(actual)).to be == negated_errors
           end
         end
       end
 
       describe '#negated_match' do
         describe "with #{as || value.inspect}" do
-          let(:actual) { value }
+          let(:actual) { value.is_a?(Proc) ? instance_exec(&value) : value }
 
           include_examples 'should not match the value', negated: true
         end
