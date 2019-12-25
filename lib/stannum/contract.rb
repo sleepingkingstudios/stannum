@@ -82,8 +82,8 @@ module Stannum
   #   property_contract =
   #     Stannum::Contract.new
   #     .add_constraint(type_constraint)
-  #     .add_constraint(name_constraint)
-  #     .add_constraint(range_constraint)
+  #     .add_constraint(name_constraint, property: :name)
+  #     .add_constraint(address_constraint, property: %i[manufacturer factory address])
   #
   # @example With An Object That Matches None Of The Property Constraints
   #   # With a non-Widget object.
