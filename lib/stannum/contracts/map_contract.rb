@@ -1,17 +1,15 @@
 # frozen_string_literal: true
 
-require 'stannum/constraint'
-require 'stannum/constraints'
-require 'stannum/contract'
+require 'stannum/contracts'
 
-module Stannum::Constraints
+module Stannum::Contracts
   # Contract that defines constraints on an object's properties.
   #
   # @example Creating A Contract With Properties
   #   length_constraint =
   #     Stannum::Constraint.new { |value| value.is_a?(Integer) }
   #
-  #   contract = Stannum::Constraints::MapContract.new do
+  #   contract = Stannum::Contracts::MapContract.new do
   #     property :length,       length_constraint
   #     property :manufacturer, Spec::ManufacturerContract.new
   #     property :name,         -> { |value| value.is_a?(String) }
@@ -98,7 +96,7 @@ module Stannum::Constraints
     # @yield Creates an instance of MapContract::Builder with the new contract
     #   and executes the block in the context of the builder.
     #
-    # @see Stannum::Constraints::MapContract::Builder
+    # @see Stannum::Contracts::MapContract::Builder
     def initialize(&block)
       super
 

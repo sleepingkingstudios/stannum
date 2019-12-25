@@ -1,10 +1,10 @@
 # frozen_string_literal: true
 
-require 'stannum/constraints/map_contract'
+require 'stannum/contracts/map_contract'
 
 require 'support/examples/constraint_examples'
 
-RSpec.describe Stannum::Constraints::MapContract do
+RSpec.describe Stannum::Contracts::MapContract do
   include Spec::Support::Examples::ConstraintExamples
 
   shared_context 'with a block with one property constraint' do
@@ -48,7 +48,7 @@ RSpec.describe Stannum::Constraints::MapContract do
       let(:described_class) { Spec::CustomContract }
 
       # rubocop:disable RSpec/DescribedClass
-      example_class 'Spec::CustomContract', Stannum::Constraints::MapContract
+      example_class 'Spec::CustomContract', Stannum::Contracts::MapContract
       # rubocop:enable RSpec/DescribedClass
     end
 
@@ -181,7 +181,7 @@ RSpec.describe Stannum::Constraints::MapContract do
     let(:described_class) { super()::Builder }
     let(:contract) do
       # rubocop:disable RSpec/DescribedClass
-      Stannum::Constraints::MapContract.new
+      Stannum::Contracts::MapContract.new
       # rubocop:enable RSpec/DescribedClass
     end
 
