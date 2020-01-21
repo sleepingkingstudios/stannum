@@ -1332,6 +1332,7 @@ RSpec.describe Stannum::Errors do
       expect { errors.dup.add(:some_error) }.not_to change(errors, :size)
     end
 
+    # rubocop:disable RSpec/RepeatedExampleGroupBody
     wrap_context 'when the errors has many root errors' do
       it { expect(errors.dup).to be == errors }
 
@@ -1381,6 +1382,7 @@ RSpec.describe Stannum::Errors do
         expect { errors.dup.add(:some_error) }.not_to change(errors, :size)
       end
     end
+    # rubocop:enable RSpec/RepeatedExampleGroupBody
   end
 
   describe '#each' do
@@ -1432,6 +1434,7 @@ RSpec.describe Stannum::Errors do
       end
     end
 
+    # rubocop:disable RSpec/RepeatedExampleGroupBody
     wrap_context 'when the errors has many root errors' do
       include_examples 'should yield each error'
     end
@@ -1451,6 +1454,7 @@ RSpec.describe Stannum::Errors do
     wrap_context 'when the errors has many indexed errors' do
       include_examples 'should yield each error'
     end
+    # rubocop:enable RSpec/RepeatedExampleGroupBody
   end
 
   describe '#empty?' do
@@ -1460,6 +1464,7 @@ RSpec.describe Stannum::Errors do
 
     it { expect(errors.empty?).to be true }
 
+    # rubocop:disable RSpec/RepeatedExampleGroupBody
     wrap_context 'when the errors has many root errors' do
       it { expect(errors.empty?).to be false }
     end
@@ -1479,6 +1484,7 @@ RSpec.describe Stannum::Errors do
     wrap_context 'when the errors has many indexed errors' do
       it { expect(errors.empty?).to be false }
     end
+    # rubocop:enable RSpec/RepeatedExampleGroupBody
   end
 
   describe '#eql?' do
@@ -1581,6 +1587,7 @@ RSpec.describe Stannum::Errors do
 
     include_examples 'should merge the errors'
 
+    # rubocop:disable RSpec/RepeatedExampleGroupBody
     wrap_context 'when the errors has many root errors' do
       include_examples 'should merge the errors'
     end
@@ -1596,6 +1603,7 @@ RSpec.describe Stannum::Errors do
     wrap_context 'when the errors has many errors at different paths' do
       include_examples 'should merge the errors'
     end
+    # rubocop:enable RSpec/RepeatedExampleGroupBody
   end
 
   describe '#size' do
@@ -1605,6 +1613,7 @@ RSpec.describe Stannum::Errors do
 
     it { expect(errors.size).to be 0 }
 
+    # rubocop:disable RSpec/RepeatedExampleGroupBody
     wrap_context 'when the errors has many root errors' do
       it { expect(errors.size).to be expected_errors.size }
     end
@@ -1624,6 +1633,7 @@ RSpec.describe Stannum::Errors do
     wrap_context 'when the errors has many indexed errors' do
       it { expect(errors.size).to be expected_errors.size }
     end
+    # rubocop:enable RSpec/RepeatedExampleGroupBody
   end
 
   describe '#to_a' do
@@ -1631,6 +1641,7 @@ RSpec.describe Stannum::Errors do
 
     it { expect(errors.to_a).to be == [] }
 
+    # rubocop:disable RSpec/RepeatedExampleGroupBody
     wrap_context 'when the errors has many root errors' do
       it { expect(errors.to_a).to contain_exactly(*expected_errors) }
     end
@@ -1650,6 +1661,7 @@ RSpec.describe Stannum::Errors do
     wrap_context 'when the errors has many indexed errors' do
       it { expect(errors.to_a).to contain_exactly(*expected_errors) }
     end
+    # rubocop:enable RSpec/RepeatedExampleGroupBody
   end
 
   describe '#update' do
@@ -1744,6 +1756,7 @@ RSpec.describe Stannum::Errors do
 
     include_examples 'should update the errors'
 
+    # rubocop:disable RSpec/RepeatedExampleGroupBody
     wrap_context 'when the errors has many root errors' do
       include_examples 'should update the errors'
     end
@@ -1759,5 +1772,6 @@ RSpec.describe Stannum::Errors do
     wrap_context 'when the errors has many errors at different paths' do
       include_examples 'should update the errors'
     end
+    # rubocop:enable RSpec/RepeatedExampleGroupBody
   end
 end

@@ -12,7 +12,7 @@ module Stannum::Contracts
   #   contract = Stannum::Contracts::MapContract.new do
   #     property :length,       length_constraint
   #     property :manufacturer, Spec::ManufacturerContract.new
-  #     property :name,         -> { |value| value.is_a?(String) }
+  #     property :name,         ->(value) { value.is_a?(String) }
   #   end
   class MapContract < Stannum::Contract
     # Builder class for defining property constraints for a MapContract.

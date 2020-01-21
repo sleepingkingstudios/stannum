@@ -41,6 +41,9 @@
 - Types::String
 - Types::Symbol
 
+- Types::Lazy - takes a class or module name as a String or Symbol; only
+  evaluates when the constraint is first checked?
+
 ### Contracts
 
 #### ArgumentsContract
@@ -65,6 +68,8 @@
   - if :symbol
     - no change to #access_property
     - #valid_property? only allows Symbol properties
+- constructor option allow_other_keys: [true (default), false]
+  - if false, object cannot have keys without a property constraint
 
 #### TupleContract
 
@@ -86,3 +91,26 @@
 - Matcher mixin - use a constraint in place of an RSpec matcher!
 
 ### Structs
+
+```
+class Person
+  # Defines :==, :[], :[]=, :inspect, :to_h, :to_s
+  # Sets Person::Contract to a new MapContract
+  include Stannum::Struct
+
+  # Define attributes.
+  # Creates reader, writer methods via @attributes[]
+  # Creates a Type constraint
+  # attribute :attr_name, AttrType (or "AttrType")
+  attribute :name, String
+  attribute :residence, "Residence"
+
+  # Define constraints.
+  constraint CustomPersonConstraint.new
+  constraint { |person| !person.can_drink? if person.age < 21 }
+  constraint :name, CustomNameConstraint.new
+  constraint(:residence) { |residence| residence.location != 'Phantom Zone' }
+end
+```
+
+#### Struct::Builder

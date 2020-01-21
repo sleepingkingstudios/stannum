@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require 'sleeping_king_studios/tasks'
 
 SleepingKingStudios::Tasks.configure do |config|

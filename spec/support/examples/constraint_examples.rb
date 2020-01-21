@@ -86,7 +86,7 @@ module Spec::Support::Examples
         describe "with #{as || value.inspect}" do
           let(:actual) { value.is_a?(Proc) ? instance_exec(&value) : value }
 
-          it { expect(subject.does_not_match? value).to be true }
+          it { expect(subject.does_not_match? actual).to be true }
         end
       end
 
