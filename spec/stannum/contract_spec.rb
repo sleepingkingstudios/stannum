@@ -2,7 +2,9 @@
 
 require 'stannum/constraints/anything'
 require 'stannum/constraints/nothing'
+require 'stannum/constraints/type'
 require 'stannum/contract'
+require 'stannum/constraint'
 
 require 'support/examples/constraint_examples'
 
@@ -15,10 +17,144 @@ RSpec.describe Stannum::Contract do
     it { expect(described_class).to be_constructible.with(0).arguments }
   end
 
+  include_examples 'should implement the Constraint interface'
+
+  describe '#access_nested_property' do
+    let(:factory)      { Spec::Factory.new('123 Example Street') }
+    let(:manufacturer) { Spec::Manufacturer.new('ACME Corporation', factory) }
+    let(:widget) do
+      Spec::Widget.new('Self-sealing Stem Bolt', manufacturer)
+    end
+
+    example_class 'Spec::Factory', Struct.new(:address)
+
+    example_class 'Spec::Manufacturer', Struct.new(:name, :factory)
+
+    example_class 'Spec::Widget', Struct.new(:name, :manufacturer)
+
+    it 'should define the private method' do
+      expect(contract)
+        .to respond_to(:access_nested_property, true)
+        .with(2).arguments
+    end
+
+    describe 'with nil' do
+      it 'should return the object' do
+        expect(contract.send :access_nested_property, widget, nil).to be widget
+      end
+    end
+
+    describe 'with a property name' do
+      it 'should return the property value' do
+        expect(contract.send :access_nested_property, widget, 'name')
+          .to be == widget.name
+      end
+    end
+
+    describe 'with an array of property names' do
+      let(:property) { %w[manufacturer factory address] }
+
+      it 'should return the nested property value' do
+        expect(contract.send :access_nested_property, widget, property)
+          .to be == factory.address
+      end
+    end
+
+    context 'when #access_property is overriden' do
+      let(:hash) do
+        {
+          name:    'ACME Corporation',
+          widgets: [
+            { name: 'Self-sealing Stem Bolt' }
+          ]
+        }
+      end
+
+      before(:example) do
+        def contract.access_property(object, property)
+          object[property]
+        end
+      end
+
+      describe 'with nil' do
+        it 'should return the object' do
+          expect(contract.send :access_nested_property, hash, nil).to be hash
+        end
+      end
+
+      describe 'with a property name' do
+        it 'should return the property value' do
+          expect(contract.send :access_nested_property, hash, :name)
+            .to be == hash[:name]
+        end
+      end
+
+      describe 'with an array of property names' do
+        it 'should return the nested property value' do
+          expect(
+            contract.send :access_nested_property, hash, [:widgets, 0, :name]
+          )
+            .to be == hash.dig(:widgets, 0, :name)
+        end
+      end
+    end
+  end
+
+  describe '#access_property' do
+    let(:value)    { 'bar' }
+    let(:object)   { instance_double(Object, send: value, respond_to?: false) }
+    let(:property) { :foo }
+
+    before(:example) do
+      allow(object)
+        .to receive(:respond_to?)
+        .with(property, true)
+        .and_return(true)
+    end
+
+    it 'should define the private method' do
+      expect(contract).to respond_to(:access_property, true).with(2).arguments
+    end
+
+    it 'should call send on the object with the property' do
+      contract.send :access_property, object, property
+
+      expect(object).to have_received(:send).with(property)
+    end
+
+    it { expect(contract.send :access_property, object, property).to be value }
+
+    describe 'with an object and a property' do
+      let(:object)   { %w[ichi ni san] }
+      let(:property) { :size }
+
+      it { expect(contract.send :access_property, object, property).to be 3 }
+    end
+
+    context 'when the object does not respond to the property method' do
+      let(:object)   { %w[ichi ni san] }
+      let(:property) { :size }
+
+      before(:example) do
+        allow(object)
+          .to receive(:respond_to?)
+          .with(property, true)
+          .and_return(false)
+      end
+
+      it { expect(contract.send :access_property, object, property).to be nil }
+    end
+  end
+
   describe '#add_constraint' do
     let(:error_message) { 'must be an instance of Stannum::Constraints::Base' }
 
-    it { expect(contract).to respond_to(:add_constraint).with(1).argument }
+    it 'should define the method' do
+      expect(contract)
+        .to respond_to(:add_constraint)
+        .with(1).argument
+        .and_keywords(:property)
+    end
 
     describe 'with nil' do
       it 'should raise an error' do
@@ -52,6 +188,71 @@ RSpec.describe Stannum::Contract do
       end
     end
 
+    describe 'with a constraint and property: nil' do
+      let(:constraint) { Stannum::Constraints::Base.new }
+      let(:expected) do
+        {
+          constraint: constraint,
+          property:   nil
+        }
+      end
+
+      it 'should return the contract' do
+        expect(contract.add_constraint(constraint, property: nil))
+          .to be contract
+      end
+
+      it 'should add the constraint' do
+        expect { contract.add_constraint(constraint, property: nil) }
+          .to change { contract.send :constraints }
+          .to include expected
+      end
+    end
+
+    describe 'with a constraint and property: array' do
+      let(:constraint) { Stannum::Constraints::Base.new }
+      let(:property)   { [:foo, 0, :bar] }
+      let(:expected) do
+        {
+          constraint: constraint,
+          property:   property
+        }
+      end
+
+      it 'should return the contract' do
+        expect(contract.add_constraint(constraint, property: property))
+          .to be contract
+      end
+
+      it 'should add the constraint' do
+        expect { contract.add_constraint(constraint, property: property) }
+          .to change { contract.send :constraints }
+          .to include expected
+      end
+    end
+
+    describe 'with a constraint and property: value' do
+      let(:constraint) { Stannum::Constraints::Base.new }
+      let(:property)   { :foo }
+      let(:expected) do
+        {
+          constraint: constraint,
+          property:   property
+        }
+      end
+
+      it 'should return the contract' do
+        expect(contract.add_constraint(constraint, property: property))
+          .to be contract
+      end
+
+      it 'should add the constraint' do
+        expect { contract.add_constraint(constraint, property: property) }
+          .to change { contract.send :constraints }
+          .to include expected
+      end
+    end
+
     context 'when the contract has multiple constraints' do
       let(:constraints) do
         Array.new(3) { Stannum::Constraints::Anything.new }
@@ -78,10 +279,73 @@ RSpec.describe Stannum::Contract do
             .to include expected
         end
       end
+
+      describe 'with a constraint and property: nil' do
+        let(:constraint) { Stannum::Constraints::Base.new }
+        let(:expected) do
+          {
+            constraint: constraint,
+            property:   nil
+          }
+        end
+
+        it 'should return the contract' do
+          expect(contract.add_constraint(constraint, property: nil))
+            .to be contract
+        end
+
+        it 'should add the constraint' do
+          expect { contract.add_constraint(constraint, property: nil) }
+            .to change { contract.send :constraints }
+            .to include expected
+        end
+      end
+
+      describe 'with a constraint and property: array' do
+        let(:constraint) { Stannum::Constraints::Base.new }
+        let(:property)   { [:foo, 0, :bar] }
+        let(:expected) do
+          {
+            constraint: constraint,
+            property:   property
+          }
+        end
+
+        it 'should return the contract' do
+          expect(contract.add_constraint(constraint, property: property))
+            .to be contract
+        end
+
+        it 'should add the constraint' do
+          expect { contract.add_constraint(constraint, property: property) }
+            .to change { contract.send :constraints }
+            .to include expected
+        end
+      end
+
+      describe 'with a constraint and property: value' do
+        let(:constraint) { Stannum::Constraints::Base.new }
+        let(:property)   { :foo }
+        let(:expected) do
+          {
+            constraint: constraint,
+            property:   property
+          }
+        end
+
+        it 'should return the contract' do
+          expect(contract.add_constraint(constraint, property: property))
+            .to be contract
+        end
+
+        it 'should add the constraint' do
+          expect { contract.add_constraint(constraint, property: property) }
+            .to change { contract.send :constraints }
+            .to include expected
+        end
+      end
     end
   end
-
-  include_examples 'should implement the Constraint interface'
 
   describe '#constraints' do
     include_examples 'should have private reader', :constraints, []
@@ -376,5 +640,120 @@ RSpec.describe Stannum::Contract do
       as: 'an integer out of range'
 
     include_examples 'should match', 1, as: 'an integer in the range'
+  end
+
+  context 'when the contract has property constraints' do
+    let(:widget_constraint) do
+      Stannum::Constraints::Type.new(Spec::Widget)
+    end
+    let(:name_constraint) do
+      Stannum::Constraint.new(
+        negated_type: 'spec.right_name',
+        type:         'spec.wrong_name'
+      ) \
+      do |actual|
+        actual == 'Self-sealing Stem Bolt'
+      end
+    end
+    let(:address_constraint) do
+      Stannum::Constraint.new(
+        negated_type: 'spec.right_address',
+        type:         'spec.wrong_address'
+      ) \
+      do |actual|
+        actual == '123 Example Street'
+      end
+    end
+    let(:expected_errors) do
+      errors = []
+
+      unless actual.is_a?(Spec::Widget)
+        errors << {
+          data: { type: Spec::Widget },
+          type: 'stannum.constraints.is_not_type'
+        }
+      end
+
+      unless actual&.name == 'Self-sealing Stem Bolt'
+        errors << { type: 'spec.wrong_name', path: %i[name] }
+      end
+
+      unless actual&.manufacturer&.factory&.address == '123 Example Street'
+        errors << {
+          type: 'spec.wrong_address',
+          path: %i[manufacturer factory address]
+        }
+      end
+
+      errors.map { |err| { data: {}, message: nil, path: [] }.merge(err) }
+    end
+    let(:negated_errors) do
+      errors = []
+
+      if actual.is_a?(Spec::Widget)
+        errors << {
+          data: { type: Spec::Widget },
+          type: 'stannum.constraints.is_type'
+        }
+      end
+
+      if actual&.name == 'Self-sealing Stem Bolt'
+        errors << { type: 'spec.right_name', path: %i[name] }
+      end
+
+      if actual&.manufacturer&.factory&.address == '123 Example Street'
+        errors << {
+          type: 'spec.right_address',
+          path: %i[manufacturer factory address]
+        }
+      end
+
+      errors.map { |err| { data: {}, message: nil, path: [] }.merge(err) }
+    end
+
+    let(:factory)      { Spec::Factory.new('123 Example Street') }
+    let(:manufacturer) { Spec::Manufacturer.new('ACME Corporation', factory) }
+    let(:widget) do
+      Spec::Widget.new('Self-sealing Stem Bolt', manufacturer)
+    end
+
+    example_class 'Spec::Factory', Struct.new(:address)
+
+    example_class 'Spec::Manufacturer', Struct.new(:name, :factory)
+
+    example_class 'Spec::Widget', Struct.new(:name, :manufacturer)
+
+    before(:example) do
+      contract
+        .add_constraint(widget_constraint)
+        .add_constraint(name_constraint, property: :name)
+        .add_constraint(
+          address_constraint,
+          property: %i[manufacturer factory address]
+        )
+    end
+
+    include_examples 'should not match', nil, reversible: true
+
+    include_examples 'should not match',
+      -> { Spec::Widget.new },
+      as: 'a widget with the wrong name'
+
+    include_examples 'should not match when negated',
+      -> { Spec::Widget.new },
+      as: 'a widget with the wrong name'
+
+    include_examples 'should not match',
+      -> { Spec::Widget.new('Self-sealing Stem Bolt') },
+      as: 'a widget with the wrong factory address'
+
+    include_examples 'should not match when negated',
+      -> { Spec::Widget.new('Self-sealing Stem Bolt') },
+      as: 'a widget with the wrong factory address'
+
+    include_examples 'should match',
+      -> { widget },
+      as:         'a widget with the correct name and manufacturer',
+      reversible: true
   end
 end

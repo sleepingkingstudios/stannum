@@ -6,8 +6,6 @@
 
 ### Constraints
 
-- #initialize takes block argument, sets definition of #matches?
-
 #### Pre-Defined Constraints
 
 - Constraints::Always
@@ -18,8 +16,6 @@
   - #does_not_match? and #matches? always return false
 - Constraints::Nothing
   - #matches? always returns false
-- Constraints::Length
-  - options for :is, :max, :min - delegate to Constraints::Range?
 - Constraints::Numeric
   - asserts actual is numeric value
   - options for integer, greater/less than
@@ -27,11 +23,8 @@
   - asserts actual in range
   - initialize with range or params
     - max and/or min, gt/gte and/or lt/lte
-- Constraints::Predicate
-  - takes block, e.g. Constraints::Predicate.new(&:persisted?)
-  - asserts block.call(actual)
-- Constraints::Type
-  - asserts that actual is_a? expected
+- Constraints::Size
+  - options for :is, :max, :min - delegate to Constraints::Range?
 
 #### Type Constraints
 
@@ -48,7 +41,37 @@
 - Types::String
 - Types::Symbol
 
+- Types::Lazy - takes a class or module name as a String or Symbol; only
+  evaluates when the constraint is first checked?
+
 ### Contracts
+
+#### ArgumentsContract
+
+#### HashContract
+
+- #access_property accesses property via #[]
+  - if not, skip property constraints entirely?
+- constructor option strict: [true, false (default)]
+  - if false, object must respond to :[]
+  - if true, object must be a Hash or subclass instance
+- constructor option keys: [:any (default), :indifferent, :string, :symbol]
+  - if :any, on #initialize extend with ::Any module
+    - no change to #access_property
+    - #valid_property? always returns true
+  - if :indifferent, on #initialize extend with ::Indifferent module
+    - #access_property fetches by String, then Symbol
+    - no change to #valid_property?
+  - if :string
+    - no change to #access_property
+    - #valid_property? only allows String properties
+  - if :symbol
+    - no change to #access_property
+    - #valid_property? only allows Symbol properties
+- constructor option allow_other_keys: [true (default), false]
+  - if false, object cannot have keys without a property constraint
+
+#### TupleContract
 
 ### Errors
 
@@ -62,26 +85,32 @@
   - if type, call include?(type: type)
   - errors.any? { |actual| actual >= expected }
 
-#### Details
-
-- add :details to error hashes, default to {}
-  - e.g. add(:outside_range, details: { min: 0, max: 10 })
-
-#### Nesting
-
-- add :path to error hashes, default to []
-- add @children Hash to #initialize
-  - default value is self.class.new
-  - handle custom subclasses (add tests!)
-  - delegate :[], :[]= to @children
-- update #each to call @children.each { |child| child.each { |err| yield err } }
-  - should yield each child's errors
-- update #size to add @children.reduce { |sum, child| sum + child.size }
-  - should include each child's size
-
 ### RSpec
 
 - MatchConstraint matcher (#match_constraint macro)
 - Matcher mixin - use a constraint in place of an RSpec matcher!
 
 ### Structs
+
+```
+class Person
+  # Defines :==, :[], :[]=, :inspect, :to_h, :to_s
+  # Sets Person::Contract to a new MapContract
+  include Stannum::Struct
+
+  # Define attributes.
+  # Creates reader, writer methods via @attributes[]
+  # Creates a Type constraint
+  # attribute :attr_name, AttrType (or "AttrType")
+  attribute :name, String
+  attribute :residence, "Residence"
+
+  # Define constraints.
+  constraint CustomPersonConstraint.new
+  constraint { |person| !person.can_drink? if person.age < 21 }
+  constraint :name, CustomNameConstraint.new
+  constraint(:residence) { |residence| residence.location != 'Phantom Zone' }
+end
+```
+
+#### Struct::Builder
