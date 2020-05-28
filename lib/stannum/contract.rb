@@ -141,6 +141,7 @@ module Stannum
   class Contract < Stannum::Constraints::Base
     def initialize
       @constraints = []
+      @included    = []
     end
 
     # @!method errors_for(actual)
@@ -350,13 +351,64 @@ module Stannum
     # @see #matches?
     # @see #negated_errors_for
     def does_not_match?(object)
-      return true if constraints.empty?
+      return true if constraints_empty?
 
-      constraints.all? do |constraint:, property:|
+      each_constraint.all? do |constraint:, property:|
         value = access_nested_property(object, property)
 
         constraint.does_not_match?(value)
       end
+    end
+
+    # Include the constraints from the given other contract.
+    #
+    # Merges the constraints from the included contract into the original. This
+    # is a dynamic process - if constraints are added to the included contract
+    # at a later point, they will also be added to the original. This is also
+    # recursive - including a contract will also merge the constraints from any
+    # contracts that were themselves included in the included contract.
+    #
+    # There are two approaches for adding one contract to another. The first and
+    # simplest is to take advantage of the fact that each contract is, itself, a
+    # constraint. Adding the new contract to the original via #add_constraint
+    # works in most cases - the new contract will be called during #matches? and
+    # when generating errors. However, functionality that inspects the
+    # constraints directly (such as the :allow_extra_keys functionality in
+    # HashContract) will fail.
+    #
+    # Including a contract in another is a much closer relationship. Each time
+    # the constraints on the original contract are enumerated, it will also
+    # yield the constraints from the included contract (and from any contracts
+    # that are included in that contract, recursively).
+    #
+    # To sum up, use #add_constraint when you want to constrain a property of
+    # the actual object with a contract. Use #include when you want to add more
+    # constraints about the object itself.
+    #
+    # @example Including A Contract
+    #   included_contract = Stannum::Contract.new
+    #     .add_constraint(Stannum::Constraint.new { |int| int < 10 })
+    #
+    #   original_contract = Stannum::Contract.new
+    #     .add_constraint(Stannum::Constraint.new { |int| int >= 0 })
+    #     .include(included_contract)
+    #
+    #   original_contract.matches?(-1) #=> a failing result
+    #   original_contract.matches?(0)  #=> a passing result
+    #   original_contract.matches?(5)  #=> a passing result
+    #   original_contract.matches?(10) #=> a failing result
+    #
+    # @param contract [Stannum::Contract] the other contract.
+    #
+    # @return [Stannum::Contract] the original contract.
+    #
+    # @see #add_constraint
+    def include(contract)
+      validate_contract(contract)
+
+      @included << contract
+
+      self
     end
 
     # Checks if the given object matches all of the constraints.
@@ -404,9 +456,9 @@ module Stannum
     # @see #does_not_match?
     # @see #errors_for
     def matches?(object)
-      return true if constraints.empty?
+      return true if constraints_empty?
 
-      constraints.all? do |constraint:, property:|
+      each_constraint.all? do |constraint:, property:|
         value = access_nested_property(object, property)
 
         constraint.matches?(value)
@@ -424,10 +476,24 @@ module Stannum
       object.send(property) if object.respond_to?(property, true)
     end
 
-    def update_errors_for(actual:, errors:)
-      return errors if constraints.empty?
+    def constraints_empty?
+      @constraints.empty? && @included.all?(&:constraints_empty?)
+    end
 
-      constraints.each.with_object(errors) do |hsh, err|
+    def each_constraint
+      return enum_for(:each_constraint) unless block_given?
+
+      @constraints.each { |item| yield item }
+
+      @included.each do |contract|
+        contract.each_constraint { |item| yield item }
+      end
+    end
+
+    def update_errors_for(actual:, errors:)
+      return errors if constraints_empty?
+
+      each_constraint.with_object(errors) do |hsh, err|
         property   = hsh.fetch(:property, nil)
         value      = access_nested_property(actual, property)
         constraint = hsh.fetch(:constraint)
@@ -442,9 +508,9 @@ module Stannum
 
     # rubocop:disable Metrics/MethodLength
     def update_negated_errors_for(actual:, errors:)
-      return errors if constraints.empty?
+      return errors if constraints_empty?
 
-      constraints.each.with_object(errors) do |hsh, err|
+      each_constraint.with_object(errors) do |hsh, err|
         property   = hsh.fetch(:property, nil)
         value      = access_nested_property(actual, property)
         constraint = hsh.fetch(:constraint)
@@ -464,12 +530,20 @@ module Stannum
 
     private
 
-    attr_reader :constraints
+    def constraints
+      each_constraint.to_a
+    end
 
     def validate_constraint(constraint)
       return if constraint.is_a?(Stannum::Constraints::Base)
 
       raise ArgumentError, 'must be an instance of Stannum::Constraints::Base'
+    end
+
+    def validate_contract(constraint)
+      return if constraint.is_a?(Stannum::Contract)
+
+      raise ArgumentError, 'must be an instance of Stannum::Contract'
     end
   end
 end
