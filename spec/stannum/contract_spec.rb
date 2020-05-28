@@ -351,6 +351,90 @@ RSpec.describe Stannum::Contract do
     include_examples 'should have private reader', :constraints, []
   end
 
+  describe '#include' do
+    let(:error_message) { 'must be an instance of Stannum::Contract' }
+
+    it { expect(contract).to respond_to(:include).with(1).argument }
+
+    describe 'with nil' do
+      it 'should raise an error' do
+        expect { contract.include nil }
+          .to raise_error ArgumentError, error_message
+      end
+    end
+
+    describe 'with an object' do
+      it 'should raise an error' do
+        expect { contract.include Object.new.freeze }
+          .to raise_error ArgumentError, error_message
+      end
+    end
+
+    describe 'with a constraint' do
+      it 'should raise an error' do
+        expect { contract.include Stannum::Constraints::Base.new }
+          .to raise_error ArgumentError, error_message
+      end
+    end
+
+    describe 'with an empty contract' do
+      let(:other) { described_class.new }
+
+      it 'should return the contract' do
+        expect(contract.include other).to be contract
+      end
+
+      it 'should not change the constraints' do
+        expect { contract.include other }
+          .not_to(change { contract.send(:constraints) })
+      end
+
+      context 'when a constraint is added to the other contract' do
+        let(:constraint) { Stannum::Constraints::Base.new }
+
+        it 'should add the constraint to the contract' do
+          contract.include other
+
+          expect { other.add_constraint(constraint) }
+            .to change { contract.send(:constraints) }
+            .to include(constraint: constraint, property: nil)
+        end
+      end
+    end
+
+    describe 'with a contract with constraints' do
+      let(:constraint) { Stannum::Constraints::Base.new }
+      let(:other)      { described_class.new }
+
+      before(:example) { other.add_constraint(constraint) }
+
+      it 'should add the constraints to the contract' do
+        expect { contract.include other }
+          .to change { contract.send(:constraints) }
+          .to include(constraint: constraint, property: nil)
+      end
+    end
+
+    context 'when the contract has constraints' do
+      let(:existing_constraint) { Stannum::Constraints::Base.new }
+
+      before(:example) { contract.add_constraint(existing_constraint) }
+
+      describe 'with a contract with constraints' do
+        let(:constraint) { Stannum::Constraints::Base.new }
+        let(:other)      { described_class.new }
+
+        before(:example) { other.add_constraint(constraint) }
+
+        it 'should add the constraints to the contract' do
+          expect { contract.include other }
+            .to change { contract.send(:constraints) }
+            .to include(constraint: constraint, property: nil)
+        end
+      end
+    end
+  end
+
   context 'when the contract has no constraints' do
     include_examples 'should match', nil
 
@@ -755,5 +839,67 @@ RSpec.describe Stannum::Contract do
       -> { widget },
       as:         'a widget with the correct name and manufacturer',
       reversible: true
+  end
+
+  context 'when the contract has included contracts' do
+    let(:own_constraint) do
+      messages = {
+        negated_type: 'spec.lte',
+        type:         'spec.gt'
+      }
+
+      Stannum::Constraint.new(**messages) { |int| int > 5 }
+    end
+    let(:other_constraint) do
+      messages = {
+        negated_type: 'spec.gte',
+        type:         'spec.lt'
+      }
+
+      Stannum::Constraint.new(**messages) { |int| int < 10 }
+    end
+    let(:other_contract) { described_class.new }
+    let(:expected_errors) do
+      if actual <= 5
+        [{ data: {}, message: nil, path: [], type: 'spec.gt' }]
+      elsif actual >= 10
+        [{ data: {}, message: nil, path: [], type: 'spec.lt' }]
+      end
+    end
+    let(:negated_errors) do
+      errors = []
+
+      if actual > 5
+        errors << { data: {}, message: nil, path: [], type: 'spec.lte' }
+      end
+
+      if actual < 10
+        errors << { data: {}, message: nil, path: [], type: 'spec.gte' }
+      end
+
+      errors
+    end
+
+    before(:example) do
+      contract.add_constraint(own_constraint)
+
+      other_contract.add_constraint(other_constraint)
+
+      contract.include(other_contract)
+    end
+
+    include_examples 'should not match', 0
+
+    include_examples 'should not match when negated', 0
+
+    include_examples 'should match', 6, reversible: true
+
+    include_examples 'should match', 9, reversible: true
+
+    include_examples 'should not match when negated', 9
+
+    include_examples 'should not match', 10
+
+    include_examples 'should not match when negated', 10
   end
 end

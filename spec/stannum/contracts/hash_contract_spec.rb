@@ -593,6 +593,24 @@ RSpec.describe Stannum::Contracts::HashContract do
         name:         'Self-sealing Stem Bolt'
       }
     end
+    let(:extra_strings) do
+      {
+        'length'       => 10,
+        'manufacturer' => manufacturer,
+        'name'         => 'Self-sealing Stem Bolt',
+        'price'        => '$9,999.99',
+        'size'         => 'Extra Large'
+      }
+    end
+    let(:extra_symbols) do
+      {
+        length:       10,
+        manufacturer: manufacturer,
+        name:         'Self-sealing Stem Bolt',
+        price:        '$9,999.99',
+        size:         'Extra Large'
+      }
+    end
     let(:expected_errors) do
       errors = []
 
@@ -685,24 +703,6 @@ RSpec.describe Stannum::Contracts::HashContract do
         }.merge(error)
       end
     end
-    let(:extra_strings) do
-      {
-        'length'       => 10,
-        'manufacturer' => manufacturer,
-        'name'         => 'Self-sealing Stem Bolt',
-        'price'        => '$9,999.99',
-        'size'         => 'Extra Large'
-      }
-    end
-    let(:extra_symbols) do
-      {
-        length:       10,
-        manufacturer: manufacturer,
-        name:         'Self-sealing Stem Bolt',
-        price:        '$9,999.99',
-        size:         'Extra Large'
-      }
-    end
 
     example_class 'Spec::Manufacturer' do |klass|
       klass.const_set :Contract, Stannum::Constraints::Type.new(klass)
@@ -719,7 +719,8 @@ RSpec.describe Stannum::Contracts::HashContract do
 
     include_examples 'should not match',
       Object.new.freeze,
-      as: 'an empty hash'
+      as:         'an object',
+      reversible: true
 
     include_examples 'should not match', {}, as: 'an empty hash'
 
@@ -999,6 +1000,440 @@ RSpec.describe Stannum::Contracts::HashContract do
           property('length')       { |actual| actual.is_a?(Integer) }
           property 'name',         constraint
           property 'manufacturer', Spec::Manufacturer::Contract
+        end
+      end
+
+      include_examples 'should match',
+        -> { matching_strings },
+        as:         'a hash with matching string keys',
+        reversible: true
+
+      include_examples 'should match',
+        -> { Spec::HashLike.new matching_strings },
+        as:         'a hash-like object with matching string keys',
+        reversible: true
+
+      include_examples 'should not match',
+        -> { matching_symbols },
+        as: 'a hash with matching symbol keys'
+
+      include_examples 'should not match when negated',
+        -> { matching_symbols },
+        as: 'a hash with matching symbol keys'
+
+      include_examples 'should not match',
+        -> { Spec::HashLike.new matching_symbols },
+        as: 'a hash-like object with matching symbol keys'
+
+      include_examples 'should not match when negated',
+        -> { Spec::HashLike.new matching_symbols },
+        as: 'a hash-like object with matching symbol keys'
+    end
+
+    wrap_context 'when initialized with key_type: :symbol' do
+      include_examples 'should not match',
+        -> { matching_strings },
+        as: 'a hash with matching string keys'
+
+      include_examples 'should not match when negated',
+        -> { matching_strings },
+        as: 'a hash with matching string keys'
+
+      include_examples 'should not match',
+        -> { Spec::HashLike.new matching_strings },
+        as: 'a hash-like object with matching string keys'
+
+      include_examples 'should not match when negated',
+        -> { Spec::HashLike.new matching_strings },
+        as: 'a hash-like object with matching string keys'
+
+      include_examples 'should match',
+        -> { matching_symbols },
+        as:         'a hash with matching symbol keys',
+        reversible: true
+
+      include_examples 'should match',
+        -> { Spec::HashLike.new matching_symbols },
+        as:         'a hash-like object with matching symbol keys',
+        reversible: true
+    end
+  end
+
+  context 'with defined and included constraints' do
+    subject(:contract) do
+      described_class.new(**options, &block).tap do |contract|
+        contract.include(included_contract)
+      end
+    end
+
+    let(:string_constraint) do
+      Stannum::Constraint.new(
+        negated_type: 'spec.is_a_string',
+        type:         'spec.is_not_a_string'
+      ) \
+      do |actual|
+        actual.is_a?(String)
+      end
+    end
+    let(:included_contract) do
+      constraint = string_constraint
+
+      described_class.new do
+        property :title, constraint
+      end
+    end
+    let(:block) do
+      constraint = string_constraint
+
+      lambda do
+        property :author, constraint
+      end
+    end
+    let(:partial_strings) do
+      {
+        'author' => 'Ursula K. Le Guin'
+      }
+    end
+    let(:partial_symbols) do
+      {
+        author: 'Ursula K. Le Guin'
+      }
+    end
+    let(:matching_strings) do
+      {
+        'author' => 'Ursula K. Le Guin',
+        'title'  => 'A Wizard of Earthsea'
+      }
+    end
+    let(:matching_symbols) do
+      {
+        author: 'Ursula K. Le Guin',
+        title:  'A Wizard of Earthsea'
+      }
+    end
+    let(:extra_strings) do
+      {
+        'author'    => 'Ursula K. Le Guin',
+        'title'     => 'A Wizard of Earthsea',
+        'publisher' => 'Parnassus'
+      }
+    end
+    let(:extra_symbols) do
+      {
+        author:    'Ursula K. Le Guin',
+        title:     'A Wizard of Earthsea',
+        publisher: 'Parnassus'
+      }
+    end
+    let(:expected_errors) do
+      errors = []
+
+      if !contract.allow_hash_like? && !actual.is_a?(Hash)
+        return [
+          {
+            data:    { type: Hash },
+            message: nil,
+            path:    [],
+            type:    Stannum::Constraints::Type::TYPE
+          }
+        ]
+      elsif !(actual.respond_to?(:[]) && actual.respond_to?(:key?))
+        errors << { type: described_class::TYPE }
+      else
+        unless fetch(:author).is_a?(String)
+          errors << {
+            path: %i[author],
+            type: 'spec.is_not_a_string'
+          }
+        end
+
+        unless fetch(:title).is_a?(String)
+          errors << {
+            path: %i[title],
+            type: 'spec.is_not_a_string'
+          }
+        end
+      end
+
+      if actual.respond_to?(:keys) && !contract.allow_extra_keys?
+        extra_keys =
+          actual.keys - contract.send(:constraints).map { |hsh| hsh[:property] }
+
+        unless extra_keys.empty?
+          errors << {
+            data: { keys: extra_keys },
+            type: described_class::EXTRA_KEYS_TYPE
+          }
+        end
+      end
+
+      errors.map do |error|
+        {
+          data:    {},
+          message: nil,
+          path:    []
+        }.merge(error)
+      end
+    end
+    let(:negated_errors) do
+      errors = []
+      strict = !contract.allow_hash_like?
+
+      if strict && actual.is_a?(Hash)
+        errors << {
+          data: { type: Hash },
+          type: Stannum::Constraints::Type::NEGATED_TYPE
+        }
+      elsif !strict && actual.respond_to?(:[]) && actual.respond_to?(:key?)
+        errors << { type: described_class::NEGATED_TYPE }
+      else
+        if fetch(:author).is_a?(String)
+          errors << {
+            path: %i[author],
+            type: 'spec.is_a_string'
+          }
+        end
+
+        if fetch(:title).is_a?(String)
+          errors << {
+            path: %i[title],
+            type: 'spec.is_a_string'
+          }
+        end
+      end
+
+      errors.map do |error|
+        {
+          data:    {},
+          message: nil,
+          path:    []
+        }.merge(error)
+      end
+    end
+
+    def fetch(property)
+      property = property.to_s   if contract.key_type == :string
+      property = property.intern if contract.key_type == :symbol
+
+      contract.send(:access_property, actual, property)
+    end
+
+    include_examples 'should not match', nil, reversible: true
+
+    include_examples 'should not match', nil, reversible: true
+
+    include_examples 'should not match',
+      Object.new.freeze,
+      as:         'an object',
+      reversible: true
+
+    include_examples 'should not match', {}, as: 'an empty hash'
+
+    include_examples 'should not match when negated', {}, as: 'an empty hash'
+
+    include_examples 'should not match', {}, as: 'an empty hash'
+
+    include_examples 'should not match when negated', {}, as: 'an empty hash'
+
+    include_examples 'should not match',
+      -> { Spec::HashLike.new },
+      as: 'an empty hash-like object'
+
+    include_examples 'should not match when negated',
+      -> { Spec::HashLike.new },
+      as: 'an empty hash-like object'
+
+    include_examples 'should not match',
+      -> { partial_strings },
+      as: 'a hash with partially-matching string keys'
+
+    include_examples 'should not match when negated',
+      -> { partial_strings },
+      as: 'a hash with partially-matching string keys'
+
+    include_examples 'should not match',
+      -> { partial_symbols },
+      as: 'a hash with partially-matching symbol keys'
+
+    include_examples 'should not match when negated',
+      -> { partial_symbols },
+      as: 'a hash with partially-matching symbol keys'
+
+    include_examples 'should not match',
+      -> { Spec::HashLike.new partial_strings },
+      as: 'a hash-like object with partially-matching string keys'
+
+    include_examples 'should not match when negated',
+      -> { Spec::HashLike.new partial_strings },
+      as: 'a hash-like object with partially-matching string keys'
+
+    include_examples 'should not match',
+      -> { Spec::HashLike.new partial_symbols },
+      as: 'a hash-like object with partially-matching symbol keys'
+
+    include_examples 'should not match when negated',
+      -> { Spec::HashLike.new partial_symbols },
+      as: 'a hash-like object with partially-matching symbol keys'
+
+    include_examples 'should not match',
+      -> { matching_strings },
+      as: 'a hash with matching string keys'
+
+    include_examples 'should not match when negated',
+      -> { matching_strings },
+      as: 'a hash with matching string keys'
+
+    include_examples 'should not match',
+      -> { Spec::HashLike.new matching_strings },
+      as: 'a hash-like object with matching string keys'
+
+    include_examples 'should not match when negated',
+      -> { Spec::HashLike.new matching_strings },
+      as: 'a hash-like object with matching string keys'
+
+    include_examples 'should match',
+      -> { matching_symbols },
+      as:         'a hash with matching symbol keys',
+      reversible: true
+
+    include_examples 'should match',
+      -> { Spec::HashLike.new matching_symbols },
+      as:         'a hash-like object with matching symbol keys',
+      reversible: true
+
+    include_examples 'should not match',
+      -> { extra_strings },
+      as: 'a hash with extra string keys'
+
+    include_examples 'should not match when negated',
+      -> { extra_strings },
+      as: 'a hash with extra string keys'
+
+    include_examples 'should not match',
+      -> { Spec::HashLike.new extra_strings },
+      as: 'a hash-like object with extra string keys'
+
+    include_examples 'should not match when negated',
+      -> { Spec::HashLike.new extra_strings },
+      as: 'a hash-like object with extra string keys'
+
+    include_examples 'should match',
+      -> { extra_symbols },
+      as:         'a hash with extra symbol keys',
+      reversible: true
+
+    include_examples 'should match',
+      -> { Spec::HashLike.new extra_symbols },
+      as:         'a hash-like object with extra symbol keys',
+      reversible: true
+
+    wrap_context 'when initialized with allow_extra_keys: false' do
+      include_examples 'should not match',
+        -> { matching_strings },
+        as: 'a hash with matching string keys'
+
+      include_examples 'should not match when negated',
+        -> { matching_strings },
+        as: 'a hash with matching string keys'
+
+      include_examples 'should match',
+        -> { matching_symbols },
+        as:         'a hash with matching symbol keys',
+        reversible: true
+
+      include_examples 'should not match',
+        -> { Spec::HashLike.new matching_strings },
+        as: 'a hash-like object with matching string keys'
+
+      include_examples 'should not match when negated',
+        -> { Spec::HashLike.new matching_strings },
+        as: 'a hash-like object with matching string keys'
+
+      include_examples 'should match',
+        -> { Spec::HashLike.new matching_symbols },
+        as:         'a hash-like object with matching symbol keys',
+        reversible: true
+
+      include_examples 'should not match',
+        -> { extra_symbols },
+        as: 'a hash with extra symbol keys'
+
+      include_examples 'should not match when negated',
+        -> { extra_symbols },
+        as: 'a hash with extra symbol keys'
+
+      include_examples 'should not match',
+        -> { Spec::HashLike.new extra_symbols },
+        as: 'a hash-like object with extra symbol keys'
+
+      include_examples 'should not match when negated',
+        -> { Spec::HashLike.new extra_symbols },
+        as: 'a hash-like object with extra symbol keys'
+    end
+
+    wrap_context 'when initialized with allow_hash_like: false' do
+      include_examples 'should not match',
+        -> { matching_strings },
+        as: 'a hash with matching string keys'
+
+      include_examples 'should not match when negated',
+        -> { matching_strings },
+        as: 'a hash with matching string keys'
+
+      include_examples 'should not match',
+        -> { Spec::HashLike.new matching_strings },
+        as:         'a hash-like object with matching string keys',
+        reversible: true
+
+      include_examples 'should match',
+        -> { matching_symbols },
+        as:         'a hash with matching symbol keys',
+        reversible: true
+
+      include_examples 'should not match',
+        -> { Spec::HashLike.new matching_symbols },
+        as: 'a hash-like object with matching symbol keys'
+
+      include_examples 'should not match when negated',
+        -> { Spec::HashLike.new matching_symbols },
+        as: 'a hash-like object with matching symbol keys'
+    end
+
+    wrap_context 'when initialized with key_type: :indifferent' do
+      include_examples 'should match',
+        -> { matching_strings },
+        as:         'a hash with matching string keys',
+        reversible: true
+
+      include_examples 'should match',
+        -> { Spec::HashLike.new matching_strings },
+        as:         'a hash-like object with matching string keys',
+        reversible: true
+
+      include_examples 'should match',
+        -> { matching_symbols },
+        as:         'a hash with matching symbol keys',
+        reversible: true
+
+      include_examples 'should match',
+        -> { Spec::HashLike.new matching_symbols },
+        as:         'a hash-like object with matching symbol keys',
+        reversible: true
+    end
+
+    wrap_context 'when initialized with key_type: :string' do
+      let(:included_contract) do
+        constraint = string_constraint
+
+        described_class.new do
+          property 'title', constraint
+        end
+      end
+      let(:block) do
+        constraint = string_constraint
+
+        lambda do
+          property 'author', constraint
         end
       end
 

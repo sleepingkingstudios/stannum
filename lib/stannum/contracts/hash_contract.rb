@@ -211,7 +211,7 @@ module Stannum::Contracts
     def extra_keys(actual)
       return [] if allow_extra_keys?
 
-      expected_keys = constraints.map { |hsh| hsh[:property] }
+      expected_keys = each_constraint.map { |hsh| hsh[:property] }
 
       actual.keys - expected_keys
     end
