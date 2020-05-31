@@ -45,6 +45,10 @@ RSpec/ExampleWithoutDescription:
 RSpec/ExampleWording:
   Enabled: false
 
+RSpec/FilePath:
+  Exclude:
+    - spec/integration/**/*
+
 RSpec/HookArgument:
   EnforcedStyle: example
 
