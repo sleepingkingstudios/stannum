@@ -7,4 +7,5 @@ module Stannum
   autoload :Contract,    'stannum/contract'
   autoload :Contracts,   'stannum/contracts'
   autoload :Errors,      'stannum/errors'
+  autoload :Struct,      'stannum/struct'
 end
