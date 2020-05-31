@@ -477,7 +477,11 @@ module Stannum
     end
 
     def constraints_empty?
-      @constraints.empty? && @included.all?(&:constraints_empty?)
+      return false unless @constraints.empty?
+
+      @included.all? do |included_contract|
+        included_contract.send :constraints_empty?
+      end
     end
 
     def each_constraint
@@ -487,6 +491,16 @@ module Stannum
 
       @included.each do |contract|
         contract.each_constraint { |item| yield item }
+      end
+    end
+
+    def each_included
+      return enum_for(:each_included) unless block_given?
+
+      @included.each do |contract|
+        yield contract
+
+        contract.each_included { |inner| yield inner }
       end
     end
 
@@ -532,6 +546,10 @@ module Stannum
 
     def constraints
       each_constraint.to_a
+    end
+
+    def included
+      each_included.to_a
     end
 
     def validate_constraint(constraint)

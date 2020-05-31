@@ -2,11 +2,7 @@
 
 ## Future Versions
 
-### Attributes
-
-### Constraints
-
-#### Pre-Defined Constraints
+### Pre-Defined Constraints
 
 - Constraints::Always
   - #does_not_match? and #matches? always return true
@@ -26,7 +22,11 @@
 - Constraints::Size
   - options for :is, :max, :min - delegate to Constraints::Range?
 
-#### Type Constraints
+- Type::Lazy - takes a class or module name as a String or Symbol; only
+  evaluates when the constraint is first checked?
+- Type::Optional - allows nil value
+
+### Type Constraints
 
 - .instance method (caches instance by params (if any))
   - a large application does not need 50 Type::String objects
@@ -41,39 +41,23 @@
 - Types::String
 - Types::Symbol
 
-- Types::Lazy - takes a class or module name as a String or Symbol; only
-  evaluates when the constraint is first checked?
+## Contracts
 
-### Contracts
+- add_constraint :fail_fast keyword
+  - all keywords with :fail_fast run first
+  - if there are any failures, non-fail-fast constraints are ignored
 
-#### ArgumentsContract
+### ArgumentsContract
 
-#### HashContract
+### MapContract
 
-- #access_property accesses property via #[]
-  - if not, skip property constraints entirely?
-- constructor option strict: [true, false (default)]
-  - if false, object must respond to :[]
-  - if true, object must be a Hash or subclass instance
-- constructor option keys: [:any (default), :indifferent, :string, :symbol]
-  - if :any, on #initialize extend with ::Any module
-    - no change to #access_property
-    - #valid_property? always returns true
-  - if :indifferent, on #initialize extend with ::Indifferent module
-    - #access_property fetches by String, then Symbol
-    - no change to #valid_property?
-  - if :string
-    - no change to #access_property
-    - #valid_property? only allows String properties
-  - if :symbol
-    - no change to #access_property
-    - #valid_property? only allows Symbol properties
-- constructor option allow_other_keys: [true (default), false]
-  - if false, object cannot have keys without a property constraint
+- fail_fast by property?
+  - e.g. add_constraint(fail_fast: :name)
+  - only skips non-fail-fast constraints on :name
 
-#### TupleContract
+### TupleContract
 
-### Errors
+## Errors
 
 - #generate_message(error)
   - creates default string based on :type
@@ -85,12 +69,12 @@
   - if type, call include?(type: type)
   - errors.any? { |actual| actual >= expected }
 
-### RSpec
+## RSpec
 
 - MatchConstraint matcher (#match_constraint macro)
 - Matcher mixin - use a constraint in place of an RSpec matcher!
 
-### Structs
+## Structs
 
 ```
 class Person
@@ -113,4 +97,60 @@ class Person
 end
 ```
 
-#### Struct::Builder
+### ::Contract
+
+- automatically add a type constraint to ::Contract
+  - handles case with another (non-subclass) struct with matching attributes
+  - use :fail_fast option?
+- add :fail_fast option to attribute constraints
+  - if the value is not the expected type, do not run custom constraints
+- automatically add type::Contract if type is a Struct class
+  - support contract: false to override this behavior
+
+### Constraints
+
+- support type:, negated_type: keywords for anonymous constraints
+
+```
+class Administrator
+  attribute :role, String
+
+  constraint(type: 'must have a role') { |role| !role.empty? }
+  constraint(:role, type: 'must be an Admin') { |role| role == 'Admin' }
+end
+```
+
+- support :if, :unless keywords
+
+### Inheritance
+
+What happens if you extend a Module with Struct, then include that module in a class?
+
+Implement Struct::Factory
+- (replaces class << self methods on Struct)
+- takes a class that inherits from Struct
+- defines the ::Attributes constant
+  - if superclass also is a Struct, include the Superclass attributes
+- defines the ::Contract constant
+  - figure out contract inheritance (a mess)
+
+Child classes must:
+  - inherit Class Methods
+  - define their own ::Attributes and ::Contract
+    - include their own ::Attributes
+    - reference their own #attributes and #contract
+  - inherit defined Attributes
+  - inherit defined constraints
+
+### Struct::Attribute
+
+- :optional option
+  - include optional? predicate
+- :required option
+  - include required? predicate
+  - inverse of :optional - error if contradictory options
+
+### Struct::Attributes
+
+- inheritance - #each references #parent ?
+- multiple inheritance - support `include OtherStruct::Attributes` ?

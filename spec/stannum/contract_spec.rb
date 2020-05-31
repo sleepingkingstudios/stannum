@@ -435,6 +435,46 @@ RSpec.describe Stannum::Contract do
     end
   end
 
+  describe '#included' do
+    include_examples 'should have private reader', :included, []
+
+    context 'when the contract includes other contracts' do
+      let(:other_contracts) do
+        [
+          described_class.new,
+          described_class.new,
+          described_class.new
+        ]
+      end
+
+      before(:example) do
+        other_contracts.each do |other_contract|
+          contract.include(other_contract)
+        end
+      end
+
+      it { expect(contract.send :included).to be == other_contracts }
+    end
+
+    context 'when the contract recursively includes other contracts' do
+      let(:other_contracts) do
+        [
+          described_class.new,
+          described_class.new,
+          described_class.new
+        ]
+      end
+
+      before(:example) do
+        other_contracts.reduce(contract) do |current, other_contract|
+          current.include(other_contract)
+        end
+      end
+
+      it { expect(contract.send :included).to be == other_contracts }
+    end
+  end
+
   context 'when the contract has no constraints' do
     include_examples 'should match', nil
 
@@ -896,10 +936,85 @@ RSpec.describe Stannum::Contract do
 
     include_examples 'should match', 9, reversible: true
 
-    include_examples 'should not match when negated', 9
-
     include_examples 'should not match', 10
 
     include_examples 'should not match when negated', 10
+  end
+
+  context 'when the contract has recursively included contracts' do
+    let(:other_constraint) do
+      messages = {
+        negated_type: 'spec.gte',
+        type:         'spec.lt'
+      }
+
+      Stannum::Constraint.new(**messages) { |int| int < 10 }
+    end
+    let(:nested_constraint) do
+      messages = {
+        negated_type: 'spec.odd',
+        type:         'spec.even'
+      }
+
+      Stannum::Constraint.new(**messages, &:odd?)
+    end
+    let(:other_contract)  { described_class.new }
+    let(:nested_contract) { described_class.new }
+    let(:expected_errors) do
+      errors = []
+
+      if actual.even?
+        errors << { data: {}, message: nil, path: [], type: 'spec.even' }
+      end
+
+      if actual >= 10
+        errors << { data: {}, message: nil, path: [], type: 'spec.lt' }
+      end
+
+      errors
+    end
+    let(:negated_errors) do
+      errors = []
+
+      if actual.odd?
+        errors << { data: {}, message: nil, path: [], type: 'spec.odd' }
+      end
+
+      if actual < 10
+        errors << { data: {}, message: nil, path: [], type: 'spec.gte' }
+      end
+
+      errors
+    end
+
+    before(:example) do
+      other_contract.add_constraint(other_constraint)
+
+      contract.include(other_contract)
+
+      nested_contract.add_constraint(nested_constraint)
+
+      other_contract.include(nested_contract)
+    end
+
+    include_examples 'should not match', 0
+
+    include_examples 'should not match when negated', 0
+
+    include_examples 'should match', 1, reversible: true
+
+    include_examples 'should not match', 6
+
+    include_examples 'should not match when negated', 6
+
+    include_examples 'should match', 7, reversible: true
+
+    include_examples 'should not match', 8
+
+    include_examples 'should not match when negated', 8
+
+    include_examples 'should match', 9, reversible: true
+
+    include_examples 'should not match', 10, reversible: true
   end
 end
