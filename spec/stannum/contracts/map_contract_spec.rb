@@ -266,7 +266,6 @@ RSpec.describe Stannum::Contracts::MapContract do
             .to include expected
         end
 
-        # rubocop:disable RSpec/ExampleLength
         it 'should yield the block to the constraint' do
           expect do |block|
             builder.property(property_name, &block)
@@ -281,7 +280,6 @@ RSpec.describe Stannum::Contracts::MapContract do
           end
             .to yield_with_args(actual)
         end
-        # rubocop:enable RSpec/ExampleLength
       end
 
       describe 'with a block and a constraint' do
@@ -306,7 +304,6 @@ RSpec.describe Stannum::Contracts::MapContract do
           end
         end
 
-        # rubocop:disable RSpec/NestedGroups
         describe 'with an invalid property name' do
           let(:property_name) { 'property_name' }
           let(:error_message) do
@@ -335,7 +332,6 @@ RSpec.describe Stannum::Contracts::MapContract do
               .to include expected
           end
         end
-        # rubocop:enable RSpec/NestedGroups
       end
     end
   end

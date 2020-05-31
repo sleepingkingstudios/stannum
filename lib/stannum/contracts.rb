@@ -4,5 +4,8 @@ require 'stannum'
 
 module Stannum
   # Namespace for pre-defined contracts.
-  module Contracts; end
+  module Contracts
+    autoload :HashContract, 'stannum/contracts/hash_contract'
+    autoload :MapContract,  'stannum/contracts/map_contract'
+  end
 end

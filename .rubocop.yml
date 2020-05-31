@@ -36,17 +36,24 @@ Metrics/ModuleLength:
   Exclude:
     - 'spec/**/*_examples.rb'
 
+RSpec/ExampleLength:
+  Max: 10
+
 RSpec/ExampleWithoutDescription:
   EnforcedStyle: single_line_only
 
 RSpec/ExampleWording:
   Enabled: false
 
+RSpec/FilePath:
+  Exclude:
+    - spec/integration/**/*
+
 RSpec/HookArgument:
   EnforcedStyle: example
 
 RSpec/NestedGroups:
-  Max: 4
+  Max: 5
 
 Style/ClassAndModuleChildren:
   # Checks the style of children definitions at classes and modules.
