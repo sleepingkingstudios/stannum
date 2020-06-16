@@ -1,5 +1,19 @@
 # Stannum Development
 
+## Development Notes
+
+### Standardization
+
+- Each constraint should define the `::TYPE` and `::NEGATED_TYPE` constants,
+  and the `#type` and `#negated_type` readers.
+- Each constraint should define `#options` (default to empty hash).
+- Each constraint should define `#inspect` (default to '<#ConstraintName opt: value, opt: value>')
+- Each contract should define `#inspect_constraints` (default to constraints.map(&:inspect)).
+
+### Testing Constraints and Contracts
+
+Constraint testing should be done in the context of the `#match` and `#negated_match` methods to avoid duplication. This tests both the status and the error(s).
+
 ## Future Versions
 
 ### Pre-Defined Constraints
@@ -59,6 +73,7 @@
 
 ## Errors
 
+- clean up error types
 - #generate_message(error)
   - creates default string based on :type
 - #generate_messages
