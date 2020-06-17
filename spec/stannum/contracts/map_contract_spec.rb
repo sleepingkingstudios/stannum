@@ -3,9 +3,11 @@
 require 'stannum/contracts/map_contract'
 
 require 'support/examples/constraint_examples'
+require 'support/examples/contract_builder_examples'
 
 RSpec.describe Stannum::Contracts::MapContract do
   include Spec::Support::Examples::ConstraintExamples
+  include Spec::Support::Examples::ContractBuilderExamples
 
   shared_context 'with a block with one property constraint' do
     let(:name_constraint) do
@@ -185,6 +187,15 @@ RSpec.describe Stannum::Contracts::MapContract do
       # rubocop:enable RSpec/DescribedClass
     end
 
+    def resolve_constraint(constraint = nil, &block)
+      builder.property(property_name, constraint, &block)
+
+      contract
+        .send(:constraints)
+        .find { |hsh| hsh[:property] == property_name }
+        .fetch(:constraint)
+    end
+
     describe '.new' do
       it { expect(described_class).to be_constructible.with(1).argument }
     end
@@ -205,92 +216,14 @@ RSpec.describe Stannum::Contracts::MapContract do
           .and_a_block
       end
 
+      include_examples 'should resolve the constraint'
+
       describe 'with an invalid property name' do
         let(:property_name) { Object.new.freeze }
         let(:error_message) { "invalid property name #{property_name.inspect}" }
 
         it 'should raise an exception' do
           expect { builder.property(property_name) }
-            .to raise_error ArgumentError, error_message
-        end
-      end
-
-      describe 'with a nil constraint' do
-        let(:error_message) { 'invalid constraint nil' }
-
-        it 'should raise an exception' do
-          expect { builder.property(property_name) }
-            .to raise_error ArgumentError, error_message
-        end
-      end
-
-      describe 'with an invalid constraint' do
-        let(:constraint)    { Object.new.freeze }
-        let(:error_message) { "invalid constraint #{constraint.inspect}" }
-
-        it 'should raise an exception' do
-          expect { builder.property(property_name, constraint) }
-            .to raise_error ArgumentError, error_message
-        end
-      end
-
-      describe 'with a valid constraint' do
-        let(:constraint) { Stannum::Constraint.new }
-        let(:expected) do
-          {
-            constraint: constraint,
-            property:   property_name
-          }
-        end
-
-        it 'should add the property constraint' do
-          expect { builder.property(property_name, constraint) }
-            .to change { contract.send :constraints }
-            .to include expected
-        end
-      end
-
-      describe 'with a block' do
-        let(:block)  { ->(actual) { actual.nil? } }
-        let(:actual) { Object.new.freeze }
-        let(:expected) do
-          {
-            constraint: an_instance_of(Stannum::Constraint),
-            property:   property_name
-          }
-        end
-
-        it 'should add the property constraint' do
-          expect { builder.property(property_name, &block) }
-            .to change { contract.send :constraints }
-            .to include expected
-        end
-
-        it 'should yield the block to the constraint' do
-          expect do |block|
-            builder.property(property_name, &block)
-
-            constraint =
-              contract
-              .send(:constraints)
-              .find { |hsh| hsh[:property] == property_name }
-              .fetch(:constraint)
-
-            constraint.match?(actual)
-          end
-            .to yield_with_args(actual)
-        end
-      end
-
-      describe 'with a block and a constraint' do
-        let(:constraint) { Stannum::Constraint.new }
-        let(:error_message) do
-          'expected either a block or a constraint instance, but received' \
-          " both a block and #{constraint.inspect}"
-        end
-
-        it 'should raise an exception' do
-          expect { builder.property(property_name, constraint) {} }
             .to raise_error ArgumentError, error_message
         end
       end
@@ -304,6 +237,8 @@ RSpec.describe Stannum::Contracts::MapContract do
           end
         end
 
+        include_examples 'should resolve the constraint'
+
         describe 'with an invalid property name' do
           let(:property_name) { 'property_name' }
           let(:error_message) do
@@ -313,23 +248,6 @@ RSpec.describe Stannum::Contracts::MapContract do
           it 'should raise an exception' do
             expect { builder.property(property_name, constraint) }
               .to raise_error ArgumentError, error_message
-          end
-        end
-
-        describe 'with a valid constraint' do
-          let(:property_name) { :property_name }
-          let(:constraint)    { Stannum::Constraint.new }
-          let(:expected) do
-            {
-              constraint: constraint,
-              property:   property_name
-            }
-          end
-
-          it 'should add the property constraint' do
-            expect { builder.property(property_name, constraint) }
-              .to change { contract.send :constraints }
-              .to include expected
           end
         end
       end
