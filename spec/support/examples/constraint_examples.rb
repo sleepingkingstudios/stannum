@@ -8,6 +8,50 @@ module Spec::Support::Examples
   module ConstraintExamples
     extend RSpec::SleepingKingStudios::Concerns::SharedExampleGroup
 
+    shared_examples 'should match the constraint' do
+      let(:actual_status) do
+        status, _ = constraint.send(match_method, actual)
+
+        status
+      end
+      let(:actual_errors) do
+        _, errors = constraint.send(match_method, actual)
+
+        errors
+      end
+
+      it { expect(actual_status).to be true }
+
+      it { expect(actual_errors).to be nil }
+    end
+
+    shared_examples 'should not match the constraint' do
+      let(:actual_status) do
+        status, _ = constraint.send(match_method, actual)
+
+        status
+      end
+      let(:actual_errors) do
+        _, errors = constraint.send(match_method, actual)
+
+        errors
+      end
+      let(:wrapped_errors) do
+        (expected_errors.is_a?(Array) ? expected_errors : [expected_errors])
+          .map do |error|
+            {
+              data:    {},
+              message: nil,
+              path:    []
+            }.merge(error)
+          end
+      end
+
+      it { expect(actual_status).to be false }
+
+      it { expect(actual_errors.to_a).to be == wrapped_errors }
+    end
+
     shared_examples 'should match the value' do |negated: false|
       method_name = negated ? :negated_match : :match
 

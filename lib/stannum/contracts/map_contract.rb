@@ -21,16 +21,7 @@ module Stannum::Contracts
     # constructor for MapContract.
     #
     # @api private
-    class Builder
-      # @param contract [Stannum::Contract] The contract to which constraints
-      #   are added.
-      def initialize(contract)
-        @contract = contract
-      end
-
-      # @return [Stannum::Contract] the contract to which constraints are added.
-      attr_reader :contract
-
+    class Builder < Stannum::Contracts::Builder
       # Defines a property constraint on the contract.
       #
       # @overload property(property_name, constraint)
@@ -54,35 +45,12 @@ module Stannum::Contracts
       def property(property_name, constraint = nil, &block)
         validate_property_name(property_name)
 
-        constraint = resolve_constraint(block: block, constraint: constraint)
+        constraint = resolve_constraint(constraint, &block)
 
         contract.add_constraint(constraint, property: property_name)
       end
 
       private
-
-      def ambiguous_values_error(constraint)
-        'expected either a block or a constraint instance, but received both' \
-        " a block and #{constraint.inspect}"
-      end
-
-      def resolve_constraint(block:, constraint:)
-        if block && constraint
-          raise ArgumentError, ambiguous_values_error(constraint), caller(1..-1)
-        end
-
-        return constraint if valid_constraint?(constraint)
-
-        return Stannum::Constraint.new(&block) if block
-
-        raise ArgumentError,
-          "invalid constraint #{constraint.inspect}",
-          caller(1..-1)
-      end
-
-      def valid_constraint?(constraint)
-        constraint.is_a?(Stannum::Constraints::Base)
-      end
 
       def validate_property_name(property_name)
         return if contract.send(:valid_property?, property_name)

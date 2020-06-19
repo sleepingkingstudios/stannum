@@ -1,5 +1,61 @@
 # Stannum Development
 
+## Development Notes
+
+### Standardization
+
+- Each constraint should define the `::TYPE` and `::NEGATED_TYPE` constants,
+  and the `#type` and `#negated_type` readers.
+- Each constraint should define `#options` (default to empty hash).
+  - Treat `type`, `negated_type` as options? Override default types?
+- Each constraint should define `#inspect` (default to '<#ConstraintName opt: value, opt: value>')
+- Each contract should define `#inspect_constraints` (default to constraints.map(&:inspect)).
+
+### Generic Contracts
+
+- `#add_constraint` should set the `:contract` key to `self`.
+- Remove :property references in `Stannum::Contract` - should be generic.
+- Streaming approach: |
+
+  Re-use the `#each_constraint` method?
+
+  ```
+  def errors_for
+    errors = Errors.new
+
+    each_constraint do |hsh|
+      next if contract.constraint_matches?(actual)
+
+      contract.add_errors_for_constraint(errors)
+    end
+
+    errors
+  end
+
+  def match
+    status = true
+    errors = Errors.new
+
+    each_constraint do |hsh|
+      next if contract.constraint_matches?(actual)
+
+      status = false
+
+      contract.add_errors_for_constraint(errors)
+    end
+
+    [status, errors]
+  end
+
+  def matches?
+    each_constraint.all? { |hsh| contract.constraint_matches?(actual) }
+  end
+  ```
+
+### Testing Constraints and Contracts
+
+Constraint testing should be done in the context of the `#match` and `#negated_match` methods to avoid duplication. This tests both the status and the error(s).
+
 ## Future Versions
 
 ### Pre-Defined Constraints
@@ -43,6 +99,7 @@
 
 ## Contracts
 
+- constrain #include to only instances of current class or subclass
 - add_constraint :fail_fast keyword
   - all keywords with :fail_fast run first
   - if there are any failures, non-fail-fast constraints are ignored
@@ -59,6 +116,7 @@
 
 ## Errors
 
+- clean up error types
 - #generate_message(error)
   - creates default string based on :type
 - #generate_messages

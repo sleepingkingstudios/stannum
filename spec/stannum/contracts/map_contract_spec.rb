@@ -3,9 +3,11 @@
 require 'stannum/contracts/map_contract'
 
 require 'support/examples/constraint_examples'
+require 'support/examples/contract_builder_examples'
 
 RSpec.describe Stannum::Contracts::MapContract do
   include Spec::Support::Examples::ConstraintExamples
+  include Spec::Support::Examples::ContractBuilderExamples
 
   shared_context 'with a block with one property constraint' do
     let(:name_constraint) do
@@ -44,133 +46,39 @@ RSpec.describe Stannum::Contracts::MapContract do
   let(:block) { -> {} }
 
   describe '.new' do
-    shared_context 'with a contract subclass' do
-      let(:described_class) { Spec::CustomContract }
+    let(:builder) { instance_double(described_class::Builder, property: nil) }
 
-      # rubocop:disable RSpec/DescribedClass
-      example_class 'Spec::CustomContract', Stannum::Contracts::MapContract
-      # rubocop:enable RSpec/DescribedClass
+    before(:example) do
+      allow(described_class::Builder).to receive(:new).and_return(builder)
     end
 
     it { expect(described_class).to be_constructible.with(0).arguments }
 
     describe 'without a block' do
-      it 'should not add any constraints' do
-        contract = described_class.new {}
+      it 'should not create a property constraint' do
+        described_class.new
 
-        expect(contract.send :constraints).to be == []
+        expect(builder).not_to have_received(:property)
       end
     end
 
     describe 'with an empty block' do
       let(:block) { -> {} }
 
-      it 'should not add any constraints' do
-        contract = described_class.new(&block)
+      it 'should not create a property constraint' do
+        described_class.new {}
 
-        expect(contract.send :constraints).to be == []
-      end
-    end
-
-    wrap_context 'with a block with one property constraint' do
-      let(:expected) do
-        [
-          {
-            constraint: name_constraint,
-            property:   :name
-          }
-        ]
-      end
-
-      it 'should add the property constraint' do
-        contract = described_class.new(&block)
-
-        expect(contract.send :constraints).to be == expected
+        expect(builder).not_to have_received(:property)
       end
     end
 
     wrap_context 'with a block with many property constraints' do
-      let(:expected) do
-        [
-          {
-            constraint: an_instance_of(Stannum::Constraint),
-            property:   :length
-          },
-          {
-            constraint: an_instance_of(Stannum::Constraint),
-            property:   :manufacturer
-          },
-          {
-            constraint: an_instance_of(Stannum::Constraint),
-            property:   :name
-          }
-        ]
-      end
+      it 'should create each property constraint', :aggregate_failures do
+        described_class.new(&block)
 
-      it 'should add the property constraints' do
-        contract = described_class.new(&block)
-
-        expect(contract.send :constraints).to contain_exactly(*expected)
-      end
-    end
-
-    context 'when the class defines a custom .build_constraints method' do
-      include_context 'with a contract subclass'
-
-      let(:block) { -> {} }
-
-      before(:example) do
-        Spec::CustomContract.class_eval do
-          attr_reader :constructor_block
-
-          def build_constraints(block)
-            @constructor_block = block
-          end
-        end
-      end
-
-      it 'should call the build_constraints method with the block' do
-        expect(described_class.new(&block).constructor_block).to be block
-      end
-    end
-
-    context 'when the class defines a custom Builder module' do
-      include_context 'with a contract subclass'
-
-      let(:constraint) { Stannum::Constraint.new }
-      let(:block) do
-        name_constraint = constraint
-
-        -> { property :name, name_constraint }
-      end
-      let(:expected) { [[:name, constraint]] }
-
-      example_class 'Spec::CustomContractBuilder' do |klass|
-        klass.class_eval do
-          def initialize(contract)
-            @contract = contract
-          end
-
-          attr_reader :contract
-
-          def property(*args)
-            contract.properties << args
-          end
-        end
-      end
-
-      before(:example) do
-        Spec::CustomContract.const_set(:Builder, Spec::CustomContractBuilder)
-
-        Spec::CustomContract.send(:define_method, :properties) do
-          @properties ||= []
-        end
-      end
-
-      it 'should execute the block in the context of the builder' do
-        contract = described_class.new(&block)
-
-        expect(contract.properties).to be == expected
+        expect(builder).to have_received(:property).with(:length)
+        expect(builder).to have_received(:property).with(:name)
+        expect(builder).to have_received(:property).with(:manufacturer)
       end
     end
   end
@@ -183,6 +91,15 @@ RSpec.describe Stannum::Contracts::MapContract do
       # rubocop:disable RSpec/DescribedClass
       Stannum::Contracts::MapContract.new
       # rubocop:enable RSpec/DescribedClass
+    end
+
+    def resolve_constraint(constraint = nil, &block)
+      builder.property(property_name, constraint, &block)
+
+      contract
+        .send(:constraints)
+        .find { |hsh| hsh[:property] == property_name }
+        .fetch(:constraint)
     end
 
     describe '.new' do
@@ -205,92 +122,14 @@ RSpec.describe Stannum::Contracts::MapContract do
           .and_a_block
       end
 
+      include_examples 'should resolve the constraint'
+
       describe 'with an invalid property name' do
         let(:property_name) { Object.new.freeze }
         let(:error_message) { "invalid property name #{property_name.inspect}" }
 
         it 'should raise an exception' do
           expect { builder.property(property_name) }
-            .to raise_error ArgumentError, error_message
-        end
-      end
-
-      describe 'with a nil constraint' do
-        let(:error_message) { 'invalid constraint nil' }
-
-        it 'should raise an exception' do
-          expect { builder.property(property_name) }
-            .to raise_error ArgumentError, error_message
-        end
-      end
-
-      describe 'with an invalid constraint' do
-        let(:constraint)    { Object.new.freeze }
-        let(:error_message) { "invalid constraint #{constraint.inspect}" }
-
-        it 'should raise an exception' do
-          expect { builder.property(property_name, constraint) }
-            .to raise_error ArgumentError, error_message
-        end
-      end
-
-      describe 'with a valid constraint' do
-        let(:constraint) { Stannum::Constraint.new }
-        let(:expected) do
-          {
-            constraint: constraint,
-            property:   property_name
-          }
-        end
-
-        it 'should add the property constraint' do
-          expect { builder.property(property_name, constraint) }
-            .to change { contract.send :constraints }
-            .to include expected
-        end
-      end
-
-      describe 'with a block' do
-        let(:block)  { ->(actual) { actual.nil? } }
-        let(:actual) { Object.new.freeze }
-        let(:expected) do
-          {
-            constraint: an_instance_of(Stannum::Constraint),
-            property:   property_name
-          }
-        end
-
-        it 'should add the property constraint' do
-          expect { builder.property(property_name, &block) }
-            .to change { contract.send :constraints }
-            .to include expected
-        end
-
-        it 'should yield the block to the constraint' do
-          expect do |block|
-            builder.property(property_name, &block)
-
-            constraint =
-              contract
-              .send(:constraints)
-              .find { |hsh| hsh[:property] == property_name }
-              .fetch(:constraint)
-
-            constraint.match?(actual)
-          end
-            .to yield_with_args(actual)
-        end
-      end
-
-      describe 'with a block and a constraint' do
-        let(:constraint) { Stannum::Constraint.new }
-        let(:error_message) do
-          'expected either a block or a constraint instance, but received' \
-          " both a block and #{constraint.inspect}"
-        end
-
-        it 'should raise an exception' do
-          expect { builder.property(property_name, constraint) {} }
             .to raise_error ArgumentError, error_message
         end
       end
@@ -304,6 +143,8 @@ RSpec.describe Stannum::Contracts::MapContract do
           end
         end
 
+        include_examples 'should resolve the constraint'
+
         describe 'with an invalid property name' do
           let(:property_name) { 'property_name' }
           let(:error_message) do
@@ -313,23 +154,6 @@ RSpec.describe Stannum::Contracts::MapContract do
           it 'should raise an exception' do
             expect { builder.property(property_name, constraint) }
               .to raise_error ArgumentError, error_message
-          end
-        end
-
-        describe 'with a valid constraint' do
-          let(:property_name) { :property_name }
-          let(:constraint)    { Stannum::Constraint.new }
-          let(:expected) do
-            {
-              constraint: constraint,
-              property:   property_name
-            }
-          end
-
-          it 'should add the property constraint' do
-            expect { builder.property(property_name, constraint) }
-              .to change { contract.send :constraints }
-              .to include expected
           end
         end
       end

@@ -73,3 +73,6 @@ Style/NestedParenthesizedCalls:
 Style/SingleLineBlockParams:
   # Prefer descriptive block param names.
   Enabled: false
+
+Style/TrailingUnderscoreVariable:
+  Enabled: false
