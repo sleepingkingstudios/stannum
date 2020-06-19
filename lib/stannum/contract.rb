@@ -138,7 +138,7 @@ module Stannum
   #     { type: 'right_name', data: {}, path: [:name], message: nil },
   #     { type: 'right_address', data: {}, path: [:manufacturer, :factory, :address], message: nil }
   #   ]
-  class Contract < Stannum::Constraints::Base
+  class Contract < Stannum::Constraints::Base # rubocop:disable Metrics/ClassLength
     def initialize
       @constraints = []
       @included    = []
@@ -504,43 +504,57 @@ module Stannum
       end
     end
 
+    def errors_for_constraint(
+      actual:,
+      constraint:,
+      errors:,
+      property:,
+      **_keywords
+    )
+      value = access_nested_property(actual, property)
+
+      return if constraint.matches?(value)
+
+      scoped = property.nil? ? errors : errors.dig(property)
+
+      constraint.send(:update_errors_for, actual: value, errors: scoped)
+    end
+
+    def negated_errors_for_constraint(
+      actual:,
+      constraint:,
+      errors:,
+      property:,
+      **_keywords
+    )
+      value = access_nested_property(actual, property)
+
+      return if constraint.does_not_match?(value)
+
+      scoped = property.nil? ? errors : errors.dig(property)
+
+      constraint.send(:update_negated_errors_for, actual: value, errors: scoped)
+    end
+
     def update_errors_for(actual:, errors:)
       return errors if constraints_empty?
 
-      each_constraint.with_object(errors) do |hsh, err|
-        property   = hsh.fetch(:property, nil)
-        value      = access_nested_property(actual, property)
-        constraint = hsh.fetch(:constraint)
-
-        next if constraint.matches?(value)
-
-        inner = property.nil? ? err : err.dig(property)
-
-        constraint.send(:update_errors_for, actual: value, errors: inner)
+      each_constraint do |hsh|
+        errors_for_constraint(actual: actual, errors: errors, **hsh)
       end
+
+      errors
     end
 
-    # rubocop:disable Metrics/MethodLength
     def update_negated_errors_for(actual:, errors:)
       return errors if constraints_empty?
 
-      each_constraint.with_object(errors) do |hsh, err|
-        property   = hsh.fetch(:property, nil)
-        value      = access_nested_property(actual, property)
-        constraint = hsh.fetch(:constraint)
-
-        next err if constraint.does_not_match?(value)
-
-        inner = property.nil? ? err : err.dig(property)
-
-        constraint.send(
-          :update_negated_errors_for,
-          actual: value,
-          errors: inner
-        )
+      each_constraint do |hsh|
+        negated_errors_for_constraint(actual: actual, errors: errors, **hsh)
       end
+
+      errors
     end
-    # rubocop:enable Metrics/MethodLength
 
     private
 
