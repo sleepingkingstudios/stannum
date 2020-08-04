@@ -17,7 +17,7 @@ module Stannum::Structs
       validate_type(type)
 
       @name    = name.to_s
-      @options = tools.hash.convert_keys_to_symbols(options || {})
+      @options = tools.hash_tools.convert_keys_to_symbols(options || {})
 
       @type, @resolved_type = resolve_type(type)
     end

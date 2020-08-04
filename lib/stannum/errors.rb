@@ -533,7 +533,7 @@ module Stannum
       values << 'nil' if allow_nil
 
       'value must be ' +
-        tools.array.humanize_list(values, last_separator: ' or ')
+        tools.array_tools.humanize_list(values, last_separator: ' or ')
     end
 
     def normalize_array_item(item, allow_nil:)

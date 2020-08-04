@@ -626,7 +626,7 @@ RSpec.describe Stannum::Structs::Attributes do
             struct.attributes['quantity'] = old_value
           end
 
-          describe 'with nil' do
+          describe 'with nil' do # rubocop:disable RSpec/NestedGroups
             it 'should reset the attribute' do
               expect { struct.quantity = nil }
                 .to change { struct.attributes['quantity'] }
@@ -634,7 +634,7 @@ RSpec.describe Stannum::Structs::Attributes do
             end
           end
 
-          describe 'with a value' do
+          describe 'with a value' do # rubocop:disable RSpec/NestedGroups
             it 'should update the attribute' do
               expect { struct.quantity = new_value }
                 .to change { struct.attributes['quantity'] }
