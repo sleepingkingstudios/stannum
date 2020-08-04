@@ -11,6 +11,15 @@ module Stannum::Constraints
     # The :type of the error generated for a non-matching object.
     TYPE = 'stannum.constraints.invalid'
 
+    # @param options [Hash<Symbol, Object>] Configuration options for the
+    #   constraint. Defaults to an empty Hash.
+    def initialize(**options)
+      @options = options
+    end
+
+    # @return [Hash<Symbol, Object>] Configuration options for the constraint.
+    attr_reader :options
+
     # Checks that the given object does not match the constraint.
     #
     # @example Checking a matching object.

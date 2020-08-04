@@ -40,6 +40,8 @@ module Stannum::Constraints
     #   class or module.
     def initialize(expected_type)
       @expected_type = resolve_expected_type(expected_type)
+
+      super(expected_type: expected_type)
     end
 
     # @return [Class, Module, String] the type the object is expected to belong

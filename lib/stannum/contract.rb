@@ -139,9 +139,11 @@ module Stannum
   #     { type: 'right_address', data: {}, path: [:manufacturer, :factory, :address], message: nil }
   #   ]
   class Contract < Stannum::Constraints::Base # rubocop:disable Metrics/ClassLength
-    def initialize
+    def initialize(**options)
       @constraints = []
       @included    = []
+
+      super(**options)
     end
 
     # @!method errors_for(actual)

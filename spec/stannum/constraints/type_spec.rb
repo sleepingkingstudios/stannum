@@ -58,6 +58,12 @@ RSpec.describe Stannum::Constraints::Type do
 
   include_examples 'should implement the Constraint interface'
 
+  describe '#options' do
+    let(:expected) { { expected_type: expected_type } }
+
+    include_examples 'should have reader', :options, -> { be == expected }
+  end
+
   context 'when expected_type is a Class' do
     let(:expected_type) { StandardError }
 

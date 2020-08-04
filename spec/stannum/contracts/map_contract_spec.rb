@@ -162,6 +162,10 @@ RSpec.describe Stannum::Contracts::MapContract do
 
   include_examples 'should implement the Constraint interface'
 
+  describe '#options' do
+    include_examples 'should have reader', :options, -> { be == {} }
+  end
+
   describe '#valid_property?' do
     it { expect(constraint).not_to respond_to(:valid_property?) }
 

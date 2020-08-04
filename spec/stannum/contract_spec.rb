@@ -11,10 +11,17 @@ require 'support/examples/constraint_examples'
 RSpec.describe Stannum::Contract do
   include Spec::Support::Examples::ConstraintExamples
 
-  subject(:contract) { described_class.new }
+  subject(:contract) { described_class.new(**options) }
+
+  let(:options) { {} }
 
   describe '.new' do
-    it { expect(described_class).to be_constructible.with(0).arguments }
+    it 'should define the constructor' do
+      expect(described_class)
+        .to be_constructible
+        .with(0).arguments
+        .and_any_keywords
+    end
   end
 
   include_examples 'should implement the Constraint interface'
@@ -472,6 +479,22 @@ RSpec.describe Stannum::Contract do
       end
 
       it { expect(contract.send :included).to be == other_contracts }
+    end
+  end
+
+  describe '#options' do
+    include_examples 'should have reader', :options, -> { be == {} }
+
+    context 'when the contract defines options' do
+      let(:options) do
+        {
+          language:  'Ada',
+          log_level: 'panic',
+          strict:    true
+        }
+      end
+
+      it { expect(contract.options).to be == options }
     end
   end
 
