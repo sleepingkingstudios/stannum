@@ -1287,7 +1287,9 @@ RSpec.describe Stannum::Struct do
             quantity:    1_000
           }
         end
-        let(:expected) { tools.hash.convert_keys_to_strings(attributes) }
+        let(:expected) do
+          tools.hash_tools.convert_keys_to_strings(attributes)
+        end
 
         it 'should set the attributes' do
           expect(described_class.new(attributes).attributes).to be == expected
@@ -1658,11 +1660,11 @@ RSpec.describe Stannum::Struct do
         end
 
         context 'when the attribute has a default value' do
-          describe 'with a valid String key' do
+          describe 'with a valid String key' do # rubocop:disable RSpec/NestedGroups
             it { expect(struct['quantity']).to be 0 }
           end
 
-          describe 'with a valid Symbol key' do
+          describe 'with a valid Symbol key' do # rubocop:disable RSpec/NestedGroups
             it { expect(struct[:quantity]).to be 0 }
           end
         end
@@ -2042,7 +2044,9 @@ RSpec.describe Stannum::Struct do
             quantity:    5
           }
         end
-        let(:expected) { tools.hash.convert_keys_to_strings(new_attributes) }
+        let(:expected) do
+          tools.hash_tools.convert_keys_to_strings(new_attributes)
+        end
 
         it 'should update the attributes' do
           expect { struct.assign_attributes(new_attributes) }
@@ -2157,7 +2161,9 @@ RSpec.describe Stannum::Struct do
             quantity:    5
           }
         end
-        let(:expected) { tools.hash.convert_keys_to_strings(new_attributes) }
+        let(:expected) do
+          tools.hash_tools.convert_keys_to_strings(new_attributes)
+        end
 
         it 'should update the attributes' do
           expect { struct.assign_attributes(new_attributes) }
@@ -2564,7 +2570,9 @@ RSpec.describe Stannum::Struct do
             quantity:    5
           }
         end
-        let(:expected) { tools.hash.convert_keys_to_strings(new_attributes) }
+        let(:expected) do
+          tools.hash_tools.convert_keys_to_strings(new_attributes)
+        end
 
         it 'should update the attributes' do
           expect { struct.assign_attributes(new_attributes) }
@@ -2710,7 +2718,9 @@ RSpec.describe Stannum::Struct do
             quantity:    5
           }
         end
-        let(:expected) { tools.hash.convert_keys_to_strings(new_attributes) }
+        let(:expected) do
+          tools.hash_tools.convert_keys_to_strings(new_attributes)
+        end
 
         it 'should update the attributes' do
           expect { struct.assign_attributes(new_attributes) }

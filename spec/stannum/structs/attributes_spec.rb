@@ -27,7 +27,7 @@ RSpec.describe Stannum::Structs::Attributes do
     end
 
     before(:example) do
-      defined_attributes.each do |**attribute|
+      defined_attributes.each do |attribute|
         attributes.define_attribute(**attribute)
       end
     end
@@ -54,7 +54,7 @@ RSpec.describe Stannum::Structs::Attributes do
     end
 
     before(:example) do
-      parent_defined_attributes.each do |**attribute|
+      parent_defined_attributes.each do |attribute|
         parent_attributes.define_attribute(**attribute)
       end
     end
@@ -75,7 +75,7 @@ RSpec.describe Stannum::Structs::Attributes do
     let(:grandparent_attributes) { described_class.new }
 
     before(:example) do
-      grandparent_defined_attributes.each do |**attribute|
+      grandparent_defined_attributes.each do |attribute|
         grandparent_attributes.define_attribute(**attribute)
       end
     end
@@ -626,7 +626,7 @@ RSpec.describe Stannum::Structs::Attributes do
             struct.attributes['quantity'] = old_value
           end
 
-          describe 'with nil' do
+          describe 'with nil' do # rubocop:disable RSpec/NestedGroups
             it 'should reset the attribute' do
               expect { struct.quantity = nil }
                 .to change { struct.attributes['quantity'] }
@@ -634,7 +634,7 @@ RSpec.describe Stannum::Structs::Attributes do
             end
           end
 
-          describe 'with a value' do
+          describe 'with a value' do # rubocop:disable RSpec/NestedGroups
             it 'should update the attribute' do
               expect { struct.quantity = new_value }
                 .to change { struct.attributes['quantity'] }

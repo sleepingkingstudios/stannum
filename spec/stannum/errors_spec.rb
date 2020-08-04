@@ -22,8 +22,13 @@ RSpec.describe Stannum::Errors do
     let(:expected_errors) { expected_root_errors }
 
     before(:example) do
-      raw_root_errors.each do |data: {}, message: nil, type:|
-        errors.add(type, message: message, **data)
+      raw_root_errors.each do |error|
+        errors
+          .add(
+            error.fetch(:type),
+            message: error[:message],
+            **error.fetch(:data, {})
+          )
       end
     end
   end
@@ -51,8 +56,13 @@ RSpec.describe Stannum::Errors do
     let(:expected_errors) { expected_child_errors }
 
     before(:example) do
-      raw_child_errors.each do |data: {}, message: nil, type:|
-        errors[child_path].add(type, message: message, **data)
+      raw_child_errors.each do |error|
+        errors[child_path]
+          .add(
+            error.fetch(:type),
+            message: error[:message],
+            **error.fetch(:data, {})
+          )
       end
     end
   end
@@ -84,8 +94,14 @@ RSpec.describe Stannum::Errors do
     let(:expected_errors)        { expected_nested_errors }
 
     before(:example) do
-      raw_nested_errors.each do |data: {}, message: nil, path:, type:|
-        errors.dig(*path).add(type, message: message, **data)
+      raw_nested_errors.each do |error|
+        errors
+          .dig(error.fetch(:path, []))
+          .add(
+            error.fetch(:type),
+            message: error[:message],
+            **error.fetch(:data, {})
+          )
       end
     end
   end
@@ -156,8 +172,14 @@ RSpec.describe Stannum::Errors do
     end
     let(:other_errors) do
       described_class.new.tap do |other|
-        raw_other_errors.each do |data: {}, message: nil, path:, type:|
-          other.dig(*path).add(type, message: message, **data)
+        raw_other_errors.each do |error|
+          other
+            .dig(error.fetch(:path, []))
+            .add(
+              error.fetch(:type),
+              message: error[:message],
+              **error.fetch(:data, {})
+            )
         end
       end
     end
@@ -253,8 +275,13 @@ RSpec.describe Stannum::Errors do
 
       describe 'with an array with matching errors' do
         before(:example) do
-          errors.each do |data:, message:, type:, **_rest|
-            other.add(type, message: message, **data)
+          errors.each do |error|
+            other
+              .add(
+                error.fetch(:type),
+                message: error[:message],
+                **error.fetch(:data, {})
+              )
           end
         end
 
@@ -263,8 +290,13 @@ RSpec.describe Stannum::Errors do
 
       describe 'with an errors object with matching errors' do
         before(:example) do
-          errors.each do |data:, message:, type:, **_rest|
-            other.add(type, message: message, **data)
+          errors.each do |error|
+            other
+              .add(
+                error.fetch(:type),
+                message: error[:message],
+                **error.fetch(:data, {})
+              )
           end
         end
 

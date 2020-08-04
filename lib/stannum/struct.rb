@@ -331,7 +331,7 @@ module Stannum
 
     # @return [Hash] the current attributes of the struct.
     def attributes
-      tools.hash.deep_dup(@attributes)
+      tools.hash_tools.deep_dup(@attributes)
     end
     alias to_h attributes
 

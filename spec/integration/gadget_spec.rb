@@ -388,7 +388,7 @@ RSpec.describe Spec::Gadget do
     wrap_context 'when initialized with attribute values' do
       let(:expected) do
         tools
-          .hash
+          .hash_tools
           .convert_keys_to_strings(attributes)
           .merge('description' => description)
       end
@@ -415,7 +415,7 @@ RSpec.describe Spec::Gadget do
     it { expect(gadget.attributes).to be == expected }
 
     wrap_context 'when initialized with attribute values' do
-      let(:expected) { tools.hash.convert_keys_to_strings(attributes) }
+      let(:expected) { tools.hash_tools.convert_keys_to_strings(attributes) }
 
       it { expect(gadget.attributes).to be == expected }
     end
