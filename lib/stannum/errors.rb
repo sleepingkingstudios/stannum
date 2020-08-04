@@ -406,11 +406,17 @@ module Stannum
     # Creates a deep copy of the errors object.
     #
     # @return [Stannum::Errors] the copy of the errors object.
-    def dup
+    def dup # rubocop:disable Metrics/MethodLength
       child = self.class.new
 
-      each do |data: {}, message: nil, path:, type:|
-        child.dig(path).add(type, message: message, **data)
+      each do |error|
+        child
+          .dig(error.fetch(:path, []))
+          .add(
+            error.fetch(:type),
+            message: error[:message],
+            **error.fetch(:data, {})
+          )
       end
 
       child
@@ -512,8 +518,13 @@ module Stannum
     protected
 
     def update_errors(other_errors)
-      other_errors.each do |data: {}, message: nil, path: [], type:|
-        dig(path).add(type, message: message, **data)
+      other_errors.each do |error|
+        dig(error.fetch(:path, []))
+          .add(
+            error.fetch(:type),
+            message: error[:message],
+            **error.fetch(:data, {})
+          )
       end
 
       self

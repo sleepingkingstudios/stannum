@@ -8,6 +8,7 @@ group :development, :test do
   gem 'byebug', '~> 11.0'
 end
 
-gem 'sleeping_king_studios-tasks', '~> 0.2.0'
+gem 'sleeping_king_studios-tasks',
+  git: 'https://github.com/sleepingkingstudios/sleeping_king_studios-tasks'
 
 gem 'yard', '~> 0.9', require: false, group: :doc

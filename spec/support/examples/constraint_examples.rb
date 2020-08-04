@@ -184,12 +184,11 @@ module Spec::Support::Examples
         it { expect(subject).to respond_to(:errors_for).with(1).argument }
 
         # rubocop:disable Lint/RedundantCopDisableDirective
-        # rubocop:disable Lint/UnusedBlockArgument
         # rubocop:disable RSpec/ExampleLength
         it 'should delegate to #update_errors_for', :aggregate_failures do
           allow(subject) # rubocop:disable RSpec/SubjectStub
-            .to receive(:update_errors_for) do |actual:, errors:|
-              errors.add('spec.example_error')
+            .to receive(:update_errors_for) do |keywords|
+              keywords.fetch(:errors).add('spec.example_error')
             end
 
           errors = subject.errors_for actual
@@ -203,7 +202,6 @@ module Spec::Support::Examples
             .with(actual: actual, errors: an_instance_of(Stannum::Errors))
         end
         # rubocop:enable Lint/RedundantCopDisableDirective
-        # rubocop:enable Lint/UnusedBlockArgument
         # rubocop:enable RSpec/ExampleLength
       end
 
@@ -225,14 +223,13 @@ module Spec::Support::Examples
         end
 
         # rubocop:disable Lint/RedundantCopDisableDirective
-        # rubocop:disable Lint/UnusedBlockArgument
         # rubocop:disable RSpec/ExampleLength
         it 'should delegate to #update_negated_errors_for',
           :aggregate_failures \
         do
           allow(subject) # rubocop:disable RSpec/SubjectStub
-            .to receive(:update_negated_errors_for) do |actual:, errors:|
-              errors.add('spec.example_error')
+            .to receive(:update_negated_errors_for) do |keywords|
+              keywords.fetch(:errors).add('spec.example_error')
             end
 
           errors = subject.negated_errors_for actual
@@ -246,7 +243,6 @@ module Spec::Support::Examples
             .with(actual: actual, errors: an_instance_of(Stannum::Errors))
         end
         # rubocop:enable Lint/RedundantCopDisableDirective
-        # rubocop:enable Lint/UnusedBlockArgument
         # rubocop:enable RSpec/ExampleLength
       end
 

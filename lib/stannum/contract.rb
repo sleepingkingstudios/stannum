@@ -353,10 +353,10 @@ module Stannum
     def does_not_match?(object)
       return true if constraints_empty?
 
-      each_constraint.all? do |constraint:, property:|
-        value = access_nested_property(object, property)
+      each_constraint.all? do |constraint|
+        value = access_nested_property(object, constraint.fetch(:property))
 
-        constraint.does_not_match?(value)
+        constraint.fetch(:constraint).does_not_match?(value)
       end
     end
 
@@ -458,10 +458,10 @@ module Stannum
     def matches?(object)
       return true if constraints_empty?
 
-      each_constraint.all? do |constraint:, property:|
-        value = access_nested_property(object, property)
+      each_constraint.all? do |constraint|
+        value = access_nested_property(object, constraint.fetch(:property))
 
-        constraint.matches?(value)
+        constraint.fetch(:constraint).matches?(value)
       end
     end
     alias match? matches?

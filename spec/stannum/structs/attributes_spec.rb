@@ -27,7 +27,7 @@ RSpec.describe Stannum::Structs::Attributes do
     end
 
     before(:example) do
-      defined_attributes.each do |**attribute|
+      defined_attributes.each do |attribute|
         attributes.define_attribute(**attribute)
       end
     end
@@ -54,7 +54,7 @@ RSpec.describe Stannum::Structs::Attributes do
     end
 
     before(:example) do
-      parent_defined_attributes.each do |**attribute|
+      parent_defined_attributes.each do |attribute|
         parent_attributes.define_attribute(**attribute)
       end
     end
@@ -75,7 +75,7 @@ RSpec.describe Stannum::Structs::Attributes do
     let(:grandparent_attributes) { described_class.new }
 
     before(:example) do
-      grandparent_defined_attributes.each do |**attribute|
+      grandparent_defined_attributes.each do |attribute|
         grandparent_attributes.define_attribute(**attribute)
       end
     end
