@@ -10,12 +10,12 @@ module Spec::Support::Examples
 
     shared_examples 'should match the constraint' do
       let(:actual_status) do
-        status, _ = constraint.send(match_method, actual)
+        status, _ = subject.send(match_method, actual)
 
         status
       end
       let(:actual_errors) do
-        _, errors = constraint.send(match_method, actual)
+        _, errors = subject.send(match_method, actual)
 
         errors
       end
@@ -27,12 +27,12 @@ module Spec::Support::Examples
 
     shared_examples 'should not match the constraint' do
       let(:actual_status) do
-        status, _ = constraint.send(match_method, actual)
+        status, _ = subject.send(match_method, actual)
 
         status
       end
       let(:actual_errors) do
-        _, errors = constraint.send(match_method, actual)
+        _, errors = subject.send(match_method, actual)
 
         errors
       end
