@@ -1,33 +1,71 @@
 # frozen_string_literal: true
 
-require 'stannum/contracts/legacy'
+require 'stannum/contracts'
 
 module Stannum::Contracts
-  # Contract that defines constraints on an ordered data structure.
+  # A TupleContract defines constraints for an ordered, indexed object.
   #
-  # @example Creating A Contract With Items
-  #   length_constraint =
-  #     Stannum::Constraint.new { |value| value.is_a?(Integer) }
+  # In order to match a TupleContract, the object must respond to the :[],
+  # :each, and :size methods, and the items in the object at each index must
+  # match the item constraint defined for that index. Finally, unless the
+  # :allow_extra_items option is set to true, the object must not have any extra
+  # items.
   #
-  #   contract = Stannum::Contracts::MapContract.new do
-  #     item length_constraint
-  #     item Spec::ManufacturerContract.new
-  #     item { |value| value.is_a?(String) }
+  # @example Creating A Contract With Item Constraints
+  #   third_base_constraint = Stannum::Constraint.new do |actual|
+  #     actual == "I Don't Know"
   #   end
-  class TupleContract < Stannum::Contracts::Legacy
-    # The :type of the error generated for a tuple with extra items.
-    EXTRA_ITEM_TYPE = 'stannum.constraints.tuple_extra_item'
-
-    # The :type of the error generated for a tuple with missing items.
-    MISSING_ITEM_TYPE = 'stannum.constraints.tuple_missing_item'
-
-    # The :type of the error generated for a matching object.
-    NEGATED_TYPE = 'stannum.constraints.is_tuple'
-
-    # The :type of the error generated for a non-matching object.
-    TYPE = 'stannum.constraints.is_not_tuple'
-
-    # Builder class for defining property constraints for a TupleContract.
+  #   tuple_contract = Stannum::Contracts::TupleContract.new do
+  #     item { |actual| actual == 'Who' }
+  #     item { |actual| actual == 'What' }
+  #     item third_base_constraint
+  #   end
+  #
+  # With A Non-Tuple Object
+  #   tuple_contract.matches?(nil) #=> false
+  #   errors = tuple_contract.errors_for(nil)
+  #   errors.to_a
+  #   #=> [
+  #     {
+  #       type:    'stannum.constraints.methods',
+  #       data:    { methods: [:[], :each, :size], missing: [:[], :each, :size] },
+  #       message: nil,
+  #       path:    []
+  #     }
+  #   ]
+  #
+  # With An Object With Missing Items
+  #   tuple_contract.matches?(['Who']) #=> false
+  #   errors = tuple_contract.errors_for(['Who'])
+  #   errors.to_a
+  #   #=> [
+  #     { type: 'stannum.constraints.invalid', data: {}, path: [1], message: nil },
+  #     { type: 'stannum.constraints.invalid', data: {}, path: [2], message: nil }
+  #   ]
+  #
+  # With An Object With Incorrect Items
+  #   tuple_contract.matches?(['What', 'What', "I Don't Know"]) #=> false
+  #   errors = tuple_contract.errors_for(['What', 'What', "I Don't Know"])
+  #   errors.to_a
+  #   #=> [
+  #     { type: 'stannum.constraints.invalid', data: {}, path: [0], message: nil }
+  #   ]
+  #
+  # With An Object With Valid Items
+  #   tuple_contract.matches?(['Who', 'What', "I Don't Know"]) #=> true
+  #   errors = tuple_contract.errors_for(['What', 'What', "I Don't Know"])
+  #   errors.to_a #=> []
+  #
+  # With An Object With Extra Items
+  #   tuple_contract.matches?(['Who', 'What', "I Don't Know", 'Tomorrow', 'Today']) #=> false
+  #   errors = tuple_contract.errors_for(['Who', 'What', "I Don't Know", 'Tomorrow', 'Today'])
+  #   errors.to_a
+  #   #=> [
+  #     { type: 'stannum.constraints.tuples.extra_items', data: {}, path: [3], message: nil },
+  #     { type: 'stannum.constraints.tuples.extra_items', data: {}, path: [4], message: nil }
+  #   ]
+  class TupleContract < Stannum::Contracts::PropertyContract
+    # Builder class for defining item constraints for a TupleContract.
     #
     # This class should not be invoked directly. Instead, pass a block to the
     # constructor for TupleContract.
@@ -39,183 +77,81 @@ module Stannum::Contracts
       def initialize(contract)
         super
 
-        @next_index = 0
+        @current_index = -1
       end
 
       # Defines an item constraint on the contract.
       #
-      # @overload item(constraint)
+      # Each time an item constraint is defined, the constraint is tied to an
+      # incrementing index, i.e. the first constraint is matched against the
+      # item at index 0, the second at index 1, and so on. This can be overriden
+      # by setting the :property option.
+      #
+      # @overload item(constraint, **options)
       #   Adds the given constraint to the contract for the next index.
       #
       #   @param constraint [Stannum::Constraint::Base] The constraint to add.
+      #   @param options [Hash<Symbol, Object>] Options for the constraint.
       #
-      # @overload item { |value| }
+      # @overload item(**options) { |value| }
       #   Creates a new Stannum::Constraint object with the given block, and
-      #   adds that constraint to the contract for the next index.
+      #   adds that constraint to the contract for the next inted.
       #
-      #   @yieldparam value [Object] The value at the index when called.
-      #
-      # @raise ArgumentError if the property name is not valid.
-      #
-      # @see Stannum::Contract#add_constraint.
-      def item(constraint = nil, &block)
-        constraint = resolve_constraint(constraint, &block)
+      #   @param options [Hash<Symbol, Object>] Options for the constraint.
+      #   @yieldparam value [Object] The value of the property when called.
+      def item(constraint = nil, **options, &block)
+        index = (@current_index += 1)
 
-        contract.add_constraint(constraint, property: @next_index)
-
-        @next_index += 1
+        self.constraint(
+          constraint,
+          property:      index,
+          property_type: :index,
+          **options,
+          &block
+        )
       end
     end
 
-    # @return [Hash] The options defined for the contract.
-    attr_reader :options
+    # @param allow_extra_items [true, false] If false, then a tuple with extra
+    #   items after the last expected item will not match the contract.
+    # @param options [Hash<Symbol, Object>] Configuration options for the
+    #   contract. Defaults to an empty Hash.
+    def initialize(allow_extra_items: false, **options, &block)
+      super(allow_extra_items: allow_extra_items, **options)
 
-    # @param allow_extra_items [Boolean] If false, the contract will fail when
-    #   checking an object with more items than are expected. Defaults to false.
-    def initialize(allow_extra_items: false, &block)
-      super()
+      count = -> { expected_count }
 
-      @options = {
-        allow_extra_items: allow_extra_items
-      }
+      add_constraint Stannum::Constraints::Types::Tuple.new, sanity: true
 
-      build_constraints(block) if block_given?
+      unless allow_extra_items?
+        add_constraint Stannum::Constraints::Tuples::ExtraItems.new(count)
+      end
+
+      self.class::Builder.new(self).instance_exec(&block) if block_given?
     end
 
-    # @return [Boolean] If false, the contract will fail when checking an object
-    #   with more items than are expected.
+    # @return [true, false] If false, then a tuple with extra items after the
+    #   last expected item will not match the contract.
     def allow_extra_items?
-      @options[:allow_extra_items]
+      !!options[:allow_extra_items]
     end
 
-    # rubocop:disable Metrics/CyclomaticComplexity
-    # rubocop:disable Metrics/PerceivedComplexity
+    protected
 
-    # Checks if the given object matches any of the constraints.
-    #
-    # @see Stannum::Contract#does_not_match?
-    def does_not_match?(object)
-      return true unless tuple?(object)
+    def expected_count
+      each_constraint.reduce(0) do |count, definition|
+        next count unless definition.options[:property_type] == :index
 
-      return true if !allow_extra_items? && extra_items?(object)
+        index = 1 + definition.options.fetch(:property, -1)
 
-      return true if missing_items?(object)
-
-      if item_constraints.empty? && (object.empty? || allow_extra_items?)
-        return false
+        index > count ? index : count
       end
-
-      super
-    end
-    # rubocop:enable Metrics/CyclomaticComplexity
-    # rubocop:enable Metrics/PerceivedComplexity
-
-    # The :type of the error generated for a tuple with extra items.
-    def extra_item_type
-      EXTRA_ITEM_TYPE
     end
 
-    # Checks if the given object matches all of the constraints.
-    #
-    # @see Stannum::Contract#matches?
-    def matches?(object)
-      return false unless tuple?(object)
+    def map_value(actual, **options)
+      return super unless options[:property_type] == :index
 
-      return false if !allow_extra_items? && extra_items?(object)
-
-      return false if missing_items?(object)
-
-      super
-    end
-    alias match? matches?
-
-    # The :type of the error generated for a tuple with missing items.
-    def missing_item_type
-      MISSING_ITEM_TYPE
-    end
-
-    # @return [String] the error type generated for a matching object.
-    def negated_type
-      NEGATED_TYPE
-    end
-
-    # @return [String] the error type generated for a non-matching object.
-    def type
-      TYPE
-    end
-
-    private
-
-    def access_property(object, property)
-      object[property]
-    end
-
-    def build_constraints(block)
-      self.class::Builder.new(self).instance_exec(&block)
-    end
-
-    def each_extra_item(actual, &block)
-      return unless !allow_extra_items? && extra_items?(actual)
-
-      first_index = item_constraints.size
-
-      actual[first_index..-1].each.with_index(first_index, &block)
-    end
-
-    def each_missing_item(actual, &block)
-      return unless missing_items?(actual)
-
-      actual.size.upto(item_constraints.size - 1).each(&block)
-    end
-
-    def errors_for_constraint(
-      actual:,
-      constraint:,
-      errors:,
-      property:,
-      **_keywords
-    )
-      return if property.is_a?(Integer) && property >= actual.size
-
-      super
-    end
-
-    def extra_items?(actual)
-      item_constraints.size < actual.size
-    end
-
-    def item_constraints
-      constraints.select { |constraint| constraint[:property].is_a?(Integer) }
-    end
-
-    def missing_items?(actual)
-      item_constraints.size > actual.size
-    end
-
-    def tuple?(object)
-      object.respond_to?(:[]) && !object.respond_to?(:key?)
-    end
-
-    def update_errors_for(actual:, errors:)
-      return errors.add(type) unless tuple?(actual)
-
-      each_missing_item(actual) do |index|
-        errors[index].add(missing_item_type)
-      end
-
-      each_extra_item(actual) do |item, index|
-        errors[index].add(extra_item_type, value: item)
-      end
-
-      super
-    end
-
-    def update_negated_errors_for(actual:, errors:)
-      return errors.add(negated_type) if item_constraints.empty?
-
-      return errors unless tuple?(actual)
-
-      super
+      actual[options[:property]]
     end
   end
 end

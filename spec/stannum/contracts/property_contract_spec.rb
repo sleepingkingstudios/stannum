@@ -107,9 +107,12 @@ RSpec.describe Stannum::Contracts::PropertyContract do
       let(:property)   { :attribute_name }
       let(:definition) { contract.each_constraint.to_a.last }
 
-      it { expect(contract.add_constraint constraint).to be contract }
+      it 'should return the contract' do
+        expect(contract.add_constraint constraint, property: property)
+          .to be contract
+      end
 
-      it 'should add the constraint to the contract', :aggregate_failures do
+      it 'should add the constraint to the contract' do
         expect { contract.add_constraint(constraint, property: property) }
           .to change { contract.each_constraint.count }
           .by(1)
@@ -132,9 +135,14 @@ RSpec.describe Stannum::Contracts::PropertyContract do
       let(:options)    { { key: 'value' } }
       let(:definition) { contract.each_constraint.to_a.last }
 
-      it { expect(contract.add_constraint constraint).to be contract }
+      it 'should return the contract' do
+        expect(
+          contract.add_constraint constraint, property: property, **options
+        )
+          .to be contract
+      end
 
-      it 'should add the constraint to the contract', :aggregate_failures do
+      it 'should add the constraint to the contract' do
         expect do
           contract.add_constraint(constraint, property: property, **options)
         end
@@ -158,9 +166,12 @@ RSpec.describe Stannum::Contracts::PropertyContract do
       let(:property)   { %i[path to attribute] }
       let(:definition) { contract.each_constraint.to_a.last }
 
-      it { expect(contract.add_constraint constraint).to be contract }
+      it 'should return the contract' do
+        expect(contract.add_constraint constraint, property: property)
+          .to be contract
+      end
 
-      it 'should add the constraint to the contract', :aggregate_failures do
+      it 'should add the constraint to the contract' do
         expect { contract.add_constraint(constraint, property: property) }
           .to change { contract.each_constraint.count }
           .by(1)

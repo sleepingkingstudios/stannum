@@ -18,6 +18,32 @@ module Stannum::Contracts
     # @return [Stannum::Contract] The contract to which constraints are added.
     attr_reader :contract
 
+    # Adds a constraint to the contract.
+    #
+    # @overload constraint(constraint, **options)
+    #   Adds the given constraint to the contract.
+    #
+    #   @param constraint [Stannum::Constraints::Base] The constraint to add to
+    #     the contract.
+    #   @param options [Hash<Symbol, Object>] Options for the constraint.
+    #
+    # @overload constraint(**options, &block)
+    #   Creates an instance of Stannum::Constraint using the given block and
+    #   adds it to the contract.
+    #
+    #   @param options [Hash<Symbol, Object>] Options for the constraint.
+    #   @option options negated_type [String] The error type generated for a
+    #     matching object.
+    #   @option options type [String] The error type generated for a
+    #     non-matching object.
+    def constraint(constraint = nil, **options, &block)
+      constraint = resolve_constraint(constraint, **options, &block)
+
+      contract.add_constraint(constraint, **options)
+
+      self
+    end
+
     private
 
     def ambiguous_values_error(constraint)
@@ -25,14 +51,14 @@ module Stannum::Contracts
       " block and #{constraint.inspect}"
     end
 
-    def resolve_constraint(constraint = nil, &block)
+    def resolve_constraint(constraint = nil, **options, &block)
       if block_given? && constraint
         raise ArgumentError, ambiguous_values_error(constraint), caller(1..-1)
       end
 
       return constraint if valid_constraint?(constraint)
 
-      return Stannum::Constraint.new(&block) if block
+      return Stannum::Constraint.new(**options, &block) if block
 
       raise ArgumentError,
         "invalid constraint #{constraint.inspect}",

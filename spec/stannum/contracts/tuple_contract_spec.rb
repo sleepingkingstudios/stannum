@@ -3,79 +3,97 @@
 require 'stannum/contracts/tuple_contract'
 
 require 'support/examples/constraint_examples'
-require 'support/examples/contract_builder_examples'
+require 'support/examples/contract_examples'
 
 RSpec.describe Stannum::Contracts::TupleContract do
   include Spec::Support::Examples::ConstraintExamples
-  include Spec::Support::Examples::ContractBuilderExamples
+  include Spec::Support::Examples::ContractExamples
 
   shared_context 'when initialized with allow_extra_items: true' do
-    before(:example) do
-      options.update(allow_extra_items: true)
-    end
+    let(:constructor_options) { { allow_extra_items: true } }
   end
 
-  shared_context 'with a block with many item constraints' do
-    let(:block) do
-      lambda do
-        item { |value| value.is_a?(Integer) }
-        item { |value| value.is_a?(String) }
+  shared_context 'when the contract has one item constraint' do
+    let(:constraints) do
+      [
+        {
+          constraint: Stannum::Constraints::Presence.new
+        }
+      ]
+    end
+    let(:definitions) do
+      constraints.map.with_index do |definition, index|
+        Stannum::Contracts::Definition.new(
+          constraint: definition[:constraint],
+          contract:   contract,
+          options:    { property: index, property_type: :index, sanity: false }
+            .merge(definition.fetch(:options, {}))
+        )
+      end
+    end
+    let(:items_count) { constraints.count }
+    let(:constructor_block) do
+      constraint_definitions = constraints
 
-        item do |value|
-          value.is_a?(Spec::Manufacturer)
+      lambda do
+        constraint_definitions.each do |definition|
+          item(definition[:constraint], **definition.fetch(:options, {}))
         end
       end
     end
-
-    example_class 'Spec::Manufacturer'
   end
 
-  subject(:constraint) { described_class.new(**options, &block) }
+  shared_context 'when the contract has many item constraints' do
+    let(:constraints) do
+      [
+        {
+          constraint: Stannum::Constraints::Presence.new
+        },
+        {
+          constraint: Stannum::Constraints::Presence.new,
+          options:    { type: :index, key: 'value' }
+        },
+        {
+          constraint: Stannum::Constraints::Type.new(Integer),
+          options:    { type: :index, ichi: 1, ni: 2, san: 3 }
+        }
+      ]
+    end
+    let(:definitions) do
+      constraints.map.with_index do |definition, index|
+        Stannum::Contracts::Definition.new(
+          constraint: definition[:constraint],
+          contract:   contract,
+          options:    { property: index, property_type: :index, sanity: false }
+            .merge(definition.fetch(:options, {}))
+        )
+      end
+    end
+    let(:items_count) { constraints.count }
+    let(:constructor_block) do
+      constraint_definitions = constraints
 
-  let(:options) { {} }
-  let(:block)   { -> {} }
-
-  describe '::EXTRA_ITEM_TYPE' do
-    include_examples 'should define frozen constant',
-      :EXTRA_ITEM_TYPE,
-      'stannum.constraints.tuple_extra_item'
+      lambda do
+        constraint_definitions.each do |definition|
+          item(definition[:constraint], **definition.fetch(:options, {}))
+        end
+      end
+    end
   end
 
-  describe '::MISSING_ITEM_TYPE' do
-    include_examples 'should define frozen constant',
-      :MISSING_ITEM_TYPE,
-      'stannum.constraints.tuple_missing_item'
+  subject(:contract) do
+    described_class.new(**constructor_options, &constructor_block)
   end
 
-  describe '::NEGATED_TYPE' do
-    include_examples 'should define frozen constant',
-      :NEGATED_TYPE,
-      'stannum.constraints.is_tuple'
-  end
-
-  describe '::TYPE' do
-    include_examples 'should define frozen constant',
-      :TYPE,
-      'stannum.constraints.is_not_tuple'
-  end
+  let(:constructor_block)   { -> {} }
+  let(:constructor_options) { {} }
 
   describe '::Builder' do
     subject(:builder) { described_class.new(contract) }
 
     let(:described_class) { super()::Builder }
     let(:contract) do
-      # rubocop:disable RSpec/DescribedClass
-      Stannum::Contracts::TupleContract.new
-      # rubocop:enable RSpec/DescribedClass
-    end
-
-    def resolve_constraint(constraint = nil, &block)
-      builder.item(constraint, &block)
-
-      contract
-        .send(:constraints)
-        .find { |hsh| hsh[:property] == index }
-        .fetch(:constraint)
+      Stannum::Contracts::TupleContract.new # rubocop:disable RSpec/DescribedClass
     end
 
     describe '.new' do
@@ -89,410 +107,588 @@ RSpec.describe Stannum::Contracts::TupleContract do
     end
 
     describe '#item' do
-      let(:index) { 0 }
+      before(:example) do
+        allow(builder).to receive(:constraint) # rubocop:disable RSpec/SubjectStub
+      end
 
       it 'should define the method' do
         expect(builder)
           .to respond_to(:item)
           .with(0..1).arguments
+          .and_any_keywords
           .and_a_block
       end
 
-      include_examples 'should resolve the constraint'
+      describe 'with a block' do
+        let(:implementation) { -> {} }
 
-      context 'when the contract has many items' do
-        let(:index) { 3 }
+        it 'should delegate to #constraint' do
+          builder.item(&implementation)
 
-        before(:example) do
-          builder.item { |value| value.is_a?(String) }
-          builder.item { |value| value.is_a?(Integer) }
-          builder.item { |value| value.is_a?(Array) }
+          expect(builder) # rubocop:disable RSpec/SubjectStub
+            .to have_received(:constraint)
+            .with(nil, property: 0, property_type: :index)
         end
 
-        include_examples 'should resolve the constraint'
+        it 'should pass the implementation' do
+          allow(builder).to receive(:constraint) do |*_args, &block| # rubocop:disable RSpec/SubjectStub
+            block.call
+          end
+
+          expect { |block| builder.item(&block) }.to yield_control
+        end
+      end
+
+      describe 'with a block and options' do
+        let(:implementation) { -> {} }
+        let(:options)        { { key: 'value' } }
+
+        it 'should delegate to #constraint' do
+          builder.item(**options, &implementation)
+
+          expect(builder) # rubocop:disable RSpec/SubjectStub
+            .to have_received(:constraint)
+            .with(nil, property: 0, property_type: :index, **options)
+        end
+      end
+
+      describe 'with a constraint' do
+        let(:constraint) { Stannum::Constraints::Base.new }
+
+        it 'should delegate to #constraint' do
+          builder.item(constraint)
+
+          expect(builder) # rubocop:disable RSpec/SubjectStub
+            .to have_received(:constraint)
+            .with(constraint, property: 0, property_type: :index)
+        end
+      end
+
+      describe 'with a constraint and options' do
+        let(:constraint) { Stannum::Constraints::Base.new }
+        let(:options)    { { key: 'value' } }
+
+        it 'should delegate to #constraint' do
+          builder.item(constraint, **options)
+
+          expect(builder) # rubocop:disable RSpec/SubjectStub
+            .to have_received(:constraint)
+            .with(constraint, property: 0, property_type: :index, **options)
+        end
+      end
+
+      context 'when the contract has one item constraint' do
+        before(:example) { builder.item }
+
+        describe 'with a block' do
+          let(:implementation) { -> {} }
+
+          it 'should delegate to #constraint' do
+            builder.item(&implementation)
+
+            expect(builder) # rubocop:disable RSpec/SubjectStub
+              .to have_received(:constraint)
+              .with(nil, property: 1, property_type: :index)
+          end
+        end
+
+        describe 'with a constraint' do
+          let(:constraint) { Stannum::Constraints::Base.new }
+
+          it 'should delegate to #constraint' do
+            builder.item(constraint)
+
+            expect(builder) # rubocop:disable RSpec/SubjectStub
+              .to have_received(:constraint)
+              .with(constraint, property: 1, property_type: :index)
+          end
+        end
+      end
+
+      context 'when the contract has many item constraints' do
+        before(:example) { 3.times { builder.item } }
+
+        describe 'with a block' do
+          let(:implementation) { -> {} }
+
+          it 'should delegate to #constraint' do
+            builder.item(&implementation)
+
+            expect(builder) # rubocop:disable RSpec/SubjectStub
+              .to have_received(:constraint)
+              .with(nil, property: 3, property_type: :index)
+          end
+        end
+
+        describe 'with a constraint' do
+          let(:constraint) { Stannum::Constraints::Base.new }
+
+          it 'should delegate to #constraint' do
+            builder.item(constraint)
+
+            expect(builder) # rubocop:disable RSpec/SubjectStub
+              .to have_received(:constraint)
+              .with(constraint, property: 3, property_type: :index)
+          end
+        end
       end
     end
   end
 
   describe '.new' do
-    let(:builder) { instance_double(described_class::Builder, item: nil) }
-
-    before(:example) do
-      allow(described_class::Builder).to receive(:new).and_return(builder)
+    it 'should define the constructor' do
+      expect(described_class)
+        .to be_constructible
+        .with(0).arguments
+        .and_keywords(:allow_extra_items)
+        .and_any_keywords
+        .and_a_block
     end
 
-    it { expect(described_class).to be_constructible.with(0).arguments }
+    describe 'with a block' do
+      let(:builder) { instance_double(described_class::Builder, item: nil) }
 
-    describe 'without a block' do
-      it 'should not create an item constraint' do
-        described_class.new
-
-        expect(builder).not_to have_received(:item)
+      before(:example) do
+        allow(described_class::Builder).to receive(:new).and_return(builder)
       end
-    end
 
-    describe 'with an empty block' do
-      let(:block) { -> {} }
+      it 'should call the builder with the block', :aggregate_failures do
+        described_class.new do
+          item option: 'one'
+          item option: 'two'
+          item option: 'three'
+        end
 
-      it 'should not create an item constraint' do
-        described_class.new {}
-
-        expect(builder).not_to have_received(:item)
-      end
-    end
-
-    wrap_context 'with a block with many item constraints' do
-      it 'should create each item constraint' do
-        described_class.new(&block)
-
-        expect(builder).to have_received(:item).exactly(3).times
+        expect(builder).to have_received(:item).with(option: 'one')
+        expect(builder).to have_received(:item).with(option: 'two')
+        expect(builder).to have_received(:item).with(option: 'three')
       end
     end
   end
 
   include_examples 'should implement the Constraint interface'
 
+  include_examples 'should implement the Contract methods'
+
+  describe '#add_constraint' do
+    describe 'with an item constraint' do
+      let(:constraint) { Stannum::Constraint.new }
+      let(:definition) { contract.each_constraint.to_a.last }
+
+      it 'should return the contract' do
+        expect(
+          contract.add_constraint(
+            constraint,
+            property:      0,
+            property_type: :index
+          )
+        )
+          .to be contract
+      end
+
+      it 'should add the constraint to the contract' do
+        expect do
+          contract.add_constraint(
+            constraint,
+            property:      0,
+            property_type: :index
+          )
+        end
+          .to change { contract.each_constraint.count }
+          .by(1)
+      end
+
+      it 'should store the contract' do # rubocop:disable RSpec/ExampleLength
+        contract.add_constraint(
+          constraint,
+          property:      0,
+          property_type: :index
+        )
+
+        expect(definition).to be_a_constraint_definition(
+          constraint: constraint,
+          contract:   contract,
+          options:    {
+            property:      0,
+            property_type: :index,
+            sanity:        false
+          }
+        )
+      end
+    end
+
+    describe 'with an item constraint with options' do
+      let(:constraint) { Stannum::Constraint.new }
+      let(:options)    { { key: 'value' } }
+      let(:definition) { contract.each_constraint.to_a.last }
+
+      it 'should return the contract' do
+        expect(
+          contract.add_constraint(
+            constraint,
+            property:      0,
+            property_type: :index,
+            **options
+          )
+        )
+          .to be contract
+      end
+
+      it 'should add the constraint to the contract' do
+        expect do
+          contract.add_constraint(
+            constraint,
+            property:      0,
+            property_type: :index,
+            **options
+          )
+        end
+          .to change { contract.each_constraint.count }
+          .by(1)
+      end
+
+      it 'should store the contract and options' do # rubocop:disable RSpec/ExampleLength
+        contract.add_constraint(
+          constraint,
+          property:      0,
+          property_type: :index,
+          **options
+        )
+
+        expect(definition).to be_a_constraint_definition(
+          constraint: constraint,
+          contract:   contract,
+          options:    {
+            property:      0,
+            property_type: :index,
+            sanity:        false,
+            **options
+          }
+        )
+      end
+    end
+  end
+
   describe '#allow_extra_items?' do
     include_examples 'should have predicate', :allow_extra_items?, false
 
     wrap_context 'when initialized with allow_extra_items: true' do
-      it { expect(constraint.allow_extra_items?).to be true }
+      it { expect(contract.allow_extra_items?).to be true }
     end
   end
 
-  describe '#extra_item_type' do
-    include_examples 'should have reader',
-      :extra_item_type,
-      'stannum.constraints.tuple_extra_item'
-  end
+  describe '#each_constraint' do
+    let(:items_count) { 0 }
+    let(:builtin_definitions) do
+      [
+        an_instance_of(Stannum::Contracts::Definition).and(
+          satisfy do |definition|
+            expect(definition.constraint)
+              .to be_a Stannum::Constraints::Types::Tuple
+            expect(definition.sanity?).to be true
+          end
+        ),
+        an_instance_of(Stannum::Contracts::Definition).and(
+          satisfy do |definition|
+            expect(definition.constraint)
+              .to be_a Stannum::Constraints::Tuples::ExtraItems
+            expect(definition.constraint.expected_count).to be == items_count
+            expect(definition.sanity?).to be false
+          end
+        )
+      ]
+    end
+    let(:expected) { builtin_definitions }
 
-  describe '#match' do
-    let(:match_method) { :match }
+    it { expect(contract).to respond_to(:each_constraint).with(0).arguments }
 
-    describe 'with nil' do
-      let(:actual) { nil }
-      let(:expected_errors) do
-        { type: described_class::TYPE }
-      end
+    it { expect(contract.each_constraint).to be_a Enumerator }
 
-      include_examples 'should not match the constraint'
+    it { expect(contract.each_constraint.count).to be 2 }
+
+    it 'should yield each definition' do
+      expect { |block| contract.each_constraint(&block) }
+        .to yield_successive_args(*expected)
     end
 
-    describe 'with an Object' do
-      let(:actual) { Object.new.freeze }
-      let(:expected_errors) do
-        { type: described_class::TYPE }
-      end
-
-      include_examples 'should not match the constraint'
-    end
-
-    describe 'with an empty Array' do
-      let(:actual) { [] }
-
-      include_examples 'should match the constraint'
-    end
-
-    describe 'with an Array with extra items' do
-      let(:actual) { %i[ichi ni] }
-      let(:expected_errors) do
+    wrap_context 'when initialized with allow_extra_items: true' do
+      let(:builtin_definitions) do
         [
-          {
-            data: { value: actual[0] },
-            path: [0],
-            type: described_class::EXTRA_ITEM_TYPE
-          },
-          {
-            data: { value: actual[1] },
-            path: [1],
-            type: described_class::EXTRA_ITEM_TYPE
-          }
+          an_instance_of(Stannum::Contracts::Definition).and(
+            satisfy do |definition|
+              expect(definition.constraint)
+                .to be_a Stannum::Constraints::Types::Tuple
+              expect(definition.sanity?).to be true
+            end
+          )
         ]
       end
 
-      include_examples 'should not match the constraint'
-    end
+      it { expect(contract.each_constraint.count).to be 1 }
 
-    wrap_context 'when initialized with allow_extra_items: true' do
-      describe 'with an Array with extra items' do
-        let(:actual) { %i[ichi ni] }
-
-        include_examples 'should match the constraint'
+      it 'should yield each definition' do
+        expect { |block| contract.each_constraint(&block) }
+          .to yield_successive_args(*expected)
       end
     end
 
-    wrap_context 'with a block with many item constraints' do
-      describe 'with an empty Array' do
-        let(:actual) { [] }
-        let(:expected_errors) do
-          [
-            {
-              path: [0],
-              type: described_class::MISSING_ITEM_TYPE
-            },
-            {
-              path: [1],
-              type: described_class::MISSING_ITEM_TYPE
-            },
-            {
-              path: [2],
-              type: described_class::MISSING_ITEM_TYPE
-            }
-          ]
-        end
+    # rubocop:disable RSpec/RepeatedExampleGroupBody
+    wrap_context 'when the contract has one item constraint' do
+      let(:expected) { builtin_definitions + definitions }
 
-        include_examples 'should not match the constraint'
-      end
+      it { expect(contract.each_constraint.count).to be(2 + constraints.size) }
 
-      describe 'with an Array with missing items' do
-        let(:actual) { [0] }
-        let(:expected_errors) do
-          [
-            {
-              path: [1],
-              type: described_class::MISSING_ITEM_TYPE
-            },
-            {
-              path: [2],
-              type: described_class::MISSING_ITEM_TYPE
-            }
-          ]
-        end
-
-        include_examples 'should not match the constraint'
-      end
-
-      describe 'with an Array with non-matching items' do
-        let(:actual) { ['invalid', 0, nil] }
-        let(:expected_errors) do
-          [
-            {
-              path: [0],
-              type: Stannum::Constraints::Base::TYPE
-            },
-            {
-              path: [1],
-              type: Stannum::Constraints::Base::TYPE
-            },
-            {
-              path: [2],
-              type: Stannum::Constraints::Base::TYPE
-            }
-          ]
-        end
-
-        include_examples 'should not match the constraint'
-      end
-
-      describe 'with an Array with partially matching items' do
-        let(:actual) { [nil, 'valid', nil] }
-        let(:expected_errors) do
-          [
-            {
-              path: [0],
-              type: Stannum::Constraints::Base::TYPE
-            },
-            {
-              path: [2],
-              type: Stannum::Constraints::Base::TYPE
-            }
-          ]
-        end
-
-        include_examples 'should not match the constraint'
-      end
-
-      describe 'with an Array with matching items' do
-        let(:actual) { [0, 'valid', Spec::Manufacturer.new] }
-
-        include_examples 'should match the constraint'
-      end
-
-      describe 'with an Array with extra items' do
-        let(:actual) { [0, 'valid', Spec::Manufacturer.new, :foo, :bar] }
-        let(:expected_errors) do
-          [
-            {
-              data: { value: :foo },
-              path: [3],
-              type: described_class::EXTRA_ITEM_TYPE
-            },
-            {
-              data: { value: :bar },
-              path: [4],
-              type: described_class::EXTRA_ITEM_TYPE
-            }
-          ]
-        end
-
-        include_examples 'should not match the constraint'
+      it 'should yield each definition' do
+        expect { |block| contract.each_constraint(&block) }
+          .to yield_successive_args(*expected)
       end
 
       wrap_context 'when initialized with allow_extra_items: true' do
-        describe 'with an Array with extra items' do
-          let(:actual) { [0, 'valid', Spec::Manufacturer.new, :foo, :bar] }
-
-          include_examples 'should match the constraint'
-        end
-      end
-    end
-  end
-
-  describe '#missing_item_type' do
-    include_examples 'should have reader',
-      :missing_item_type,
-      'stannum.constraints.tuple_missing_item'
-  end
-
-  describe '#negated_match' do
-    let(:match_method) { :negated_match }
-
-    describe 'with nil' do
-      let(:actual) { nil }
-
-      include_examples 'should match the constraint'
-    end
-
-    describe 'with an Object' do
-      let(:actual) { Object.new.freeze }
-
-      include_examples 'should match the constraint'
-    end
-
-    describe 'with an empty Array' do
-      let(:actual) { [] }
-      let(:expected_errors) do
-        { type: described_class::NEGATED_TYPE }
-      end
-
-      include_examples 'should not match the constraint'
-    end
-
-    describe 'with an Array with extra items' do
-      let(:actual) { %i[ichi ni] }
-
-      include_examples 'should match the constraint'
-    end
-
-    wrap_context 'when initialized with allow_extra_items: true' do
-      describe 'with an Array with extra items' do
-        let(:actual) { %i[ichi ni] }
-        let(:expected_errors) do
-          { type: described_class::NEGATED_TYPE }
-        end
-
-        include_examples 'should not match the constraint'
-      end
-    end
-
-    wrap_context 'with a block with many item constraints' do
-      describe 'with an empty Array' do
-        let(:actual) { [] }
-
-        include_examples 'should match the constraint'
-      end
-
-      describe 'with an Array with missing items' do
-        let(:actual) { [0] }
-
-        include_examples 'should match the constraint'
-      end
-
-      describe 'with an Array with non-matching items' do
-        let(:actual) { ['invalid', 0, nil] }
-
-        include_examples 'should match the constraint'
-      end
-
-      describe 'with an Array with partially matching items' do
-        let(:actual) { [nil, 'valid', nil] }
-        let(:expected_errors) do
+        let(:builtin_definitions) do
           [
-            {
-              path: [1],
-              type: Stannum::Constraints::Base::NEGATED_TYPE
-            }
+            an_instance_of(Stannum::Contracts::Definition).and(
+              satisfy do |definition|
+                expect(definition.constraint)
+                  .to be_a Stannum::Constraints::Types::Tuple
+                expect(definition.sanity?).to be true
+              end
+            )
           ]
         end
 
-        include_examples 'should not match the constraint'
-      end
+        it { expect(contract.each_constraint.count).to be 1 + constraints.size }
 
-      describe 'with an Array with matching items' do
-        let(:actual) { [0, 'valid', Spec::Manufacturer.new] }
-        let(:expected_errors) do
-          [
-            {
-              path: [0],
-              type: Stannum::Constraints::Base::NEGATED_TYPE
-            },
-            {
-              path: [1],
-              type: Stannum::Constraints::Base::NEGATED_TYPE
-            },
-            {
-              path: [2],
-              type: Stannum::Constraints::Base::NEGATED_TYPE
-            }
-          ]
+        it 'should yield each definition' do
+          expect { |block| contract.each_constraint(&block) }
+            .to yield_successive_args(*expected)
         end
-
-        include_examples 'should not match the constraint'
       end
+    end
 
-      describe 'with an Array with extra items' do
-        let(:actual) { [0, 'valid', Spec::Manufacturer.new, :foo, :bar] }
+    wrap_context 'when the contract has many item constraints' do
+      let(:expected) { builtin_definitions + definitions }
 
-        include_examples 'should match the constraint'
+      it { expect(contract.each_constraint.count).to be(2 + constraints.size) }
+
+      it 'should yield each definition' do
+        expect { |block| contract.each_constraint(&block) }
+          .to yield_successive_args(*expected)
       end
 
       wrap_context 'when initialized with allow_extra_items: true' do
-        describe 'with an Array with extra items' do
-          let(:actual) { [0, 'valid', Spec::Manufacturer.new, :foo, :bar] }
-          let(:expected_errors) do
-            [
-              {
-                path: [0],
-                type: Stannum::Constraints::Base::NEGATED_TYPE
-              },
-              {
-                path: [1],
-                type: Stannum::Constraints::Base::NEGATED_TYPE
-              },
-              {
-                path: [2],
-                type: Stannum::Constraints::Base::NEGATED_TYPE
-              }
-            ]
+        let(:builtin_definitions) do
+          [
+            an_instance_of(Stannum::Contracts::Definition).and(
+              satisfy do |definition|
+                expect(definition.constraint)
+                  .to be_a Stannum::Constraints::Types::Tuple
+                expect(definition.sanity?).to be true
+              end
+            )
+          ]
+        end
+
+        it { expect(contract.each_constraint.count).to be 1 + constraints.size }
+
+        it 'should yield each definition' do
+          expect { |block| contract.each_constraint(&block) }
+            .to yield_successive_args(*expected)
+        end
+      end
+    end
+    # rubocop:enable RSpec/RepeatedExampleGroupBody
+  end
+
+  describe '#each_pair' do
+    let(:actual)      { %w[ichi ni san] }
+    let(:items_count) { 0 }
+    let(:builtin_definitions) do
+      [
+        an_instance_of(Stannum::Contracts::Definition).and(
+          satisfy do |definition|
+            expect(definition.constraint)
+              .to be_a Stannum::Constraints::Types::Tuple
+            expect(definition.sanity?).to be true
           end
+        ),
+        an_instance_of(Stannum::Contracts::Definition).and(
+          satisfy do |definition|
+            expect(definition.constraint)
+              .to be_a Stannum::Constraints::Tuples::ExtraItems
+            expect(definition.constraint.expected_count).to be == items_count
+            expect(definition.sanity?).to be false
+          end
+        )
+      ]
+    end
+    let(:expected) do
+      builtin_definitions.zip(Array.new(builtin_definitions.size, actual))
+    end
 
-          include_examples 'should not match the constraint'
+    it { expect(contract).to respond_to(:each_pair).with(1).argument }
+
+    it { expect(contract.each_pair(actual)).to be_a Enumerator }
+
+    it { expect(contract.each_pair(actual).count).to be 2 + items_count }
+
+    it 'should yield each definition and the mapped property' do
+      expect { |block| contract.each_pair(actual, &block) }
+        .to yield_successive_args(*expected)
+    end
+
+    wrap_context 'when initialized with allow_extra_items: true' do
+      let(:builtin_definitions) do
+        [
+          an_instance_of(Stannum::Contracts::Definition).and(
+            satisfy do |definition|
+              expect(definition.constraint)
+                .to be_a Stannum::Constraints::Types::Tuple
+              expect(definition.sanity?).to be true
+            end
+          )
+        ]
+      end
+
+      it { expect(contract.each_pair(actual).count).to be 1 + items_count }
+
+      it 'should yield each definition and the mapped property' do
+        expect { |block| contract.each_pair(actual, &block) }
+          .to yield_successive_args(*expected)
+      end
+    end
+
+    # rubocop:disable RSpec/RepeatedExampleGroupBody
+    wrap_context 'when the contract has one item constraint' do
+      let(:expected) do
+        builtin_definitions.zip(Array.new(builtin_definitions.size, actual)) +
+          definitions.zip(actual)
+      end
+
+      it 'should have the expected size' do
+        expect(contract.each_pair(actual).count).to be(2 + constraints.size)
+      end
+
+      it 'should yield each definition' do
+        expect { |block| contract.each_pair(actual, &block) }
+          .to yield_successive_args(*expected)
+      end
+
+      wrap_context 'when initialized with allow_extra_items: true' do
+        let(:builtin_definitions) do
+          [
+            an_instance_of(Stannum::Contracts::Definition).and(
+              satisfy do |definition|
+                expect(definition.constraint)
+                  .to be_a Stannum::Constraints::Types::Tuple
+                expect(definition.sanity?).to be true
+              end
+            )
+          ]
         end
+
+        it { expect(contract.each_pair(actual).count).to be 1 + items_count }
+
+        it 'should yield each definition and the mapped property' do
+          expect { |block| contract.each_pair(actual, &block) }
+            .to yield_successive_args(*expected)
+        end
+      end
+    end
+
+    wrap_context 'when the contract has many item constraints' do
+      let(:expected) do
+        builtin_definitions.zip(Array.new(builtin_definitions.size, actual)) +
+          definitions.zip(actual)
+      end
+
+      it 'should have the expected size' do
+        expect(contract.each_pair(actual).count).to be(2 + constraints.size)
+      end
+
+      it 'should yield each definition' do
+        expect { |block| contract.each_pair(actual, &block) }
+          .to yield_successive_args(*expected)
+      end
+
+      wrap_context 'when initialized with allow_extra_items: true' do
+        let(:builtin_definitions) do
+          [
+            an_instance_of(Stannum::Contracts::Definition).and(
+              satisfy do |definition|
+                expect(definition.constraint)
+                  .to be_a Stannum::Constraints::Types::Tuple
+                expect(definition.sanity?).to be true
+              end
+            )
+          ]
+        end
+
+        it { expect(contract.each_pair(actual).count).to be 1 + items_count }
+
+        it 'should yield each definition and the mapped property' do
+          expect { |block| contract.each_pair(actual, &block) }
+            .to yield_successive_args(*expected)
+        end
+      end
+    end
+    # rubocop:enable RSpec/RepeatedExampleGroupBody
+  end
+
+  describe '#map_errors' do
+    let(:errors) { Stannum::Errors.new }
+
+    it { expect(contract.send :map_errors, errors).to be errors }
+
+    describe 'with property_type: :index' do
+      let(:index) { 1 }
+
+      before(:example) do
+        errors[index].add('spec.indexed_error')
+      end
+
+      it 'should return the errors for the index' do
+        expect(
+          contract.send(
+            :map_errors,
+            errors,
+            property:      index,
+            property_type: :index
+          )
+        )
+          .to be == errors[index]
       end
     end
   end
 
-  describe '#negated_type' do
-    include_examples 'should have reader',
-      :negated_type,
-      'stannum.constraints.is_tuple'
+  describe '#map_value' do
+    let(:value) { %w[ichi ni san] }
+
+    it { expect(contract.send :map_value, value).to be value }
+
+    describe 'with property_type: :index' do
+      let(:index) { 1 }
+
+      it 'should return the indexed value' do
+        expect(
+          contract.send(
+            :map_value,
+            value,
+            property:      index,
+            property_type: :index
+          )
+        )
+          .to be == value[index]
+      end
+    end
   end
 
   describe '#options' do
-    let(:expected) do
-      { allow_extra_items: false }.merge(options)
-    end
-
-    include_examples 'should have reader', :options, -> { be == expected }
+    include_examples 'should have reader',
+      :options,
+      -> { be == { allow_extra_items: false } }
 
     wrap_context 'when initialized with allow_extra_items: true' do
-      it { expect(constraint.allow_extra_items?).to be true }
+      it { expect(contract.options).to be == { allow_extra_items: true } }
     end
-  end
-
-  describe '#type' do
-    include_examples 'should have reader',
-      :type,
-      'stannum.constraints.is_not_tuple'
   end
 end

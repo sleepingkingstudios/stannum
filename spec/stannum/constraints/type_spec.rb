@@ -32,7 +32,12 @@ RSpec.describe Stannum::Constraints::Type do
   describe '.new' do
     let(:error_message) { 'expected type must be a Class or Module' }
 
-    it { expect(described_class).to be_constructible.with(1).argument }
+    it 'should define the constructor' do
+      expect(described_class)
+        .to be_constructible
+        .with(1).argument
+        .and_any_keywords
+    end
 
     describe 'with nil' do
       it 'should raise an error' do
@@ -62,6 +67,15 @@ RSpec.describe Stannum::Constraints::Type do
     let(:expected) { { expected_type: expected_type } }
 
     include_examples 'should have reader', :options, -> { be == expected }
+
+    context 'when initialized with options' do
+      subject(:constraint) { described_class.new(expected_type, **options) }
+
+      let(:options)  { { key: 'value' } }
+      let(:expected) { super().merge(options) }
+
+      it { expect(constraint.options).to be == expected }
+    end
   end
 
   context 'when expected_type is a Class' do
