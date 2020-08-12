@@ -39,7 +39,7 @@ RSpec.describe Spec::Gizmo do
     describe '.contract' do
       let(:contract) { described_class.attributes.contract }
 
-      it { expect(contract).to be_a Stannum::Contract }
+      it { expect(contract).to be_a Stannum::Contracts::Legacy }
 
       describe 'with an empty Hash' do
         let(:expected_errors) do
@@ -169,7 +169,7 @@ RSpec.describe Spec::Gizmo do
   describe '.contract' do
     let(:contract) { described_class.contract }
 
-    it { expect(contract).to be_a Stannum::Contract }
+    it { expect(contract).to be_a Stannum::Contracts::Legacy }
 
     describe 'with an empty struct' do
       let(:expected_errors) do

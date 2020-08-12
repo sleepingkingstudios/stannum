@@ -2,7 +2,7 @@
 
 require 'stannum/constraints/base'
 
-module Stannum
+module Stannum::Contracts
   # A contract aggregates constraints about the given object or its properties.
   #
   # @example Creating A Contract With Constraints
@@ -138,7 +138,7 @@ module Stannum
   #     { type: 'right_name', data: {}, path: [:name], message: nil },
   #     { type: 'right_address', data: {}, path: [:manufacturer, :factory, :address], message: nil }
   #   ]
-  class Contract < Stannum::Constraints::Base # rubocop:disable Metrics/ClassLength
+  class Legacy < Stannum::Constraints::Base # rubocop:disable Metrics/ClassLength
     def initialize(**options)
       @constraints = []
       @included    = []
@@ -575,7 +575,7 @@ module Stannum
     end
 
     def validate_contract(constraint)
-      return if constraint.is_a?(Stannum::Contract)
+      return if constraint.is_a?(Stannum::Contracts::Legacy)
 
       raise ArgumentError, 'must be an instance of Stannum::Contract'
     end

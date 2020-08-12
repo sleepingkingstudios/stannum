@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-require 'stannum/contracts'
+require 'stannum/contracts/legacy'
 
 module Stannum::Contracts
   # Contract that defines constraints on an object's properties.
@@ -14,7 +14,7 @@ module Stannum::Contracts
   #     property :manufacturer, Spec::ManufacturerContract.new
   #     property :name,         ->(value) { value.is_a?(String) }
   #   end
-  class MapContract < Stannum::Contract
+  class MapContract < Stannum::Contracts::Legacy
     # Builder class for defining property constraints for a MapContract.
     #
     # This class should not be invoked directly. Instead, pass a block to the

@@ -3,12 +3,12 @@
 require 'stannum/constraints/anything'
 require 'stannum/constraints/nothing'
 require 'stannum/constraints/type'
-require 'stannum/contract'
+require 'stannum/contracts/legacy'
 require 'stannum/constraint'
 
 require 'support/examples/constraint_examples'
 
-RSpec.describe Stannum::Contract do
+RSpec.describe Stannum::Contracts::Legacy do
   include Spec::Support::Examples::ConstraintExamples
 
   subject(:contract) { described_class.new(**options) }

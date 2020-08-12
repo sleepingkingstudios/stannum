@@ -9,7 +9,7 @@ RSpec.describe Stannum::Contracts::Builder do
 
   subject(:builder) { described_class.new(contract) }
 
-  let(:contract) { Stannum::Contract.new }
+  let(:contract) { Stannum::Contracts::Base.new }
 
   describe '.new' do
     it { expect(described_class).to be_constructible.with(1).argument }

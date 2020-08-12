@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-require 'stannum/contracts'
+require 'stannum/contracts/legacy'
 
 module Stannum::Contracts
   # Contract that defines constraints on an ordered data structure.
@@ -14,7 +14,7 @@ module Stannum::Contracts
   #     item Spec::ManufacturerContract.new
   #     item { |value| value.is_a?(String) }
   #   end
-  class TupleContract < Stannum::Contract
+  class TupleContract < Stannum::Contracts::Legacy
     # The :type of the error generated for a tuple with extra items.
     EXTRA_ITEM_TYPE = 'stannum.constraints.tuple_extra_item'
 
