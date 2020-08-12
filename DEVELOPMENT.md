@@ -2,6 +2,9 @@
 
 ## Development Notes
 
+- Always return a Stannum::Errors from match.
+- Refactor #errors_for to always check #matches?
+
 ### Standardization
 
 - Each constraint should define the `::TYPE` and `::NEGATED_TYPE` constants,

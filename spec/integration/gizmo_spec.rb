@@ -1,7 +1,8 @@
 # frozen_string_literal: true
 
-require 'support/gizmo'
+require 'support/structs/gizmo'
 
+# @note Integration spec for a subclassed Stannum::Struct.
 RSpec.describe Spec::Gizmo do
   shared_context 'when initialized with attribute values' do
     let(:attributes) do

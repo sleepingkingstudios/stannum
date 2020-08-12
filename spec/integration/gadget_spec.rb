@@ -1,7 +1,8 @@
 # frozen_string_literal: true
 
-require 'support/gadget'
+require 'support/structs/gadget'
 
+# @note Integration spec for Stannum::Gadget.
 RSpec.describe Spec::Gadget do
   shared_context 'when initialized with attribute values' do
     let(:attributes) do

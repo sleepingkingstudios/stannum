@@ -2,7 +2,7 @@
 
 require 'stannum'
 
-require 'support/gadget'
+require 'support/structs/gadget'
 
 module Spec
   class Gizmo < Spec::Gadget

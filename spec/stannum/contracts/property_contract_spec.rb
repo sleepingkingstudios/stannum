@@ -4,7 +4,7 @@ require 'stannum/contracts/property_contract'
 
 require 'support/examples/constraint_examples'
 require 'support/examples/contract_examples'
-require 'support/gadget'
+require 'support/structs/gadget'
 
 RSpec.describe Stannum::Contracts::PropertyContract do
   include Spec::Support::Examples::ConstraintExamples
@@ -269,6 +269,7 @@ RSpec.describe Stannum::Contracts::PropertyContract do
         end
       end
 
+      # @todo Extract this to spec/support/structs
       example_class 'Spec::Factory' do |klass|
         klass.include Stannum::Struct
 
@@ -276,6 +277,7 @@ RSpec.describe Stannum::Contracts::PropertyContract do
         klass.attribute :gadget,  Spec::Gadget
       end
 
+      # @todo Extract this to spec/support/structs
       example_class 'Spec::Manufacturer' do |klass|
         klass.include Stannum::Struct
 
@@ -369,6 +371,7 @@ RSpec.describe Stannum::Contracts::PropertyContract do
     describe 'with a nested property' do
       let(:property) { %i[factory gadget name] }
 
+      # @todo Extract this to spec/support/structs
       example_class 'Spec::Factory' do |klass|
         klass.include Stannum::Struct
 
@@ -376,6 +379,7 @@ RSpec.describe Stannum::Contracts::PropertyContract do
         klass.attribute :gadget,  Spec::Gadget
       end
 
+      # @todo Extract this to spec/support/structs
       example_class 'Spec::Manufacturer' do |klass|
         klass.include Stannum::Struct
 
