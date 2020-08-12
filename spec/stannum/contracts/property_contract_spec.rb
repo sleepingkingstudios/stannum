@@ -31,7 +31,8 @@ RSpec.describe Stannum::Contracts::PropertyContract do
         Stannum::Contracts::Definition.new(
           constraint: definition[:constraint],
           contract:   contract,
-          options:    definition.fetch(:options, {})
+          options:    { property: nil, sanity: false }
+            .merge(definition.fetch(:options, {}))
         )
       end
     end
@@ -67,7 +68,8 @@ RSpec.describe Stannum::Contracts::PropertyContract do
         Stannum::Contracts::Definition.new(
           constraint: definition[:constraint],
           contract:   contract,
-          options:    definition.fetch(:options, {})
+          options:    { property: nil, sanity: false }
+            .merge(definition.fetch(:options, {}))
         )
       end
     end
@@ -119,7 +121,7 @@ RSpec.describe Stannum::Contracts::PropertyContract do
         expect(definition).to be_a_constraint_definition(
           constraint: constraint,
           contract:   contract,
-          options:    { property: property }
+          options:    { property: property, sanity: false }
         )
       end
     end
@@ -146,7 +148,7 @@ RSpec.describe Stannum::Contracts::PropertyContract do
         expect(definition).to be_a_constraint_definition(
           constraint: constraint,
           contract:   contract,
-          options:    options.merge(property: property)
+          options:    options.merge(property: property, sanity: false)
         )
       end
     end
@@ -170,7 +172,7 @@ RSpec.describe Stannum::Contracts::PropertyContract do
         expect(definition).to be_a_constraint_definition(
           constraint: constraint,
           contract:   contract,
-          options:    { property: property }
+          options:    { property: property, sanity: false }
         )
       end
     end

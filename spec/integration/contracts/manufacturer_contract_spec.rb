@@ -75,7 +75,17 @@ RSpec.describe Spec::ManufacturerContract do
             message: nil,
             path:    [],
             type:    described_class::TYPE
-          },
+          }
+        ]
+      end
+
+      it { expect(errors).to be == expected_errors }
+    end
+
+    describe 'with an object that matches the sanity constraints' do
+      let(:actual) { Spec::Manufacturer.new }
+      let(:expected_errors) do
+        [
           {
             data:    {},
             message: nil,
@@ -144,7 +154,19 @@ RSpec.describe Spec::ManufacturerContract do
             message: nil,
             path:    [],
             type:    described_class::TYPE
-          },
+          }
+        ]
+      end
+
+      it { expect(errors).to be == expected_errors }
+
+      it { expect(status).to be false }
+    end
+
+    describe 'with an object that matches the sanity constraints' do
+      let(:actual) { Spec::Manufacturer.new }
+      let(:expected_errors) do
+        [
           {
             data:    {},
             message: nil,

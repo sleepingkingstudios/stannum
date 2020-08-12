@@ -64,6 +64,40 @@ module Stannum::Contracts
   #     { type: 'integer',  data: {}, path: [], message: nil },
   #     { type: 'in_range', data: {}, path: [], message: nil }
   #   ]
+  #
+  # @example Creating A Contract With A Sanity Constraint
+  #   format_constraint =
+  #     Stannum::Constraint.new(type: 'invalid_format', negated_type: 'valid_format') do |actual|
+  #       actual =~ /\A0x[0-9A-Fa-f]*\z/
+  #     end
+  #   length_constraint =
+  #     Stannum::Constraint.new(type: 'invalid_length', negated_type: 'valid_length') do |actual|
+  #       actual.length > 2
+  #     end
+  #   string_constraint = Stannum::Constraints::Type.new(String)
+  #   contract =
+  #     Stannum::Contracts::Base.new
+  #     .add_constraint(string_constraint, sanity: true)
+  #     .add_constraint(format_constraint)
+  #     .add_constraint(length_constraint)
+  #
+  # @example With An Object That Does Not Match The Sanity Constraint
+  #   contract.matches?(nil) #=> false
+  #   errors = contract.errors_for(nil) #=> Cuprum::Errors
+  #   errors.to_a
+  #   #=> [
+  #     {
+  #       data:    { type: String},
+  #       message: nil,
+  #       path:    [],
+  #       type:    'stannum.constraints.is_not_type'
+  #     }
+  #   ]
+  #
+  #   contract.does_not_match?(nil) #=> true
+  #   errors = contract.negated_errors_for(nil) #=> Cuprum::Errors
+  #   errors.to_a
+  #   #=> []
   class Base < Stannum::Constraints::Base # rubocop:disable Metrics/ClassLength
     # @param options [Hash<Symbol, Object>] Configuration options for the
     #   contract. Defaults to an empty Hash.
@@ -82,6 +116,10 @@ module Stannum::Contracts
     #   not match the mapped value, the corresponding errors will be added to
     #   the errors object.
     #
+    #   If the contract defines sanity constraints, the sanity constraints will
+    #   be matched first. If any of the sanity constraints fail, #errors_for
+    #   will immediately return the errors for the failed constraint.
+    #
     #   @param actual [Object] The object to match.
     #
     #   @return [Stannum::Errors] the generated errors object.
@@ -98,6 +136,10 @@ module Stannum::Contracts
     #   matches the mapped value, the corresponding errors will be added to
     #   the errors object.
     #
+    #   If the contract defines sanity constraints, the sanity constraints will
+    #   be matched first. If any of the sanity constraints fail, #errors_for
+    #   will immediately return any errors already added to the errors object.
+    #
     #   @param actual [Object] The object to match.
     #
     #   @return [Stannum::Errors] the generated errors object.
@@ -112,25 +154,32 @@ module Stannum::Contracts
     # evaluated with the object and the errors updated accordingly.
     #
     # @param constraint [Stannum::Constraints::Base] The constraint to add.
-    #
+    # @param sanity [true, false] Marks the constraint as a sanity constraint,
+    #   which is always matched first and will always short-circuit on a failed
+    #   match.
     # @param options [Hash<Symbol, Object>] Options for the constraint. These
     #   can be used by subclasses to define the value and error mappings for the
     #   constraint.
     #
     # @return [self] the contract.
-    def add_constraint(constraint, **options)
+    def add_constraint(constraint, sanity: false, **options)
       validate_constraint(constraint)
 
       @constraints << Stannum::Contracts::Definition.new(
         constraint: constraint,
         contract:   self,
-        options:    options
+        options:    options.merge(sanity: sanity)
       )
 
       self
     end
 
     # Checks that none of the added constraints match the object.
+    #
+    # If the contract defines sanity constraints, the sanity constraints will be
+    # matched first. If any of the sanity constraints fail (#does_not_match?
+    # for the constraint returns true), then this method will immediately return
+    # true and all subsequent constraints will be skipped.
     #
     # @param actual [Object] The object to match.
     #
@@ -142,7 +191,13 @@ module Stannum::Contracts
     # @see #negated_match
     def does_not_match?(actual)
       each_pair(actual) do |definition, value|
-        return false unless definition.constraint.does_not_match?(value)
+        if definition.constraint.does_not_match?(value)
+          next unless definition.sanity?
+
+          return true
+        end
+
+        return false
       end
 
       true
@@ -157,6 +212,9 @@ module Stannum::Contracts
     # encapsulates the constraint, the original contract, and the options
     # specified by #add_constraint.
     #
+    # If the contract defines sanity constraints, the sanity constraints will be
+    # returned or yielded first, followed by the remaining constraints.
+    #
     # @overload each_constraint
     #   @return [Enumerator] An enumerator for the constraint definitions.
     #
@@ -169,11 +227,13 @@ module Stannum::Contracts
     def each_constraint
       return enum_for(:each_constraint) unless block_given?
 
-      @included.each do |contract|
-        contract.each_constraint { |definition| yield definition }
+      each_unscoped_constraint do |definition|
+        yield definition if definition.sanity?
       end
 
-      @constraints.each { |definition| yield definition }
+      each_unscoped_constraint do |definition|
+        yield definition unless definition.sanity?
+      end
     end
 
     # Iterates through the constraints and mapped values.
@@ -182,6 +242,9 @@ module Stannum::Contracts
     # mapping representing the object or property that the constraint will
     # match. Calling #each_pair for an object yields the constraint and the
     # mapped object or property for that constraint and object.
+    #
+    # If the contract defines sanity constraints, the sanity constraints will be
+    # returned or yielded first, followed by the remaining constraints.
     #
     # By default, this mapping returns the object itself; however, this can be
     # overriden in subclasses based on the constraint options, such as matching
@@ -274,6 +337,12 @@ module Stannum::Contracts
     # return true and the errors object. Otherwise, #match will return false and
     # the errors object.
     #
+    # If the contract defines sanity constraints, the sanity constraints will be
+    # matched first. If any of the sanity constraints fail (#matches? for the
+    # constraint returns false), then this method will immediately return
+    # false and the errors for the failed sanity constraint; and all subsequent
+    # constraints will be skipped.
+    #
     # @param actual [Object] The object to match.
     #
     # @return [<Array(Boolean, Stannum::Errors)>] the status (true or false) and
@@ -293,12 +362,19 @@ module Stannum::Contracts
         status = false
 
         definition.contract.send(:add_errors_for, definition, value, errors)
+
+        return [status, errors] if definition.sanity?
       end
 
       [status, errors]
     end
 
     # Checks that all of the added constraints match the object.
+    #
+    # If the contract defines sanity constraints, the sanity constraints will be
+    # matched first. If any of the sanity constraints fail (#does_not_match?
+    # for the constraint returns true), then this method will immediately return
+    # false and all subsequent constraints will be skipped.
     #
     # @param actual [Object] The object to match.
     #
@@ -328,6 +404,12 @@ module Stannum::Contracts
     # return true and the errors object. Otherwise, #match will return false and
     # the errors object.
     #
+    # If the contract defines sanity constraints, the sanity constraints will be
+    # matched first. If any of the sanity constraints fail (#does_not_match?
+    # for the constraint returns true), then this method will immediately return
+    # true and any errors already set; and all subsequent constraints will be
+    # skipped.
+    #
     # @param actual [Object] The object to match.
     #
     # @return [<Array(Boolean, Stannum::Errors)>] the status (true or false) and
@@ -337,12 +419,16 @@ module Stannum::Contracts
     # @see #each_pair
     # @see #match
     # @see #negated_errors_for
-    def negated_match(actual)
+    def negated_match(actual) # rubocop:disable Metrics/MethodLength
       status = true
       errors = Stannum::Errors.new
 
       each_pair(actual) do |definition, value|
-        next if definition.constraint.does_not_match?(value)
+        if definition.constraint.does_not_match?(value)
+          next unless definition.sanity?
+
+          return [true, errors]
+        end
 
         status = false
 
@@ -384,11 +470,23 @@ module Stannum::Contracts
 
     private
 
+    def each_unscoped_constraint
+      return enum_for(:each_unscoped_constraint) unless block_given?
+
+      @included.each do |contract|
+        contract.each_constraint { |definition| yield definition }
+      end
+
+      @constraints.each { |definition| yield definition }
+    end
+
     def update_errors_for(actual:, errors:)
       each_pair(actual) do |definition, value|
         next if definition.constraint.matches?(value)
 
         definition.contract.add_errors_for(definition, value, errors)
+
+        return errors if definition.sanity?
       end
 
       errors
@@ -396,7 +494,11 @@ module Stannum::Contracts
 
     def update_negated_errors_for(actual:, errors:)
       each_pair(actual) do |definition, value|
-        next if definition.constraint.does_not_match?(value)
+        if definition.constraint.does_not_match?(value)
+          next unless definition.sanity?
+
+          return errors
+        end
 
         definition.contract.add_negated_errors_for(definition, value, errors)
       end

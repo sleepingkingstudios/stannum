@@ -10,7 +10,7 @@ module Spec
     def initialize
       super
 
-      add_constraint Stannum::Constraints::Type.new(String)
+      add_constraint Stannum::Constraints::Type.new(String), sanity: true
 
       add_constraint Spec::LengthConstraint.new(36)
 

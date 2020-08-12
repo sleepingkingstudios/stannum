@@ -5,11 +5,12 @@ require 'stannum/contracts/definition'
 RSpec.describe Stannum::Contracts::Definition do
   subject(:definition) { described_class.new(attributes) }
 
+  let(:options) { { key: 'value' } }
   let(:attributes) do
     {
       constraint: Stannum::Constraints::Base.new,
       contract:   Stannum::Contracts::Base.new,
-      options:    { key: 'value' }
+      options:    options
     }
   end
 
@@ -67,5 +68,39 @@ RSpec.describe Stannum::Contracts::Definition do
     include_examples 'should have property',
       :options,
       -> { attributes[:options] }
+  end
+
+  describe '#property' do
+    include_examples 'should have reader', :property, nil
+
+    context 'when property is a Array' do
+      let(:property) { %i[factory gadget name] }
+      let(:options)  { super().merge(property: property) }
+
+      it { expect(definition.property).to be property }
+    end
+
+    context 'when property is a Symbol' do
+      let(:property) { :name }
+      let(:options)  { super().merge(property: property) }
+
+      it { expect(definition.property).to be property }
+    end
+  end
+
+  describe '#sanity?' do
+    include_examples 'should define predicate', :sanity?, false
+
+    context 'when options: sanity is false' do
+      let(:options) { super().merge(sanity: false) }
+
+      it { expect(definition.sanity?).to be false }
+    end
+
+    context 'when options: sanity is true' do
+      let(:options) { super().merge(sanity: true) }
+
+      it { expect(definition.sanity?).to be true }
+    end
   end
 end

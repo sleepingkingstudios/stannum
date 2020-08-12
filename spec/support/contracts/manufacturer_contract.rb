@@ -15,7 +15,8 @@ module Spec
         Stannum::Constraint.new(
           negated_type: NEGATED_TYPE,
           type:         TYPE
-        ) { |actual| actual.is_a?(Spec::Manufacturer) }
+        ) { |actual| actual.is_a?(Spec::Manufacturer) },
+        sanity: true
       )
 
       add_constraint(

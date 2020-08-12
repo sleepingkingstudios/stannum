@@ -44,7 +44,17 @@ RSpec.describe Spec::UuidContract do
             message: nil,
             path:    [],
             type:    Stannum::Constraints::Type::TYPE
-          },
+          }
+        ]
+      end
+
+      it { expect(errors).to be == expected_errors }
+    end
+
+    describe 'with an object that matches the sanity constraints' do
+      let(:actual) { '' }
+      let(:expected_errors) do
+        [
           {
             data:    {},
             message: nil,
@@ -99,7 +109,19 @@ RSpec.describe Spec::UuidContract do
             message: nil,
             path:    [],
             type:    Stannum::Constraints::Type::TYPE
-          },
+          }
+        ]
+      end
+
+      it { expect(errors).to be == expected_errors }
+
+      it { expect(status).to be false }
+    end
+
+    describe 'with an object that matches the sanity constraints' do
+      let(:actual) { '' }
+      let(:expected_errors) do
+        [
           {
             data:    {},
             message: nil,

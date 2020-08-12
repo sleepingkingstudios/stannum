@@ -12,26 +12,41 @@ module Spec::Support::Examples
       be_a(Stannum::Contracts::Definition).and(have_attributes(properties))
     end
 
+    def equal_errors(expected)
+      (be == expected).and(have_attributes(size: expected.size))
+    end
+
     shared_context 'when #each_pair is stubbed' do
-      let(:actual)      { nil }
-      let(:constraints) { [] }
+      let(:actual)             { nil }
+      let(:sanity_constraints) { [] }
+      let(:constraints)        { [] }
       let(:definitions) do
-        constraints.map.with_index do |constraint, index|
-          Stannum::Contracts::Definition.new(
-            constraint: constraint,
-            contract:   Stannum::Contracts::Base.new,
-            options:    { index: index }
-          )
-        end
+        sanity_constraints.map.with_index do |constraint, index|
+          build_definition(constraint, index, sanity: true)
+        end +
+          constraints.map.with_index do |constraint, index|
+            build_definition(constraint, index)
+          end
+      end
+      let(:sanity_values) do
+        Array.new(sanity_constraints.size) { |index| "sanity #{index}" }
       end
       let(:values) do
         Array.new(constraints.size) { |index| "value #{index}" }
       end
 
+      def build_definition(constraint, index, **options)
+        Stannum::Contracts::Definition.new(
+          constraint: constraint,
+          contract:   Stannum::Contracts::Base.new,
+          options:    { index: index, **options }
+        )
+      end
+
       before(:example) do
         receive_each_pair = receive(:each_pair)
 
-        definitions.zip(values).each do |definition, value|
+        definitions.zip(sanity_values + values).each do |definition, value|
           receive_each_pair.and_yield(definition, value)
         end
 
@@ -71,6 +86,26 @@ module Spec::Support::Examples
 
     shared_context 'when #each_pair yields many matching constraints' do
       let(:constraints) do
+        [
+          Stannum::Constraints::Anything.new,
+          Stannum::Constraints::Anything.new,
+          Stannum::Constraints::Anything.new
+        ]
+      end
+    end
+
+    shared_context 'when #each_pair yields non-matching sanity constraints' do
+      let(:sanity_constraints) do
+        [
+          Stannum::Constraints::Nothing.new,
+          Stannum::Constraints::Nothing.new,
+          Stannum::Constraints::Nothing.new
+        ]
+      end
+    end
+
+    shared_context 'when #each_pair yields matching sanity constraints' do
+      let(:sanity_constraints) do
         [
           Stannum::Constraints::Anything.new,
           Stannum::Constraints::Anything.new,
@@ -136,6 +171,199 @@ module Spec::Support::Examples
               expect(constraint)
                 .to have_received(matches_method)
                 .with(values[index])
+            end
+          end
+        end
+
+        context 'when the contract has sanity constraints' do
+          # @note Sanity constraints are asymmetric - a non-matching sanity
+          #   check will short-circuit a contract whether or not the check is
+          #   negated.
+
+          let(:sanity_constraints) do
+            Array.new(3) do
+              instance_double(
+                Stannum::Constraints::Base,
+                matches_method => true
+              )
+            end
+          end
+          let(:constraints) do
+            Array.new(3) do
+              instance_double(
+                Stannum::Constraints::Base,
+                matches_method => true
+              )
+            end
+          end
+
+          context 'when the sanity constraints do not match the object' do
+            before(:example) do
+              sanity_constraints.each do |constraint|
+                allow(constraint)
+                  .to receive(matches_method)
+                  .and_return(negated) # @see note
+              end
+            end
+
+            it 'should match the first sanity constraint' do
+              contract.send(match_method, actual)
+
+              expect(sanity_constraints.first)
+                .to have_received(matches_method)
+                .with(sanity_values.first)
+            end
+
+            it 'should not match the remaining sanity constraints',
+              :aggregate_failures \
+            do
+              contract.send(match_method, actual)
+
+              sanity_constraints[1..-1].each do |constraint|
+                expect(constraint).not_to have_received(matches_method)
+              end
+            end
+
+            it 'should not match the constraints', :aggregate_failures do
+              contract.send(match_method, actual)
+
+              constraints.each do |constraint|
+                expect(constraint).not_to have_received(matches_method)
+              end
+            end
+          end
+
+          context 'when some of the sanity constraints match the object' do
+            before(:example) do
+              allow(sanity_constraints.first)
+                .to receive(matches_method)
+                .and_return(!negated) # @see note
+
+              sanity_constraints[1..-1].each do |constraint|
+                allow(constraint)
+                  .to receive(matches_method)
+                  .and_return(negated) # @see note
+              end
+            end
+
+            # rubocop:disable RSpec/RepeatedDescription
+            if negated
+              it 'should match the first passing sanity constraint',
+                :aggregate_failures \
+              do
+                contract.send(match_method, actual)
+
+                expect(sanity_constraints.first)
+                  .to have_received(matches_method)
+                  .with(sanity_values.first)
+              end
+
+              it 'should not match the remaining sanity constraints',
+                :aggregate_failures \
+              do
+                contract.send(match_method, actual)
+
+                sanity_constraints[1..-1].each do |constraint|
+                  expect(constraint).not_to have_received(matches_method)
+                end
+              end
+            else
+              it 'should match sanity constraints until a failure',
+                :aggregate_failures \
+              do
+                contract.send(match_method, actual)
+
+                sanity_constraints[0..1].each.with_index do |constraint, index|
+                  expect(constraint)
+                    .to have_received(matches_method)
+                    .with(sanity_values[index])
+                end
+              end
+
+              it 'should not match the remaining sanity constraints',
+                :aggregate_failures \
+              do
+                contract.send(match_method, actual)
+
+                sanity_constraints[2..-1].each do |constraint|
+                  expect(constraint).not_to have_received(matches_method)
+                end
+              end
+            end
+            # rubocop:enable RSpec/RepeatedDescription
+
+            it 'should not match the constraints', :aggregate_failures do
+              contract.send(match_method, actual)
+
+              constraints.each do |constraint|
+                expect(constraint).not_to have_received(matches_method)
+              end
+            end
+          end
+
+          context 'when the sanity constraints match the object' do
+            before(:example) do
+              sanity_constraints.each do |constraint|
+                allow(constraint)
+                  .to receive(matches_method)
+                  .and_return(!negated) # @see note
+              end
+
+              constraints.each do |constraint|
+                allow(constraint)
+                  .to receive(matches_method)
+                  .and_return(true)
+              end
+            end
+
+            if negated
+              it 'should match the first passing sanity constraint',
+                :aggregate_failures \
+              do
+                contract.send(match_method, actual)
+
+                expect(sanity_constraints.first)
+                  .to have_received(matches_method)
+                  .with(sanity_values.first)
+              end
+
+              it 'should not match the remaining sanity constraints',
+                :aggregate_failures \
+              do
+                contract.send(match_method, actual)
+
+                sanity_constraints[1..-1].each do |constraint|
+                  expect(constraint).not_to have_received(matches_method)
+                end
+              end
+
+              it 'should not match the constraints', :aggregate_failures do
+                contract.send(match_method, actual)
+
+                constraints.each do |constraint|
+                  expect(constraint).not_to have_received(matches_method)
+                end
+              end
+            else
+              it 'should match the sanity constraints', :aggregate_failures do
+                contract.send(match_method, actual)
+
+                sanity_constraints.each.with_index do |constraint, index|
+                  expect(constraint)
+                    .to have_received(matches_method)
+                    .with(sanity_values[index])
+                end
+              end
+
+              it 'should match the constraints', :aggregate_failures do
+                contract.send(match_method, actual)
+
+                constraints.each.with_index do |constraint, index|
+                  expect(constraint)
+                    .to have_received(matches_method)
+                    .with(values[index])
+                end
+              end
             end
           end
         end
@@ -257,7 +485,7 @@ module Spec::Support::Examples
 
           include_context 'should map the errors'
 
-          it 'should match the constraint', :aggregate_failures do
+          it 'should match the constraints', :aggregate_failures do
             contract.send(match_method, actual)
 
             constraints.each.with_index do |constraint, index|
@@ -331,12 +559,290 @@ module Spec::Support::Examples
             end
           end
         end
+
+        context 'when the contract has sanity constraints' do
+          # @note Sanity constraints are asymmetric - a non-matching sanity
+          #   check will short-circuit a contract whether or not the check is
+          #   negated.
+
+          let(:sanity_constraints) do
+            Array.new(3) do
+              instance_double(
+                Stannum::Constraints::Base,
+                matches_method       => true,
+                update_errors_method => nil
+              )
+            end
+          end
+          let(:constraints) do
+            Array.new(3) do
+              instance_double(
+                Stannum::Constraints::Base,
+                matches_method       => true,
+                update_errors_method => nil
+              )
+            end
+          end
+
+          context 'when the sanity constraints do not match the object' do
+            before(:example) do
+              sanity_constraints.each do |constraint|
+                allow(constraint)
+                  .to receive(matches_method)
+                  .and_return(negated) # @see note
+              end
+            end
+
+            it 'should match the first sanity constraint' do
+              contract.send(match_method, actual)
+
+              expect(sanity_constraints.first)
+                .to have_received(matches_method)
+                .with(sanity_values.first)
+            end
+
+            it 'should not match the remaining sanity constraints',
+              :aggregate_failures \
+            do
+              contract.send(match_method, actual)
+
+              sanity_constraints[1..-1].each do |constraint|
+                expect(constraint).not_to have_received(matches_method)
+              end
+            end
+
+            it 'should not match the constraints', :aggregate_failures do
+              contract.send(match_method, actual)
+
+              constraints.each do |constraint|
+                expect(constraint).not_to have_received(matches_method)
+              end
+            end
+
+            if negated
+              it 'should not update the first sanity constraint errors' do
+                contract.send(match_method, actual)
+
+                expect(sanity_constraints.first)
+                  .not_to have_received(update_errors_method)
+              end
+            else
+              it 'should update the first sanity constraint errors' do
+                contract.send(match_method, actual)
+
+                expect(sanity_constraints.first)
+                  .to have_received(update_errors_method)
+                  .with(
+                    actual: sanity_values[0],
+                    errors: an_instance_of(Stannum::Errors)
+                  )
+              end
+            end
+
+            it 'should not update the remaining sanity constraint errors',
+              :aggregate_failures \
+            do
+              contract.send(match_method, actual)
+
+              sanity_constraints[1..-1].each do |constraint|
+                expect(constraint).not_to have_received(update_errors_method)
+              end
+            end
+
+            it 'should not update the constraint errors', :aggregate_failures do
+              contract.send(match_method, actual)
+
+              constraints.each do |constraint|
+                expect(constraint).not_to have_received(update_errors_method)
+              end
+            end
+          end
+
+          context 'when some of the sanity constraints match the object' do
+            before(:example) do
+              allow(sanity_constraints.first)
+                .to receive(matches_method)
+                .and_return(!negated) # @see note
+
+              sanity_constraints[1..-1].each do |constraint|
+                allow(constraint)
+                  .to receive(matches_method)
+                  .and_return(negated) # @see note
+              end
+            end
+
+            it 'should match sanity constraints until a failure',
+              :aggregate_failures \
+            do
+              contract.send(match_method, actual)
+
+              sanity_constraints[0..1].each.with_index do |constraint, index|
+                expect(constraint)
+                  .to have_received(matches_method)
+                  .with(sanity_values[index])
+              end
+            end
+
+            it 'should not match the remaining sanity constraints',
+              :aggregate_failures \
+            do
+              contract.send(match_method, actual)
+
+              sanity_constraints[2..-1].each do |constraint|
+                expect(constraint).not_to have_received(matches_method)
+              end
+            end
+
+            it 'should not match the constraints', :aggregate_failures do
+              contract.send(match_method, actual)
+
+              constraints.each do |constraint|
+                expect(constraint).not_to have_received(matches_method)
+              end
+            end
+
+            # rubocop:disable RSpec/RepeatedDescription
+            if negated
+              it 'should update the first sanity constraint errors' do
+                contract.send(match_method, actual)
+
+                expect(sanity_constraints[0])
+                  .to have_received(update_errors_method)
+                  .with(
+                    actual: sanity_values[0],
+                    errors: an_instance_of(Stannum::Errors)
+                  )
+              end
+
+              it 'should not update the remaining sanity constraint errors',
+                :aggregate_failures \
+              do
+                contract.send(match_method, actual)
+
+                sanity_constraints[1..-1].each do |constraint|
+                  expect(constraint).not_to have_received(update_errors_method)
+                end
+              end
+            else
+              it 'should not update the first sanity constraint errors' do
+                contract.send(match_method, actual)
+
+                expect(sanity_constraints.first)
+                  .not_to have_received(update_errors_method)
+              end
+
+              it 'should update the first failing sanity constraint errors' do
+                contract.send(match_method, actual)
+
+                expect(sanity_constraints[1])
+                  .to have_received(update_errors_method)
+                  .with(
+                    actual: sanity_values[1],
+                    errors: an_instance_of(Stannum::Errors)
+                  )
+              end
+
+              it 'should not update the remaining sanity constraint errors',
+                :aggregate_failures \
+              do
+                contract.send(match_method, actual)
+
+                sanity_constraints[2..-1].each do |constraint|
+                  expect(constraint).not_to have_received(update_errors_method)
+                end
+              end
+            end
+            # rubocop:enable RSpec/RepeatedDescription
+
+            it 'should not update the constraint errors', :aggregate_failures do
+              contract.send(match_method, actual)
+
+              constraints.each do |constraint|
+                expect(constraint).not_to have_received(update_errors_method)
+              end
+            end
+          end
+
+          context 'when the sanity constraints match the object' do
+            before(:example) do
+              sanity_constraints.each do |constraint|
+                allow(constraint)
+                  .to receive(matches_method)
+                  .and_return(!negated) # @see note
+              end
+
+              constraints.each do |constraint|
+                allow(constraint)
+                  .to receive(matches_method)
+                  .and_return(true)
+              end
+            end
+
+            it 'should match the sanity constraints', :aggregate_failures do
+              contract.send(match_method, actual)
+
+              sanity_constraints.each.with_index do |constraint, index|
+                expect(constraint)
+                  .to have_received(matches_method)
+                  .with(sanity_values[index])
+              end
+            end
+
+            it 'should match the constraints', :aggregate_failures do
+              contract.send(match_method, actual)
+
+              constraints.each.with_index do |constraint, index|
+                expect(constraint)
+                  .to have_received(matches_method)
+                  .with(values[index])
+              end
+            end
+
+            if negated
+              # rubocop:disable RSpec/ExampleLength
+              it 'should update the sanity constraint errors',
+                :aggregate_failures \
+              do
+                contract.send(match_method, actual)
+
+                sanity_constraints.each.with_index do |constraint, index|
+                  expect(constraint)
+                    .to have_received(update_errors_method)
+                    .with(
+                      actual: sanity_values[index],
+                      errors: an_instance_of(Stannum::Errors)
+                    )
+                end
+              end
+              # rubocop:enable RSpec/ExampleLength
+            else
+              it 'should not update the sanity constraint errors',
+                :aggregate_failures \
+              do
+                contract.send(match_method, actual)
+
+                sanity_constraints.each do |constraint|
+                  expect(constraint).not_to have_received(update_errors_method)
+                end
+              end
+            end
+
+            it 'should not update the errors', :aggregate_failures do
+              contract.send(match_method, actual)
+
+              constraints.each do |constraint|
+                expect(constraint).not_to have_received(update_errors_method)
+              end
+            end
+          end
+        end
       end
 
       describe '#does_not_match?' do
         include_context 'when #each_pair is stubbed'
 
         let(:match_method) { :does_not_match? }
+        let(:status)       { contract.does_not_match?(actual) }
 
         include_examples 'should match each constraint', negated: true
 
@@ -347,29 +853,45 @@ module Spec::Support::Examples
         end
 
         context 'when the contract has no constraints' do
-          it { expect(contract.does_not_match? actual).to be true }
+          it { expect(status).to be true }
         end
 
         wrap_context 'when #each_pair yields a non-matching constraint' do
-          it { expect(contract.does_not_match? actual).to be true }
+          it { expect(status).to be true }
         end
 
         wrap_context 'when #each_pair yields a matching constraint' do
-          it { expect(contract.does_not_match? actual).to be false }
+          it { expect(status).to be false }
         end
 
         wrap_context 'when #each_pair yields many non-matching constraints' do
-          it { expect(contract.does_not_match? actual).to be true }
+          it { expect(status).to be true }
         end
 
         wrap_context 'when #each_pair yields many non-matching and matching' \
                      ' constraints' \
         do
-          it { expect(contract.does_not_match? actual).to be false }
+          it { expect(status).to be false }
         end
 
         wrap_context 'when #each_pair yields many matching constraints' do
-          it { expect(contract.does_not_match? actual).to be false }
+          it { expect(status).to be false }
+        end
+
+        wrap_context 'when #each_pair yields non-matching sanity constraints' do
+          include_context 'when #each_pair yields many non-matching constraints'
+
+          it { expect(status).to be true }
+        end
+
+        wrap_context 'when #each_pair yields matching sanity constraints' do
+          wrap_context 'when #each_pair yields many non-matching constraints' do
+            it { expect(status).to be false }
+          end
+
+          wrap_context 'when #each_pair yields many matching constraints' do
+            it { expect(status).to be false }
+          end
         end
       end
 
@@ -387,6 +909,7 @@ module Spec::Support::Examples
             end
         end
         let(:match_method) { :errors_for }
+        let(:errors)       { contract.errors_for(actual) }
 
         include_examples 'should match and update errors for each constraint'
 
@@ -399,7 +922,7 @@ module Spec::Support::Examples
         end
 
         context 'when the contract has no constraints' do
-          it { expect(contract.errors_for(actual)).to be == [] }
+          it { expect(errors).to be == [] }
         end
 
         wrap_context 'when #each_pair yields a non-matching constraint' do
@@ -408,12 +931,12 @@ module Spec::Support::Examples
           end
 
           it 'should return the expected errors' do
-            expect(contract.errors_for(actual).to_a).to be == wrapped_errors
+            expect(errors).to equal_errors(wrapped_errors)
           end
         end
 
         wrap_context 'when #each_pair yields a matching constraint' do
-          it { expect(contract.errors_for actual).to be == [] }
+          it { expect(errors).to be == [] }
         end
 
         wrap_context 'when #each_pair yields many non-matching constraints' do
@@ -426,7 +949,7 @@ module Spec::Support::Examples
           end
 
           it 'should return the expected errors' do
-            expect(contract.errors_for(actual).to_a).to be == wrapped_errors
+            expect(errors).to equal_errors(wrapped_errors)
           end
         end
 
@@ -438,12 +961,30 @@ module Spec::Support::Examples
           end
 
           it 'should return the expected errors' do
-            expect(contract.errors_for(actual).to_a).to be == wrapped_errors
+            expect(errors).to equal_errors(wrapped_errors)
           end
         end
 
         wrap_context 'when #each_pair yields many matching constraints' do
-          it { expect(contract.errors_for(actual).to_a).to be == [] }
+          it { expect(errors).to be == [] }
+        end
+
+        wrap_context 'when #each_pair yields non-matching sanity constraints' do
+          include_context 'when #each_pair yields many matching constraints'
+
+          let(:expected_errors) do
+            [{ type: Stannum::Constraints::Nothing::TYPE }]
+          end
+
+          it 'should return the expected errors' do
+            expect(errors).to equal_errors(wrapped_errors)
+          end
+        end
+
+        wrap_context 'when #each_pair yields matching sanity constraints' do
+          include_context 'when #each_pair yields many matching constraints'
+
+          it { expect(errors).to be == [] }
         end
       end
 
@@ -479,7 +1020,7 @@ module Spec::Support::Examples
 
           it { expect(status).to be false }
 
-          it { expect(errors).to be == wrapped_errors }
+          it { expect(errors).to equal_errors(wrapped_errors) }
         end
 
         wrap_context 'when #each_pair yields a matching constraint' do
@@ -499,7 +1040,7 @@ module Spec::Support::Examples
 
           it { expect(status).to be false }
 
-          it { expect(errors).to be == wrapped_errors }
+          it { expect(errors).to equal_errors(wrapped_errors) }
         end
 
         wrap_context 'when #each_pair yields many non-matching and matching' \
@@ -511,10 +1052,30 @@ module Spec::Support::Examples
 
           it { expect(status).to be false }
 
-          it { expect(errors).to be == wrapped_errors }
+          it { expect(errors).to equal_errors(wrapped_errors) }
         end
 
         wrap_context 'when #each_pair yields many matching constraints' do
+          it { expect(status).to be true }
+
+          it { expect(errors).to be == [] }
+        end
+
+        wrap_context 'when #each_pair yields non-matching sanity constraints' do
+          include_context 'when #each_pair yields many matching constraints'
+
+          let(:expected_errors) do
+            [{ type: Stannum::Constraints::Nothing::TYPE }]
+          end
+
+          it { expect(status).to be false }
+
+          it { expect(errors).to equal_errors(wrapped_errors) }
+        end
+
+        wrap_context 'when #each_pair yields matching sanity constraints' do
+          include_context 'when #each_pair yields many matching constraints'
+
           it { expect(status).to be true }
 
           it { expect(errors).to be == [] }
@@ -525,6 +1086,7 @@ module Spec::Support::Examples
         include_context 'when #each_pair is stubbed'
 
         let(:match_method) { :matches? }
+        let(:status)       { contract.matches?(actual) }
 
         include_examples 'should match each constraint'
 
@@ -535,29 +1097,41 @@ module Spec::Support::Examples
         end
 
         context 'when the contract has no constraints' do
-          it { expect(contract.matches? actual).to be true }
+          it { expect(status).to be true }
         end
 
         wrap_context 'when #each_pair yields a non-matching constraint' do
-          it { expect(contract.matches? actual).to be false }
+          it { expect(status).to be false }
         end
 
         wrap_context 'when #each_pair yields a matching constraint' do
-          it { expect(contract.matches? actual).to be true }
+          it { expect(status).to be true }
         end
 
         wrap_context 'when #each_pair yields many non-matching constraints' do
-          it { expect(contract.matches? actual).to be false }
+          it { expect(status).to be false }
         end
 
         wrap_context 'when #each_pair yields many non-matching and matching' \
                      ' constraints' \
         do
-          it { expect(contract.matches? actual).to be false }
+          it { expect(status).to be false }
         end
 
         wrap_context 'when #each_pair yields many matching constraints' do
-          it { expect(contract.matches? actual).to be true }
+          it { expect(status).to be true }
+        end
+
+        wrap_context 'when #each_pair yields non-matching sanity constraints' do
+          include_context 'when #each_pair yields many matching constraints'
+
+          it { expect(status).to be false }
+        end
+
+        wrap_context 'when #each_pair yields matching sanity constraints' do
+          include_context 'when #each_pair yields many matching constraints'
+
+          it { expect(status).to be true }
         end
       end
 
@@ -575,6 +1149,7 @@ module Spec::Support::Examples
             end
         end
         let(:match_method) { :negated_errors_for }
+        let(:errors)       { contract.negated_errors_for(actual) }
 
         include_examples 'should match and update errors for each constraint',
           negated: true
@@ -590,7 +1165,7 @@ module Spec::Support::Examples
         end
 
         wrap_context 'when #each_pair yields a non-matching constraint' do
-          it { expect(contract.negated_errors_for actual).to be == [] }
+          it { expect(errors).to be == [] }
         end
 
         wrap_context 'when #each_pair yields a matching constraint' do
@@ -599,13 +1174,12 @@ module Spec::Support::Examples
           end
 
           it 'should return the expected errors' do
-            expect(contract.negated_errors_for(actual).to_a)
-              .to be == wrapped_errors
+            expect(errors).to equal_errors(wrapped_errors)
           end
         end
 
         wrap_context 'when #each_pair yields many non-matching constraints' do
-          it { expect(contract.negated_errors_for actual).to be == [] }
+          it { expect(errors).to be == [] }
         end
 
         wrap_context 'when #each_pair yields many non-matching and matching' \
@@ -619,8 +1193,7 @@ module Spec::Support::Examples
           end
 
           it 'should return the expected errors' do
-            expect(contract.negated_errors_for(actual).to_a)
-              .to be == wrapped_errors
+            expect(errors).to equal_errors(wrapped_errors)
           end
         end
 
@@ -634,8 +1207,42 @@ module Spec::Support::Examples
           end
 
           it 'should return the expected errors' do
-            expect(contract.negated_errors_for(actual).to_a)
-              .to be == wrapped_errors
+            expect(errors).to equal_errors(wrapped_errors)
+          end
+        end
+
+        wrap_context 'when #each_pair yields non-matching sanity constraints' do
+          include_context 'when #each_pair yields many non-matching constraints'
+
+          it { expect(errors).to be == [] }
+        end
+
+        wrap_context 'when #each_pair yields matching sanity constraints' do
+          wrap_context 'when #each_pair yields many non-matching constraints' do
+            let(:expected_errors) do
+              [
+                { type: Stannum::Constraints::Anything::NEGATED_TYPE },
+                { type: Stannum::Constraints::Anything::NEGATED_TYPE },
+                { type: Stannum::Constraints::Anything::NEGATED_TYPE }
+              ]
+            end
+
+            it { expect(errors).to equal_errors(wrapped_errors) }
+          end
+
+          wrap_context 'when #each_pair yields many matching constraints' do
+            let(:expected_errors) do
+              [
+                { type: Stannum::Constraints::Anything::NEGATED_TYPE },
+                { type: Stannum::Constraints::Anything::NEGATED_TYPE },
+                { type: Stannum::Constraints::Anything::NEGATED_TYPE },
+                { type: Stannum::Constraints::Anything::NEGATED_TYPE },
+                { type: Stannum::Constraints::Anything::NEGATED_TYPE },
+                { type: Stannum::Constraints::Anything::NEGATED_TYPE }
+              ]
+            end
+
+            it { expect(errors).to equal_errors(wrapped_errors) }
           end
         end
       end
@@ -673,7 +1280,7 @@ module Spec::Support::Examples
 
           it { expect(status).to be false }
 
-          it { expect(errors).to be == wrapped_errors }
+          it { expect(errors).to equal_errors(wrapped_errors) }
         end
 
         wrap_context 'when #each_pair yields many non-matching constraints' do
@@ -694,7 +1301,7 @@ module Spec::Support::Examples
 
           it { expect(status).to be false }
 
-          it { expect(errors).to be == wrapped_errors }
+          it { expect(errors).to equal_errors(wrapped_errors) }
         end
 
         wrap_context 'when #each_pair yields many matching constraints' do
@@ -708,7 +1315,48 @@ module Spec::Support::Examples
 
           it { expect(status).to be false }
 
-          it { expect(errors).to be == wrapped_errors }
+          it { expect(errors).to equal_errors(wrapped_errors) }
+        end
+
+        wrap_context 'when #each_pair yields non-matching sanity constraints' do
+          include_context 'when #each_pair yields many non-matching constraints'
+
+          it { expect(status).to be true }
+
+          it { expect(errors).to be == [] }
+        end
+
+        wrap_context 'when #each_pair yields matching sanity constraints' do
+          wrap_context 'when #each_pair yields many non-matching constraints' do
+            let(:expected_errors) do
+              [
+                { type: Stannum::Constraints::Anything::NEGATED_TYPE },
+                { type: Stannum::Constraints::Anything::NEGATED_TYPE },
+                { type: Stannum::Constraints::Anything::NEGATED_TYPE }
+              ]
+            end
+
+            it { expect(status).to be false }
+
+            it { expect(errors).to equal_errors(wrapped_errors) }
+          end
+
+          wrap_context 'when #each_pair yields many matching constraints' do
+            let(:expected_errors) do
+              [
+                { type: Stannum::Constraints::Anything::NEGATED_TYPE },
+                { type: Stannum::Constraints::Anything::NEGATED_TYPE },
+                { type: Stannum::Constraints::Anything::NEGATED_TYPE },
+                { type: Stannum::Constraints::Anything::NEGATED_TYPE },
+                { type: Stannum::Constraints::Anything::NEGATED_TYPE },
+                { type: Stannum::Constraints::Anything::NEGATED_TYPE }
+              ]
+            end
+
+            it { expect(status).to be false }
+
+            it { expect(errors).to equal_errors(wrapped_errors) }
+          end
         end
       end
     end

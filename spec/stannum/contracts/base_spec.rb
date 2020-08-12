@@ -22,7 +22,7 @@ RSpec.describe Stannum::Contracts::Base do
         Stannum::Contracts::Definition.new(
           constraint: definition[:constraint],
           contract:   contract,
-          options:    definition.fetch(:options, {})
+          options:    { sanity: false }.merge(definition.fetch(:options, {}))
         )
       end
     end
@@ -58,7 +58,7 @@ RSpec.describe Stannum::Contracts::Base do
         Stannum::Contracts::Definition.new(
           constraint: definition[:constraint],
           contract:   contract,
-          options:    definition.fetch(:options, {})
+          options:    { sanity: false }.merge(definition.fetch(:options, {}))
         )
       end
     end
@@ -100,7 +100,7 @@ RSpec.describe Stannum::Contracts::Base do
         Stannum::Contracts::Definition.new(
           constraint: definition[:constraint],
           contract:   definition[:contract],
-          options:    definition.fetch(:options, {})
+          options:    { sanity: false }.merge(definition.fetch(:options, {}))
         )
       end
     end
@@ -116,6 +116,50 @@ RSpec.describe Stannum::Contracts::Base do
           **definition.fetch(:options, {})
         )
       end
+    end
+  end
+
+  shared_context 'when the contract has sanity constraints' do
+    include_context 'when the contract includes other contracts'
+
+    let(:constraints) do
+      [
+        {
+          constraint: Stannum::Constraints::Base.new,
+          contract:   grandparent_contract,
+          options:    { metadata: :grandparent }
+        },
+        {
+          constraint: Stannum::Constraints::Base.new,
+          contract:   parent_contract,
+          options:    { metadata: :parent }
+        },
+        {
+          constraint: Stannum::Constraints::Base.new,
+          contract:   contract,
+          options:    { metadata: :self }
+        },
+        {
+          constraint: Stannum::Constraints::Base.new,
+          contract:   grandparent_contract,
+          options:    { sanity: true, metadata: :grandparent }
+        },
+        {
+          constraint: Stannum::Constraints::Base.new,
+          contract:   parent_contract,
+          options:    { sanity: true, metadata: :parent }
+        },
+        {
+          constraint: Stannum::Constraints::Base.new,
+          contract:   contract,
+          options:    { sanity: true, metadata: :self }
+        }
+      ]
+    end
+    let(:grouped_definitions) do
+      grouped = definitions.group_by(&:sanity?)
+
+      grouped[true] + grouped[false]
     end
   end
 
@@ -178,13 +222,13 @@ RSpec.describe Stannum::Contracts::Base do
           .by(1)
       end
 
-      it 'should store the contract' do
+      it 'should store the contract and options' do
         contract.add_constraint(constraint)
 
         expect(definition).to be_a_constraint_definition(
           constraint: constraint,
           contract:   contract,
-          options:    {}
+          options:    { sanity: false }
         )
       end
     end
@@ -210,7 +254,7 @@ RSpec.describe Stannum::Contracts::Base do
         expect(definition).to be_a_constraint_definition(
           constraint: constraint,
           contract:   contract,
-          options:    options
+          options:    { sanity: false }.merge(options)
         )
       end
     end
@@ -228,13 +272,13 @@ RSpec.describe Stannum::Contracts::Base do
             .by(1)
         end
 
-        it 'should store the contract' do
+        it 'should store the contract and options' do
           contract.add_constraint(constraint)
 
           expect(definition).to be_a_constraint_definition(
             constraint: constraint,
             contract:   contract,
-            options:    {}
+            options:    { sanity: false }
           )
         end
       end
@@ -260,7 +304,7 @@ RSpec.describe Stannum::Contracts::Base do
           expect(definition).to be_a_constraint_definition(
             constraint: constraint,
             contract:   contract,
-            options:    options
+            options:    { sanity: false }.merge(options)
           )
         end
       end
@@ -312,6 +356,17 @@ RSpec.describe Stannum::Contracts::Base do
       end
     end
     # rubocop:enable RSpec/RepeatedExampleGroupBody
+
+    wrap_context 'when the contract has sanity constraints' do
+      let(:expected) { grouped_definitions }
+
+      it { expect(contract.each_constraint.count).to be constraints.size }
+
+      it 'should yield each definition' do
+        expect { |block| contract.each_constraint(&block) }
+          .to yield_successive_args(*expected)
+      end
+    end
   end
 
   describe '#each_pair' do
@@ -361,6 +416,19 @@ RSpec.describe Stannum::Contracts::Base do
       end
     end
     # rubocop:enable RSpec/RepeatedExampleGroupBody
+
+    wrap_context 'when the contract has sanity constraints' do
+      let(:expected) do
+        grouped_definitions.zip(Array.new(constraints.size, actual))
+      end
+
+      it { expect(contract.each_constraint.count).to be constraints.size }
+
+      it 'should yield each definition and the object' do
+        expect { |block| contract.each_pair(actual, &block) }
+          .to yield_successive_args(*expected)
+      end
+    end
   end
 
   describe '#include' do
@@ -407,7 +475,7 @@ RSpec.describe Stannum::Contracts::Base do
           Stannum::Contracts::Definition.new(
             constraint: constraint,
             contract:   other,
-            options:    {}
+            options:    { sanity: false }
           )
         end
 
@@ -428,7 +496,7 @@ RSpec.describe Stannum::Contracts::Base do
         Stannum::Contracts::Definition.new(
           constraint: constraint,
           contract:   other,
-          options:    {}
+          options:    { sanity: false }
         )
       end
 
@@ -449,7 +517,7 @@ RSpec.describe Stannum::Contracts::Base do
           Stannum::Contracts::Definition.new(
             constraint: constraint,
             contract:   other,
-            options:    {}
+            options:    { sanity: false }
           )
         end
 

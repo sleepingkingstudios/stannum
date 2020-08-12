@@ -3,7 +3,7 @@
 ## Development Notes
 
 - Always return a Stannum::Errors from match.
-- Refactor #errors_for to always check #matches?
+- Refactor #errors_for to always check #matches.
 
 ### Standardization
 
@@ -54,6 +54,68 @@
     each_constraint.all? { |hsh| contract.constraint_matches?(actual) }
   end
   ```
+
+### Sanity Constraints
+
+- Marked with sanity: true property.
+- Sanity checks are short-circuiting.
+- Example: type constraint on the object, prior to evaluating property
+  constraints
+
+#### #each_constraint
+
+- Returns all sanity checks, then all non-sanity checks.
+- Define helper #each_included_constraint ?
+- Iterate through twice, first yielding sanity?: true, then sanity?: false
+
+#### #match
+
+- Example: A struct with properties. If the actual is not an instance of the
+  struct (#matches returns false), immediately stop and return that error.
+- Also #matches?, #errors_for
+
+```ruby
+each_pair(actual) do |definition, value|
+  next if definition.constraint.matches?(value)
+
+  status = false
+
+  definition.contract.send(:add_errors_for, definition, value, errors)
+
+  return [status, errors] if definition.sanity?
+end
+```
+
+#### #negated_match
+
+- Example: A struct with properties. If the actual is not an instance of the
+  struct (#does_not_match returns true), immediately stop and do not add an
+  error.
+- Also #does_not_match?, #negated_errors_for
+
+```ruby
+each_pair(actual) do |definition, value|
+  if definition.constraint.does_not_match?(value)
+    next unless definition.sanity?
+
+    return [true, errors]
+  end
+
+  status = false
+
+  definition.contract.add_negated_errors_for(definition, value, errors)
+end
+```
+
+#### Property-specific Sanity Constraints
+
+NOT SUPPORTED DIRECTLY
+
+- Instead of adding multiple constraints for the property, add one contract for
+  the property which contains the individual constraints. If any of the
+  constraints are sanity constraints, the contract will short-circuit
+  accordingly. Probably.
+- Integration test this!
 
 ### Testing Constraints and Contracts
 

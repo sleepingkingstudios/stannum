@@ -80,33 +80,44 @@ module Stannum::Contracts
   #     { type: 'right_address', data: {}, path: [:manufacturer, :factory, :address], message: nil }
   #   ]
   class PropertyContract < Stannum::Contracts::Base
-    # @!method add_constraint(constraint, property: nil, **options)
-    #   Adds a property constraint to the contract.
+    # Adds a constraint to the contract.
     #
-    #   When the contract is called, the contract will find the value of that
-    #   property for the given object. If the property is an array, the contract
-    #   will recursively retrieve each property.
+    # When the contract is called, the contract will find the value of that
+    # property for the given object. If the property is an array, the contract
+    # will recursively retrieve each property.
     #
-    #   A property of nil will match against the given object itself, rather
-    #   than one of its properties.
+    # A property of nil will match against the given object itself, rather
+    # than one of its properties.
     #
-    #   If the value does not match the constraint, then the error from the
-    #   constraint will be added in an error namespace matching the constraint.
-    #   For example, a property of :name will add the error message to
-    #   errors.dig(:name), while a property
-    #   of [:manufacturer, :address, :street] will add the error message to
-    #   errors.dig(:manufacturer, :address, :street).
+    # If the value does not match the constraint, then the error from the
+    # constraint will be added in an error namespace matching the constraint.
+    # For example, a property of :name will add the error message to
+    # errors.dig(:name), while a property of [:manufacturer, :address, :street]
+    # will add the error message to
+    # errors.dig(:manufacturer, :address, :street).
     #
-    #   @param constraint [Stannum::Constraints::Base] The constraint to add.
+    # @param constraint [Stannum::Constraints::Base] The constraint to add.
+    # @param sanity [true, false] Marks the constraint as a sanity constraint,
+    #   which is always matched first and will always short-circuit on a failed
+    #   match.
+    # @param property [String, Symbol, Array<String, Symbol>, nil] The
+    #   property to match.
+    # @param options [Hash<Symbol, Object>] Options for the constraint. These
+    #   can be used by subclasses to define the value and error mappings for the
+    #   constraint.
     #
-    #   @param property [String, Symbol, Array<String, Symbol>, nil] The
-    #     property to match.
-    #
-    #   @param options [Hash<Symbol, Object>] Options for the constraint.
-    #
-    #   @return [self] the contract.
+    # @return [self] the contract.
+    def add_constraint(constraint, property: nil, sanity: false, **options)
+      validate_constraint(constraint)
 
-    # @!method yard_hack
+      @constraints << Stannum::Contracts::Definition.new(
+        constraint: constraint,
+        contract:   self,
+        options:    options.merge(property: property, sanity: sanity)
+      )
+
+      self
+    end
 
     protected
 
