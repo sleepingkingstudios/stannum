@@ -1,12 +1,13 @@
 # frozen_string_literal: true
 
-require 'stannum/contracts/property_contract'
+require 'stannum/contract'
 
 require 'support/examples/constraint_examples'
+require 'support/examples/contract_builder_examples'
 require 'support/examples/contract_examples'
 require 'support/structs/gadget'
 
-RSpec.describe Stannum::Contracts::PropertyContract do
+RSpec.describe Stannum::Contract do
   include Spec::Support::Examples::ConstraintExamples
   include Spec::Support::Examples::ContractExamples
 
@@ -84,9 +85,64 @@ RSpec.describe Stannum::Contracts::PropertyContract do
     end
   end
 
-  subject(:contract) { described_class.new(**constructor_options) }
+  subject(:contract) do
+    described_class.new(**constructor_options, &constructor_block)
+  end
 
+  let(:constructor_block)   { -> {} }
   let(:constructor_options) { {} }
+
+  describe '::Builder' do
+    include Spec::Support::Examples::ContractBuilderExamples
+
+    subject(:builder) { described_class.new(contract) }
+
+    let(:described_class) { super()::Builder }
+    let(:contract) do
+      Stannum::Contract.new # rubocop:disable RSpec/DescribedClass
+    end
+
+    describe '.new' do
+      it { expect(described_class).to be_constructible.with(1).argument }
+    end
+
+    describe '#contract' do
+      include_examples 'should define reader',
+        :contract,
+        -> { contract }
+    end
+
+    describe '#property' do
+      let(:property) { :foo }
+      let(:custom_options) do
+        { property: property }
+      end
+
+      def define_from_block(**options, &block)
+        builder.property(property, **options, &block)
+      end
+
+      def define_from_constraint(constraint, **options)
+        builder.property(property, constraint, **options)
+      end
+
+      it 'should define the method' do
+        expect(builder)
+          .to respond_to(:property)
+          .with(1..2).arguments
+          .and_any_keywords
+          .and_a_block
+      end
+
+      include_examples 'should delegate to #constraint'
+
+      describe 'with property: an Array' do
+        let(:property) { %i[foo bar baz] }
+
+        include_examples 'should delegate to #constraint'
+      end
+    end
+  end
 
   describe '.new' do
     it 'should define the constructor' do
@@ -94,6 +150,27 @@ RSpec.describe Stannum::Contracts::PropertyContract do
         .to be_constructible
         .with(0).arguments
         .and_any_keywords
+        .and_a_block
+    end
+
+    describe 'with a block' do
+      let(:builder) { instance_double(described_class::Builder, property: nil) }
+
+      before(:example) do
+        allow(described_class::Builder).to receive(:new).and_return(builder)
+      end
+
+      it 'should call the builder with the block', :aggregate_failures do
+        described_class.new do
+          property :foo, option: 'one'
+          property :bar, option: 'two'
+          property :baz, option: 'three'
+        end
+
+        expect(builder).to have_received(:property).with(:foo, option: 'one')
+        expect(builder).to have_received(:property).with(:bar, option: 'two')
+        expect(builder).to have_received(:property).with(:baz, option: 'three')
+      end
     end
   end
 

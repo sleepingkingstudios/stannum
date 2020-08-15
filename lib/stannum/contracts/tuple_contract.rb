@@ -95,7 +95,7 @@ module Stannum::Contracts
       #
       # @overload item(**options) { |value| }
       #   Creates a new Stannum::Constraint object with the given block, and
-      #   adds that constraint to the contract for the next inted.
+      #   adds that constraint to the contract for the next index.
       #
       #   @param options [Hash<Symbol, Object>] Options for the constraint.
       #   @yieldparam value [Object] The value of the property when called.
@@ -152,6 +152,16 @@ module Stannum::Contracts
       return super unless options[:property_type] == :index
 
       actual[options[:property]]
+    end
+
+    def valid_property?(property: nil, property_type: nil, **options)
+      return super unless property_type == :index
+
+      property.is_a?(Integer)
+    end
+
+    def validate_property?(**options)
+      options[:property_type] == :index || super
     end
   end
 end

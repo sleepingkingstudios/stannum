@@ -109,6 +109,7 @@ module Stannum::Contracts
     # @return [self] the contract.
     def add_constraint(constraint, property: nil, sanity: false, **options)
       validate_constraint(constraint)
+      validate_property(property: property, **options)
 
       @constraints << Stannum::Contracts::Definition.new(
         constraint: constraint,
@@ -145,6 +146,36 @@ module Stannum::Contracts
 
     def access_property(object, property)
       object.send(property) if object.respond_to?(property, true)
+    end
+
+    def valid_property?(property: nil, **_options)
+      if property.is_a?(Array)
+        return false if property.empty?
+
+        return property.all? { |item| valid_property_name?(item) }
+      end
+
+      valid_property_name?(property)
+    end
+
+    def valid_property_name?(name)
+      return false unless name.is_a?(String) || name.is_a?(Symbol)
+
+      !name.empty?
+    end
+
+    def validate_property(**options)
+      return unless validate_property?(**options)
+
+      return if valid_property?(**options)
+
+      raise ArgumentError,
+        "invalid property name #{options[:property].inspect}",
+        caller(1..-1)
+    end
+
+    def validate_property?(property: nil, **_options)
+      !property.nil?
     end
   end
 end

@@ -3,6 +3,7 @@
 require 'stannum/contracts/tuple_contract'
 
 require 'support/examples/constraint_examples'
+require 'support/examples/contract_builder_examples'
 require 'support/examples/contract_examples'
 
 RSpec.describe Stannum::Contracts::TupleContract do
@@ -89,6 +90,8 @@ RSpec.describe Stannum::Contracts::TupleContract do
   let(:constructor_options) { {} }
 
   describe '::Builder' do
+    include Spec::Support::Examples::ContractBuilderExamples
+
     subject(:builder) { described_class.new(contract) }
 
     let(:described_class) { super()::Builder }
@@ -107,8 +110,17 @@ RSpec.describe Stannum::Contracts::TupleContract do
     end
 
     describe '#item' do
-      before(:example) do
-        allow(builder).to receive(:constraint) # rubocop:disable RSpec/SubjectStub
+      let(:index) { 0 }
+      let(:custom_options) do
+        { property: index, property_type: :index }
+      end
+
+      def define_from_block(**options, &block)
+        builder.item(**options, &block)
+      end
+
+      def define_from_constraint(constraint, **options)
+        builder.item(constraint, **options)
       end
 
       it 'should define the method' do
@@ -119,118 +131,22 @@ RSpec.describe Stannum::Contracts::TupleContract do
           .and_a_block
       end
 
-      describe 'with a block' do
-        let(:implementation) { -> {} }
-
-        it 'should delegate to #constraint' do
-          builder.item(&implementation)
-
-          expect(builder) # rubocop:disable RSpec/SubjectStub
-            .to have_received(:constraint)
-            .with(nil, property: 0, property_type: :index)
-        end
-
-        it 'should pass the implementation' do
-          allow(builder).to receive(:constraint) do |*_args, &block| # rubocop:disable RSpec/SubjectStub
-            block.call
-          end
-
-          expect { |block| builder.item(&block) }.to yield_control
-        end
-      end
-
-      describe 'with a block and options' do
-        let(:implementation) { -> {} }
-        let(:options)        { { key: 'value' } }
-
-        it 'should delegate to #constraint' do
-          builder.item(**options, &implementation)
-
-          expect(builder) # rubocop:disable RSpec/SubjectStub
-            .to have_received(:constraint)
-            .with(nil, property: 0, property_type: :index, **options)
-        end
-      end
-
-      describe 'with a constraint' do
-        let(:constraint) { Stannum::Constraints::Base.new }
-
-        it 'should delegate to #constraint' do
-          builder.item(constraint)
-
-          expect(builder) # rubocop:disable RSpec/SubjectStub
-            .to have_received(:constraint)
-            .with(constraint, property: 0, property_type: :index)
-        end
-      end
-
-      describe 'with a constraint and options' do
-        let(:constraint) { Stannum::Constraints::Base.new }
-        let(:options)    { { key: 'value' } }
-
-        it 'should delegate to #constraint' do
-          builder.item(constraint, **options)
-
-          expect(builder) # rubocop:disable RSpec/SubjectStub
-            .to have_received(:constraint)
-            .with(constraint, property: 0, property_type: :index, **options)
-        end
-      end
+      include_examples 'should delegate to #constraint'
 
       context 'when the contract has one item constraint' do
+        let(:index) { 1 }
+
         before(:example) { builder.item }
 
-        describe 'with a block' do
-          let(:implementation) { -> {} }
-
-          it 'should delegate to #constraint' do
-            builder.item(&implementation)
-
-            expect(builder) # rubocop:disable RSpec/SubjectStub
-              .to have_received(:constraint)
-              .with(nil, property: 1, property_type: :index)
-          end
-        end
-
-        describe 'with a constraint' do
-          let(:constraint) { Stannum::Constraints::Base.new }
-
-          it 'should delegate to #constraint' do
-            builder.item(constraint)
-
-            expect(builder) # rubocop:disable RSpec/SubjectStub
-              .to have_received(:constraint)
-              .with(constraint, property: 1, property_type: :index)
-          end
-        end
+        include_examples 'should delegate to #constraint'
       end
 
       context 'when the contract has many item constraints' do
+        let(:index) { 3 }
+
         before(:example) { 3.times { builder.item } }
 
-        describe 'with a block' do
-          let(:implementation) { -> {} }
-
-          it 'should delegate to #constraint' do
-            builder.item(&implementation)
-
-            expect(builder) # rubocop:disable RSpec/SubjectStub
-              .to have_received(:constraint)
-              .with(nil, property: 3, property_type: :index)
-          end
-        end
-
-        describe 'with a constraint' do
-          let(:constraint) { Stannum::Constraints::Base.new }
-
-          it 'should delegate to #constraint' do
-            builder.item(constraint)
-
-            expect(builder) # rubocop:disable RSpec/SubjectStub
-              .to have_received(:constraint)
-              .with(constraint, property: 3, property_type: :index)
-          end
-        end
+        include_examples 'should delegate to #constraint'
       end
     end
   end
@@ -271,6 +187,25 @@ RSpec.describe Stannum::Contracts::TupleContract do
   include_examples 'should implement the Contract methods'
 
   describe '#add_constraint' do
+    describe 'with an invalid item index' do
+      let(:constraint) { Stannum::Constraint.new }
+      let(:property)   { 'foo' }
+      let(:error_message) do
+        "invalid property name #{property.inspect}"
+      end
+
+      it 'should raise an error' do
+        expect do
+          contract.add_constraint(
+            constraint,
+            property:      property,
+            property_type: :index
+          )
+        end
+          .to raise_error ArgumentError, error_message
+      end
+    end
+
     describe 'with an item constraint' do
       let(:constraint) { Stannum::Constraint.new }
       let(:definition) { contract.each_constraint.to_a.last }
@@ -689,6 +624,204 @@ RSpec.describe Stannum::Contracts::TupleContract do
 
     wrap_context 'when initialized with allow_extra_items: true' do
       it { expect(contract.options).to be == { allow_extra_items: true } }
+    end
+  end
+
+  describe '#valid_property?' do
+    it 'should define the private method' do
+      expect(contract)
+        .to respond_to(:valid_property?, true)
+        .with(0).arguments
+        .and_any_keywords
+    end
+
+    describe 'with no keywords' do
+      it { expect(contract.send :valid_property?).to be false }
+    end
+
+    describe 'with property: nil' do
+      it 'should return true' do
+        expect(contract.send :valid_property?, property: nil).to be false
+      end
+    end
+
+    describe 'with property: an Object' do
+      it 'should return true' do
+        expect(contract.send :valid_property?, property: Object.new.freeze)
+          .to be false
+      end
+    end
+
+    describe 'with property: an Integer' do
+      it 'should return true' do
+        expect(contract.send :valid_property?, property: 0)
+          .to be false
+      end
+    end
+
+    describe 'with property: an empty String' do
+      it 'should return true' do
+        expect(contract.send :valid_property?, property: '').to be false
+      end
+    end
+
+    describe 'with property: a String' do
+      it 'should return true' do
+        expect(contract.send :valid_property?, property: 'foo').to be true
+      end
+    end
+
+    describe 'with property: an empty Symbol' do
+      it 'should return true' do
+        expect(contract.send :valid_property?, property: :'').to be false
+      end
+    end
+
+    describe 'with property: a Symbol' do
+      it 'should return true' do
+        expect(contract.send :valid_property?, property: :foo).to be true
+      end
+    end
+
+    describe 'with property: an empty Array' do
+      it 'should return false' do
+        expect(contract.send :valid_property?, property: []).to be false
+      end
+    end
+
+    describe 'with property: an Array with an invalid object' do
+      it 'should return false' do
+        expect(contract.send :valid_property?, property: [nil]).to be false
+      end
+    end
+
+    describe 'with property: an Array with an invalid String' do
+      it 'should return false' do
+        expect(contract.send :valid_property?, property: ['']).to be false
+      end
+    end
+
+    describe 'with property: an Array with an valid Strings' do
+      it 'should return true' do
+        expect(contract.send :valid_property?, property: %w[foo bar baz])
+          .to be true
+      end
+    end
+
+    describe 'with property: an Array with an invalid Symbol' do
+      it 'should return false' do
+        expect(contract.send :valid_property?, property: [:'']).to be false
+      end
+    end
+
+    describe 'with property_type: :index and property: nil' do
+      it 'should return false' do
+        expect(
+          contract.send(
+            :valid_property?,
+            property:      nil,
+            property_type: :index
+          )
+        ).to be false
+      end
+    end
+
+    describe 'with property_type: :index and property: an Object' do
+      it 'should return false' do
+        expect(
+          contract.send(
+            :valid_property?,
+            property:      Object.new.freeze,
+            property_type: :index
+          )
+        ).to be false
+      end
+    end
+
+    describe 'with property_type: :index and property: an Array' do
+      it 'should return false' do
+        expect(
+          contract.send(
+            :valid_property?,
+            property:      %w[foo bar baz],
+            property_type: :index
+          )
+        ).to be false
+      end
+    end
+
+    describe 'with property_type: :index and property: an Integer' do
+      it 'should return false' do
+        expect(
+          contract.send(
+            :valid_property?,
+            property:      -1,
+            property_type: :index
+          )
+        ).to be true
+      end
+    end
+
+    describe 'with property_type: :index and property: a String' do
+      it 'should return false' do
+        expect(
+          contract.send(
+            :valid_property?,
+            property:      'foo',
+            property_type: :index
+          )
+        ).to be false
+      end
+    end
+
+    describe 'with property_type: :index and property: a Symbol' do
+      it 'should return false' do
+        expect(
+          contract.send(
+            :valid_property?,
+            property:      :foo,
+            property_type: :index
+          )
+        ).to be false
+      end
+    end
+  end
+
+  describe '#validate_property?' do
+    it 'should define the private method' do
+      expect(contract)
+        .to respond_to(:validate_property?, true)
+        .with(0).arguments
+        .and_any_keywords
+    end
+
+    describe 'with no keywords' do
+      it { expect(contract.send :validate_property?).to be false }
+    end
+
+    describe 'with property: nil' do
+      it 'should return true' do
+        expect(contract.send :validate_property?, property: nil).to be false
+      end
+    end
+
+    describe 'with property: an Object' do
+      it 'should return true' do
+        expect(contract.send :validate_property?, property: Object.new.freeze)
+          .to be true
+      end
+    end
+
+    describe 'with property: nil and property_type: :index' do
+      it 'should return true' do
+        expect(
+          contract.send(
+            :validate_property?,
+            property:      nil,
+            property_type: :index
+          )
+        ).to be true
+      end
     end
   end
 end
