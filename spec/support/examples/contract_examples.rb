@@ -65,9 +65,9 @@ module Spec::Support::Examples
     shared_context 'when #each_pair yields many non-matching constraints' do
       let(:constraints) do
         [
-          Stannum::Constraints::Nothing.new,
-          Stannum::Constraints::Nothing.new,
-          Stannum::Constraints::Nothing.new
+          Stannum::Constraints::Nothing.new(type: 'spec.first_type'),
+          Stannum::Constraints::Nothing.new(type: 'spec.second_type'),
+          Stannum::Constraints::Nothing.new(type: 'spec.third_type')
         ]
       end
     end
@@ -77,9 +77,9 @@ module Spec::Support::Examples
     do
       let(:constraints) do
         [
-          Stannum::Constraints::Anything.new,
-          Stannum::Constraints::Nothing.new,
-          Stannum::Constraints::Anything.new
+          Stannum::Constraints::Anything.new(negated_type: 'spec.first_type'),
+          Stannum::Constraints::Nothing.new(type: 'spec.second_type'),
+          Stannum::Constraints::Anything.new(negated_type: 'spec.third_type')
         ]
       end
     end
@@ -87,9 +87,9 @@ module Spec::Support::Examples
     shared_context 'when #each_pair yields many matching constraints' do
       let(:constraints) do
         [
-          Stannum::Constraints::Anything.new,
-          Stannum::Constraints::Anything.new,
-          Stannum::Constraints::Anything.new
+          Stannum::Constraints::Anything.new(negated_type: 'spec.first_type'),
+          Stannum::Constraints::Anything.new(negated_type: 'spec.second_type'),
+          Stannum::Constraints::Anything.new(negated_type: 'spec.third_type')
         ]
       end
     end
@@ -97,9 +97,9 @@ module Spec::Support::Examples
     shared_context 'when #each_pair yields non-matching sanity constraints' do
       let(:sanity_constraints) do
         [
-          Stannum::Constraints::Nothing.new,
-          Stannum::Constraints::Nothing.new,
-          Stannum::Constraints::Nothing.new
+          Stannum::Constraints::Nothing.new(type: 'spec.first_sane'),
+          Stannum::Constraints::Nothing.new(type: 'spec.second_sane'),
+          Stannum::Constraints::Nothing.new(type: 'spec.third_sane')
         ]
       end
     end
@@ -107,9 +107,9 @@ module Spec::Support::Examples
     shared_context 'when #each_pair yields matching sanity constraints' do
       let(:sanity_constraints) do
         [
-          Stannum::Constraints::Anything.new,
-          Stannum::Constraints::Anything.new,
-          Stannum::Constraints::Anything.new
+          Stannum::Constraints::Anything.new(negated_type: 'spec.first_sane'),
+          Stannum::Constraints::Anything.new(negated_type: 'spec.second_sane'),
+          Stannum::Constraints::Anything.new(negated_type: 'spec.third_sane')
         ]
       end
     end
@@ -942,9 +942,9 @@ module Spec::Support::Examples
         wrap_context 'when #each_pair yields many non-matching constraints' do
           let(:expected_errors) do
             [
-              { type: Stannum::Constraints::Nothing::TYPE },
-              { type: Stannum::Constraints::Nothing::TYPE },
-              { type: Stannum::Constraints::Nothing::TYPE }
+              { type: 'spec.first_type' },
+              { type: 'spec.second_type' },
+              { type: 'spec.third_type' }
             ]
           end
 
@@ -957,7 +957,7 @@ module Spec::Support::Examples
                      ' constraints' \
         do
           let(:expected_errors) do
-            [{ type: Stannum::Constraints::Nothing::TYPE }]
+            [{ type: 'spec.second_type' }]
           end
 
           it 'should return the expected errors' do
@@ -973,7 +973,7 @@ module Spec::Support::Examples
           include_context 'when #each_pair yields many matching constraints'
 
           let(:expected_errors) do
-            [{ type: Stannum::Constraints::Nothing::TYPE }]
+            [{ type: 'spec.first_sane' }]
           end
 
           it 'should return the expected errors' do
@@ -1032,9 +1032,9 @@ module Spec::Support::Examples
         wrap_context 'when #each_pair yields many non-matching constraints' do
           let(:expected_errors) do
             [
-              { type: Stannum::Constraints::Nothing::TYPE },
-              { type: Stannum::Constraints::Nothing::TYPE },
-              { type: Stannum::Constraints::Nothing::TYPE }
+              { type: 'spec.first_type' },
+              { type: 'spec.second_type' },
+              { type: 'spec.third_type' }
             ]
           end
 
@@ -1047,7 +1047,7 @@ module Spec::Support::Examples
                      ' constraints' \
         do
           let(:expected_errors) do
-            [{ type: Stannum::Constraints::Nothing::TYPE }]
+            [{ type: 'spec.second_type' }]
           end
 
           it { expect(status).to be false }
@@ -1065,7 +1065,7 @@ module Spec::Support::Examples
           include_context 'when #each_pair yields many matching constraints'
 
           let(:expected_errors) do
-            [{ type: Stannum::Constraints::Nothing::TYPE }]
+            [{ type: 'spec.first_sane' }]
           end
 
           it { expect(status).to be false }
@@ -1187,8 +1187,8 @@ module Spec::Support::Examples
         do
           let(:expected_errors) do
             [
-              { type: Stannum::Constraints::Anything::NEGATED_TYPE },
-              { type: Stannum::Constraints::Anything::NEGATED_TYPE }
+              { type: 'spec.first_type' },
+              { type: 'spec.third_type' }
             ]
           end
 
@@ -1200,9 +1200,9 @@ module Spec::Support::Examples
         wrap_context 'when #each_pair yields many matching constraints' do
           let(:expected_errors) do
             [
-              { type: Stannum::Constraints::Anything::NEGATED_TYPE },
-              { type: Stannum::Constraints::Anything::NEGATED_TYPE },
-              { type: Stannum::Constraints::Anything::NEGATED_TYPE }
+              { type: 'spec.first_type' },
+              { type: 'spec.second_type' },
+              { type: 'spec.third_type' }
             ]
           end
 
@@ -1221,9 +1221,9 @@ module Spec::Support::Examples
           wrap_context 'when #each_pair yields many non-matching constraints' do
             let(:expected_errors) do
               [
-                { type: Stannum::Constraints::Anything::NEGATED_TYPE },
-                { type: Stannum::Constraints::Anything::NEGATED_TYPE },
-                { type: Stannum::Constraints::Anything::NEGATED_TYPE }
+                { type: 'spec.first_sane' },
+                { type: 'spec.second_sane' },
+                { type: 'spec.third_sane' }
               ]
             end
 
@@ -1233,12 +1233,12 @@ module Spec::Support::Examples
           wrap_context 'when #each_pair yields many matching constraints' do
             let(:expected_errors) do
               [
-                { type: Stannum::Constraints::Anything::NEGATED_TYPE },
-                { type: Stannum::Constraints::Anything::NEGATED_TYPE },
-                { type: Stannum::Constraints::Anything::NEGATED_TYPE },
-                { type: Stannum::Constraints::Anything::NEGATED_TYPE },
-                { type: Stannum::Constraints::Anything::NEGATED_TYPE },
-                { type: Stannum::Constraints::Anything::NEGATED_TYPE }
+                { type: 'spec.first_sane' },
+                { type: 'spec.second_sane' },
+                { type: 'spec.third_sane' },
+                { type: 'spec.first_type' },
+                { type: 'spec.second_type' },
+                { type: 'spec.third_type' }
               ]
             end
 
@@ -1294,8 +1294,8 @@ module Spec::Support::Examples
         do
           let(:expected_errors) do
             [
-              { type: Stannum::Constraints::Anything::NEGATED_TYPE },
-              { type: Stannum::Constraints::Anything::NEGATED_TYPE }
+              { type: 'spec.first_type' },
+              { type: 'spec.third_type' }
             ]
           end
 
@@ -1307,9 +1307,9 @@ module Spec::Support::Examples
         wrap_context 'when #each_pair yields many matching constraints' do
           let(:expected_errors) do
             [
-              { type: Stannum::Constraints::Anything::NEGATED_TYPE },
-              { type: Stannum::Constraints::Anything::NEGATED_TYPE },
-              { type: Stannum::Constraints::Anything::NEGATED_TYPE }
+              { type: 'spec.first_type' },
+              { type: 'spec.second_type' },
+              { type: 'spec.third_type' }
             ]
           end
 
@@ -1330,9 +1330,9 @@ module Spec::Support::Examples
           wrap_context 'when #each_pair yields many non-matching constraints' do
             let(:expected_errors) do
               [
-                { type: Stannum::Constraints::Anything::NEGATED_TYPE },
-                { type: Stannum::Constraints::Anything::NEGATED_TYPE },
-                { type: Stannum::Constraints::Anything::NEGATED_TYPE }
+                { type: 'spec.first_sane' },
+                { type: 'spec.second_sane' },
+                { type: 'spec.third_sane' }
               ]
             end
 
@@ -1344,12 +1344,12 @@ module Spec::Support::Examples
           wrap_context 'when #each_pair yields many matching constraints' do
             let(:expected_errors) do
               [
-                { type: Stannum::Constraints::Anything::NEGATED_TYPE },
-                { type: Stannum::Constraints::Anything::NEGATED_TYPE },
-                { type: Stannum::Constraints::Anything::NEGATED_TYPE },
-                { type: Stannum::Constraints::Anything::NEGATED_TYPE },
-                { type: Stannum::Constraints::Anything::NEGATED_TYPE },
-                { type: Stannum::Constraints::Anything::NEGATED_TYPE }
+                { type: 'spec.first_sane' },
+                { type: 'spec.second_sane' },
+                { type: 'spec.third_sane' },
+                { type: 'spec.first_type' },
+                { type: 'spec.second_type' },
+                { type: 'spec.third_type' }
               ]
             end
 

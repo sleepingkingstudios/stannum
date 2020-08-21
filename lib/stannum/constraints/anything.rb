@@ -15,8 +15,16 @@ module Stannum::Constraints
     # The :type of the error generated for a matching object.
     NEGATED_TYPE = 'stannum.constraints.anything'
 
-    # The :type of the error generated for a non-matching object.
-    TYPE = 'stannum.constraints.nothing'
+    # @param negated_type [String] The error type generated for a matching
+    #   object.
+    def initialize(negated_type: nil, **options)
+      @negated_type = negated_type || NEGATED_TYPE
+
+      super(negated_type: @negated_type, **options)
+    end
+
+    # @return [String] the error type generated for a matching object.
+    attr_reader :negated_type
 
     # Returns true for all objects.
     #
@@ -27,15 +35,5 @@ module Stannum::Constraints
       true
     end
     alias match? matches?
-
-    # @return [String] the error type generated for a matching object.
-    def negated_type
-      NEGATED_TYPE
-    end
-
-    # @return [String] the error type generated for a non-matching object.
-    def type
-      TYPE
-    end
   end
 end
