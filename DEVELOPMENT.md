@@ -56,6 +56,8 @@
   and the `#type` and `#negated_type` readers.
 - Each constraint should define `#options` (default to empty hash).
   - Treat `type`, `negated_type` as options? Override default types?
+- Use terse contract class/file names:
+  - Stannum::Contracts::IndifferentHash instead of IndifferentHashContract.
 
 ### Sanity Constraints
 
