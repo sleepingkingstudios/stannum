@@ -120,6 +120,33 @@ module Stannum::Contracts
       super(allow_extra_items: allow_extra_items, **options, &block)
     end
 
+    # Adds an index constraint to the contract.
+    #
+    # When the contract is called, the contract will find the value of the
+    # object at the given index.
+    #
+    # @param index [Integer] The index of the value to match.
+    # @param constraint [Stannum::Constraints::Base] The constraint to add.
+    # @param sanity [true, false] Marks the constraint as a sanity constraint,
+    #   which is always matched first and will always short-circuit on a failed
+    #   match.
+    # @param options [Hash<Symbol, Object>] Options for the constraint. These
+    #   can be used by subclasses to define the value and error mappings for the
+    #   constraint.
+    #
+    # @return [self] the contract.
+    #
+    # @see Stannum::Contracts::PropertyContract#add_constraint.
+    def add_index_constraint(index, constraint, sanity: false, **options)
+      add_constraint(
+        constraint,
+        property:      index,
+        property_type: :index,
+        sanity:        sanity,
+        **options
+      )
+    end
+
     # @return [true, false] If false, then a tuple with extra items after the
     #   last expected item will not match the contract.
     def allow_extra_items?

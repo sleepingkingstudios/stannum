@@ -1,7 +1,9 @@
 # frozen_string_literal: true
 
 require 'support/contracts/manufacturer_contract'
+require 'support/structs/factory'
 require 'support/structs/gadget'
+require 'support/structs/manufacturer'
 
 # @note Integration spec for Stannum::Contracts::PropertyContract.
 RSpec.describe Spec::ManufacturerContract do
@@ -9,22 +11,6 @@ RSpec.describe Spec::ManufacturerContract do
 
   describe '.new' do
     it { expect(described_class).to be_constructible.with(0).arguments }
-  end
-
-  # @todo Extract this to spec/support/structs
-  example_class 'Spec::Factory' do |klass|
-    klass.include Stannum::Struct
-
-    klass.attribute :address, String
-    klass.attribute :gadget,  Spec::Gadget
-  end
-
-  # @todo Extract this to spec/support/structs
-  example_class 'Spec::Manufacturer' do |klass|
-    klass.include Stannum::Struct
-
-    klass.attribute :factory, 'Spec::Factory'
-    klass.attribute :name,    String
   end
 
   describe '#does_not_match?' do

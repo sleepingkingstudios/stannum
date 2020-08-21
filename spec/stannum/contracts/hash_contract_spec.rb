@@ -385,6 +385,231 @@ RSpec.describe Stannum::Contracts::HashContract do
     end
   end
 
+  describe '#add_key_constraint' do
+    it 'should define the method' do
+      expect(contract)
+        .to respond_to(:add_key_constraint)
+        .with(2).arguments
+        .and_keywords(:sanity)
+        .and_any_keywords
+    end
+
+    describe 'with a key constraint' do
+      let(:constraint) { Stannum::Constraint.new }
+      let(:definition) { contract.each_constraint.to_a.last }
+
+      it 'should return the contract' do
+        expect(contract.add_key_constraint(:name, constraint))
+          .to be contract
+      end
+
+      it 'should add the constraint to the contract' do
+        expect { contract.add_key_constraint(:name, constraint) }
+          .to change { contract.each_constraint.count }
+          .by(1)
+      end
+
+      it 'should store the contract' do
+        contract.add_key_constraint(:name, constraint)
+
+        expect(definition).to be_a_constraint_definition(
+          constraint: constraint,
+          contract:   contract,
+          options:    {
+            property:      :name,
+            property_type: :key,
+            sanity:        false
+          }
+        )
+      end
+    end
+
+    describe 'with a key constraint with options' do
+      let(:constraint) { Stannum::Constraint.new }
+      let(:options)    { { key: 'value' } }
+      let(:definition) { contract.each_constraint.to_a.last }
+
+      it 'should return the contract' do
+        expect(contract.add_key_constraint(:name, constraint, **options))
+          .to be contract
+      end
+
+      it 'should add the constraint to the contract' do
+        expect { contract.add_key_constraint(:name, constraint, **options) }
+          .to change { contract.each_constraint.count }
+          .by(1)
+      end
+
+      it 'should store the contract' do # rubocop:disable RSpec/ExampleLength
+        contract.add_key_constraint(:name, constraint, **options)
+
+        expect(definition).to be_a_constraint_definition(
+          constraint: constraint,
+          contract:   contract,
+          options:    {
+            property:      :name,
+            property_type: :key,
+            sanity:        false,
+            **options
+          }
+        )
+      end
+    end
+
+    context 'when initialized with key_type: a class' do
+      let(:constructor_options) { super().merge(key_type: String) }
+
+      describe 'with an invalid key' do
+        let(:constraint)    { Stannum::Constraint.new }
+        let(:error_message) { 'invalid property name :name' }
+
+        it 'should raise an error' do
+          expect { contract.add_key_constraint(:name, constraint) }
+            .to raise_error ArgumentError, error_message
+        end
+      end
+
+      describe 'with a key constraint' do
+        let(:constraint) { Stannum::Constraint.new }
+        let(:definition) { contract.each_constraint.to_a.last }
+
+        it 'should return the contract' do
+          expect(contract.add_key_constraint('name', constraint))
+            .to be contract
+        end
+
+        it 'should add the constraint to the contract' do
+          expect { contract.add_key_constraint('name', constraint) }
+            .to change { contract.each_constraint.count }
+            .by(1)
+        end
+
+        it 'should store the contract' do
+          contract.add_key_constraint('name', constraint)
+
+          expect(definition).to be_a_constraint_definition(
+            constraint: constraint,
+            contract:   contract,
+            options:    {
+              property:      'name',
+              property_type: :key,
+              sanity:        false
+            }
+          )
+        end
+      end
+
+      describe 'with a key constraint with options' do
+        let(:constraint) { Stannum::Constraint.new }
+        let(:options)    { { key: 'value' } }
+        let(:definition) { contract.each_constraint.to_a.last }
+
+        it 'should return the contract' do
+          expect(contract.add_key_constraint('name', constraint, **options))
+            .to be contract
+        end
+
+        it 'should add the constraint to the contract' do
+          expect { contract.add_key_constraint('name', constraint, **options) }
+            .to change { contract.each_constraint.count }
+            .by(1)
+        end
+
+        it 'should store the contract' do # rubocop:disable RSpec/ExampleLength
+          contract.add_key_constraint('name', constraint, **options)
+
+          expect(definition).to be_a_constraint_definition(
+            constraint: constraint,
+            contract:   contract,
+            options:    {
+              property:      'name',
+              property_type: :key,
+              sanity:        false,
+              **options
+            }
+          )
+        end
+      end
+    end
+
+    context 'when initialized with key_type: a constraint' do
+      let(:key_type)            { Stannum::Constraints::Type.new(String) }
+      let(:constructor_options) { super().merge(key_type: key_type) }
+
+      describe 'with an invalid key' do
+        let(:constraint)    { Stannum::Constraint.new }
+        let(:error_message) { 'invalid property name :name' }
+
+        it 'should raise an error' do
+          expect { contract.add_key_constraint(:name, constraint) }
+            .to raise_error ArgumentError, error_message
+        end
+      end
+
+      describe 'with a key constraint' do
+        let(:constraint) { Stannum::Constraint.new }
+        let(:definition) { contract.each_constraint.to_a.last }
+
+        it 'should return the contract' do
+          expect(contract.add_key_constraint('name', constraint))
+            .to be contract
+        end
+
+        it 'should add the constraint to the contract' do
+          expect { contract.add_key_constraint('name', constraint) }
+            .to change { contract.each_constraint.count }
+            .by(1)
+        end
+
+        it 'should store the contract' do
+          contract.add_key_constraint('name', constraint)
+
+          expect(definition).to be_a_constraint_definition(
+            constraint: constraint,
+            contract:   contract,
+            options:    {
+              property:      'name',
+              property_type: :key,
+              sanity:        false
+            }
+          )
+        end
+      end
+
+      describe 'with a key constraint with options' do
+        let(:constraint) { Stannum::Constraint.new }
+        let(:options)    { { key: 'value' } }
+        let(:definition) { contract.each_constraint.to_a.last }
+
+        it 'should return the contract' do
+          expect(contract.add_key_constraint('name', constraint, **options))
+            .to be contract
+        end
+
+        it 'should add the constraint to the contract' do
+          expect { contract.add_key_constraint('name', constraint, **options) }
+            .to change { contract.each_constraint.count }
+            .by(1)
+        end
+
+        it 'should store the contract' do # rubocop:disable RSpec/ExampleLength
+          contract.add_key_constraint('name', constraint, **options)
+
+          expect(definition).to be_a_constraint_definition(
+            constraint: constraint,
+            contract:   contract,
+            options:    {
+              property:      'name',
+              property_type: :key,
+              sanity:        false,
+              **options
+            }
+          )
+        end
+      end
+    end
+  end
+
   describe '#each_constraint' do
     let(:expected_keys) { Set.new }
     let(:builtin_definitions) do

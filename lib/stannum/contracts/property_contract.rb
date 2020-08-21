@@ -110,7 +110,29 @@ module Stannum::Contracts
       end
     end
 
-    # Adds a constraint to the contract.
+    # (see Stannum::Contracts::Base#add_constraint)
+    #
+    # If the :property option is set, this defines a property constraint. See
+    # #add_property_constraint for more information.
+    #
+    # @param property [String, Symbol, Array<String, Symbol>, nil] The
+    #   property to match.
+    #
+    # @see #add_property_constraint.
+    def add_constraint(constraint, property: nil, sanity: false, **options)
+      validate_constraint(constraint)
+      validate_property(property: property, **options)
+
+      @constraints << Stannum::Contracts::Definition.new(
+        constraint: constraint,
+        contract:   self,
+        options:    options.merge(property: property, sanity: sanity)
+      )
+
+      self
+    end
+
+    # Adds a property constraint to the contract.
     #
     # When the contract is called, the contract will find the value of that
     # property for the given object. If the property is an array, the contract
@@ -126,28 +148,21 @@ module Stannum::Contracts
     # will add the error message to
     # errors.dig(:manufacturer, :address, :street).
     #
+    # @param property [String, Symbol, Array<String, Symbol>, nil] The
+    #   property to match.
     # @param constraint [Stannum::Constraints::Base] The constraint to add.
     # @param sanity [true, false] Marks the constraint as a sanity constraint,
     #   which is always matched first and will always short-circuit on a failed
     #   match.
-    # @param property [String, Symbol, Array<String, Symbol>, nil] The
-    #   property to match.
     # @param options [Hash<Symbol, Object>] Options for the constraint. These
     #   can be used by subclasses to define the value and error mappings for the
     #   constraint.
     #
     # @return [self] the contract.
-    def add_constraint(constraint, property: nil, sanity: false, **options)
-      validate_constraint(constraint)
-      validate_property(property: property, **options)
-
-      @constraints << Stannum::Contracts::Definition.new(
-        constraint: constraint,
-        contract:   self,
-        options:    options.merge(property: property, sanity: sanity)
-      )
-
-      self
+    #
+    # @see #add_constraint.
+    def add_property_constraint(property, constraint, sanity: false, **options)
+      add_constraint(constraint, property: property, sanity: sanity, **options)
     end
 
     protected

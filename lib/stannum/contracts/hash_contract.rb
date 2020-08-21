@@ -138,6 +138,33 @@ module Stannum::Contracts
       )
     end
 
+    # Adds a key constraint to the contract.
+    #
+    # When the contract is called, the contract will find the value of the
+    # object for the given key.
+    #
+    # @param key [Integer] The key of the value to match.
+    # @param constraint [Stannum::Constraints::Base] The constraint to add.
+    # @param sanity [true, false] Marks the constraint as a sanity constraint,
+    #   which is always matched first and will always short-circuit on a failed
+    #   match.
+    # @param options [Hash<Symbol, Object>] Options for the constraint. These
+    #   can be used by subclasses to define the value and error mappings for the
+    #   constraint.
+    #
+    # @return [self] the contract.
+    #
+    # @see Stannum::Contracts::PropertyContract#add_constraint.
+    def add_key_constraint(key, constraint, sanity: false, **options)
+      add_constraint(
+        constraint,
+        property:      key,
+        property_type: :key,
+        sanity:        sanity,
+        **options
+      )
+    end
+
     # (see Stannum::Contracts::Base#each_constraint)
     def each_constraint
       return enum_for(:each_constraint) unless block_given?

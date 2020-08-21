@@ -304,6 +304,91 @@ RSpec.describe Stannum::Contracts::TupleContract do
     end
   end
 
+  describe '#add_index_constraint' do
+    it 'should define the method' do
+      expect(contract)
+        .to respond_to(:add_index_constraint)
+        .with(2).arguments
+        .and_keywords(:sanity)
+        .and_any_keywords
+    end
+
+    describe 'with an invalid item index' do
+      let(:constraint) { Stannum::Constraint.new }
+      let(:property)   { 'foo' }
+      let(:error_message) do
+        "invalid property name #{property.inspect}"
+      end
+
+      it 'should raise an error' do
+        expect { contract.add_index_constraint(property, constraint) }
+          .to raise_error ArgumentError, error_message
+      end
+    end
+
+    describe 'with an item constraint' do
+      let(:constraint) { Stannum::Constraint.new }
+      let(:definition) { contract.each_constraint.to_a.last }
+
+      it 'should return the contract' do
+        expect(contract.add_index_constraint(0, constraint))
+          .to be contract
+      end
+
+      it 'should add the constraint to the contract' do
+        expect { contract.add_index_constraint(0, constraint) }
+          .to change { contract.each_constraint.count }
+          .by(1)
+      end
+
+      it 'should store the contract' do
+        contract.add_index_constraint(0, constraint)
+
+        expect(definition).to be_a_constraint_definition(
+          constraint: constraint,
+          contract:   contract,
+          options:    {
+            property:      0,
+            property_type: :index,
+            sanity:        false
+          }
+        )
+      end
+    end
+
+    describe 'with an item constraint with options' do
+      let(:constraint) { Stannum::Constraint.new }
+      let(:options)    { { key: 'value' } }
+      let(:definition) { contract.each_constraint.to_a.last }
+
+      it 'should return the contract' do
+        expect(contract.add_index_constraint(0, constraint, **options))
+          .to be contract
+      end
+
+      it 'should add the constraint to the contract' do
+        expect { contract.add_index_constraint(0, constraint, **options) }
+          .to change { contract.each_constraint.count }
+          .by(1)
+      end
+
+      it 'should store the contract and options' do # rubocop:disable RSpec/ExampleLength
+        contract.add_index_constraint(0, constraint, **options)
+
+        expect(definition).to be_a_constraint_definition(
+          constraint: constraint,
+          contract:   contract,
+          options:    {
+            property:      0,
+            property_type: :index,
+            sanity:        false,
+            **options
+          }
+        )
+      end
+    end
+  end
+
   describe '#allow_extra_items?' do
     include_examples 'should have predicate', :allow_extra_items?, false
 

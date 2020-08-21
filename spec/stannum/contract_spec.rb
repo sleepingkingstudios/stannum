@@ -5,7 +5,9 @@ require 'stannum/contract'
 require 'support/examples/constraint_examples'
 require 'support/examples/contract_builder_examples'
 require 'support/examples/contract_examples'
+require 'support/structs/factory'
 require 'support/structs/gadget'
+require 'support/structs/manufacturer'
 
 RSpec.describe Stannum::Contract do
   include Spec::Support::Examples::ConstraintExamples
@@ -386,22 +388,6 @@ RSpec.describe Stannum::Contract do
         end
       end
 
-      # @todo Extract this to spec/support/structs
-      example_class 'Spec::Factory' do |klass|
-        klass.include Stannum::Struct
-
-        klass.attribute :address, String
-        klass.attribute :gadget,  Spec::Gadget
-      end
-
-      # @todo Extract this to spec/support/structs
-      example_class 'Spec::Manufacturer' do |klass|
-        klass.include Stannum::Struct
-
-        klass.attribute :factory, 'Spec::Factory'
-        klass.attribute :name,    String
-      end
-
       it { expect(contract.each_pair(actual).count).to be constraints.size }
 
       context 'when the nested properties do not exist' do
@@ -487,22 +473,6 @@ RSpec.describe Stannum::Contract do
 
     describe 'with a nested property' do
       let(:property) { %i[factory gadget name] }
-
-      # @todo Extract this to spec/support/structs
-      example_class 'Spec::Factory' do |klass|
-        klass.include Stannum::Struct
-
-        klass.attribute :address, String
-        klass.attribute :gadget,  Spec::Gadget
-      end
-
-      # @todo Extract this to spec/support/structs
-      example_class 'Spec::Manufacturer' do |klass|
-        klass.include Stannum::Struct
-
-        klass.attribute :factory, 'Spec::Factory'
-        klass.attribute :name,    String
-      end
 
       context 'when the property does not exist' do
         let(:value) do

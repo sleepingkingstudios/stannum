@@ -8,11 +8,6 @@
 
 #### ::Builder
 
-- Define specialized add_x_constraint methods
-  - HashContract#add_key_constraint
-  - PropertyContract#add_property_constraint
-  - TupleContract#add_index_constraint
-  - Refactor builders to leverage ^ ?
 - Implement #compose(contract):
   ```ruby
   contract = Stannum::Contract.new do
