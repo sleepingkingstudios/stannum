@@ -1,265 +1,258 @@
 # frozen_string_literal: true
 
-require 'stannum/constraints/type'
-require 'stannum/contracts/map_contract'
+require 'stannum/contracts'
 
 module Stannum::Contracts
-  # Contract that defines constraints on a hash and its keys and values.
+  # A HashContract defines constraints on an hash's values.
   #
-  # @example Creating A Contract
-  #   contract = Stannum::Contracts::HashContract.new do
-  #     property :name,   name_constraint
-  #     property :size,   ->(value) { value.is_a?(Integer) }
-  #     property :weight, Spec::WeightConstraint.new
-  #   end
+  # @example Creating A Hash Contract
+  #   hash_contract = Stannum::Contracts::HashContract.new
+  #
+  #   hash_contract.add_constraint(
+  #     negated_type:  'example.is_boolean',
+  #     property:      :ok,
+  #     property_type: :key,
+  #     type:          'example.is_not_boolean'
+  #   ) { |actual| actual == true || actual == false }
+  #   hash_contract.add_constraint(
+  #     Stannum::Constraints::Type.new(Hash),
+  #     property:      :data,
+  #     property_type: :key,
+  #   )
+  #   hash_contract.add_constraint(
+  #     Stannum::Constraints::Presence.new,
+  #     property:      :signature,
+  #     property_type: :key,
+  #   )
   #
   # @example With A Non-Hash Object
-  #   contract.matches?(nil) #=> false
-  #   errors = contract.errors_for(nil) #=> Cuprum::Errors
-  #   errors.to_a
-  #   #=> [
-  #   #     {
-  #   #       data: { type: Hash },
-  #   #       type: 'stannum.constraints.is_not_type'
-  #   #     }
-  #   #   ]
+  #   hash_contract.matches?(nil) #=> false
+  #   errors = hash_contract.errors_for(nil)
+  #   #=> [{ type: 'is_not_type', data: { type: Hash }, path: [], message: nil }]
   #
-  # @example With A Hash With Non-Matching Key-Value Pairs
-  #   contract.matches?({}) => false
-  #   errors = contract.errors_for({}) #=> Cuprum::Errors
+  #   hash_contract.does_not_match?(nil)          #=> true
+  #   hash_contract.negated_errors_for?(nil).to_a #=> []
+  #
+  # @example With A Hash That Matches None Of The Key Constraints
+  #   hash_contract.matches?({}) #=> false
+  #   errors = hash_contract.errors_for({})
   #   errors.to_a
   #   #=> [
-  #   #     {
-  #   #       type: 'spec.is_not_a_name'
-  #   #     },
-  #   #     {
-  #   #       type: 'stannum.constraints.invalid'
-  #   #     },
-  #   #     {
-  #   #       type: 'spec.is_not_a_valid_weight'
-  #   #     }
-  #   #   ]
-  class HashContract < MapContract # rubocop:disable Metrics/ClassLength
+  #     { type: 'is_not_boolean', data: {}, path: [:ok], message: nil },
+  #     { type: 'is_not_type', data: { type: Hash }, path: [:data], message: nil },
+  #     { type: 'absent', data: {}, path: [:signature], message: nil }
+  #   ]
+  #
+  #   hash_contract.does_not_match?({}) #=> false
+  #   errors.to_a
+  #   #=> [
+  #     { type: 'is_type', data: { type: Hash }, path: [], message: nil }
+  #   ]
+  #
+  # @example With A Hash That Matches Some Of The Key Constraints
+  #   hash = { ok: true, signature: '' }
+  #   hash_contract.matches?(hash) #=> false
+  #   errors = hash_contract.errors_for(hash)
+  #   errors.to_a
+  #   #=> [
+  #     { type: 'is_not_type', data: { type: Hash }, path: [:data], message: nil },
+  #     { type: 'absent', data: {}, path: [:signature], message: nil }
+  #   ]
+  #
+  #   hash_contract.does_not_match?(hash) #=> false
+  #   errors = hash_contract.negated_errors_for?(hash)
+  #   errors.to_a
+  #   #=> [
+  #     { type: 'is_type', data: { type: Hash }, path: [], message: nil },
+  #     { type: 'is_boolean', data: {}, path: [:ok], message: nil }
+  #   ]
+  #
+  # @example With A Hash That Matches All Of The Key Constraints
+  #   hash = { ok: true, data: {}, signature: 'abc' }
+  #   hash_contract.matches?(hash)        #=> true
+  #   hash_contract.errors_for(hash).to_a #=> []
+  #
+  #   hash_contract.does_not_match?(hash) #=> false
+  #   errors = hash_contract.negated_errors_for?(hash)
+  #   errors.to_a
+  #   #=> [
+  #     { type: 'is_type', data: { type: Hash }, path: [], message: nil },
+  #     { type: 'is_boolean', data: {}, path: [:ok], message: nil },
+  #     { type: 'present', data: {}, path: [:signature], message: nil },
+  #   ]
+  class HashContract < Stannum::Contracts::PropertyContract
+    # Builder class for defining item constraints for a Contract.
+    #
+    # This class should not be invoked directly. Instead, pass a block to the
+    # constructor for HashContract.
+    #
     # @api private
-    #
-    # Mixin for HashContract instances that permit any objects as Hash keys.
-    #
-    # @see Stannum::Contracts::HashContract
-    module AnyKeys
-      private
-
-      def valid_property?(_property_name)
-        true
+    class Builder < Stannum::Contracts::PropertyContract::Builder
+      # Defines a key constraint on the contract.
+      #
+      # @overload key(key, constraint, **options)
+      #   Adds the given constraint to the contract for the value at the given
+      #   key.
+      #
+      #   @param key [String, Symbol, Array<String, Symbol>] The key to
+      #     constrain.
+      #   @param constraint [Stannum::Constraint::Base] The constraint to add.
+      #   @param options [Hash<Symbol, Object>] Options for the constraint.
+      #
+      # @overload key(**options) { |value| }
+      #   Creates a new Stannum::Constraint object with the given block, and
+      #   adds that constraint to the contract for the value at the given key.
+      def key(property, constraint = nil, **options, &block)
+        self.constraint(
+          constraint,
+          property:      property,
+          property_type: :key,
+          **options,
+          &block
+        )
       end
     end
 
-    # @api private
-    #
-    # Mixin for HashContract instances that permit either Strings or Symbols
-    # as Hash keys.
-    #
-    # @see Stannum::Contracts::HashContract
-    module IndifferentKeys
-      private
-
-      def access_property(object, property)
-        return nil unless object.respond_to?(:[]) && object.respond_to?(:key?)
-
-        string_key = property.to_s
-        symbol_key = property.intern
-
-        object.key?(string_key) ? object[string_key] : object[symbol_key]
-      end
-    end
-
-    # @api private
-    #
-    # Mixin for HashContract instances that permit only Strings as Hash keys.
-    #
-    # @see Stannum::Contracts::HashContract
-    module StringKeys
-      private
-
-      def valid_property?(property_name)
-        property_name.is_a?(String) && !property_name.empty?
-      end
-    end
-
-    # @api private
-    #
-    # Mixin for HashContract instances that permit only Symbols as Hash keys.
-    #
-    # @see Stannum::Contracts::HashContract
-    module SymbolKeys
-      private
-
-      def valid_property?(property_name)
-        property_name.is_a?(Symbol) && !property_name.empty?
-      end
-    end
-
-    KEY_TYPES = {
-      any:         AnyKeys,
-      indifferent: IndifferentKeys,
-      string:      StringKeys,
-      symbol:      SymbolKeys
-    }.freeze
-    private_constant :KEY_TYPES
-
-    # The :type of the error generated for a hash with extra keys.
-    EXTRA_KEYS_TYPE = 'stannum.constraints.hash_with_extra_keys'
-
-    # The :type of the error generated for a matching object.
-    NEGATED_TYPE = 'stannum.constraints.is_hash_like'
-
-    # The :type of the error generated for a non-matching object.
-    TYPE = 'stannum.constraints.is_not_hash_like'
-
-    # @param allow_extra_keys [Boolean] If false, the contract will fail on a
-    #   Hash that has keys not specified in the contract. Defaults to true.
-    # @param allow_hash_like [Boolean] If true, the contract will match objects
-    #   that are not Hash instances, but that implement the expected Hash
-    #   methods. Defaults to true.
-    # @param key_type [Symbol] The expected type of the Hash keys. Must be one
-    #   of :any (key can be any object), :indifferent (key can be either a
-    #   String or a Symbol), :string, or :symbol. Defaults to :any.
-    #
-    # @yield Creates an instance of MapContract::Builder with the new contract
-    #   and executes the block in the context of the builder.
-    #
-    # @see Stannum::Contracts::MapContract::Builder
+    # @param allow_extra_keys [true, false] If true, the contract will match
+    #   hashes with keys that are not constrained by the contract.
+    # @param allow_hash_like [true, false] If true, the contract will match
+    #   hash-like objects that respond to the #[], #each, and #keys methods.
+    # @param key_type [Stannum::Constraints::Base, Class, nil] If set, adding
+    #   a key constraint with a key that does not match the class or constraint
+    #   will raise an exception.
+    # @param options [Hash<Symbol, Object>] Configuration options for the
+    #   contract. Defaults to an empty Hash.
     def initialize(
-      allow_extra_keys: true,
-      allow_hash_like:  true,
-      key_type:         :any,
+      allow_extra_keys: false,
+      allow_hash_like:  false,
+      key_type:         nil,
+      **options,
       &block
     )
-      apply_key_type(key_type)
-
-      super(&block)
-
-      @options = {
+      super(
         allow_extra_keys: allow_extra_keys,
         allow_hash_like:  allow_hash_like,
-        key_type:         key_type
-      }
+        key_type:         resolve_key_type(key_type),
+        **options,
+        &block
+      )
     end
 
-    attr_reader :options
-
-    # @return [Boolean] if false, the contract will fail on a Hash that has keys
-    #   not specified in the contract.
-    def allow_extra_keys?
-      @options[:allow_extra_keys]
+    # Adds a key constraint to the contract.
+    #
+    # When the contract is called, the contract will find the value of the
+    # object for the given key.
+    #
+    # @param key [Integer] The key of the value to match.
+    # @param constraint [Stannum::Constraints::Base] The constraint to add.
+    # @param sanity [true, false] Marks the constraint as a sanity constraint,
+    #   which is always matched first and will always short-circuit on a failed
+    #   match.
+    # @param options [Hash<Symbol, Object>] Options for the constraint. These
+    #   can be used by subclasses to define the value and error mappings for the
+    #   constraint.
+    #
+    # @return [self] the contract.
+    #
+    # @see Stannum::Contracts::PropertyContract#add_constraint.
+    def add_key_constraint(key, constraint, sanity: false, **options)
+      add_constraint(
+        constraint,
+        property:      key,
+        property_type: :key,
+        sanity:        sanity,
+        **options
+      )
     end
 
-    # @return [Boolean] if true, the contract will match objects that are not
-    #   Hash instances, but that implement the expected Hash methods.
-    def allow_hash_like?
-      @options[:allow_hash_like]
+    # (see Stannum::Contracts::Base#each_constraint)
+    def each_constraint
+      return enum_for(:each_constraint) unless block_given?
+
+      super do |definition|
+        # Extra keys should be handled only by the top-level constraint;
+        # otherwise, an included HashContract with a subset of the expected keys
+        # would cause a false negative.
+        if definition.constraint.is_a?(Stannum::Constraints::Hashes::ExtraKeys)
+          next unless self == definition.contract
+        end
+
+        yield definition
+      end
     end
 
-    # @!method errors_for(actual)
-    #   (see Stannum::Constraints::Base#errors_for)
+    # @return [Array] the list of keys expected by the key constraints.
+    def expected_keys
+      each_constraint.reduce([]) do |keys, definition|
+        next keys unless definition.options[:property_type] == :key
 
-    # @!method negated_errors_for(actual)
-    #   (see Stannum::Constraints::Base#negated_errors_for)
-
-    # (see Stannum::Constraints::Base#does_not_match?)
-    def does_not_match?(actual)
-      return false if hash_like?(actual)
-
-      super
+        keys << definition.options.fetch(:property)
+      end
     end
 
-    # @return [Symbol] the expected type of the Hash keys.
-    def key_type
-      @options[:key_type]
-    end
+    protected
 
-    # (see Stannum::Constraints::Base#matches?)
-    def matches?(actual)
-      return false unless hash_like?(actual)
+    def map_value(actual, **options)
+      return super unless options[:property_type] == :key
 
-      return false unless extra_keys(actual).empty?
-
-      super
-    end
-
-    # @return [String] the error type generated for a matching object.
-    def negated_type
-      NEGATED_TYPE
-    end
-
-    # @return [String] the error type generated for a non-matching object.
-    def type
-      TYPE
+      actual[options[:property]]
     end
 
     private
 
-    def access_property(object, property)
-      object.respond_to?(:[]) ? object[property] : nil
+    def add_extra_keys_constraint
+      return if options[:allow_extra_keys]
+
+      keys = -> { expected_keys }
+
+      add_constraint Stannum::Constraints::Hashes::ExtraKeys.new(keys)
     end
 
-    def apply_key_type(key_type)
-      validate_key_type(key_type)
-
-      extend(KEY_TYPES[key_type])
-    end
-
-    def extra_keys(actual)
-      return [] if allow_extra_keys?
-
-      expected_keys = each_constraint.map { |hsh| hsh[:property] }
-
-      actual.keys - expected_keys
-    end
-
-    def hash_like?(actual)
-      return actual.is_a?(Hash) unless allow_hash_like?
-
-      actual.respond_to?(:[]) &&
-        actual.respond_to?(:key?) &&
-        actual.respond_to?(:keys)
-    end
-
-    def update_errors_for(actual:, errors:)
-      if hash_like?(actual)
-        err = super
-
-        update_extra_keys_error(actual: actual, errors: err)
-      elsif allow_hash_like?
-        errors.add(type)
+    def add_type_constraint
+      if options[:allow_hash_like]
+        add_constraint Stannum::Constraints::Types::Map.new, sanity: true
       else
-        errors.add(Stannum::Constraints::Type::TYPE, type: Hash)
+        add_constraint Stannum::Constraints::Type.new(Hash), sanity: true
       end
     end
 
-    def update_extra_keys_error(actual:, errors:)
-      keys = extra_keys(actual)
+    def define_constraints(&block)
+      add_type_constraint
 
-      return errors if keys.empty?
+      add_extra_keys_constraint
 
-      errors.add(EXTRA_KEYS_TYPE, keys: keys)
+      super
     end
 
-    def update_negated_errors_for(actual:, errors:)
-      if allow_hash_like? && hash_like?(actual)
-        errors.add(negated_type)
-      elsif hash_like?(actual)
-        errors.add(Stannum::Constraints::Type::NEGATED_TYPE, type: Hash)
-      else
-        super
-      end
+    def key_type
+      options[:key_type]
     end
 
-    def validate_key_type(key_type)
-      return if KEY_TYPES.keys.include?(key_type)
+    def key_type?
+      !options[:key_type].nil?
+    end
+
+    def resolve_key_type(key_type)
+      return key_type if key_type.nil?
+      return key_type if key_type.is_a?(Stannum::Constraints::Base)
+
+      return Stannum::Constraints::Type.new(key_type) if key_type.is_a?(Class)
 
       raise ArgumentError,
-        'key_type must be :any, :indifferent, :string, or :symbol',
-        caller[1..-1]
+        'key type must be a Class or a constraint',
+        caller(1..-1)
+    end
+
+    def valid_property?(property: nil, property_type: nil, **_options)
+      return super unless property_type == :key
+
+      key_type.matches?(property)
+    end
+
+    def validate_property?(**options)
+      return super unless options[:property_type] == :key
+
+      key_type?
     end
   end
 end

@@ -140,6 +140,7 @@ module Stannum
 
     def initialize
       @children = Hash.new { |hsh, key| hsh[key] = self.class.new }
+      @cache    = Set.new
       @errors   = []
     end
 
@@ -322,11 +323,13 @@ module Stannum
     #     .add(:not_integer, message: 'is outside the range')
     #     .add(:not_in_range)
     def add(type, message: nil, **data)
-      type = normalize_type(type)
-      msg  = normalize_message(message)
-      err  = { data: data, message: msg, type: type }
+      error  = build_error(data: data, message: message, type: type)
+      hashed = error.hash
 
-      @errors << err
+      return self if @cache.include?(hashed)
+
+      @errors << error
+      @cache  << hashed
 
       self
     end
@@ -531,6 +534,13 @@ module Stannum
     end
 
     private
+
+    def build_error(data:, message:, type:)
+      type = normalize_type(type)
+      msg  = normalize_message(message)
+
+      { data: data, message: msg, type: type }
+    end
 
     def compare_hashed_errors(other_errors)
       hashes       = Set.new(map(&:hash))

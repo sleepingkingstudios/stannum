@@ -5,11 +5,29 @@ require 'stannum/constraints'
 module Stannum::Constraints
   # A constraint codifies a particular expectation about an object.
   class Base
+    # Builder class for defining constraints for a Contract.
+    #
+    # This class should not be invoked directly. Instead, pass a block to the
+    # constructor for Contract.
+    #
+    # @api private
+    class Builder < Stannum::Contracts::Builder
+    end
+
     # The :type of the error generated for a matching object.
     NEGATED_TYPE = 'stannum.constraints.valid'
 
     # The :type of the error generated for a non-matching object.
     TYPE = 'stannum.constraints.invalid'
+
+    # @param options [Hash<Symbol, Object>] Configuration options for the
+    #   constraint. Defaults to an empty Hash.
+    def initialize(**options)
+      @options = options
+    end
+
+    # @return [Hash<Symbol, Object>] Configuration options for the constraint.
+    attr_reader :options
 
     # Checks that the given object does not match the constraint.
     #

@@ -14,10 +14,7 @@ module Stannum::Structs
 
     def initialize
       @attributes = {}
-      contract    = Stannum::Contracts::HashContract.new(
-        allow_extra_keys: false,
-        key_type:         :indifferent
-      )
+      contract    = Stannum::Contracts::IndifferentHashContract.new
 
       const_set(:Contract, contract)
     end
@@ -124,7 +121,11 @@ module Stannum::Structs
     def define_constraint(attribute)
       constraint = Stannum::Constraints::Type.new(attribute.type)
 
-      self::Contract.add_constraint(constraint, property: attribute.reader_name)
+      self::Contract.add_constraint(
+        constraint,
+        property:      attribute.reader_name,
+        property_type: :key
+      )
     end
 
     def define_reader(attr_name, reader_name)

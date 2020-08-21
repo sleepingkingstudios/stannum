@@ -38,8 +38,12 @@ module Stannum::Constraints
     # @param expected_type [Class, Module, String] The type the object is
     #   expected to belong to. Can be a Class or a Module, or the name of a
     #   class or module.
-    def initialize(expected_type)
+    # @param options [Hash<Symbol, Object>] Configuration options for the
+    #   constraint. Defaults to an empty Hash.
+    def initialize(expected_type, **options)
       @expected_type = resolve_expected_type(expected_type)
+
+      super(expected_type: expected_type, **options)
     end
 
     # @return [Class, Module, String] the type the object is expected to belong

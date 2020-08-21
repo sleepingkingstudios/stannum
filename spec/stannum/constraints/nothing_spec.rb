@@ -7,17 +7,9 @@ require 'support/examples/constraint_examples'
 RSpec.describe Stannum::Constraints::Nothing do
   include Spec::Support::Examples::ConstraintExamples
 
-  subject(:constraint) { described_class.new }
+  subject(:constraint) { described_class.new(**constructor_options) }
 
-  let(:expected_errors) do
-    Stannum::Errors.new.add(constraint.type)
-  end
-
-  describe '::NEGATED_TYPE' do
-    include_examples 'should define frozen constant',
-      :NEGATED_TYPE,
-      'stannum.constraints.nothing'
-  end
+  let(:constructor_options) { {} }
 
   describe '::TYPE' do
     include_examples 'should define frozen constant',
@@ -26,56 +18,301 @@ RSpec.describe Stannum::Constraints::Nothing do
   end
 
   describe '.new' do
-    it { expect(described_class).to be_constructible.with(0).arguments }
+    it 'should define the constructor' do
+      expect(described_class)
+        .to be_constructible
+        .with(0).arguments
+        .and_keywords(:type)
+    end
   end
 
   include_examples 'should implement the Constraint interface'
 
-  include_examples 'should not match', nil, reversible: true
+  describe '#match' do
+    let(:match_method) { :match }
+    let(:expected_errors) do
+      { type: described_class::TYPE }
+    end
 
-  include_examples 'should not match', true, reversible: true
+    describe 'with nil' do
+      let(:actual) { nil }
 
-  include_examples 'should not match', false, reversible: true
+      include_examples 'should not match the constraint'
+    end
 
-  include_examples 'should not match', 0, as: 'an integer', reversible: true
+    describe 'with true' do
+      let(:actual) { true }
 
-  include_examples 'should not match', Object.new.freeze, reversible: true
+      include_examples 'should not match the constraint'
+    end
 
-  include_examples 'should not match',
-    '',
-    as:         'an empty string',
-    reversible: true
+    describe 'with false' do
+      let(:actual) { false }
 
-  include_examples 'should not match', 'a string', reversible: true
+      include_examples 'should not match the constraint'
+    end
 
-  include_examples 'should not match', :a_symbol, reversible: true
+    describe 'with an integer' do
+      let(:actual) { 0 }
 
-  include_examples 'should not match',
-    [],
-    as:         'an empty array',
-    reversible: true
+      include_examples 'should not match the constraint'
+    end
 
-  include_examples 'should not match',
-    %w[a b c],
-    as:         'an array',
-    reversible: true
+    describe 'with an Object' do
+      let(:actual) { Object.new.freeze }
 
-  include_examples 'should not match', {}, as: 'an empty hash', reversible: true
+      include_examples 'should not match the constraint'
+    end
 
-  include_examples 'should not match',
-    { a: 'a' },
-    as:         'a hash',
-    reversible: true
+    describe 'with an empty String' do
+      let(:actual) { '' }
+
+      include_examples 'should not match the constraint'
+    end
+
+    describe 'with a String' do
+      let(:actual) { 'a string' }
+
+      include_examples 'should not match the constraint'
+    end
+
+    describe 'with an empty Symbol' do
+      let(:actual) { :'' }
+
+      include_examples 'should not match the constraint'
+    end
+
+    describe 'with a Symbol' do
+      let(:actual) { :a_symbol }
+
+      include_examples 'should not match the constraint'
+    end
+
+    describe 'with an empty Array' do
+      let(:actual) { [] }
+
+      include_examples 'should not match the constraint'
+    end
+
+    describe 'with a Array' do
+      let(:actual) { %w[a b c] }
+
+      include_examples 'should not match the constraint'
+    end
+
+    describe 'with an empty Hash' do
+      let(:actual) { {} }
+
+      include_examples 'should not match the constraint'
+    end
+
+    describe 'with a Hash' do
+      let(:actual) { { a: 1, b: 2, c: 3 } }
+
+      include_examples 'should not match the constraint'
+    end
+
+    context 'when initialized with type: value' do
+      let(:type)                { 'spec.type' }
+      let(:constructor_options) { super().merge(type: type) }
+      let(:expected_errors)     { { type: type } }
+
+      describe 'with nil' do
+        let(:actual) { nil }
+
+        include_examples 'should not match the constraint'
+      end
+
+      describe 'with true' do
+        let(:actual) { true }
+
+        include_examples 'should not match the constraint'
+      end
+
+      describe 'with false' do
+        let(:actual) { false }
+
+        include_examples 'should not match the constraint'
+      end
+
+      describe 'with an integer' do
+        let(:actual) { 0 }
+
+        include_examples 'should not match the constraint'
+      end
+
+      describe 'with an Object' do
+        let(:actual) { Object.new.freeze }
+
+        include_examples 'should not match the constraint'
+      end
+
+      describe 'with an empty String' do
+        let(:actual) { '' }
+
+        include_examples 'should not match the constraint'
+      end
+
+      describe 'with a String' do
+        let(:actual) { 'a string' }
+
+        include_examples 'should not match the constraint'
+      end
+
+      describe 'with an empty Symbol' do
+        let(:actual) { :'' }
+
+        include_examples 'should not match the constraint'
+      end
+
+      describe 'with a Symbol' do
+        let(:actual) { :a_symbol }
+
+        include_examples 'should not match the constraint'
+      end
+
+      describe 'with an empty Array' do
+        let(:actual) { [] }
+
+        include_examples 'should not match the constraint'
+      end
+
+      describe 'with a Array' do
+        let(:actual) { %w[a b c] }
+
+        include_examples 'should not match the constraint'
+      end
+
+      describe 'with an empty Hash' do
+        let(:actual) { {} }
+
+        include_examples 'should not match the constraint'
+      end
+
+      describe 'with a Hash' do
+        let(:actual) { { a: 1, b: 2, c: 3 } }
+
+        include_examples 'should not match the constraint'
+      end
+    end
+  end
+
+  describe '#negated_match' do
+    let(:match_method) { :negated_match }
+
+    describe 'with nil' do
+      let(:actual) { nil }
+
+      include_examples 'should match the constraint'
+    end
+
+    describe 'with true' do
+      let(:actual) { true }
+
+      include_examples 'should match the constraint'
+    end
+
+    describe 'with false' do
+      let(:actual) { false }
+
+      include_examples 'should match the constraint'
+    end
+
+    describe 'with an integer' do
+      let(:actual) { 0 }
+
+      include_examples 'should match the constraint'
+    end
+
+    describe 'with an Object' do
+      let(:actual) { Object.new.freeze }
+
+      include_examples 'should match the constraint'
+    end
+
+    describe 'with an empty String' do
+      let(:actual) { '' }
+
+      include_examples 'should match the constraint'
+    end
+
+    describe 'with a String' do
+      let(:actual) { 'a string' }
+
+      include_examples 'should match the constraint'
+    end
+
+    describe 'with an empty Symbol' do
+      let(:actual) { :'' }
+
+      include_examples 'should match the constraint'
+    end
+
+    describe 'with a Symbol' do
+      let(:actual) { :a_symbol }
+
+      include_examples 'should match the constraint'
+    end
+
+    describe 'with an empty Array' do
+      let(:actual) { [] }
+
+      include_examples 'should match the constraint'
+    end
+
+    describe 'with a Array' do
+      let(:actual) { %w[a b c] }
+
+      include_examples 'should match the constraint'
+    end
+
+    describe 'with an empty Hash' do
+      let(:actual) { {} }
+
+      include_examples 'should match the constraint'
+    end
+
+    describe 'with a Hash' do
+      let(:actual) { { a: 1, b: 2, c: 3 } }
+
+      include_examples 'should match the constraint'
+    end
+  end
 
   describe '#negated_type' do
     include_examples 'should define reader',
       :negated_type,
-      'stannum.constraints.nothing'
+      'stannum.constraints.valid'
+  end
+
+  describe '#options' do
+    let(:expected_options) do
+      { type: described_class::TYPE }
+    end
+
+    include_examples 'should have reader',
+      :options,
+      -> { be == expected_options }
+
+    context 'when initialized with type: value' do
+      let(:type)                { 'spec.type' }
+      let(:constructor_options) { super().merge(type: type) }
+      let(:expected_options)    { super().merge(type: type) }
+
+      it { expect(constraint.options).to be == expected_options }
+    end
   end
 
   describe '#type' do
     include_examples 'should define reader',
       :type,
       'stannum.constraints.anything'
+
+    context 'when initialized with type: value' do
+      let(:type)                { 'spec.type' }
+      let(:constructor_options) { super().merge(type: type) }
+
+      it { expect(constraint.type).to be == type }
+    end
   end
 end

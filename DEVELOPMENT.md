@@ -2,55 +2,59 @@
 
 ## Development Notes
 
+### Contract
+
+- Refactor #include to #compose (avoids collision when implementing DSL).
+
+#### ::Builder
+
+- Implement #compose(contract):
+  ```ruby
+  contract = Stannum::Contract.new do
+    compose OtherContract
+  end
+  ```
+
+#### DSL
+
+- Define a DSL for adding constraints to a contract at the class level:
+  ```ruby
+  class CustomContract < HashContract
+    compose    OtherContract
+    constraint SomeConstraint
+    property   :property_name, PropertyConstraint
+    key        :key,           KeyConstraint
+  end
+  ```
+- Must be heritable.
+- Each class defines list of tuples [method_name, \*args, \*\*kwargs, &block]
+  - Enumerable over ancestors!
+- Passed to Builder ahead of the block.
+  - Builder executes each method.
+- Revise integration specs!
+
 ### Standardization
 
+- Always return a `Stannum::Errors` from `match`.
+- Refactor `#errors_for` to always check `#matches`.
 - Each constraint should define the `::TYPE` and `::NEGATED_TYPE` constants,
   and the `#type` and `#negated_type` readers.
 - Each constraint should define `#options` (default to empty hash).
   - Treat `type`, `negated_type` as options? Override default types?
-- Each constraint should define `#inspect` (default to '<#ConstraintName opt: value, opt: value>')
-- Each contract should define `#inspect_constraints` (default to constraints.map(&:inspect)).
+- Use terse contract class/file names:
+  - Stannum::Contracts::IndifferentHash instead of IndifferentHashContract.
 
-### Generic Contracts
+### Sanity Constraints
 
-- `#add_constraint` should set the `:contract` key to `self`.
-- Remove :property references in `Stannum::Contract` - should be generic.
-- Streaming approach: |
+#### Property-specific Sanity Constraints
 
-  Re-use the `#each_constraint` method?
+NOT SUPPORTED DIRECTLY
 
-  ```
-  def errors_for
-    errors = Errors.new
-
-    each_constraint do |hsh|
-      next if contract.constraint_matches?(actual)
-
-      contract.add_errors_for_constraint(errors)
-    end
-
-    errors
-  end
-
-  def match
-    status = true
-    errors = Errors.new
-
-    each_constraint do |hsh|
-      next if contract.constraint_matches?(actual)
-
-      status = false
-
-      contract.add_errors_for_constraint(errors)
-    end
-
-    [status, errors]
-  end
-
-  def matches?
-    each_constraint.all? { |hsh| contract.constraint_matches?(actual) }
-  end
-  ```
+- Instead of adding multiple constraints for the property, add one contract for
+  the property which contains the individual constraints. If any of the
+  constraints are sanity constraints, the contract will short-circuit
+  accordingly. Probably.
+- Integration test this!
 
 ### Testing Constraints and Contracts
 
@@ -62,12 +66,8 @@ Constraint testing should be done in the context of the `#match` and `#negated_m
 
 - Constraints::Always
   - #does_not_match? and #matches? always return true
-- Constraints::Anything
-  - #matches? always returns true
 - Constraints::Never
   - #does_not_match? and #matches? always return false
-- Constraints::Nothing
-  - #matches? always returns false
 - Constraints::Numeric
   - asserts actual is numeric value
   - options for integer, greater/less than
@@ -99,20 +99,9 @@ Constraint testing should be done in the context of the `#match` and `#negated_m
 
 ## Contracts
 
-- constrain #include to only instances of current class or subclass
-- add_constraint :fail_fast keyword
-  - all keywords with :fail_fast run first
-  - if there are any failures, non-fail-fast constraints are ignored
+### ParametersContract
 
-### ArgumentsContract
-
-### MapContract
-
-- fail_fast by property?
-  - e.g. add_constraint(fail_fast: :name)
-  - only skips non-fail-fast constraints on :name
-
-### TupleContract
+- actual => { arguments: [], block: true, keywords: {} }
 
 ## Errors
 
@@ -134,81 +123,5 @@ Constraint testing should be done in the context of the `#match` and `#negated_m
 
 ## Structs
 
-```
-class Person
-  # Defines :==, :[], :[]=, :inspect, :to_h, :to_s
-  # Sets Person::Contract to a new MapContract
-  include Stannum::Struct
-
-  # Define attributes.
-  # Creates reader, writer methods via @attributes[]
-  # Creates a Type constraint
-  # attribute :attr_name, AttrType (or "AttrType")
-  attribute :name, String
-  attribute :residence, "Residence"
-
-  # Define constraints.
-  constraint CustomPersonConstraint.new
-  constraint { |person| !person.can_drink? if person.age < 21 }
-  constraint :name, CustomNameConstraint.new
-  constraint(:residence) { |residence| residence.location != 'Phantom Zone' }
-end
-```
-
-### ::Contract
-
-- automatically add a type constraint to ::Contract
-  - handles case with another (non-subclass) struct with matching attributes
-  - use :fail_fast option?
-- add :fail_fast option to attribute constraints
-  - if the value is not the expected type, do not run custom constraints
-- automatically add type::Contract if type is a Struct class
-  - support contract: false to override this behavior
-
-### Constraints
-
-- support type:, negated_type: keywords for anonymous constraints
-
-```
-class Administrator
-  attribute :role, String
-
-  constraint(type: 'must have a role') { |role| !role.empty? }
-  constraint(:role, type: 'must be an Admin') { |role| role == 'Admin' }
-end
-```
-
-- support :if, :unless keywords
-
-### Inheritance
-
-What happens if you extend a Module with Struct, then include that module in a class?
-
-Implement Struct::Factory
-- (replaces class << self methods on Struct)
-- takes a class that inherits from Struct
-- defines the ::Attributes constant
-  - if superclass also is a Struct, include the Superclass attributes
-- defines the ::Contract constant
-  - figure out contract inheritance (a mess)
-
-Child classes must:
-  - inherit Class Methods
-  - define their own ::Attributes and ::Contract
-    - include their own ::Attributes
-    - reference their own #attributes and #contract
-  - inherit defined Attributes
-  - inherit defined constraints
-
-### Struct::Attribute
-
-- :optional option
-  - include optional? predicate
-- :required option
-  - include required? predicate
-  - inverse of :optional - error if contradictory options
-
-### Struct::Attributes
-
-- inheritance - #each references #parent ?
-- multiple inheritance - support `include OtherStruct::Attributes` ?
+- Refactor Stannum::Structs::Attribute to Stannum::Attribute.
+- Refactor Stannum::Structs::Attributes to Stannum::Schema.

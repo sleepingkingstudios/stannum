@@ -177,12 +177,13 @@ RSpec.describe Stannum::Struct do
   end
 
   describe '::Contract' do
-    let(:constraints) { described_class::Contract.send :constraints }
+    let(:constraints) { described_class::Contract.send(:each_constraint).to_a }
 
     it { expect(described_class).to define_constant(:Contract) }
 
     it 'should be a contract instance' do
-      expect(described_class::Contract).to be_a(Stannum::Contracts::MapContract)
+      expect(described_class::Contract)
+        .to be_a(Stannum::Contracts::PropertyContract)
     end
 
     it { expect(constraints.size).to be 0 }
@@ -814,11 +815,11 @@ RSpec.describe Stannum::Struct do
     let(:constraint) { Stannum::Constraint.new {} }
 
     def attribute_constraints
-      described_class::Attributes::Contract.send(:constraints)
+      described_class::Attributes::Contract.send(:each_constraint).to_a
     end
 
     def constraints
-      described_class::Contract.send(:constraints)
+      described_class::Contract.send(:each_constraint).to_a
     end
 
     it 'should define the class method' do
@@ -882,7 +883,7 @@ RSpec.describe Stannum::Struct do
         expect do |block|
           described_class.constraint(&block)
 
-          constraint = constraints.last[:constraint]
+          constraint = constraints.last.constraint
 
           constraint.matches?(struct)
         end
@@ -908,7 +909,7 @@ RSpec.describe Stannum::Struct do
         expect do |block|
           described_class.constraint('name', &block)
 
-          constraint = constraints.last[:constraint]
+          constraint = constraints.last.constraint
 
           constraint.matches?(value)
         end
@@ -934,7 +935,7 @@ RSpec.describe Stannum::Struct do
         expect do |block|
           described_class.constraint(:name, &block)
 
-          constraint = constraints.last[:constraint]
+          constraint = constraints.last.constraint
 
           constraint.matches?(value)
         end
@@ -952,8 +953,10 @@ RSpec.describe Stannum::Struct do
         expect { described_class.constraint('name', constraint) }
           .to change { constraints }
           .to include(
-            constraint: constraint,
-            property:   'name'
+            have_attributes(
+              constraint: constraint,
+              property:   'name'
+            )
           )
       end
 
@@ -968,8 +971,10 @@ RSpec.describe Stannum::Struct do
         expect { described_class.constraint(:name, constraint) }
           .to change { constraints }
           .to include(
-            constraint: constraint,
-            property:   'name'
+            have_attributes(
+              constraint: constraint,
+              property:   'name'
+            )
           )
       end
 
@@ -984,8 +989,10 @@ RSpec.describe Stannum::Struct do
         expect { described_class.constraint(constraint) }
           .to change { constraints }
           .to include(
-            constraint: constraint,
-            property:   nil
+            have_attributes(
+              constraint: constraint,
+              property:   nil
+            )
           )
       end
 
@@ -1007,7 +1014,7 @@ RSpec.describe Stannum::Struct do
           expect do |block|
             described_class.constraint(&block)
 
-            constraint = constraints.last[:constraint]
+            constraint = constraints.last.constraint
 
             constraint.matches?(struct)
           end
@@ -1033,7 +1040,7 @@ RSpec.describe Stannum::Struct do
           expect do |block|
             described_class.constraint('name', &block)
 
-            constraint = constraints.last[:constraint]
+            constraint = constraints.last.constraint
 
             constraint.matches?(value)
           end
@@ -1059,7 +1066,7 @@ RSpec.describe Stannum::Struct do
           expect do |block|
             described_class.constraint(:name, &block)
 
-            constraint = constraints.last[:constraint]
+            constraint = constraints.last.constraint
 
             constraint.matches?(value)
           end
@@ -1077,8 +1084,10 @@ RSpec.describe Stannum::Struct do
           expect { described_class.constraint('name', constraint) }
             .to change { constraints }
             .to include(
-              constraint: constraint,
-              property:   'name'
+              have_attributes(
+                constraint: constraint,
+                property:   'name'
+              )
             )
         end
 
@@ -1093,8 +1102,10 @@ RSpec.describe Stannum::Struct do
           expect { described_class.constraint(:name, constraint) }
             .to change { constraints }
             .to include(
-              constraint: constraint,
-              property:   'name'
+              have_attributes(
+                constraint: constraint,
+                property:   'name'
+              )
             )
         end
 
@@ -1109,8 +1120,10 @@ RSpec.describe Stannum::Struct do
           expect { described_class.constraint(constraint) }
             .to change { constraints }
             .to include(
-              constraint: constraint,
-              property:   nil
+              have_attributes(
+                constraint: constraint,
+                property:   nil
+              )
             )
         end
 

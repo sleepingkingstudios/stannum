@@ -1,7 +1,8 @@
 # frozen_string_literal: true
 
-require 'support/gizmo'
+require 'support/structs/gizmo'
 
+# @note Integration spec for a subclassed Stannum::Struct.
 RSpec.describe Spec::Gizmo do
   shared_context 'when initialized with attribute values' do
     let(:attributes) do
@@ -38,7 +39,7 @@ RSpec.describe Spec::Gizmo do
     describe '.contract' do
       let(:contract) { described_class.attributes.contract }
 
-      it { expect(contract).to be_a Stannum::Contract }
+      it { expect(contract).to be_a Stannum::Contracts::HashContract }
 
       describe 'with an empty Hash' do
         let(:expected_errors) do
@@ -168,7 +169,7 @@ RSpec.describe Spec::Gizmo do
   describe '.contract' do
     let(:contract) { described_class.contract }
 
-    it { expect(contract).to be_a Stannum::Contract }
+    it { expect(contract).to be_a Stannum::Contracts::PropertyContract }
 
     describe 'with an empty struct' do
       let(:expected_errors) do

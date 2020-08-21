@@ -102,15 +102,17 @@ RSpec.describe Stannum::Structs::Attributes do
   it { expect(attributes).to be_a Enumerable }
 
   describe '::Contract' do
-    let(:constraints) { attributes::Contract.send(:constraints) }
+    let(:constraints) { attributes::Contract.each_constraint.to_a }
 
     it 'should define the constant' do
       expect(attributes)
         .to define_constant(:Contract)
-        .with_value(an_instance_of(Stannum::Contracts::HashContract))
+        .with_value(
+          an_instance_of(Stannum::Contracts::IndifferentHashContract)
+        )
     end
 
-    it { expect(constraints.size).to be 0 }
+    it { expect(constraints.size).to be 2 }
 
     describe 'with an empty hash' do
       it { expect(attributes::Contract.errors_for({})).to be == [] }
@@ -123,10 +125,10 @@ RSpec.describe Stannum::Structs::Attributes do
       let(:expected_errors) do
         [
           {
-            data:    { keys: %i[price] },
+            data:    { value: hsh[:price] },
             message: nil,
-            path:    [],
-            type:    'stannum.constraints.hash_with_extra_keys'
+            path:    %i[price],
+            type:    'stannum.constraints.hashes.extra_keys'
           }
         ]
       end
@@ -139,17 +141,18 @@ RSpec.describe Stannum::Structs::Attributes do
     end
 
     wrap_context 'when there are many defined attributes' do
-      it { expect(constraints.size).to be defined_attributes.size }
+      it { expect(constraints.size).to be 2 + defined_attributes.size }
 
       it 'should define the constraints', :aggregate_failures do
         defined_attributes.each do |attribute|
-          attr_name = attribute[:name].intern
           attr_type = Object.const_get(attribute[:type])
 
           expect(constraints).to include(
-            constraint: an_instance_of(Stannum::Constraints::Type)
-              .and(have_attributes expected_type: attr_type),
-            property:   attr_name
+            have_attributes(
+              constraint: an_instance_of(Stannum::Constraints::Type)
+                .and(have_attributes expected_type: attr_type),
+              property:   attribute[:name].intern
+            )
           )
         end
       end
@@ -239,10 +242,10 @@ RSpec.describe Stannum::Structs::Attributes do
         let(:expected_errors) do
           [
             {
-              data:    { keys: %i[price] },
+              data:    { value: hsh[:price] },
               message: nil,
-              path:    [],
-              type:    'stannum.constraints.hash_with_extra_keys'
+              path:    %i[price],
+              type:    'stannum.constraints.hashes.extra_keys'
             }
           ]
         end
@@ -355,10 +358,10 @@ RSpec.describe Stannum::Structs::Attributes do
         let(:expected_errors) do
           [
             {
-              data:    { keys: %i[manufacturer] },
+              data:    { value: hsh[:manufacturer] },
               message: nil,
-              path:    [],
-              type:    'stannum.constraints.hash_with_extra_keys'
+              path:    %i[manufacturer],
+              type:    'stannum.constraints.hashes.extra_keys'
             }
           ]
         end
@@ -485,10 +488,10 @@ RSpec.describe Stannum::Structs::Attributes do
         let(:expected_errors) do
           [
             {
-              data:    { keys: %i[manufacturer] },
+              data:    { value: hsh[:manufacturer] },
               message: nil,
-              path:    [],
-              type:    'stannum.constraints.hash_with_extra_keys'
+              path:    %i[manufacturer],
+              type:    'stannum.constraints.hashes.extra_keys'
             }
           ]
         end

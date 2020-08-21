@@ -76,7 +76,7 @@ RSpec.describe Stannum::Structs::Factory do
 
         expect(Spec::CustomStruct)
           .to define_constant(:Contract)
-          .with_value(an_instance_of Stannum::Contracts::MapContract)
+          .with_value(an_instance_of Stannum::Contracts::PropertyContract)
       end
     end
 
@@ -116,7 +116,7 @@ RSpec.describe Stannum::Structs::Factory do
 
         expect(Spec::CustomStruct)
           .to define_constant(:Contract)
-          .with_value(an_instance_of Stannum::Contracts::MapContract)
+          .with_value(an_instance_of Stannum::Contracts::PropertyContract)
 
         expect(Spec::CustomStruct::Contract)
           .not_to be Spec::AncestorStruct::Contract
@@ -125,7 +125,7 @@ RSpec.describe Stannum::Structs::Factory do
       it 'should include the parent ::Contract' do
         factory.call(Spec::CustomStruct)
 
-        expect(Spec::CustomStruct::Contract.send :included)
+        expect(Spec::CustomStruct::Contract.send(:each_included_contract).to_a)
           .to include(Spec::AncestorStruct::Contract)
       end
     end

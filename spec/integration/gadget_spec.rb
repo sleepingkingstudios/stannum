@@ -1,7 +1,8 @@
 # frozen_string_literal: true
 
-require 'support/gadget'
+require 'support/structs/gadget'
 
+# @note Integration spec for Stannum::Gadget.
 RSpec.describe Spec::Gadget do
   shared_context 'when initialized with attribute values' do
     let(:attributes) do
@@ -37,7 +38,7 @@ RSpec.describe Spec::Gadget do
     describe '.contract' do
       let(:contract) { described_class.attributes.contract }
 
-      it { expect(contract).to be_a Stannum::Contract }
+      it { expect(contract).to be_a Stannum::Contracts::HashContract }
 
       describe 'with an empty Hash' do
         let(:expected_errors) do
@@ -149,7 +150,7 @@ RSpec.describe Spec::Gadget do
   describe '.contract' do
     let(:contract) { described_class.contract }
 
-    it { expect(contract).to be_a Stannum::Contract }
+    it { expect(contract).to be_a Stannum::Contracts::PropertyContract }
 
     describe 'with an empty struct' do
       let(:expected_errors) do

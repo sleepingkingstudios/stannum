@@ -17,6 +17,7 @@ RSpec.describe Stannum::Constraint do
         .to be_constructible
         .with(0).arguments
         .and_keywords(:negated_type, :type)
+        .and_any_keywords
         .and_a_block
     end
   end
@@ -33,6 +34,43 @@ RSpec.describe Stannum::Constraint do
       let(:options)      { super().merge(negated_type: negated_type) }
 
       it { expect(constraint.negated_type).to be negated_type }
+    end
+  end
+
+  describe '#options' do
+    let(:expected) do
+      {
+        negated_type: Stannum::Constraints::Base::NEGATED_TYPE,
+        type:         Stannum::Constraints::Base::TYPE
+      }.merge(options)
+    end
+
+    include_examples 'should have reader', :options, -> { be == expected }
+
+    context 'when initialized with a negated type' do
+      let(:negated_type) { 'spec.custom_negated_type' }
+      let(:options)      { super().merge(negated_type: negated_type) }
+
+      it { expect(constraint.options).to be == expected }
+    end
+
+    context 'when initialized with a type' do
+      let(:type)    { 'spec.custom_type' }
+      let(:options) { super().merge(type: type) }
+
+      it { expect(constraint.options).to be == expected }
+    end
+
+    context 'when initialized with options' do
+      let(:options) do
+        {
+          language:  'Ada',
+          log_level: 'panic',
+          strict:    true
+        }
+      end
+
+      it { expect(constraint.options).to be == expected }
     end
   end
 

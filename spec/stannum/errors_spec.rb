@@ -919,6 +919,23 @@ RSpec.describe Stannum::Errors do
             .to change(errors, :to_a).to include expected
         end
       end
+
+      describe 'with a duplicate string' do
+        it { expect(errors.add 'blank').to be errors }
+
+        it 'should not add the error' do
+          expect { errors.add 'blank' }.not_to change(errors, :size)
+        end
+      end
+
+      describe 'with a duplicate string and data' do
+        it { expect(errors.add 'invalid', key: 'value').to be errors }
+
+        it 'should not add the error' do
+          expect { errors.add 'invalid', key: 'value' }
+            .not_to change(errors, :size)
+        end
+      end
     end
   end
 

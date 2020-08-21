@@ -51,10 +51,12 @@ module Stannum
     #     constraint, otherwise false.
     #
     #   @see #matches?
-    def initialize(negated_type: nil, type: nil, &block)
+    def initialize(negated_type: nil, type: nil, **options, &block)
       @negated_type = negated_type || Stannum::Constraints::Base::NEGATED_TYPE
       @type         = type         || Stannum::Constraints::Base::TYPE
       @definition   = block
+
+      super(negated_type: @negated_type, type: @type, **options)
     end
 
     # @return [String] the error type generated for a matching object.
