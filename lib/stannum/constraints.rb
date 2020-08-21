@@ -7,6 +7,7 @@ module Stannum
   module Constraints
     autoload :Anything, 'stannum/constraints/anything'
     autoload :Base,     'stannum/constraints/base'
+    autoload :Hashes,   'stannum/constraints/hashes'
     autoload :Methods,  'stannum/constraints/methods'
     autoload :Nothing,  'stannum/constraints/nothing'
     autoload :Presence, 'stannum/constraints/presence'

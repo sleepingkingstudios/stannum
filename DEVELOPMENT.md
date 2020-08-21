@@ -2,110 +2,62 @@
 
 ## Development Notes
 
-- Always return a Stannum::Errors from match.
-- Refactor #errors_for to always check #matches.
+### Contract
+
+- Refactor #include to #compose (avoids collision when implementing DSL).
+
+#### ::Builder
+
+- Define specialized add_x_constraint methods
+  - HashContract#add_key_constraint
+  - PropertyContract#add_property_constraint
+  - TupleContract#add_index_constraint
+  - Refactor builders to leverage ^ ?
+- Implement #compose(contract):
+  ```ruby
+  contract = Stannum::Contract.new do
+    compose OtherContract
+  end
+  ```
+
+#### DSL
+
+- Define a DSL for adding constraints to a contract at the class level:
+  ```ruby
+  class CustomContract < HashContract
+    compose    OtherContract
+    constraint SomeConstraint
+    property   :property_name, PropertyConstraint
+    key        :key,           KeyConstraint
+  end
+  ```
+- Must be heritable.
+- Each class defines list of tuples [method_name, \*args, \*\*kwargs, &block]
+  - Enumerable over ancestors!
+- Passed to Builder ahead of the block.
+  - Builder executes each method.
+- Revise integration specs!
+
+### Contracts::IndifferentHashContract
+
+- Requires Constraints::Hashes::IndifferentKey
+  - sets key_type
+  - indifferent lookup for #map_value
+
+### Contracts::PropertyContract::Builder
+
+- Refactor from Contract::Builder.
 
 ### Standardization
 
+- Always return a `Stannum::Errors` from `match`.
+- Refactor `#errors_for` to always check `#matches`.
 - Each constraint should define the `::TYPE` and `::NEGATED_TYPE` constants,
   and the `#type` and `#negated_type` readers.
 - Each constraint should define `#options` (default to empty hash).
   - Treat `type`, `negated_type` as options? Override default types?
-- Each constraint should define `#inspect` (default to '<#ConstraintName opt: value, opt: value>')
-- Each contract should define `#inspect_constraints` (default to constraints.map(&:inspect)).
-
-### Generic Contracts
-
-- `#add_constraint` should set the `:contract` key to `self`.
-- Remove :property references in `Stannum::Contract` - should be generic.
-- Streaming approach: |
-
-  Re-use the `#each_constraint` method?
-
-  ```
-  def errors_for
-    errors = Errors.new
-
-    each_constraint do |hsh|
-      next if contract.constraint_matches?(actual)
-
-      contract.add_errors_for_constraint(errors)
-    end
-
-    errors
-  end
-
-  def match
-    status = true
-    errors = Errors.new
-
-    each_constraint do |hsh|
-      next if contract.constraint_matches?(actual)
-
-      status = false
-
-      contract.add_errors_for_constraint(errors)
-    end
-
-    [status, errors]
-  end
-
-  def matches?
-    each_constraint.all? { |hsh| contract.constraint_matches?(actual) }
-  end
-  ```
 
 ### Sanity Constraints
-
-- Marked with sanity: true property.
-- Sanity checks are short-circuiting.
-- Example: type constraint on the object, prior to evaluating property
-  constraints
-
-#### #each_constraint
-
-- Returns all sanity checks, then all non-sanity checks.
-- Define helper #each_included_constraint ?
-- Iterate through twice, first yielding sanity?: true, then sanity?: false
-
-#### #match
-
-- Example: A struct with properties. If the actual is not an instance of the
-  struct (#matches returns false), immediately stop and return that error.
-- Also #matches?, #errors_for
-
-```ruby
-each_pair(actual) do |definition, value|
-  next if definition.constraint.matches?(value)
-
-  status = false
-
-  definition.contract.send(:add_errors_for, definition, value, errors)
-
-  return [status, errors] if definition.sanity?
-end
-```
-
-#### #negated_match
-
-- Example: A struct with properties. If the actual is not an instance of the
-  struct (#does_not_match returns true), immediately stop and do not add an
-  error.
-- Also #does_not_match?, #negated_errors_for
-
-```ruby
-each_pair(actual) do |definition, value|
-  if definition.constraint.does_not_match?(value)
-    next unless definition.sanity?
-
-    return [true, errors]
-  end
-
-  status = false
-
-  definition.contract.add_negated_errors_for(definition, value, errors)
-end
-```
 
 #### Property-specific Sanity Constraints
 
@@ -127,12 +79,8 @@ Constraint testing should be done in the context of the `#match` and `#negated_m
 
 - Constraints::Always
   - #does_not_match? and #matches? always return true
-- Constraints::Anything
-  - #matches? always returns true
 - Constraints::Never
   - #does_not_match? and #matches? always return false
-- Constraints::Nothing
-  - #matches? always returns false
 - Constraints::Numeric
   - asserts actual is numeric value
   - options for integer, greater/less than
@@ -164,20 +112,7 @@ Constraint testing should be done in the context of the `#match` and `#negated_m
 
 ## Contracts
 
-- constrain #include to only instances of current class or subclass
-- add_constraint :fail_fast keyword
-  - all keywords with :fail_fast run first
-  - if there are any failures, non-fail-fast constraints are ignored
-
-### ArgumentsContract
-
-### MapContract
-
-- fail_fast by property?
-  - e.g. add_constraint(fail_fast: :name)
-  - only skips non-fail-fast constraints on :name
-
-### TupleContract
+### ParametersContract
 
 ## Errors
 

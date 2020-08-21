@@ -107,7 +107,7 @@ RSpec.describe Stannum::Structs::Attributes do
     it 'should define the constant' do
       expect(attributes)
         .to define_constant(:Contract)
-        .with_value(an_instance_of(Stannum::Contracts::HashContract))
+        .with_value(an_instance_of(Stannum::Contracts::LegacyHashContract))
     end
 
     it { expect(constraints.size).to be 0 }

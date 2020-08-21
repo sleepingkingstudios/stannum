@@ -39,9 +39,9 @@ module Stannum
       #   @param constraint [Stannum::Constraint::Base] The constraint to add.
       #   @param options [Hash<Symbol, Object>] Options for the constraint.
       #
-      # @overload item(**options) { |value| }
+      # @overload property(**options) { |value| }
       #   Creates a new Stannum::Constraint object with the given block, and
-      #   adds that constraint to the contract for the next intex.
+      #   adds that constraint to the contract for the property.
       def property(property, constraint = nil, **options, &block)
         self.constraint(
           constraint,

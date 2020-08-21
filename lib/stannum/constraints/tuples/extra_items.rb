@@ -19,26 +19,32 @@ module Stannum::Constraints::Tuples
     # The :type of the error generated for a non-matching object.
     TYPE = 'stannum.constraints.tuples.extra_items'
 
-    # @todo Document #initialize.
+    # @param expected_count [Integer, Proc] The number of expected items. If a
+    #   Proc, will be evaluated each time the constraint is matched.
+    # @param options [Hash<Symbol, Object>] Configuration options for the
+    #   constraint. Defaults to an empty Hash.
     def initialize(expected_count, **options)
       super(**options)
 
       @expected_count = expected_count
     end
 
-    # @todo Document #does_not_match?
+    # @return [true, false] true if the object responds to #size and the object
+    #   size is greater than the number of expected items; otherwise false.
     def does_not_match?(actual)
       return false unless actual.respond_to?(:size)
 
       actual.size > expected_count
     end
 
-    # @todo Document #expected_count.
+    # @return [Integer] the number of expected items.
     def expected_count
       @expected_count.is_a?(Proc) ? @expected_count.call : @expected_count
     end
 
-    # @todo Document #matches?
+    # @return [true, false] true if the object responds to #size and the object
+    #   size is less than or equal to than the number of expected items;
+    #   otherwise false.
     def matches?(actual)
       return false unless actual.respond_to?(:size)
 

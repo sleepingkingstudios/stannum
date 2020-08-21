@@ -2,6 +2,7 @@
 
 require 'forwardable'
 
+require 'stannum/contracts/legacy_hash_contract'
 require 'stannum/structs/attribute'
 
 module Stannum::Structs
@@ -14,7 +15,7 @@ module Stannum::Structs
 
     def initialize
       @attributes = {}
-      contract    = Stannum::Contracts::HashContract.new(
+      contract    = Stannum::Contracts::LegacyHashContract.new(
         allow_extra_keys: false,
         key_type:         :indifferent
       )
