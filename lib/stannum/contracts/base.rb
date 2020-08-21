@@ -470,10 +470,16 @@ module Stannum::Contracts
 
     private
 
+    def each_included_contract
+      return enum_for(:each_included_contract) unless block_given?
+
+      @included.each { |contract| yield contract }
+    end
+
     def each_unscoped_constraint
       return enum_for(:each_unscoped_constraint) unless block_given?
 
-      @included.each do |contract|
+      each_included_contract do |contract|
         contract.each_constraint { |definition| yield definition }
       end
 

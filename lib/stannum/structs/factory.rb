@@ -1,6 +1,5 @@
 # frozen_string_literal: true
 
-require 'stannum/contracts/map_contract'
 require 'stannum/structs/attributes'
 
 module Stannum::Structs
@@ -38,7 +37,7 @@ module Stannum::Structs
     end
 
     def initialize_contract(struct_class)
-      contract = Stannum::Contracts::MapContract.new
+      contract = Stannum::Contracts::PropertyContract.new
 
       struct_class.const_set(:Contract, contract)
 

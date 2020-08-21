@@ -116,6 +116,8 @@ Constraint testing should be done in the context of the `#match` and `#negated_m
 
 ### ParametersContract
 
+- actual => { arguments: [], block: true, keywords: {} }
+
 ## Errors
 
 - clean up error types
@@ -136,81 +138,5 @@ Constraint testing should be done in the context of the `#match` and `#negated_m
 
 ## Structs
 
-```
-class Person
-  # Defines :==, :[], :[]=, :inspect, :to_h, :to_s
-  # Sets Person::Contract to a new MapContract
-  include Stannum::Struct
-
-  # Define attributes.
-  # Creates reader, writer methods via @attributes[]
-  # Creates a Type constraint
-  # attribute :attr_name, AttrType (or "AttrType")
-  attribute :name, String
-  attribute :residence, "Residence"
-
-  # Define constraints.
-  constraint CustomPersonConstraint.new
-  constraint { |person| !person.can_drink? if person.age < 21 }
-  constraint :name, CustomNameConstraint.new
-  constraint(:residence) { |residence| residence.location != 'Phantom Zone' }
-end
-```
-
-### ::Contract
-
-- automatically add a type constraint to ::Contract
-  - handles case with another (non-subclass) struct with matching attributes
-  - use :fail_fast option?
-- add :fail_fast option to attribute constraints
-  - if the value is not the expected type, do not run custom constraints
-- automatically add type::Contract if type is a Struct class
-  - support contract: false to override this behavior
-
-### Constraints
-
-- support type:, negated_type: keywords for anonymous constraints
-
-```
-class Administrator
-  attribute :role, String
-
-  constraint(type: 'must have a role') { |role| !role.empty? }
-  constraint(:role, type: 'must be an Admin') { |role| role == 'Admin' }
-end
-```
-
-- support :if, :unless keywords
-
-### Inheritance
-
-What happens if you extend a Module with Struct, then include that module in a class?
-
-Implement Struct::Factory
-- (replaces class << self methods on Struct)
-- takes a class that inherits from Struct
-- defines the ::Attributes constant
-  - if superclass also is a Struct, include the Superclass attributes
-- defines the ::Contract constant
-  - figure out contract inheritance (a mess)
-
-Child classes must:
-  - inherit Class Methods
-  - define their own ::Attributes and ::Contract
-    - include their own ::Attributes
-    - reference their own #attributes and #contract
-  - inherit defined Attributes
-  - inherit defined constraints
-
-### Struct::Attribute
-
-- :optional option
-  - include optional? predicate
-- :required option
-  - include required? predicate
-  - inverse of :optional - error if contradictory options
-
-### Struct::Attributes
-
-- inheritance - #each references #parent ?
-- multiple inheritance - support `include OtherStruct::Attributes` ?
+- Refactor Stannum::Structs::Attribute to Stannum::Attribute.
+- Refactor Stannum::Structs::Attributes to Stannum::Schema.
