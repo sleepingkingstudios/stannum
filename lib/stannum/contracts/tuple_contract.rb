@@ -71,7 +71,7 @@ module Stannum::Contracts
     # constructor for TupleContract.
     #
     # @api private
-    class Builder < Stannum::Contracts::Builder
+    class Builder < Stannum::Contracts::PropertyContract::Builder
       # @param contract [Stannum::Contract] The contract to which constraints
       #   are added.
       def initialize(contract)
@@ -117,17 +117,7 @@ module Stannum::Contracts
     # @param options [Hash<Symbol, Object>] Configuration options for the
     #   contract. Defaults to an empty Hash.
     def initialize(allow_extra_items: false, **options, &block)
-      super(allow_extra_items: allow_extra_items, **options)
-
-      count = -> { expected_count }
-
-      add_constraint Stannum::Constraints::Types::Tuple.new, sanity: true
-
-      unless allow_extra_items?
-        add_constraint Stannum::Constraints::Tuples::ExtraItems.new(count)
-      end
-
-      self.class::Builder.new(self).instance_exec(&block) if block_given?
+      super(allow_extra_items: allow_extra_items, **options, &block)
     end
 
     # @return [true, false] If false, then a tuple with extra items after the
@@ -162,6 +152,28 @@ module Stannum::Contracts
 
     def validate_property?(**options)
       options[:property_type] == :index || super
+    end
+
+    private
+
+    def add_extra_items_constraint
+      return if allow_extra_items?
+
+      count = -> { expected_count }
+
+      add_constraint Stannum::Constraints::Tuples::ExtraItems.new(count)
+    end
+
+    def add_type_constraint
+      add_constraint Stannum::Constraints::Types::Tuple.new, sanity: true
+    end
+
+    def define_constraints(&block)
+      add_type_constraint
+
+      add_extra_items_constraint
+
+      super
     end
   end
 end

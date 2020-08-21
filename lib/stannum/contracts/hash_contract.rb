@@ -87,7 +87,7 @@ module Stannum::Contracts
     # constructor for HashContract.
     #
     # @api private
-    class Builder < Stannum::Contracts::Builder
+    class Builder < Stannum::Contracts::PropertyContract::Builder
       # Defines a key constraint on the contract.
       #
       # @overload key(key, constraint, **options)
@@ -133,14 +133,9 @@ module Stannum::Contracts
         allow_extra_keys: allow_extra_keys,
         allow_hash_like:  allow_hash_like,
         key_type:         resolve_key_type(key_type),
-        **options
+        **options,
+        &block
       )
-
-      add_type_constraint
-
-      add_extra_keys_constraint
-
-      self.class::Builder.new(self).instance_exec(&block) if block_given?
     end
 
     # (see Stannum::Contracts::Base#each_constraint)
@@ -192,6 +187,14 @@ module Stannum::Contracts
       else
         add_constraint Stannum::Constraints::Type.new(Hash), sanity: true
       end
+    end
+
+    def define_constraints(&block)
+      add_type_constraint
+
+      add_extra_keys_constraint
+
+      super
     end
 
     def key_type

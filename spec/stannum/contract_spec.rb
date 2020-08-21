@@ -37,13 +37,20 @@ RSpec.describe Stannum::Contract do
         )
       end
     end
+    let(:constructor_block) do
+      definitions = constraints
 
-    before(:example) do
-      constraints.each do |definition|
-        contract.add_constraint(
-          definition[:constraint],
-          **definition.fetch(:options, {})
-        )
+      lambda do
+        definitions.each do |definition|
+          options   = definition.fetch(:options, {}).dup
+          prop_name = options.delete(:property)
+
+          if prop_name
+            property(prop_name, definition[:constraint], **options)
+          else
+            constraint(definition[:constraint], **options)
+          end
+        end
       end
     end
   end
@@ -74,13 +81,20 @@ RSpec.describe Stannum::Contract do
         )
       end
     end
+    let(:constructor_block) do
+      definitions = constraints
 
-    before(:example) do
-      constraints.each do |definition|
-        contract.add_constraint(
-          definition[:constraint],
-          **definition.fetch(:options, {})
-        )
+      lambda do
+        definitions.each do |definition|
+          options   = definition.fetch(:options, {}).dup
+          prop_name = options.delete(:property)
+
+          if prop_name
+            property(prop_name, definition[:constraint], **options)
+          else
+            constraint(definition[:constraint], **options)
+          end
+        end
       end
     end
   end

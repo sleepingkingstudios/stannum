@@ -38,16 +38,6 @@
   - Builder executes each method.
 - Revise integration specs!
 
-### Contracts::IndifferentHashContract
-
-- Requires Constraints::Hashes::IndifferentKey
-  - sets key_type
-  - indifferent lookup for #map_value
-
-### Contracts::PropertyContract::Builder
-
-- Refactor from Contract::Builder.
-
 ### Standardization
 
 - Always return a `Stannum::Errors` from `match`.

@@ -3,6 +3,7 @@
 require 'stannum/contracts/base'
 
 require 'support/examples/constraint_examples'
+require 'support/examples/contract_builder_examples'
 require 'support/examples/contract_examples'
 
 RSpec.describe Stannum::Contracts::Base do
@@ -167,12 +168,216 @@ RSpec.describe Stannum::Contracts::Base do
 
   let(:constructor_options) { {} }
 
+  describe '::Builder' do
+    include Spec::Support::Examples::ContractBuilderExamples
+
+    subject(:builder) { described_class.new(contract) }
+
+    let(:described_class) { super()::Builder }
+    let(:contract) do
+      Stannum::Contracts::Base.new # rubocop:disable RSpec/DescribedClass
+    end
+
+    describe '.new' do
+      it { expect(described_class).to be_constructible.with(1).argument }
+    end
+
+    describe '#contract' do
+      include_examples 'should define reader',
+        :contract,
+        -> { contract }
+    end
+
+    describe '#constraint' do
+      it 'should define the method' do
+        expect(builder)
+          .to respond_to(:constraint)
+          .with(0..1).arguments
+          .and_any_keywords
+      end
+
+      describe 'with no arguments' do
+        let(:error_message) { 'invalid constraint nil' }
+
+        it 'should raise an exception' do
+          expect { builder.constraint }
+            .to raise_error ArgumentError, error_message
+        end
+      end
+
+      describe 'with a nil constraint' do
+        let(:error_message) { 'invalid constraint nil' }
+
+        it 'should raise an exception' do
+          expect { builder.constraint(nil) }
+            .to raise_error ArgumentError, error_message
+        end
+      end
+
+      describe 'with an invalid constraint' do
+        let(:constraint)    { Object.new.freeze }
+        let(:error_message) { "invalid constraint #{constraint.inspect}" }
+
+        it 'should raise an exception' do
+          expect { builder.constraint(constraint) }
+            .to raise_error ArgumentError, error_message
+        end
+      end
+
+      describe 'with a valid constraint' do
+        let(:constraint) { Stannum::Constraint.new }
+
+        it 'should return the builder' do
+          expect(builder.constraint(constraint)).to be builder
+        end
+
+        it 'should add the constraint to the contract', :aggregate_failures do
+          builder.constraint(constraint)
+
+          definition = contract.each_constraint.to_a.last
+
+          expect(definition).to be_a Stannum::Contracts::Definition
+          expect(definition.constraint).to be constraint
+          expect(definition.contract).to be contract
+          expect(definition.options).to be == { sanity: false }
+        end
+      end
+
+      describe 'with a valid constraint and options' do
+        let(:constraint) { Stannum::Constraint.new }
+        let(:options)    { { key: 'value' } }
+
+        it 'should return the builder' do
+          expect(builder.constraint(constraint, **options)).to be builder
+        end
+
+        it 'should add the constraint to the contract', :aggregate_failures do
+          builder.constraint(constraint, **options)
+
+          definition = contract.each_constraint.to_a.last
+
+          expect(definition).to be_a Stannum::Contracts::Definition
+          expect(definition.constraint).to be constraint
+          expect(definition.contract).to be contract
+          expect(definition.options).to be == { sanity: false }.merge(options)
+        end
+      end
+
+      describe 'with a block' do
+        let(:block)  { ->(actual) { actual.nil? } }
+        let(:actual) { Object.new.freeze }
+
+        it 'should return the builder' do
+          expect(builder.constraint(&block)).to be builder
+        end
+
+        it 'should add the constraint to the contract', :aggregate_failures do
+          builder.constraint(&block)
+
+          definition = contract.each_constraint.to_a.last
+
+          expect(definition).to be_a Stannum::Contracts::Definition
+          expect(definition.constraint).to be_a Stannum::Constraint
+          expect(definition.contract).to be contract
+          expect(definition.options).to be == { sanity: false }
+        end
+
+        it 'should yield the block to the constraint' do
+          expect do |block|
+            builder.constraint(&block)
+
+            definition = contract.each_constraint.to_a.last
+
+            definition.constraint.match?(actual)
+          end
+            .to yield_with_args(actual)
+        end
+      end
+
+      describe 'with a block and options' do
+        let(:block)  { ->(actual) { actual.nil? } }
+        let(:actual) { Object.new.freeze }
+        let(:options) do
+          {
+            key:          'value',
+            negated_type: 'spec.negated_type',
+            type:         'spec.custom_type'
+          }
+        end
+
+        it 'should return the builder' do
+          expect(builder.constraint(**options, &block)).to be builder
+        end
+
+        it 'should add the constraint to the contract', :aggregate_failures do
+          builder.constraint(**options, &block)
+
+          definition = contract.each_constraint.to_a.last
+
+          expect(definition).to be_a Stannum::Contracts::Definition
+          expect(definition.constraint).to be_a Stannum::Constraint
+          expect(definition.constraint.options).to be == options
+          expect(definition.contract).to be contract
+          expect(definition.options).to be == { sanity: false }.merge(options)
+        end
+
+        it 'should yield the block to the constraint' do
+          expect do |block|
+            builder.constraint(**options, &block)
+
+            definition = contract.each_constraint.to_a.last
+
+            definition.constraint.match?(actual)
+          end
+            .to yield_with_args(actual)
+        end
+      end
+
+      describe 'with a block and a constraint' do
+        let(:block)      { ->(actual) { actual.nil? } }
+        let(:constraint) { Stannum::Constraint.new }
+        let(:error_message) do
+          'expected either a block or a constraint instance, but received' \
+          " both a block and #{constraint.inspect}"
+        end
+
+        it 'should raise an exception' do
+          expect { builder.constraint(constraint, &block) }
+            .to raise_error ArgumentError, error_message
+        end
+      end
+    end
+  end
+
   describe '.new' do
     it 'should define the constructor' do
       expect(described_class)
         .to be_constructible
         .with(0).arguments
         .and_any_keywords
+        .and_a_block
+    end
+
+    describe 'with a block' do
+      let(:builder) do
+        instance_double(described_class::Builder, constraint: nil)
+      end
+
+      before(:example) do
+        allow(described_class::Builder).to receive(:new).and_return(builder)
+      end
+
+      it 'should call the builder with the block', :aggregate_failures do
+        described_class.new do
+          constraint option: 'one'
+          constraint option: 'two'
+          constraint option: 'three'
+        end
+
+        expect(builder).to have_received(:constraint).with(option: 'one')
+        expect(builder).to have_received(:constraint).with(option: 'two')
+        expect(builder).to have_received(:constraint).with(option: 'three')
+      end
     end
   end
 

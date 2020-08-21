@@ -101,11 +101,13 @@ module Stannum::Contracts
   class Base < Stannum::Constraints::Base # rubocop:disable Metrics/ClassLength
     # @param options [Hash<Symbol, Object>] Configuration options for the
     #   contract. Defaults to an empty Hash.
-    def initialize(**options)
+    def initialize(**options, &block)
       @constraints = []
       @included    = []
 
       super(**options)
+
+      define_constraints(&block)
     end
 
     # @!method errors_for(actual)
@@ -469,6 +471,10 @@ module Stannum::Contracts
     end
 
     private
+
+    def define_constraints(&block)
+      self.class::Builder.new(self).instance_exec(&block) if block_given?
+    end
 
     def each_included_contract
       return enum_for(:each_included_contract) unless block_given?
