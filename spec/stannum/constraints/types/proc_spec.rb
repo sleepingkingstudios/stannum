@@ -1,10 +1,10 @@
 # frozen_string_literal: true
 
-require 'stannum/constraints/types/symbol'
+require 'stannum/constraints/types/proc'
 
 require 'support/examples/constraint_examples'
 
-RSpec.describe Stannum::Constraints::Types::Symbol do
+RSpec.describe Stannum::Constraints::Types::Proc do
   include Spec::Support::Examples::ConstraintExamples
 
   subject(:constraint) { described_class.new(**constructor_options) }
@@ -35,18 +35,18 @@ RSpec.describe Stannum::Constraints::Types::Symbol do
   include_examples 'should implement the Constraint interface'
 
   describe '#expected_type' do
-    include_examples 'should have reader', :expected_type, Symbol
+    include_examples 'should have reader', :expected_type, Proc
   end
 
   describe '#match' do
     let(:match_method) { :match }
     let(:expected_errors) do
       {
-        data: { required: constraint.required?, type: Symbol },
+        data: { required: constraint.required?, type: Proc },
         type: constraint.type
       }
     end
-    let(:matching) { :symbol }
+    let(:matching) { -> {} }
 
     include_examples 'should match the type constraint'
   end
@@ -55,11 +55,11 @@ RSpec.describe Stannum::Constraints::Types::Symbol do
     let(:match_method) { :negated_match }
     let(:expected_errors) do
       {
-        data: { required: constraint.required?, type: Symbol },
+        data: { required: constraint.required?, type: Proc },
         type: constraint.negated_type
       }
     end
-    let(:matching) { :symbol }
+    let(:matching) { -> {} }
 
     include_examples 'should match the negated type constraint'
   end
@@ -71,7 +71,7 @@ RSpec.describe Stannum::Constraints::Types::Symbol do
   end
 
   describe '#options' do
-    let(:expected) { { expected_type: Symbol, required: true } }
+    let(:expected) { { expected_type: Proc, required: true } }
 
     include_examples 'should have reader', :options, -> { be == expected }
 
