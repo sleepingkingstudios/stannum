@@ -5,6 +5,7 @@ require 'stannum/constraints'
 module Stannum::Constraints
   # Namespace for type constraints.
   module Types
+    autoload :Hash,   'stannum/constraints/types/hash'
     autoload :Map,    'stannum/constraints/types/map'
     autoload :Symbol, 'stannum/constraints/types/symbol'
     autoload :Tuple,  'stannum/constraints/types/tuple'
