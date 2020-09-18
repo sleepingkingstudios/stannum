@@ -2,6 +2,9 @@
 
 ## Development Notes
 
+- Refactor Constraints::Methods to Constraints::Signature ?
+  - Refactor Map, Tuple constraints to Constraints::Signatures ?
+
 ### Contract
 
 - Refactor #include to #compose (avoids collision when implementing DSL).
@@ -91,11 +94,13 @@ Constraint testing should be done in the context of the `#match` and `#negated_m
 - Types::Boolean
 - Types::Float
 - Types::Hash
-- Types::HashOf(keyType, valueType)
+- Types::IndifferentHash
 - Types::Integer
 - Types::Nil
 - Types::String
+  - add support for allowing/disallowing empty strings
 - Types::Symbol
+  - add support for allowing/disallowing empty symbols
 
 ## Contracts
 

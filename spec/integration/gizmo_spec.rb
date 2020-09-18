@@ -32,7 +32,13 @@ RSpec.describe Spec::Gizmo do
       it 'should return the attribute' do
         expect(described_class.attributes[:name])
           .to be_a(Stannum::Structs::Attribute)
-          .and(have_attributes(name: 'name', options: {}, type: 'String'))
+          .and(
+            have_attributes(
+              name:    'name',
+              options: { required: true },
+              type:    'String'
+            )
+          )
       end
     end
 
@@ -45,25 +51,19 @@ RSpec.describe Spec::Gizmo do
         let(:expected_errors) do
           [
             {
-              data:    { type: String },
+              data:    { required: true, type: String },
               message: nil,
               path:    [:name],
               type:    'stannum.constraints.is_not_type'
             },
             {
-              data:    { type: String },
-              message: nil,
-              path:    [:description],
-              type:    'stannum.constraints.is_not_type'
-            },
-            {
-              data:    { type: Integer },
+              data:    { required: true, type: Integer },
               message: nil,
               path:    [:quantity],
               type:    'stannum.constraints.is_not_type'
             },
             {
-              data:    { type: String },
+              data:    { required: true, type: String },
               message: nil,
               path:    [:size],
               type:    'stannum.constraints.is_not_type'
@@ -80,19 +80,19 @@ RSpec.describe Spec::Gizmo do
         let(:expected_errors) do
           [
             {
-              data:    { type: String },
+              data:    { required: false, type: String },
               message: nil,
-              path:    [:name],
+              path:    [:description],
               type:    'stannum.constraints.is_not_type'
             },
             {
-              data:    { type: Integer },
+              data:    { required: true, type: Integer },
               message: nil,
               path:    [:quantity],
               type:    'stannum.constraints.is_not_type'
             },
             {
-              data:    { type: String },
+              data:    { required: true, type: String },
               message: nil,
               path:    [:size],
               type:    'stannum.constraints.is_not_type'
@@ -100,7 +100,10 @@ RSpec.describe Spec::Gizmo do
           ]
         end
         let(:attributes) do
-          { description: 'No one is sure what this is or what it does.' }
+          {
+            description: :invalid_description,
+            name:        'Self-Sealing Stem Bolt'
+          }
         end
 
         it { expect(contract.errors_for(attributes)).to be == expected_errors }
@@ -131,22 +134,22 @@ RSpec.describe Spec::Gizmo do
           {
             name:    'name',
             type:    'String',
-            options: {}
+            options: { required: true }
           },
           {
             name:    'description',
             type:    'String',
-            options: { optional: true }
+            options: { required: false }
           },
           {
             name:    'quantity',
             type:    'Integer',
-            options: { default: 0 }
+            options: { default: 0, required: true }
           },
           {
             name:    'size',
             type:    'String',
-            options: {}
+            options: { required: true }
           }
         ].map do |attributes|
           an_instance_of(Stannum::Structs::Attribute).and(
@@ -175,19 +178,13 @@ RSpec.describe Spec::Gizmo do
       let(:expected_errors) do
         [
           {
-            data:    { type: String },
+            data:    { required: true, type: String },
             message: nil,
             path:    [:name],
             type:    'stannum.constraints.is_not_type'
           },
           {
-            data:    { type: String },
-            message: nil,
-            path:    [:description],
-            type:    'stannum.constraints.is_not_type'
-          },
-          {
-            data:    { type: String },
+            data:    { required: true, type: String },
             message: nil,
             path:    [:size],
             type:    'stannum.constraints.is_not_type'
@@ -215,15 +212,16 @@ RSpec.describe Spec::Gizmo do
     describe 'with a struct with invalid attributes' do
       let(:attributes) do
         {
-          name:     'Self-Sealing Stem Bolt',
-          quantity: -10,
-          size:     'Lilliputian'
+          name:        'Self-Sealing Stem Bolt',
+          description: :invalid_description,
+          quantity:    -10,
+          size:        'Lilliputian'
         }
       end
       let(:expected_errors) do
         [
           {
-            data:    { type: String },
+            data:    { required: false, type: String },
             message: nil,
             path:    [:description],
             type:    'stannum.constraints.is_not_type'

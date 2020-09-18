@@ -19,7 +19,7 @@ RSpec.describe Spec::ResponseContract do
       let(:expected_errors) do
         [
           {
-            data:    { type: Hash },
+            data:    { required: true, type: Hash },
             message: nil,
             path:    [],
             type:    Stannum::Constraints::Type::TYPE
@@ -37,13 +37,13 @@ RSpec.describe Spec::ResponseContract do
       let(:expected_errors) do
         [
           {
-            data:    { type: Integer },
+            data:    { required: true, type: Integer },
             message: nil,
             path:    %i[status],
             type:    Stannum::Constraints::Type::TYPE
           },
           {
-            data:    { type: Hash },
+            data:    { required: true, type: Hash },
             message: nil,
             path:    %i[json],
             type:    Stannum::Constraints::Type::TYPE
@@ -61,7 +61,7 @@ RSpec.describe Spec::ResponseContract do
       let(:expected_errors) do
         [
           {
-            data:    { type: Integer },
+            data:    { required: true, type: Integer },
             message: nil,
             path:    %i[status],
             type:    Stannum::Constraints::Type::TYPE
@@ -91,7 +91,7 @@ RSpec.describe Spec::ResponseContract do
             type:    Stannum::Constraints::Hashes::ExtraKeys::TYPE
           },
           {
-            data:    { type: Integer },
+            data:    { required: true, type: Integer },
             message: nil,
             path:    %i[status],
             type:    Stannum::Constraints::Type::TYPE
@@ -120,7 +120,7 @@ RSpec.describe Spec::ResponseContract do
       let(:expected_errors) do
         [
           {
-            data:    { type: Integer },
+            data:    { required: true, type: Integer },
             message: nil,
             path:    %i[status],
             type:    Stannum::Constraints::Type::TYPE
@@ -194,7 +194,7 @@ RSpec.describe Spec::ResponseContract do
       let(:expected_errors) do
         [
           {
-            data:    { type: Hash },
+            data:    { required: true, type: Hash },
             message: nil,
             path:    %i[],
             type:    Stannum::Constraints::Type::NEGATED_TYPE
@@ -218,7 +218,7 @@ RSpec.describe Spec::ResponseContract do
       let(:expected_errors) do
         [
           {
-            data:    { type: Hash },
+            data:    { required: true, type: Hash },
             message: nil,
             path:    %i[],
             type:    Stannum::Constraints::Type::NEGATED_TYPE
@@ -230,7 +230,7 @@ RSpec.describe Spec::ResponseContract do
             type:    Stannum::Constraints::Hashes::ExtraKeys::NEGATED_TYPE
           },
           {
-            data:    { type: Hash },
+            data:    { required: true, type: Hash },
             message: nil,
             path:    %i[json],
             type:    Stannum::Constraints::Type::NEGATED_TYPE
@@ -248,13 +248,13 @@ RSpec.describe Spec::ResponseContract do
       let(:expected_errors) do
         [
           {
-            data:    { type: Hash },
+            data:    { required: true, type: Hash },
             message: nil,
             path:    %i[],
             type:    Stannum::Constraints::Type::NEGATED_TYPE
           },
           {
-            data:    { type: Hash },
+            data:    { required: true, type: Hash },
             message: nil,
             path:    %i[json],
             type:    Stannum::Constraints::Type::NEGATED_TYPE
@@ -277,7 +277,7 @@ RSpec.describe Spec::ResponseContract do
       let(:expected_errors) do
         [
           {
-            data:    { type: Hash },
+            data:    { required: true, type: Hash },
             message: nil,
             path:    %i[],
             type:    Stannum::Constraints::Type::NEGATED_TYPE
@@ -289,7 +289,7 @@ RSpec.describe Spec::ResponseContract do
             type:    Stannum::Constraints::Hashes::ExtraKeys::NEGATED_TYPE
           },
           {
-            data:    { type: Hash },
+            data:    { required: true, type: Hash },
             message: nil,
             path:    %i[json],
             type:    Stannum::Constraints::Type::NEGATED_TYPE
@@ -312,7 +312,7 @@ RSpec.describe Spec::ResponseContract do
       let(:expected_errors) do
         [
           {
-            data:    { type: Hash },
+            data:    { required: true, type: Hash },
             message: nil,
             path:    %i[],
             type:    Stannum::Constraints::Type::NEGATED_TYPE
@@ -324,13 +324,13 @@ RSpec.describe Spec::ResponseContract do
             type:    Stannum::Constraints::Hashes::ExtraKeys::NEGATED_TYPE
           },
           {
-            data:    { type: Integer },
+            data:    { required: true, type: Integer },
             message: nil,
             path:    %i[status],
             type:    Stannum::Constraints::Type::NEGATED_TYPE
           },
           {
-            data:    { type: Hash },
+            data:    { required: true, type: Hash },
             message: nil,
             path:    %i[json],
             type:    Stannum::Constraints::Type::NEGATED_TYPE
@@ -360,19 +360,19 @@ RSpec.describe Spec::ResponseContract do
       let(:expected_errors) do
         [
           {
-            data:    { type: Hash },
+            data:    { required: true, type: Hash },
             message: nil,
             path:    %i[],
             type:    Stannum::Constraints::Type::NEGATED_TYPE
           },
           {
-            data:    { type: Integer },
+            data:    { required: true, type: Integer },
             message: nil,
             path:    %i[status],
             type:    Stannum::Constraints::Type::NEGATED_TYPE
           },
           {
-            data:    { type: Hash },
+            data:    { required: true, type: Hash },
             message: nil,
             path:    %i[json],
             type:    Stannum::Constraints::Type::NEGATED_TYPE

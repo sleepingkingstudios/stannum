@@ -119,7 +119,10 @@ module Stannum::Structs
     end
 
     def define_constraint(attribute)
-      constraint = Stannum::Constraints::Type.new(attribute.type)
+      constraint = Stannum::Constraints::Type.new(
+        attribute.type,
+        required: attribute.required?
+      )
 
       self::Contract.add_constraint(
         constraint,

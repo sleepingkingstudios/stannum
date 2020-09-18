@@ -2,7 +2,11 @@
 
 require 'stannum/structs/attribute'
 
+require 'support/examples/optional_examples'
+
 RSpec.describe Stannum::Structs::Attribute do
+  include Spec::Support::Examples::OptionalExamples
+
   shared_context 'with default: value' do
     let(:default) { 'Self-Sealing Stem Bolt' }
 
@@ -13,9 +17,12 @@ RSpec.describe Stannum::Structs::Attribute do
     described_class.new(name: name, type: type, options: options)
   end
 
+  let(:constructor_options) do
+    {}
+  end
   let(:name)    { 'description' }
   let(:type)    { String }
-  let(:options) { {} }
+  let(:options) { constructor_options }
 
   describe '.new' do
     it 'should define the constructor' do
@@ -60,10 +67,10 @@ RSpec.describe Stannum::Structs::Attribute do
     end
 
     describe 'with options: nil' do
-      it 'should set the options to an empty hash' do
+      it 'should set the options to a default hash' do
         expect(
           described_class.new(name: name, type: type, options: nil).options
-        ).to be == {}
+        ).to be == { required: true }
       end
     end
 
@@ -109,6 +116,10 @@ RSpec.describe Stannum::Structs::Attribute do
     end
   end
 
+  include_examples 'should implement the Optional interface'
+
+  include_examples 'should implement the Optional methods'
+
   describe '#default' do
     it { expect(attribute).to respond_to(:default).with(0).arguments }
 
@@ -138,22 +149,28 @@ RSpec.describe Stannum::Structs::Attribute do
   end
 
   describe '#options' do
-    include_examples 'should have reader', :options, -> { options }
+    let(:expected) do
+      SleepingKingStudios::Tools::HashTools
+        .convert_keys_to_symbols(options)
+        .merge(required: true)
+    end
+
+    include_examples 'should have reader', :options, -> { expected }
 
     context 'with options: a Hash with String keys' do
       let(:options) { { 'key' => 'value' } }
 
-      it { expect(attribute.options).to be == { key: 'value' } }
+      it { expect(attribute.options).to be == expected }
     end
 
     context 'with options: a Hash with Symbol keys' do
       let(:options) { { key: 'value' } }
 
-      it { expect(attribute.options).to be == { key: 'value' } }
+      it { expect(attribute.options).to be == expected }
     end
 
     wrap_context 'with default: value' do
-      it { expect(attribute.options).to be == options }
+      it { expect(attribute.options).to be == expected }
     end
   end
 
