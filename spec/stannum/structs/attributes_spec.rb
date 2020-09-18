@@ -15,7 +15,7 @@ RSpec.describe Stannum::Structs::Attributes do
         },
         {
           name:    'description',
-          options: { required: false },
+          options: { optional: true },
           type:    'String'
         },
         {
@@ -161,19 +161,13 @@ RSpec.describe Stannum::Structs::Attributes do
         let(:expected_errors) do
           [
             {
-              data:    { type: String },
+              data:    { required: true, type: String },
               message: nil,
               path:    [:name],
               type:    'stannum.constraints.is_not_type'
             },
             {
-              data:    { type: String },
-              message: nil,
-              path:    [:description],
-              type:    'stannum.constraints.is_not_type'
-            },
-            {
-              data:    { type: Integer },
+              data:    { required: true, type: Integer },
               message: nil,
               path:    [:quantity],
               type:    'stannum.constraints.is_not_type'
@@ -190,18 +184,21 @@ RSpec.describe Stannum::Structs::Attributes do
 
       describe 'with a partially matching hash' do
         let(:hsh) do
-          { description: 'No one is quite sure what this does or why.' }
+          {
+            name:        'Self-Sealing Stem Bolt',
+            description: :invalid_description
+          }
         end
         let(:expected_errors) do
           [
             {
-              data:    { type: String },
+              data:    { required: false, type: String },
               message: nil,
-              path:    [:name],
+              path:    [:description],
               type:    'stannum.constraints.is_not_type'
             },
             {
-              data:    { type: Integer },
+              data:    { required: true, type: Integer },
               message: nil,
               path:    [:quantity],
               type:    'stannum.constraints.is_not_type'
@@ -263,25 +260,19 @@ RSpec.describe Stannum::Structs::Attributes do
         let(:expected_errors) do
           [
             {
-              data:    { type: String },
+              data:    { required: true, type: String },
               message: nil,
               path:    [:size],
               type:    'stannum.constraints.is_not_type'
             },
             {
-              data:    { type: String },
+              data:    { required: true, type: String },
               message: nil,
               path:    [:name],
               type:    'stannum.constraints.is_not_type'
             },
             {
-              data:    { type: String },
-              message: nil,
-              path:    [:description],
-              type:    'stannum.constraints.is_not_type'
-            },
-            {
-              data:    { type: Integer },
+              data:    { required: true, type: Integer },
               message: nil,
               path:    [:quantity],
               type:    'stannum.constraints.is_not_type'
@@ -298,24 +289,27 @@ RSpec.describe Stannum::Structs::Attributes do
 
       describe 'with a partially matching hash' do
         let(:hsh) do
-          { description: 'No one is quite sure what this does or why.' }
+          {
+            name:        'Self-Sealing Stem Bolt',
+            description: :invalid_description
+          }
         end
         let(:expected_errors) do
           [
             {
-              data:    { type: String },
+              data:    { required: true, type: String },
               message: nil,
               path:    [:size],
               type:    'stannum.constraints.is_not_type'
             },
             {
-              data:    { type: String },
+              data:    { required: false, type: String },
               message: nil,
-              path:    [:name],
+              path:    [:description],
               type:    'stannum.constraints.is_not_type'
             },
             {
-              data:    { type: Integer },
+              data:    { required: true, type: Integer },
               message: nil,
               path:    [:quantity],
               type:    'stannum.constraints.is_not_type'
@@ -379,31 +373,25 @@ RSpec.describe Stannum::Structs::Attributes do
         let(:expected_errors) do
           [
             {
-              data:    { type: BigDecimal },
+              data:    { required: true, type: BigDecimal },
               message: nil,
               path:    [:price],
               type:    'stannum.constraints.is_not_type'
             },
             {
-              data:    { type: String },
+              data:    { required: true, type: String },
               message: nil,
               path:    [:size],
               type:    'stannum.constraints.is_not_type'
             },
             {
-              data:    { type: String },
+              data:    { required: true, type: String },
               message: nil,
               path:    [:name],
               type:    'stannum.constraints.is_not_type'
             },
             {
-              data:    { type: String },
-              message: nil,
-              path:    [:description],
-              type:    'stannum.constraints.is_not_type'
-            },
-            {
-              data:    { type: Integer },
+              data:    { required: true, type: Integer },
               message: nil,
               path:    [:quantity],
               type:    'stannum.constraints.is_not_type'
@@ -420,30 +408,33 @@ RSpec.describe Stannum::Structs::Attributes do
 
       describe 'with a partially matching hash' do
         let(:hsh) do
-          { description: 'No one is quite sure what this does or why.' }
+          {
+            description: :invalid_description,
+            name:        'Self-Sealing Stem Bolt'
+          }
         end
         let(:expected_errors) do
           [
             {
-              data:    { type: BigDecimal },
+              data:    { required: true, type: BigDecimal },
               message: nil,
               path:    [:price],
               type:    'stannum.constraints.is_not_type'
             },
             {
-              data:    { type: String },
+              data:    { required: true, type: String },
               message: nil,
               path:    [:size],
               type:    'stannum.constraints.is_not_type'
             },
             {
-              data:    { type: String },
+              data:    { required: false, type: String },
               message: nil,
-              path:    [:name],
+              path:    [:description],
               type:    'stannum.constraints.is_not_type'
             },
             {
-              data:    { type: Integer },
+              data:    { required: true, type: Integer },
               message: nil,
               path:    [:quantity],
               type:    'stannum.constraints.is_not_type'
@@ -729,7 +720,13 @@ RSpec.describe Stannum::Structs::Attributes do
       describe 'with a valid String' do
         def be_the_expected_attribute
           an_instance_of(Stannum::Structs::Attribute)
-            .and(have_attributes name: 'name', options: {}, type: 'String')
+            .and(
+              have_attributes(
+                name:    'name',
+                options: { required: true },
+                type:    'String'
+              )
+            )
         end
 
         it { expect(attributes['name']).to be_the_expected_attribute }
@@ -738,7 +735,13 @@ RSpec.describe Stannum::Structs::Attributes do
       describe 'with a valid Symbol' do
         def be_the_expected_attribute
           an_instance_of(Stannum::Structs::Attribute)
-            .and(have_attributes name: 'name', options: {}, type: 'String')
+            .and(
+              have_attributes(
+                name:    'name',
+                options: { required: true },
+                type:    'String'
+              )
+            )
         end
 
         it { expect(attributes[:name]).to be_the_expected_attribute }
@@ -749,7 +752,13 @@ RSpec.describe Stannum::Structs::Attributes do
       describe 'with a valid String' do
         def be_the_expected_attribute
           an_instance_of(Stannum::Structs::Attribute)
-            .and(have_attributes name: 'size', options: {}, type: 'String')
+            .and(
+              have_attributes(
+                name:    'size',
+                options: { required: true },
+                type:    'String'
+              )
+            )
         end
 
         it { expect(attributes['size']).to be_the_expected_attribute }
@@ -758,7 +767,13 @@ RSpec.describe Stannum::Structs::Attributes do
       describe 'with a valid Symbol' do
         def be_the_expected_attribute
           an_instance_of(Stannum::Structs::Attribute)
-            .and(have_attributes name: 'size', options: {}, type: 'String')
+            .and(
+              have_attributes(
+                name:    'size',
+                options: { required: true },
+                type:    'String'
+              )
+            )
         end
 
         it { expect(attributes[:size]).to be_the_expected_attribute }
@@ -769,7 +784,13 @@ RSpec.describe Stannum::Structs::Attributes do
       describe 'with a valid String' do
         def be_the_expected_attribute
           an_instance_of(Stannum::Structs::Attribute)
-            .and(have_attributes name: 'price', options: {}, type: 'BigDecimal')
+            .and(
+              have_attributes(
+                name:    'price',
+                options: { required: true },
+                type:    'BigDecimal'
+              )
+            )
         end
 
         it { expect(attributes['price']).to be_the_expected_attribute }
@@ -778,7 +799,13 @@ RSpec.describe Stannum::Structs::Attributes do
       describe 'with a valid Symbol' do
         def be_the_expected_attribute
           an_instance_of(Stannum::Structs::Attribute)
-            .and(have_attributes name: 'price', options: {}, type: 'BigDecimal')
+            .and(
+              have_attributes(
+                name:    'price',
+                options: { required: true },
+                type:    'BigDecimal'
+              )
+            )
         end
 
         it { expect(attributes[:price]).to be_the_expected_attribute }
@@ -811,7 +838,7 @@ RSpec.describe Stannum::Structs::Attributes do
 
     it { expect(attribute.name).to be == name.to_s }
 
-    it { expect(attribute.options).to be == options }
+    it { expect(attribute.options).to be == options.merge(required: true) }
 
     it { expect(attribute.type).to be == type.to_s }
 
@@ -858,7 +885,13 @@ RSpec.describe Stannum::Structs::Attributes do
     it { expect { |block| attributes.each(&block) }.not_to yield_control }
 
     wrap_context 'when there are many defined attributes' do
-      let(:expected_attributes) { defined_attributes }
+      let(:expected_attributes) do
+        defined_attributes.map do |attribute|
+          attribute.merge(
+            options: Stannum::Support::Optional.resolve(**attribute[:options])
+          )
+        end
+      end
       let(:expected_keys) do
         expected_attributes.map { |hsh| hsh[:name] }
       end
@@ -879,7 +912,11 @@ RSpec.describe Stannum::Structs::Attributes do
 
     wrap_context 'when parent attributes are included' do
       let(:expected_attributes) do
-        parent_defined_attributes + defined_attributes
+        (parent_defined_attributes + defined_attributes).map do |attribute|
+          attribute.merge(
+            options: Stannum::Support::Optional.resolve(**attribute[:options])
+          )
+        end
       end
       let(:expected_keys) do
         expected_attributes.map { |hsh| hsh[:name] }
@@ -901,9 +938,15 @@ RSpec.describe Stannum::Structs::Attributes do
 
     wrap_context 'when grandparent attributes are included' do
       let(:expected_attributes) do
-        grandparent_defined_attributes +
+        (
+          grandparent_defined_attributes +
           parent_defined_attributes +
           defined_attributes
+        ).map do |attribute|
+          attribute.merge(
+            options: Stannum::Support::Optional.resolve(**attribute[:options])
+          )
+        end
       end
       let(:expected_keys) do
         expected_attributes.map { |hsh| hsh[:name] }
@@ -992,7 +1035,13 @@ RSpec.describe Stannum::Structs::Attributes do
     it { expect { |block| attributes.each_value(&block) }.not_to yield_control }
 
     wrap_context 'when there are many defined attributes' do
-      let(:expected_attributes) { defined_attributes }
+      let(:expected_attributes) do
+        defined_attributes.map do |attribute|
+          attribute.merge(
+            options: Stannum::Support::Optional.resolve(**attribute[:options])
+          )
+        end
+      end
       let(:expected_values) do
         expected_attributes.map do |attribute|
           an_instance_of(Stannum::Structs::Attribute)
@@ -1010,7 +1059,11 @@ RSpec.describe Stannum::Structs::Attributes do
 
     wrap_context 'when parent attributes are included' do
       let(:expected_attributes) do
-        parent_defined_attributes + defined_attributes
+        (parent_defined_attributes + defined_attributes).map do |attribute|
+          attribute.merge(
+            options: Stannum::Support::Optional.resolve(**attribute[:options])
+          )
+        end
       end
       let(:expected_values) do
         expected_attributes.map do |attribute|
@@ -1029,9 +1082,15 @@ RSpec.describe Stannum::Structs::Attributes do
 
     wrap_context 'when grandparent attributes are included' do
       let(:expected_attributes) do
-        grandparent_defined_attributes +
+        (
+          grandparent_defined_attributes +
           parent_defined_attributes +
           defined_attributes
+        ).map do |attribute|
+          attribute.merge(
+            options: Stannum::Support::Optional.resolve(**attribute[:options])
+          )
+        end
       end
       let(:expected_values) do
         expected_attributes.map do |attribute|

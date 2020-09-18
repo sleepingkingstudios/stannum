@@ -40,7 +40,7 @@ RSpec.describe Spec::UuidContract do
       let(:expected_errors) do
         [
           {
-            data:    { type: String },
+            data:    { required: true, type: String },
             message: nil,
             path:    [],
             type:    Stannum::Constraints::Type::TYPE
@@ -105,7 +105,7 @@ RSpec.describe Spec::UuidContract do
       let(:expected_errors) do
         [
           {
-            data:    { type: String },
+            data:    { required: true, type: String },
             message: nil,
             path:    [],
             type:    Stannum::Constraints::Type::TYPE
@@ -205,7 +205,7 @@ RSpec.describe Spec::UuidContract do
       let(:expected_errors) do
         [
           {
-            data:    { type: String },
+            data:    { required: true, type: String },
             message: nil,
             path:    [],
             type:    Stannum::Constraints::Type::NEGATED_TYPE
@@ -227,7 +227,7 @@ RSpec.describe Spec::UuidContract do
       let(:expected_errors) do
         [
           {
-            data:    { type: String },
+            data:    { required: true, type: String },
             message: nil,
             path:    [],
             type:    Stannum::Constraints::Type::NEGATED_TYPE
@@ -268,7 +268,7 @@ RSpec.describe Spec::UuidContract do
       let(:expected_errors) do
         [
           {
-            data:    { type: String },
+            data:    { required: true, type: String },
             message: nil,
             path:    [],
             type:    Stannum::Constraints::Type::NEGATED_TYPE
@@ -292,7 +292,7 @@ RSpec.describe Spec::UuidContract do
       let(:expected_errors) do
         [
           {
-            data:    { type: String },
+            data:    { required: true, type: String },
             message: nil,
             path:    [],
             type:    Stannum::Constraints::Type::NEGATED_TYPE

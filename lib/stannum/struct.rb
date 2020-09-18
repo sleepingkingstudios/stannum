@@ -109,7 +109,10 @@ module Stannum
           type:    attr_type,
           options: options
         )
-        constraint = Stannum::Constraints::Type.new(attribute.type)
+        constraint = Stannum::Constraints::Type.new(
+          attribute.type,
+          required: attribute.required?
+        )
 
         self::Contract.add_constraint(
           constraint,

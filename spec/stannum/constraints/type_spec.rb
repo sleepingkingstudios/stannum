@@ -3,13 +3,18 @@
 require 'stannum/constraints/type'
 
 require 'support/examples/constraint_examples'
+require 'support/examples/optional_examples'
 
 RSpec.describe Stannum::Constraints::Type do
   include Spec::Support::Examples::ConstraintExamples
+  include Spec::Support::Examples::OptionalExamples
 
-  subject(:constraint) { described_class.new(expected_type) }
+  subject(:constraint) do
+    described_class.new(expected_type, **constructor_options)
+  end
 
-  let(:expected_type) { String }
+  let(:expected_type)       { String }
+  let(:constructor_options) { {} }
 
   describe '::NEGATED_TYPE' do
     include_examples 'should define frozen constant',
@@ -30,6 +35,7 @@ RSpec.describe Stannum::Constraints::Type do
       expect(described_class)
         .to be_constructible
         .with(1).argument
+        .and_keywords(:optional, :required)
         .and_any_keywords
     end
 
@@ -56,6 +62,10 @@ RSpec.describe Stannum::Constraints::Type do
   end
 
   include_examples 'should implement the Constraint interface'
+
+  include_examples 'should implement the Optional interface'
+
+  include_examples 'should implement the Optional methods'
 
   describe '#expected_type' do
     include_examples 'should have reader', :expected_type, -> { expected_type }
@@ -93,7 +103,7 @@ RSpec.describe Stannum::Constraints::Type do
     let(:match_method) { :match }
     let(:expected_errors) do
       {
-        data: { type: expected_type },
+        data: { required: constraint.required?, type: expected_type },
         type: constraint.type
       }
     end
@@ -106,7 +116,9 @@ RSpec.describe Stannum::Constraints::Type do
     end
 
     context 'when expected_type is a Class name' do
-      subject(:constraint) { described_class.new(expected_type.name) }
+      subject(:constraint) do
+        described_class.new(expected_type.name, **constructor_options)
+      end
 
       let(:expected_type) { StandardError }
       let(:matching)      { StandardError.new }
@@ -122,7 +134,9 @@ RSpec.describe Stannum::Constraints::Type do
     end
 
     context 'when expected_type is a Module name' do
-      subject(:constraint) { described_class.new(expected_type.name) }
+      subject(:constraint) do
+        described_class.new(expected_type.name, **constructor_options)
+      end
 
       let(:expected_type) { Enumerable }
       let(:matching)      { [] }
@@ -135,7 +149,7 @@ RSpec.describe Stannum::Constraints::Type do
     let(:match_method) { :negated_match }
     let(:expected_errors) do
       {
-        data: { type: expected_type },
+        data: { required: constraint.required?, type: expected_type },
         type: constraint.negated_type
       }
     end
@@ -148,7 +162,9 @@ RSpec.describe Stannum::Constraints::Type do
     end
 
     context 'when expected_type is a Class name' do
-      subject(:constraint) { described_class.new(expected_type.name) }
+      subject(:constraint) do
+        described_class.new(expected_type.name, **constructor_options)
+      end
 
       let(:expected_type) { StandardError }
       let(:matching)      { StandardError.new }
@@ -164,7 +180,9 @@ RSpec.describe Stannum::Constraints::Type do
     end
 
     context 'when expected_type is a Module name' do
-      subject(:constraint) { described_class.new(expected_type.name) }
+      subject(:constraint) do
+        described_class.new(expected_type.name, **constructor_options)
+      end
 
       let(:expected_type) { Enumerable }
       let(:matching)      { [] }
@@ -180,7 +198,12 @@ RSpec.describe Stannum::Constraints::Type do
   end
 
   describe '#options' do
-    let(:expected) { { expected_type: expected_type } }
+    let(:expected) do
+      {
+        expected_type: expected_type,
+        required:      true
+      }
+    end
 
     include_examples 'should have reader', :options, -> { be == expected }
 

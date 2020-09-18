@@ -1,10 +1,13 @@
 # frozen_string_literal: true
 
 require 'stannum/structs'
+require 'stannum/support/optional'
 
 module Stannum::Structs
   # Data object representing an attribute on a struct.
   class Attribute
+    include Stannum::Support::Optional
+
     # @param name [String, Symbol] The name of the attribute. Converted to a
     #   String.
     # @param options [Hash, nil] Options for the attribute. Converted to a Hash
@@ -18,6 +21,7 @@ module Stannum::Structs
 
       @name    = name.to_s
       @options = tools.hash_tools.convert_keys_to_symbols(options || {})
+      @options = resolve_required_option(**@options)
 
       @type, @resolved_type = resolve_type(type)
     end

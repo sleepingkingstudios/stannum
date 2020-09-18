@@ -201,15 +201,9 @@ RSpec.describe Stannum::Struct do
         let(:expected_errors) do
           [
             {
-              data:    { type: String },
+              data:    { required: true, type: String },
               message: nil,
               path:    [:name],
-              type:    'stannum.constraints.is_not_type'
-            },
-            {
-              data:    { type: String },
-              message: nil,
-              path:    [:description],
               type:    'stannum.constraints.is_not_type'
             }
           ]
@@ -224,11 +218,16 @@ RSpec.describe Stannum::Struct do
       end
 
       describe 'with a non-matching struct' do
-        let(:attributes) { { name: 'Self-sealing Stem Bolt' } }
+        let(:attributes) do
+          {
+            description: :invalid,
+            name:        'Self-sealing Stem Bolt'
+          }
+        end
         let(:expected_errors) do
           [
             {
-              data:    { type: String },
+              data:    { required: false, type: String },
               message: nil,
               path:    [:description],
               type:    'stannum.constraints.is_not_type'
@@ -265,7 +264,7 @@ RSpec.describe Stannum::Struct do
         let(:expected_errors) do
           [
             {
-              data:    { type: String },
+              data:    { required: true, type: String },
               message: nil,
               path:    [:name],
               type:    'stannum.constraints.is_not_type'
@@ -275,12 +274,6 @@ RSpec.describe Stannum::Struct do
               message: nil,
               path:    [:name],
               type:    'stannum.constraints.absent'
-            },
-            {
-              data:    { type: String },
-              message: nil,
-              path:    [:description],
-              type:    'stannum.constraints.is_not_type'
             }
           ]
         end
@@ -296,8 +289,9 @@ RSpec.describe Stannum::Struct do
       describe 'with a non-matching struct' do
         let(:attributes) do
           {
-            name:     '',
-            quantity: -10
+            name:        '',
+            description: :invalid,
+            quantity:    -10
           }
         end
         let(:expected_errors) do
@@ -309,7 +303,7 @@ RSpec.describe Stannum::Struct do
               type:    'stannum.constraints.absent'
             },
             {
-              data:    { type: String },
+              data:    { required: false, type: String },
               message: nil,
               path:    [:description],
               type:    'stannum.constraints.is_not_type'
@@ -362,15 +356,9 @@ RSpec.describe Stannum::Struct do
           let(:expected_errors) do
             [
               {
-                data:    { type: String },
+                data:    { required: true, type: String },
                 message: nil,
                 path:    [:name],
-                type:    'stannum.constraints.is_not_type'
-              },
-              {
-                data:    { type: String },
-                message: nil,
-                path:    [:description],
                 type:    'stannum.constraints.is_not_type'
               }
             ]
@@ -385,11 +373,16 @@ RSpec.describe Stannum::Struct do
         end
 
         describe 'with a non-matching struct' do
-          let(:attributes) { { name: 'Self-sealing Stem Bolt' } }
+          let(:attributes) do
+            {
+              description: :invalid,
+              name:        'Self-sealing Stem Bolt'
+            }
+          end
           let(:expected_errors) do
             [
               {
-                data:    { type: String },
+                data:    { required: false, type: String },
                 message: nil,
                 path:    [:description],
                 type:    'stannum.constraints.is_not_type'
@@ -428,7 +421,7 @@ RSpec.describe Stannum::Struct do
           let(:expected_errors) do
             [
               {
-                data:    { type: String },
+                data:    { required: true, type: String },
                 message: nil,
                 path:    [:name],
                 type:    'stannum.constraints.is_not_type'
@@ -438,12 +431,6 @@ RSpec.describe Stannum::Struct do
                 message: nil,
                 path:    [:name],
                 type:    'stannum.constraints.absent'
-              },
-              {
-                data:    { type: String },
-                message: nil,
-                path:    [:description],
-                type:    'stannum.constraints.is_not_type'
               }
             ]
           end
@@ -459,8 +446,9 @@ RSpec.describe Stannum::Struct do
         describe 'with a non-matching struct' do
           let(:attributes) do
             {
-              name:     '',
-              quantity: -10
+              name:        '',
+              description: :invalid,
+              quantity:    -10
             }
           end
           let(:expected_errors) do
@@ -472,7 +460,7 @@ RSpec.describe Stannum::Struct do
                 type:    'stannum.constraints.absent'
               },
               {
-                data:    { type: String },
+                data:    { required: false, type: String },
                 message: nil,
                 path:    [:description],
                 type:    'stannum.constraints.is_not_type'
@@ -518,7 +506,7 @@ RSpec.describe Stannum::Struct do
           let(:expected_errors) do
             [
               {
-                data:    { type: String },
+                data:    { required: true, type: String },
                 message: nil,
                 path:    [:size],
                 type:    'stannum.constraints.is_not_type'
@@ -552,7 +540,7 @@ RSpec.describe Stannum::Struct do
           let(:expected_errors) do
             [
               {
-                data:    { type: String },
+                data:    { required: true, type: String },
                 message: nil,
                 path:    [:size],
                 type:    'stannum.constraints.is_not_type'
@@ -616,7 +604,7 @@ RSpec.describe Stannum::Struct do
           let(:expected_errors) do
             [
               {
-                data:    { type: String },
+                data:    { required: true, type: String },
                 message: nil,
                 path:    [:name],
                 type:    'stannum.constraints.is_not_type'
@@ -628,13 +616,7 @@ RSpec.describe Stannum::Struct do
                 type:    'stannum.constraints.absent'
               },
               {
-                data:    { type: String },
-                message: nil,
-                path:    [:description],
-                type:    'stannum.constraints.is_not_type'
-              },
-              {
-                data:    { type: String },
+                data:    { required: true, type: String },
                 message: nil,
                 path:    [:size],
                 type:    'stannum.constraints.is_not_type'
@@ -659,9 +641,10 @@ RSpec.describe Stannum::Struct do
         describe 'with a non-matching struct' do
           let(:attributes) do
             {
-              name:     '',
-              quantity: -10,
-              size:     'Lilliputian'
+              name:        '',
+              description: :invalid,
+              quantity:    -10,
+              size:        'Lilliputian'
             }
           end
           let(:expected_errors) do
@@ -673,7 +656,7 @@ RSpec.describe Stannum::Struct do
                 type:    'stannum.constraints.absent'
               },
               {
-                data:    { type: String },
+                data:    { required: false, type: String },
                 message: nil,
                 path:    [:description],
                 type:    'stannum.constraints.is_not_type'
@@ -729,7 +712,7 @@ RSpec.describe Stannum::Struct do
             have_attributes(
               name:    attr_name.to_s,
               type:    attr_type.to_s,
-              options: options
+              options: { required: true }.merge(options)
             )
           )
       end

@@ -31,7 +31,13 @@ RSpec.describe Spec::Gadget do
       it 'should return the attribute' do
         expect(described_class.attributes[:name])
           .to be_a(Stannum::Structs::Attribute)
-          .and(have_attributes(name: 'name', options: {}, type: 'String'))
+          .and(
+            have_attributes(
+              name:    'name',
+              options: { required: true },
+              type:    'String'
+            )
+          )
       end
     end
 
@@ -44,19 +50,13 @@ RSpec.describe Spec::Gadget do
         let(:expected_errors) do
           [
             {
-              data:    { type: String },
+              data:    { required: true, type: String },
               message: nil,
               path:    [:name],
               type:    'stannum.constraints.is_not_type'
             },
             {
-              data:    { type: String },
-              message: nil,
-              path:    [:description],
-              type:    'stannum.constraints.is_not_type'
-            },
-            {
-              data:    { type: Integer },
+              data:    { required: true, type: Integer },
               message: nil,
               path:    [:quantity],
               type:    'stannum.constraints.is_not_type'
@@ -73,13 +73,13 @@ RSpec.describe Spec::Gadget do
         let(:expected_errors) do
           [
             {
-              data:    { type: String },
+              data:    { required: false, type: String },
               message: nil,
-              path:    [:name],
+              path:    [:description],
               type:    'stannum.constraints.is_not_type'
             },
             {
-              data:    { type: Integer },
+              data:    { required: true, type: Integer },
               message: nil,
               path:    [:quantity],
               type:    'stannum.constraints.is_not_type'
@@ -87,7 +87,10 @@ RSpec.describe Spec::Gadget do
           ]
         end
         let(:attributes) do
-          { description: 'No one is sure what this is or what it does.' }
+          {
+            name:        'Self-Sealing Stem Bolt',
+            description: :invalid_description
+          }
         end
 
         it { expect(contract.errors_for(attributes)).to be == expected_errors }
@@ -117,17 +120,17 @@ RSpec.describe Spec::Gadget do
           {
             name:    'name',
             type:    'String',
-            options: {}
+            options: { required: true }
           },
           {
             name:    'description',
             type:    'String',
-            options: { optional: true }
+            options: { required: false }
           },
           {
             name:    'quantity',
             type:    'Integer',
-            options: { default: 0 }
+            options: { default: 0, required: true }
           }
         ].map do |attributes|
           an_instance_of(Stannum::Structs::Attribute).and(
@@ -156,15 +159,9 @@ RSpec.describe Spec::Gadget do
       let(:expected_errors) do
         [
           {
-            data:    { type: String },
+            data:    { required: true, type: String },
             message: nil,
             path:    [:name],
-            type:    'stannum.constraints.is_not_type'
-          },
-          {
-            data:    { type: String },
-            message: nil,
-            path:    [:description],
             type:    'stannum.constraints.is_not_type'
           },
           {
@@ -184,14 +181,15 @@ RSpec.describe Spec::Gadget do
     describe 'with a struct with invalid attributes' do
       let(:attributes) do
         {
-          name:     'Self-Sealing Stem Bolt',
-          quantity: -10
+          name:        'Self-Sealing Stem Bolt',
+          description: :invalid_description,
+          quantity:    -10
         }
       end
       let(:expected_errors) do
         [
           {
-            data:    { type: String },
+            data:    { required: false, type: String },
             message: nil,
             path:    [:description],
             type:    'stannum.constraints.is_not_type'
