@@ -252,5 +252,45 @@ module Spec::Support::Examples
         end
       end
     end
+
+    shared_examples 'should match the type constraint' do
+      describe 'with nil' do
+        let(:actual) { nil }
+
+        include_examples 'should not match the constraint'
+      end
+
+      describe 'with a non-matching object' do
+        let(:actual) { Object.new.freeze }
+
+        include_examples 'should not match the constraint'
+      end
+
+      describe 'with a matching object' do
+        let(:actual) { matching }
+
+        include_examples 'should match the constraint'
+      end
+    end
+
+    shared_examples 'should match the negated type constraint' do
+      describe 'with nil' do
+        let(:actual) { nil }
+
+        include_examples 'should match the constraint'
+      end
+
+      describe 'with a non-matching object' do
+        let(:actual) { Object.new.freeze }
+
+        include_examples 'should match the constraint'
+      end
+
+      describe 'with a matching object' do
+        let(:actual) { matching }
+
+        include_examples 'should not match the constraint'
+      end
+    end
   end
 end

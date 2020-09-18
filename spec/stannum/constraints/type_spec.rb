@@ -10,12 +10,6 @@ RSpec.describe Stannum::Constraints::Type do
   subject(:constraint) { described_class.new(expected_type) }
 
   let(:expected_type) { String }
-  let(:expected_errors) do
-    Stannum::Errors.new.add(constraint.type, type: expected_type)
-  end
-  let(:negated_errors) do
-    Stannum::Errors.new.add(constraint.negated_type, type: expected_type)
-  end
 
   describe '::NEGATED_TYPE' do
     include_examples 'should define frozen constant',
@@ -63,109 +57,6 @@ RSpec.describe Stannum::Constraints::Type do
 
   include_examples 'should implement the Constraint interface'
 
-  describe '#options' do
-    let(:expected) { { expected_type: expected_type } }
-
-    include_examples 'should have reader', :options, -> { be == expected }
-
-    context 'when initialized with options' do
-      subject(:constraint) { described_class.new(expected_type, **options) }
-
-      let(:options)  { { key: 'value' } }
-      let(:expected) { super().merge(options) }
-
-      it { expect(constraint.options).to be == expected }
-    end
-  end
-
-  context 'when expected_type is a Class' do
-    let(:expected_type) { StandardError }
-
-    include_examples 'should not match', nil, reversible: true
-
-    include_examples 'should not match',
-      Object.new.freeze,
-      as:         'an object',
-      reversible: true
-
-    include_examples 'should match',
-      StandardError.new,
-      as:         'an instance of the class',
-      reversible: true
-
-    include_examples 'should match',
-      RuntimeError.new,
-      as:         'an instance of a subclass',
-      reversible: true
-  end
-
-  context 'when expected_type is a Class name' do
-    subject(:constraint) { described_class.new(expected_type.name) }
-
-    let(:expected_type) { StandardError }
-
-    include_examples 'should not match', nil, reversible: true
-
-    include_examples 'should not match',
-      Object.new.freeze,
-      as:         'an object',
-      reversible: true
-
-    include_examples 'should match',
-      StandardError.new,
-      as:         'an instance of the class',
-      reversible: true
-
-    include_examples 'should match',
-      RuntimeError.new,
-      as:         'an instance of a subclass',
-      reversible: true
-  end
-
-  context 'when expected_type is a Module' do
-    let(:expected_type) { Enumerable }
-
-    include_examples 'should not match', nil, reversible: true
-
-    include_examples 'should not match',
-      Object.new.freeze,
-      as:         'an object',
-      reversible: true
-
-    include_examples 'should match',
-      [],
-      as:         'an instance of a class including the module',
-      reversible: true
-
-    include_examples 'should match',
-      Object.new.extend(Enumerable).freeze,
-      as:         'an object extending the module',
-      reversible: true
-  end
-
-  context 'when expected_type is a Module name' do
-    subject(:constraint) { described_class.new(expected_type.name) }
-
-    let(:expected_type) { Enumerable }
-
-    include_examples 'should not match', nil, reversible: true
-
-    include_examples 'should not match',
-      Object.new.freeze,
-      as:         'an object',
-      reversible: true
-
-    include_examples 'should match',
-      [],
-      as:         'an instance of a class including the module',
-      reversible: true
-
-    include_examples 'should match',
-      Object.new.extend(Enumerable).freeze,
-      as:         'an object extending the module',
-      reversible: true
-  end
-
   describe '#expected_type' do
     include_examples 'should have reader', :expected_type, -> { expected_type }
 
@@ -198,10 +89,109 @@ RSpec.describe Stannum::Constraints::Type do
     end
   end
 
+  describe '#match' do
+    let(:match_method) { :match }
+    let(:expected_errors) do
+      {
+        data: { type: expected_type },
+        type: constraint.type
+      }
+    end
+
+    context 'when expected_type is a Class' do
+      let(:expected_type) { StandardError }
+      let(:matching)      { StandardError.new }
+
+      include_examples 'should match the type constraint'
+    end
+
+    context 'when expected_type is a Class name' do
+      subject(:constraint) { described_class.new(expected_type.name) }
+
+      let(:expected_type) { StandardError }
+      let(:matching)      { StandardError.new }
+
+      include_examples 'should match the type constraint'
+    end
+
+    context 'when expected_type is a Module' do
+      let(:expected_type) { Enumerable }
+      let(:matching)      { [] }
+
+      include_examples 'should match the type constraint'
+    end
+
+    context 'when expected_type is a Module name' do
+      subject(:constraint) { described_class.new(expected_type.name) }
+
+      let(:expected_type) { Enumerable }
+      let(:matching)      { [] }
+
+      include_examples 'should match the type constraint'
+    end
+  end
+
+  describe '#negated_match' do
+    let(:match_method) { :negated_match }
+    let(:expected_errors) do
+      {
+        data: { type: expected_type },
+        type: constraint.negated_type
+      }
+    end
+
+    context 'when expected_type is a Class' do
+      let(:expected_type) { StandardError }
+      let(:matching)      { StandardError.new }
+
+      include_examples 'should match the negated type constraint'
+    end
+
+    context 'when expected_type is a Class name' do
+      subject(:constraint) { described_class.new(expected_type.name) }
+
+      let(:expected_type) { StandardError }
+      let(:matching)      { StandardError.new }
+
+      include_examples 'should match the negated type constraint'
+    end
+
+    context 'when expected_type is a Module' do
+      let(:expected_type) { Enumerable }
+      let(:matching)      { [] }
+
+      include_examples 'should match the negated type constraint'
+    end
+
+    context 'when expected_type is a Module name' do
+      subject(:constraint) { described_class.new(expected_type.name) }
+
+      let(:expected_type) { Enumerable }
+      let(:matching)      { [] }
+
+      include_examples 'should match the negated type constraint'
+    end
+  end
+
   describe '#negated_type' do
     include_examples 'should define reader',
       :negated_type,
       'stannum.constraints.is_type'
+  end
+
+  describe '#options' do
+    let(:expected) { { expected_type: expected_type } }
+
+    include_examples 'should have reader', :options, -> { be == expected }
+
+    context 'when initialized with options' do
+      subject(:constraint) { described_class.new(expected_type, **options) }
+
+      let(:options)  { { key: 'value' } }
+      let(:expected) { super().merge(options) }
+
+      it { expect(constraint.options).to be == expected }
+    end
   end
 
   describe '#type' do
