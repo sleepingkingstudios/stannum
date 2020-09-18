@@ -65,6 +65,10 @@ RSpec.describe Stannum::Constraints::Types::Hash do
 
   include_examples 'should implement the Constraint interface'
 
+  describe '#expected_type' do
+    include_examples 'should have reader', :expected_type, ::Hash
+  end
+
   describe '#key_type' do
     include_examples 'should have reader', :key_type, nil
 
@@ -249,6 +253,53 @@ RSpec.describe Stannum::Constraints::Types::Hash do
     include_examples 'should define reader',
       :negated_type,
       Stannum::Constraints::Type::NEGATED_TYPE
+  end
+
+  describe '#options' do
+    let(:expected) do
+      {
+        expected_type: Hash,
+        key_type:      nil,
+        required:      true,
+        value_type:    nil
+      }.merge(constructor_options)
+    end
+
+    include_examples 'should have reader', :options, -> { be == expected }
+
+    context 'when initialized with options' do
+      let(:constructor_options) { { key: 'value' } }
+
+      it { expect(constraint.options).to be == expected }
+    end
+
+    context 'when initialized with key_type: a Class' do
+      let(:key_type)            { String }
+      let(:constructor_options) { super().merge(key_type: key_type) }
+
+      it { expect(constraint.options).to be == expected }
+    end
+
+    context 'when initialized with key_type: a constraint' do
+      let(:key_type)            { Stannum::Constraint.new }
+      let(:constructor_options) { super().merge(key_type: key_type) }
+
+      it { expect(constraint.options).to be == expected }
+    end
+
+    context 'when initialized with value_type: a Class' do
+      let(:value_type)          { String }
+      let(:constructor_options) { super().merge(value_type: value_type) }
+
+      it { expect(constraint.options).to be == expected }
+    end
+
+    context 'when initialized with value_type: a constraint' do
+      let(:value_type)          { Stannum::Constraint.new }
+      let(:constructor_options) { super().merge(value_type: value_type) }
+
+      it { expect(constraint.options).to be == expected }
+    end
   end
 
   describe '#type' do
