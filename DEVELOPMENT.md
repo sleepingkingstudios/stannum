@@ -6,6 +6,13 @@
   - Refactor Map, Tuple constraints to Constraints::Signatures ?
 - Refactor Type constraints to include Type suffix ?
   - e.g. Array => ArrayType (avoid collision with core class!)
+- Harmonize HashContract, TupleContract.
+  - define MapContract, TupleContract
+    - uses Signature sanity constraint
+    - defines a #type_constraint inner reader
+  - define HashContract < MapContract, ArrayContract < TupleContract
+    - uses Type sanity constraint
+    - overrides #type_constraint inner reader
 
 ### Contract
 
@@ -45,7 +52,10 @@
 - Each constraint should define the `::TYPE` and `::NEGATED_TYPE` constants,
   and the `#type` and `#negated_type` readers.
 - Each constraint should define `#options` (default to empty hash).
-  - Treat `type`, `negated_type` as options? Override default types?
+  - Treat `type`, `negated_type` as options. Defaults to TYPE, NEGATED_TYPE
+  - Implement 'should implement the Constraint methods' shared examples
+    - Defines negated_type, options, type
+    - Extract implementations from 'implement Constraint interface' examples
 - Use terse contract class/file names:
   - Stannum::Contracts::IndifferentHash instead of IndifferentHashContract.
 
@@ -71,6 +81,8 @@ Constraint testing should be done in the context of the `#match` and `#negated_m
 
 - Constraints::Always
   - #does_not_match? and #matches? always return true
+- Constraints::Equality
+  - asserts actual == expected
 - Constraints::Never
   - #does_not_match? and #matches? always return false
 - Constraints::Numeric
@@ -82,10 +94,6 @@ Constraint testing should be done in the context of the `#match` and `#negated_m
     - max and/or min, gt/gte and/or lt/lte
 - Constraints::Size
   - options for :is, :max, :min - delegate to Constraints::Range?
-
-- Type::Lazy - takes a class or module name as a String or Symbol; only
-  evaluates when the constraint is first checked?
-- Type::Optional - allows nil value
 
 ### Type Constraints
 

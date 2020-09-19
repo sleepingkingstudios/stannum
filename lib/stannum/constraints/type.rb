@@ -41,7 +41,6 @@ module Stannum::Constraints
     # @param expected_type [Class, Module, String] The type the object is
     #   expected to belong to. Can be a Class or a Module, or the name of a
     #   class or module.
-    # @param optional [true, false]
     # @param options [Hash<Symbol, Object>] Configuration options for the
     #   constraint. Defaults to an empty Hash.
     def initialize(expected_type, optional: nil, required: nil, **options)
