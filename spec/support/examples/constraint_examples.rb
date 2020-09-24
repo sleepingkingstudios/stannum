@@ -251,6 +251,84 @@ module Spec::Support::Examples
           expect(subject).to respond_to(:negated_match).with(1).argument
         end
       end
+
+      describe '#options' do
+        include_examples 'should have reader', :options
+      end
+
+      describe '#with_options' do
+        it { expect(subject).to respond_to(:with_options).with_any_keywords }
+      end
+    end
+
+    shared_examples 'should implement the Constraint methods' do
+      describe '#clone' do
+        let(:copy) { subject.clone }
+
+        it { expect(copy).not_to be subject }
+
+        it { expect(copy).to be_a described_class }
+
+        it { expect(copy.options).to be == subject.options }
+
+        it 'should duplicate the options' do
+          expect { copy.options.update(key: 'value') }
+            .not_to change(subject, :options)
+        end
+      end
+
+      describe '#dup' do
+        let(:copy) { subject.dup }
+
+        it { expect(copy).not_to be subject }
+
+        it { expect(copy).to be_a described_class }
+
+        it { expect(copy.options).to be == subject.options }
+
+        it 'should duplicate the options' do
+          expect { copy.options.update(key: 'value') }
+            .not_to change(subject, :options)
+        end
+      end
+
+      describe '#options' do
+        let(:expected_options) do
+          defined?(super()) ? super() : constructor_options
+        end
+
+        it { expect(subject.options).to be == expected_options }
+
+        context 'when initialized with options' do
+          let(:constructor_options) { super().merge(key: 'value') }
+          let(:expected_options)    { super().merge(key: 'value') }
+
+          it { expect(subject.options).to be == expected_options }
+        end
+      end
+
+      describe '#with_options' do
+        let(:options) { {} }
+        let(:copy)    { subject.with_options(**options) }
+
+        it { expect(copy).not_to be subject }
+
+        it { expect(copy).to be_a described_class }
+
+        it { expect(copy.options).to be == subject.options }
+
+        it 'should duplicate the options' do
+          expect { copy.options.update(key: 'value') }
+            .not_to change(subject, :options)
+        end
+
+        describe 'with options' do
+          let(:options)          { { key: 'value' } }
+          let(:expected_options) { subject.options.merge(options) }
+
+          it { expect(copy.options).to be == options }
+        end
+      end
     end
 
     shared_examples 'should match the type constraint' do

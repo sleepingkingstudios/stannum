@@ -222,4 +222,32 @@ RSpec.describe Stannum::Constraints::Type do
       :type,
       'stannum.constraints.is_not_type'
   end
+
+  describe '#with_options' do
+    let(:copy) { subject.with_options(**options) }
+
+    describe 'with optional: false' do
+      let(:options) { { optional: false } }
+
+      it { expect(copy.options[:required]).to be true }
+    end
+
+    describe 'with optional: true' do
+      let(:options) { { optional: true } }
+
+      it { expect(copy.options[:required]).to be false }
+    end
+
+    describe 'with required: false' do
+      let(:options) { { required: false } }
+
+      it { expect(copy.options[:required]).to be false }
+    end
+
+    describe 'with required: true' do
+      let(:options) { { required: true } }
+
+      it { expect(copy.options[:required]).to be true }
+    end
+  end
 end

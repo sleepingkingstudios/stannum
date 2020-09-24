@@ -9,29 +9,31 @@ RSpec.describe Stannum::Support::Optional do
 
   shared_context 'when the subject is optional by default' do
     before(:example) do
-      Spec::Options.send(:define_method, :initialize) do |options|
-        super(resolve_required_option(required_by_default: false, **options))
+      Spec::OptionalConstraint.send(:define_method, :initialize) do |**options|
+        super(**resolve_required_option(required_by_default: false, **options))
       end
     end
   end
 
   shared_context 'when the subject is required by default' do
     before(:example) do
-      Spec::Options.send(:define_method, :initialize) do |options|
-        super(resolve_required_option(**options))
+      Spec::OptionalConstraint.send(:define_method, :initialize) do |**options|
+        super(**resolve_required_option(**options))
       end
     end
   end
 
-  subject { Spec::Options.new(constructor_options) }
+  subject { Spec::OptionalConstraint.new(**constructor_options) }
 
   let(:constructor_options) { {} }
 
-  example_class 'Spec::Options', Struct.new(:options) do |klass|
+  example_class 'Spec::OptionalConstraint',
+    Stannum::Constraints::Base \
+  do |klass|
     klass.include Stannum::Support::Optional # rubocop:disable RSpec/DescribedClass
 
-    klass.send(:define_method, :initialize) do |options|
-      super(resolve_required_option(**options))
+    klass.send(:define_method, :initialize) do |**options|
+      super(**resolve_required_option(**options))
     end
   end
 

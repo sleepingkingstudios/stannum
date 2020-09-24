@@ -93,6 +93,11 @@ module Stannum::Constraints
       TYPE
     end
 
+    # (see Stannum::Constraints::Base#with_options)
+    def with_options(**options)
+      super(**resolve_required_option(**options))
+    end
+
     protected
 
     # rubocop:disable Lint/UnusedMethodArgument

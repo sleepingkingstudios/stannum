@@ -23,11 +23,21 @@ module Stannum::Constraints
     # @param options [Hash<Symbol, Object>] Configuration options for the
     #   constraint. Defaults to an empty Hash.
     def initialize(**options)
-      @options = options
+      self.options = options
     end
 
     # @return [Hash<Symbol, Object>] Configuration options for the constraint.
     attr_reader :options
+
+    # Produces a shallow copy of the constraint.
+    #
+    # @param freeze [true, false] If true, copies the frozen status of the
+    #   constraint. Defaults to true.
+    #
+    # @return [Stannum::Constraints::Base] the cloned constraint.
+    def clone(freeze: true)
+      super.copy_properties(self)
+    end
 
     # Checks that the given object does not match the constraint.
     #
@@ -49,6 +59,13 @@ module Stannum::Constraints
     # @see #matches?
     def does_not_match?(actual)
       !matches?(actual)
+    end
+
+    # Produces a shallow copy of the constraint.
+    #
+    # @return [Stannum::Constraints::Base] the duplicated constraint.
+    def dup
+      super.copy_properties(self)
     end
 
     # Generates an errors object for the given object.
@@ -200,7 +217,24 @@ module Stannum::Constraints
       TYPE
     end
 
+    # Creates a copy of the constraint and updates the copy's options.
+    #
+    # @param options [Hash] The options to update.
+    #
+    # @return [Stannum::Constraints::Base] the copied constraint.
+    def with_options(**options)
+      dup.copy_properties(self, options: self.options.merge(options))
+    end
+
     protected
+
+    attr_writer :options
+
+    def copy_properties(source, options: nil, **_)
+      self.options = options || source.options.dup
+
+      self
+    end
 
     # rubocop:disable Lint/UnusedMethodArgument
     def update_errors_for(actual:, errors:)

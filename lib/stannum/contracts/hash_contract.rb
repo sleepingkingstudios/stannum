@@ -190,6 +190,13 @@ module Stannum::Contracts
       end
     end
 
+    # (see Stannum::Contracts::Base#with_options)
+    def with_options(**options)
+      return super unless options.key?(:allow_extra_keys)
+
+      raise ArgumentError, "can't change option :allow_extra_keys"
+    end
+
     protected
 
     def map_value(actual, **options)

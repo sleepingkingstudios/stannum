@@ -1,5 +1,8 @@
 # Stannum Development
 
+- What happens to a frozen constraint? A frozen contract?
+  - Should freezing a contract freeze its constraints? #deep_freeze ?
+
 ## Development Notes
 
 - Refactor Constraints::Methods to Constraints::Signature ?

@@ -909,4 +909,15 @@ RSpec.describe Stannum::Contracts::TupleContract do
       end
     end
   end
+
+  describe '#with_options' do
+    describe 'with allow_extra_items: value' do
+      let(:error_message) { "can't change option :allow_extra_items" }
+
+      it 'should raise an exception' do
+        expect { contract.with_options(allow_extra_items: true) }
+          .to raise_error ArgumentError, error_message
+      end
+    end
+  end
 end

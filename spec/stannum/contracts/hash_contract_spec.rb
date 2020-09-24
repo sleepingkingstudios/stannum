@@ -1105,4 +1105,15 @@ RSpec.describe Stannum::Contracts::HashContract do
       it { expect(contract.options).to be == expected }
     end
   end
+
+  describe '#with_options' do
+    describe 'with allow_extra_keys: value' do
+      let(:error_message) { "can't change option :allow_extra_keys" }
+
+      it 'should raise an exception' do
+        expect { contract.with_options(allow_extra_keys: true) }
+          .to raise_error ArgumentError, error_message
+      end
+    end
+  end
 end

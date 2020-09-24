@@ -7,9 +7,9 @@ require 'support/examples/constraint_examples'
 RSpec.describe Stannum::Constraints::Base do
   include Spec::Support::Examples::ConstraintExamples
 
-  subject(:constraint) { described_class.new(**options) }
+  subject(:constraint) { described_class.new(**constructor_options) }
 
-  let(:options) { {} }
+  let(:constructor_options) { {} }
   let(:expected_errors) do
     Stannum::Errors.new.add(constraint.type)
   end
@@ -39,6 +39,8 @@ RSpec.describe Stannum::Constraints::Base do
   end
 
   include_examples 'should implement the Constraint interface'
+
+  include_examples 'should implement the Constraint methods'
 
   include_examples 'should not match', nil, reversible: true
 
@@ -170,22 +172,6 @@ RSpec.describe Stannum::Constraints::Base do
     include_examples 'should define reader',
       :negated_type,
       'stannum.constraints.valid'
-  end
-
-  describe '#options' do
-    include_examples 'should have reader', :options, -> { be == {} }
-
-    context 'when the constraint defines options' do
-      let(:options) do
-        {
-          language:  'Ada',
-          log_level: 'panic',
-          strict:    true
-        }
-      end
-
-      it { expect(constraint.options).to be == options }
-    end
   end
 
   describe '#type' do
