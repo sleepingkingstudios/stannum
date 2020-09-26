@@ -13,6 +13,7 @@ RSpec.describe Stannum::Constraints::Identity do
 
   let(:expected_value)      { 'a string' }
   let(:constructor_options) { {} }
+  let(:expected_options)    { { expected_value: expected_value } }
 
   describe '::NEGATED_TYPE' do
     include_examples 'should define frozen constant',
@@ -36,6 +37,8 @@ RSpec.describe Stannum::Constraints::Identity do
   end
 
   include_examples 'should implement the Constraint interface'
+
+  include_examples 'should implement the Constraint methods'
 
   describe '#expected_value' do
     include_examples 'should have reader',
@@ -87,32 +90,5 @@ RSpec.describe Stannum::Constraints::Identity do
 
       include_examples 'should not match the constraint'
     end
-  end
-
-  describe '#negated_type' do
-    include_examples 'should define reader',
-      :negated_type,
-      'stannum.constraints.is_value'
-  end
-
-  describe '#options' do
-    let(:expected) { { expected_value: expected_value } }
-
-    include_examples 'should have reader', :options, -> { be == expected }
-
-    context 'when initialized with options' do
-      subject(:constraint) { described_class.new(expected_value, **options) }
-
-      let(:options)  { { key: 'value' } }
-      let(:expected) { super().merge(options) }
-
-      it { expect(constraint.options).to be == expected }
-    end
-  end
-
-  describe '#type' do
-    include_examples 'should define reader',
-      :type,
-      'stannum.constraints.is_not_value'
   end
 end

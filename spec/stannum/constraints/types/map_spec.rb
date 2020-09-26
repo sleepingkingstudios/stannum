@@ -7,7 +7,10 @@ require 'support/examples/constraint_examples'
 RSpec.describe Stannum::Constraints::Types::Map do
   include Spec::Support::Examples::ConstraintExamples
 
-  subject(:constraint) { described_class.new }
+  subject(:constraint) { described_class.new(**constructor_options) }
+
+  let(:constructor_options) { {} }
+  let(:expected_options)    { { expected_methods: %i[[] each keys] } }
 
   describe '::NEGATED_TYPE' do
     include_examples 'should define frozen constant',
@@ -26,6 +29,8 @@ RSpec.describe Stannum::Constraints::Types::Map do
   end
 
   include_examples 'should implement the Constraint interface'
+
+  include_examples 'should implement the Constraint methods'
 
   describe '#match' do
     let(:match_method) { :match }

@@ -88,6 +88,7 @@ RSpec.describe Stannum::Contracts::TupleContract do
 
   let(:constructor_block)   { -> {} }
   let(:constructor_options) { {} }
+  let(:expected_options)    { { allow_extra_items: false } }
 
   describe '::Builder' do
     include Spec::Support::Examples::ContractBuilderExamples
@@ -183,6 +184,8 @@ RSpec.describe Stannum::Contracts::TupleContract do
   end
 
   include_examples 'should implement the Constraint interface'
+
+  include_examples 'should implement the Constraint methods'
 
   include_examples 'should implement the Contract methods'
 

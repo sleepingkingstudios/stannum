@@ -60,6 +60,13 @@ RSpec.describe Stannum::Contracts::HashContract do
 
   let(:constructor_block)   { -> {} }
   let(:constructor_options) { {} }
+  let(:expected_options) do
+    {
+      allow_extra_keys: false,
+      allow_hash_like:  false,
+      key_type:         nil
+    }
+  end
 
   describe '::Builder' do
     include Spec::Support::Examples::ContractBuilderExamples
@@ -150,6 +157,8 @@ RSpec.describe Stannum::Contracts::HashContract do
   end
 
   include_examples 'should implement the Constraint interface'
+
+  include_examples 'should implement the Constraint methods'
 
   include_examples 'should implement the Contract methods'
 

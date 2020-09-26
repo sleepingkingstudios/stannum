@@ -12,6 +12,17 @@ RSpec.describe Stannum::Contracts::Parameters::SignatureContract do
   subject(:contract) { described_class.new(**constructor_options) }
 
   let(:constructor_options) { {} }
+  let(:expected_options) do
+    type_constraint =
+      be_a_constraint(Stannum::Constraints::Type)
+      .with_options(expected_type: Symbol, required: true)
+
+    {
+      allow_extra_keys: false,
+      allow_hash_like:  false,
+      key_type:         type_constraint
+    }
+  end
 
   describe '.new' do
     it 'should define the constructor' do
@@ -23,6 +34,8 @@ RSpec.describe Stannum::Contracts::Parameters::SignatureContract do
   end
 
   include_examples 'should implement the Constraint interface'
+
+  include_examples 'should implement the Constraint methods'
 
   include_examples 'should implement the Contract methods'
 

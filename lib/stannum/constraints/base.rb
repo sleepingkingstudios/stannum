@@ -22,6 +22,10 @@ module Stannum::Constraints
 
     # @param options [Hash<Symbol, Object>] Configuration options for the
     #   constraint. Defaults to an empty Hash.
+    # @option options [String] :negated_type The type of the error generated for
+    #    a matching object.
+    # @option options [String] :type The type of the error generated for a
+    #    non-matching object.
     def initialize(**options)
       self.options = options
     end
@@ -209,12 +213,12 @@ module Stannum::Constraints
 
     # @return [String] the error type generated for a matching object.
     def negated_type
-      NEGATED_TYPE
+      options.fetch(:negated_type, self.class::NEGATED_TYPE)
     end
 
     # @return [String] the error type generated for a non-matching object.
     def type
-      TYPE
+      options.fetch(:type, self.class::TYPE)
     end
 
     # Creates a copy of the constraint and updates the copy's options.

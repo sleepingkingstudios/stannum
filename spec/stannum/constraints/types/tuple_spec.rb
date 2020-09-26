@@ -7,7 +7,10 @@ require 'support/examples/constraint_examples'
 RSpec.describe Stannum::Constraints::Types::Tuple do
   include Spec::Support::Examples::ConstraintExamples
 
-  subject(:constraint) { described_class.new }
+  subject(:constraint) { described_class.new(**constructor_options) }
+
+  let(:constructor_options) { {} }
+  let(:expected_options)    { { expected_methods: %i[[] each size] } }
 
   describe '::NEGATED_TYPE' do
     include_examples 'should define frozen constant',
@@ -26,6 +29,8 @@ RSpec.describe Stannum::Constraints::Types::Tuple do
   end
 
   include_examples 'should implement the Constraint interface'
+
+  include_examples 'should implement the Constraint methods'
 
   describe '#match' do
     let(:match_method) { :match }
@@ -134,23 +139,5 @@ RSpec.describe Stannum::Constraints::Types::Tuple do
 
       include_examples 'should not match the constraint'
     end
-  end
-
-  describe '#negated_type' do
-    include_examples 'should define reader',
-      :negated_type,
-      Stannum::Constraints::Methods::NEGATED_TYPE
-  end
-
-  describe '#options' do
-    let(:expected) { { expected_methods: %i[[] each size] } }
-
-    include_examples 'should have reader', :options, -> { be == expected }
-  end
-
-  describe '#type' do
-    include_examples 'should define reader',
-      :type,
-      Stannum::Constraints::Methods::TYPE
   end
 end

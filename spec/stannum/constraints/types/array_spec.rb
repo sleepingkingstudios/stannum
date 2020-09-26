@@ -10,6 +10,13 @@ RSpec.describe Stannum::Constraints::Types::Array do
   subject(:constraint) { described_class.new(**constructor_options) }
 
   let(:constructor_options) { {} }
+  let(:expected_options) do
+    {
+      expected_type: Array,
+      item_type:     nil,
+      required:      true
+    }
+  end
 
   describe '::INVALID_ITEM_TYPE' do
     include_examples 'should define frozen constant',
@@ -51,6 +58,8 @@ RSpec.describe Stannum::Constraints::Types::Array do
   end
 
   include_examples 'should implement the Constraint interface'
+
+  include_examples 'should implement the Constraint methods'
 
   describe '#expected_type' do
     include_examples 'should have reader', :expected_type, ::Array

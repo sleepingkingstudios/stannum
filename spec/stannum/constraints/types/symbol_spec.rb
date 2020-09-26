@@ -10,6 +10,7 @@ RSpec.describe Stannum::Constraints::Types::Symbol do
   subject(:constraint) { described_class.new(**constructor_options) }
 
   let(:constructor_options) { {} }
+  let(:expected_options)    { { expected_type: Symbol, required: true } }
 
   describe '::NEGATED_TYPE' do
     include_examples 'should define frozen constant',
@@ -33,6 +34,8 @@ RSpec.describe Stannum::Constraints::Types::Symbol do
   end
 
   include_examples 'should implement the Constraint interface'
+
+  include_examples 'should implement the Constraint methods'
 
   describe '#expected_type' do
     include_examples 'should have reader', :expected_type, Symbol
@@ -62,32 +65,5 @@ RSpec.describe Stannum::Constraints::Types::Symbol do
     let(:matching) { :symbol }
 
     include_examples 'should match the negated type constraint'
-  end
-
-  describe '#negated_type' do
-    include_examples 'should define reader',
-      :negated_type,
-      Stannum::Constraints::Type::NEGATED_TYPE
-  end
-
-  describe '#options' do
-    let(:expected) { { expected_type: Symbol, required: true } }
-
-    include_examples 'should have reader', :options, -> { be == expected }
-
-    context 'when initialized with options' do
-      subject(:constraint) { described_class.new(**options) }
-
-      let(:options)  { { key: 'value' } }
-      let(:expected) { super().merge(options) }
-
-      it { expect(constraint.options).to be == expected }
-    end
-  end
-
-  describe '#type' do
-    include_examples 'should define reader',
-      :type,
-      Stannum::Constraints::Type::TYPE
   end
 end

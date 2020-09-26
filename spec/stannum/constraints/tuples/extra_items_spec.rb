@@ -7,9 +7,13 @@ require 'support/examples/constraint_examples'
 RSpec.describe Stannum::Constraints::Tuples::ExtraItems do
   include Spec::Support::Examples::ConstraintExamples
 
-  subject(:constraint) { described_class.new(expected_count) }
+  subject(:constraint) do
+    described_class.new(expected_count, **constructor_options)
+  end
 
-  let(:expected_count) { 3 }
+  let(:expected_count)      { 3 }
+  let(:constructor_options) { {} }
+  let(:expected_options)    { { expected_count: expected_count } }
 
   describe '::NEGATED_TYPE' do
     include_examples 'should define frozen constant',
@@ -33,6 +37,8 @@ RSpec.describe Stannum::Constraints::Tuples::ExtraItems do
   end
 
   include_examples 'should implement the Constraint interface'
+
+  include_examples 'should implement the Constraint methods'
 
   describe '#expected_count' do
     include_examples 'should have reader', :expected_count
@@ -280,17 +286,5 @@ RSpec.describe Stannum::Constraints::Tuples::ExtraItems do
         include_examples 'should match the constraint'
       end
     end
-  end
-
-  describe '#negated_type' do
-    include_examples 'should define reader',
-      :negated_type,
-      'stannum.constraints.tuples.no_extra_items'
-  end
-
-  describe '#type' do
-    include_examples 'should define reader',
-      :type,
-      'stannum.constraints.tuples.extra_items'
   end
 end

@@ -8,8 +8,10 @@ module Stannum::Constraints::Types
     EXPECTED_METHODS = %i[[] each size].freeze
     private_constant :EXPECTED_METHODS
 
-    def initialize
-      super(*EXPECTED_METHODS)
+    # @param options [Hash<Symbol, Object>] Configuration options for the
+    #   constraint. Defaults to an empty Hash.
+    def initialize(**options)
+      super(*EXPECTED_METHODS, **options)
     end
   end
 end

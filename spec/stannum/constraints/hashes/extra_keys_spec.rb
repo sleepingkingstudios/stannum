@@ -7,9 +7,13 @@ require 'support/examples/constraint_examples'
 RSpec.describe Stannum::Constraints::Hashes::ExtraKeys do
   include Spec::Support::Examples::ConstraintExamples
 
-  subject(:constraint) { described_class.new(expected_keys) }
+  subject(:constraint) do
+    described_class.new(expected_keys, **constructor_options)
+  end
 
-  let(:expected_keys) { %i[foo bar baz] }
+  let(:expected_keys)       { %i[foo bar baz] }
+  let(:constructor_options) { {} }
+  let(:expected_options)    { { expected_keys: Set.new(expected_keys) } }
 
   describe '::NEGATED_TYPE' do
     include_examples 'should define frozen constant',
@@ -51,6 +55,8 @@ RSpec.describe Stannum::Constraints::Hashes::ExtraKeys do
   end
 
   include_examples 'should implement the Constraint interface'
+
+  include_examples 'should implement the Constraint methods'
 
   describe '#expected_keys' do
     include_examples 'should have reader', :expected_keys
@@ -418,17 +424,5 @@ RSpec.describe Stannum::Constraints::Hashes::ExtraKeys do
         include_examples 'should match the constraint'
       end
     end
-  end
-
-  describe '#negated_type' do
-    include_examples 'should define reader',
-      :negated_type,
-      'stannum.constraints.hashes.no_extra_keys'
-  end
-
-  describe '#type' do
-    include_examples 'should define reader',
-      :type,
-      'stannum.constraints.hashes.extra_keys'
   end
 end

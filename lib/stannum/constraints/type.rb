@@ -44,7 +44,7 @@ module Stannum::Constraints
     # @param options [Hash<Symbol, Object>] Configuration options for the
     #   constraint. Defaults to an empty Hash.
     def initialize(expected_type, optional: nil, required: nil, **options)
-      @expected_type = resolve_expected_type(expected_type)
+      expected_type = resolve_expected_type(expected_type)
 
       super(
         expected_type: expected_type,
@@ -58,7 +58,9 @@ module Stannum::Constraints
 
     # @return [Class, Module, String] the type the object is expected to belong
     #   to.
-    attr_reader :expected_type
+    def expected_type
+      options[:expected_type]
+    end
 
     # Checks that the object is an instance of the expected type.
     #
@@ -71,11 +73,6 @@ module Stannum::Constraints
     end
     alias match? matches?
 
-    # @return [String] the error type generated for a matching object.
-    def negated_type
-      NEGATED_TYPE
-    end
-
     # @return [true, false] false if the constraint accepts nil values,
     #   otherwise true.
     def optional?
@@ -86,11 +83,6 @@ module Stannum::Constraints
     #   otherwise false.
     def required?
       options[:required]
-    end
-
-    # @return [String] the error type generated for a non-matching object.
-    def type
-      TYPE
     end
 
     # (see Stannum::Constraints::Base#with_options)

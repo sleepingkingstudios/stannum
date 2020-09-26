@@ -24,9 +24,7 @@ module Stannum::Constraints::Tuples
     # @param options [Hash<Symbol, Object>] Configuration options for the
     #   constraint. Defaults to an empty Hash.
     def initialize(expected_count, **options)
-      super(**options)
-
-      @expected_count = expected_count
+      super(expected_count: expected_count, **options)
     end
 
     # @return [true, false] true if the object responds to #size and the object
@@ -39,7 +37,9 @@ module Stannum::Constraints::Tuples
 
     # @return [Integer] the number of expected items.
     def expected_count
-      @expected_count.is_a?(Proc) ? @expected_count.call : @expected_count
+      count = options[:expected_count]
+
+      count.is_a?(Proc) ? count.call : count
     end
 
     # @return [true, false] true if the object responds to #size and the object
@@ -51,16 +51,6 @@ module Stannum::Constraints::Tuples
       actual.size <= expected_count
     end
     alias match? matches?
-
-    # @return [String] the error type generated for a matching object.
-    def negated_type
-      NEGATED_TYPE
-    end
-
-    # @return [String] the error type generated for a non-matching object.
-    def type
-      TYPE
-    end
 
     private
 

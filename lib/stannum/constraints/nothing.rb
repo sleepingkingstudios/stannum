@@ -15,16 +15,6 @@ module Stannum::Constraints
     # The :type of the error generated for a non-matching object.
     TYPE = 'stannum.constraints.anything'
 
-    # @param type [String] The error type generated for a non-matching object.
-    def initialize(type: nil, **options)
-      @type = type || TYPE
-
-      super(type: @type, **options)
-    end
-
-    # @return [String] the error type generated for a non-matching object.
-    attr_reader :type
-
     # Returns false for all objects.
     #
     # @return [false] in all cases.

@@ -10,6 +10,7 @@ RSpec.describe Stannum::Constraints::Types::Proc do
   subject(:constraint) { described_class.new(**constructor_options) }
 
   let(:constructor_options) { {} }
+  let(:expected_options)    { { expected_type: Proc, required: true } }
 
   describe '::NEGATED_TYPE' do
     include_examples 'should define frozen constant',

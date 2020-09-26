@@ -7,7 +7,10 @@ require 'support/examples/constraint_examples'
 RSpec.describe Stannum::Constraints::Hashes::IndifferentKey do
   include Spec::Support::Examples::ConstraintExamples
 
-  subject(:constraint) { described_class.new }
+  subject(:constraint) { described_class.new(**constructor_options) }
+
+  let(:constructor_options) { {} }
+  let(:expected_options)    { {} }
 
   describe '::NEGATED_TYPE' do
     include_examples 'should define frozen constant',
@@ -31,6 +34,8 @@ RSpec.describe Stannum::Constraints::Hashes::IndifferentKey do
   end
 
   include_examples 'should implement the Constraint interface'
+
+  include_examples 'should implement the Constraint methods'
 
   describe '#match' do
     let(:match_method) { :match }
@@ -125,17 +130,5 @@ RSpec.describe Stannum::Constraints::Hashes::IndifferentKey do
 
       include_examples 'should not match the constraint'
     end
-  end
-
-  describe '#negated_type' do
-    include_examples 'should define reader',
-      :negated_type,
-      'stannum.constraints.hashes.is_string_or_symbol'
-  end
-
-  describe '#type' do
-    include_examples 'should define reader',
-      :type,
-      'stannum.constraints.hashes.is_not_string_or_symbol'
   end
 end
