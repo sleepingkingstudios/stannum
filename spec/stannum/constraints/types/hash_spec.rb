@@ -45,7 +45,9 @@ RSpec.describe Stannum::Constraints::Types::Hash do
     end
 
     describe 'with key_type: an Object' do
-      let(:error_message) { 'key_type must be a Class or a constraint' }
+      let(:error_message) do
+        'key type must be a Class or Module or a constraint'
+      end
 
       it 'should raise an error' do
         expect { described_class.new(key_type: Object.new.freeze) }
@@ -54,7 +56,9 @@ RSpec.describe Stannum::Constraints::Types::Hash do
     end
 
     describe 'with value_type: an Object' do
-      let(:error_message) { 'value_type must be a Class or a constraint' }
+      let(:error_message) do
+        'value type must be a Class or Module or a constraint'
+      end
 
       it 'should raise an error' do
         expect { described_class.new(value_type: Object.new.freeze) }
@@ -91,7 +95,9 @@ RSpec.describe Stannum::Constraints::Types::Hash do
       let(:key_type)            { Stannum::Constraint.new }
       let(:constructor_options) { super().merge(key_type: key_type) }
 
-      it { expect(constraint.key_type).to be key_type }
+      it { expect(constraint.key_type).to be_a Stannum::Constraint }
+
+      it { expect(constraint.key_type.options).to be == key_type.options }
     end
   end
 
@@ -276,29 +282,58 @@ RSpec.describe Stannum::Constraints::Types::Hash do
     context 'when initialized with key_type: a Class' do
       let(:key_type)            { String }
       let(:constructor_options) { super().merge(key_type: key_type) }
+      let(:expected) do
+        super().merge(key_type: be_a_constraint(Stannum::Constraints::Type))
+      end
 
-      it { expect(constraint.options).to be == expected }
+      it { expect(constraint.options).to deep_match expected }
+
+      it 'should set the expected type' do
+        expect(constraint.options[:key_type].expected_type).to be key_type
+      end
     end
 
     context 'when initialized with key_type: a constraint' do
       let(:key_type)            { Stannum::Constraint.new }
       let(:constructor_options) { super().merge(key_type: key_type) }
+      let(:expected) do
+        super().merge(key_type: be_a_constraint(Stannum::Constraint))
+      end
 
-      it { expect(constraint.options).to be == expected }
+      it { expect(constraint.options).to deep_match expected }
+
+      it 'should set the options' do
+        expect(constraint.options[:key_type].options).to be == key_type.options
+      end
     end
 
     context 'when initialized with value_type: a Class' do
       let(:value_type)          { String }
       let(:constructor_options) { super().merge(value_type: value_type) }
+      let(:expected) do
+        super().merge(value_type: be_a_constraint(Stannum::Constraints::Type))
+      end
 
-      it { expect(constraint.options).to be == expected }
+      it { expect(constraint.options).to deep_match expected }
+
+      it 'should set the expected type' do
+        expect(constraint.options[:value_type].expected_type).to be value_type
+      end
     end
 
     context 'when initialized with value_type: a constraint' do
       let(:value_type)          { Stannum::Constraint.new }
       let(:constructor_options) { super().merge(value_type: value_type) }
+      let(:expected) do
+        super().merge(value_type: be_a_constraint(Stannum::Constraint))
+      end
 
-      it { expect(constraint.options).to be == expected }
+      it { expect(constraint.options).to deep_match expected }
+
+      it 'should set the options' do
+        expect(constraint.options[:value_type].options)
+          .to be == value_type.options
+      end
     end
   end
 
@@ -330,7 +365,9 @@ RSpec.describe Stannum::Constraints::Types::Hash do
       let(:value_type)          { Stannum::Constraint.new }
       let(:constructor_options) { super().merge(value_type: value_type) }
 
-      it { expect(constraint.value_type).to be value_type }
+      it { expect(constraint.value_type).to be_a Stannum::Constraint }
+
+      it { expect(constraint.value_type.options).to be == value_type.options }
     end
   end
 end

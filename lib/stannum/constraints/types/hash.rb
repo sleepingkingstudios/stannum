@@ -1,6 +1,7 @@
 # frozen_string_literal: true
 
 require 'stannum/constraints/types'
+require 'stannum/support/coercion'
 
 module Stannum::Constraints::Types
   # A Hash type constraint asserts that the object is a Hash.
@@ -46,24 +47,15 @@ module Stannum::Constraints::Types
     # @param options [Hash<Symbol, Object>] Configuration options for the
     #   constraint. Defaults to an empty Hash.
     def initialize(key_type: nil, value_type: nil, **options)
+      # key_type = Stannum::Constraints::Types::
+
       super(
         ::Hash,
-        key_type:   key_type,
-        value_type: value_type,
+        key_type:   coerce_key_type(key_type),
+        value_type: coerce_value_type(value_type),
         **options
       )
-
-      @key_type   = validate_key_type(key_type)
-      @value_type = validate_value_type(value_type)
     end
-
-    # @return [Stannum::Constraints::Base, nil] the expected type for the keys
-    #   in the hash.
-    attr_reader :key_type
-
-    # @return [Stannum::Constraints::Base, nil] the expected type for the values
-    #   in the hash.
-    attr_reader :value_type
 
     # Checks that the object is not a Hash instance.
     #
@@ -73,6 +65,12 @@ module Stannum::Constraints::Types
     # @see Stannum::Constraints::Types::Hash#matches?
     def does_not_match?(actual)
       !matches_type?(actual)
+    end
+
+    # @return [Stannum::Constraints::Base, nil] the expected type for the keys
+    #   in the hash.
+    def key_type
+      options[:key_type]
     end
 
     # Checks that the object is a Hash instance and that the keys/values match.
@@ -98,7 +96,29 @@ module Stannum::Constraints::Types
     end
     alias match? matches?
 
+    # @return [Stannum::Constraints::Base, nil] the expected type for the values
+    #   in the hash.
+    def value_type
+      options[:value_type]
+    end
+
     private
+
+    def coerce_key_type(key_type)
+      Stannum::Support::Coercion.type_constraint(
+        key_type,
+        allow_nil: true,
+        as:        'key type'
+      )
+    end
+
+    def coerce_value_type(value_type)
+      Stannum::Support::Coercion.type_constraint(
+        value_type,
+        allow_nil: true,
+        as:        'value type'
+      )
+    end
 
     def key_type_matches?(actual)
       return true unless key_type
@@ -126,32 +146,6 @@ module Stannum::Constraints::Types
       end
 
       errors
-    end
-
-    def validate_key_type(key_type)
-      return nil if key_type.nil?
-
-      return key_type if key_type.is_a?(Stannum::Constraints::Base)
-
-      return Stannum::Constraints::Type.new(key_type) if key_type.is_a?(Class)
-
-      raise ArgumentError,
-        'key_type must be a Class or a constraint',
-        caller(1..-1)
-    end
-
-    def validate_value_type(value_type)
-      return nil if value_type.nil?
-
-      return value_type if value_type.is_a?(Stannum::Constraints::Base)
-
-      if value_type.is_a?(Class)
-        return Stannum::Constraints::Type.new(value_type)
-      end
-
-      raise ArgumentError,
-        'value_type must be a Class or a constraint',
-        caller(1..-1)
     end
 
     def value_type_matches?(actual)

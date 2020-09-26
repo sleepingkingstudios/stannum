@@ -1,6 +1,7 @@
 # frozen_string_literal: true
 
 require 'stannum/constraints/types'
+require 'stannum/support/coercion'
 
 module Stannum::Constraints::Types
   # An Array type constraint asserts that the object is an Array.
@@ -13,7 +14,7 @@ module Stannum::Constraints::Types
   #   constraint.matches?([])         # => true
   #   constraint.matches?([1, 2, 3])  # => true
   #
-  # @example Using an Array type constraint with a key constraint
+  # @example Using an Array type constraint with an item constraint
   #   constraint = Stannum::Constraints::Types::Array.new(item_type: String)
   #
   #   constraint.matches?(nil)               # => false
@@ -33,16 +34,10 @@ module Stannum::Constraints::Types
     def initialize(item_type: nil, **options)
       super(
         ::Array,
-        item_type: item_type,
+        item_type: coerce_item_type(item_type),
         **options
       )
-
-      @item_type = validate_item_type(item_type)
     end
-
-    # @return [Stannum::Constraints::Base, nil] the expected type for the items
-    #   in the array.
-    attr_reader :item_type
 
     # Checks that the object is not an Array instance.
     #
@@ -52,6 +47,12 @@ module Stannum::Constraints::Types
     # @see Stannum::Constraints::Types::Array#matches?
     def does_not_match?(actual)
       !matches_type?(actual)
+    end
+
+    # @return [Stannum::Constraints::Base, nil] the expected type for the items
+    #   in the array.
+    def item_type
+      options[:item_type]
     end
 
     # Checks that the object is an Array instance and that the items match.
@@ -75,6 +76,14 @@ module Stannum::Constraints::Types
 
     private
 
+    def coerce_item_type(item_type)
+      Stannum::Support::Coercion.type_constraint(
+        item_type,
+        allow_nil: true,
+        as:        'item type'
+      )
+    end
+
     def item_type_matches?(actual)
       return true unless item_type
 
@@ -93,18 +102,6 @@ module Stannum::Constraints::Types
       end
 
       errors
-    end
-
-    def validate_item_type(item_type)
-      return nil if item_type.nil?
-
-      return item_type if item_type.is_a?(Stannum::Constraints::Base)
-
-      return Stannum::Constraints::Type.new(item_type) if item_type.is_a?(Class)
-
-      raise ArgumentError,
-        'item_type must be a Class or a constraint',
-        caller(1..-1)
     end
   end
 end

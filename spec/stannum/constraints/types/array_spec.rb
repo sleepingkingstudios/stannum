@@ -39,7 +39,9 @@ RSpec.describe Stannum::Constraints::Types::Array do
     end
 
     describe 'with item_type: an Object' do
-      let(:error_message) { 'item_type must be a Class or a constraint' }
+      let(:error_message) do
+        'item type must be a Class or Module or a constraint'
+      end
 
       it 'should raise an error' do
         expect { described_class.new(item_type: Object.new.freeze) }
@@ -76,7 +78,9 @@ RSpec.describe Stannum::Constraints::Types::Array do
       let(:item_type)           { Stannum::Constraint.new }
       let(:constructor_options) { super().merge(item_type: item_type) }
 
-      it { expect(constraint.item_type).to be item_type }
+      it { expect(constraint.item_type).to be_a item_type.class }
+
+      it { expect(constraint.item_type.options).to be == item_type.options }
     end
   end
 
@@ -202,15 +206,30 @@ RSpec.describe Stannum::Constraints::Types::Array do
     context 'when initialized with item_type: a Class' do
       let(:item_type)           { String }
       let(:constructor_options) { super().merge(item_type: item_type) }
+      let(:expected) do
+        super().merge(item_type: be_a_constraint(Stannum::Constraints::Type))
+      end
 
-      it { expect(constraint.options).to be == expected }
+      it { expect(constraint.options).to deep_match expected }
+
+      it 'should set the expected type' do
+        expect(constraint.options[:item_type].expected_type).to be item_type
+      end
     end
 
     context 'when initialized with item_type: a constraint' do
       let(:item_type)           { Stannum::Constraint.new }
       let(:constructor_options) { super().merge(item_type: item_type) }
+      let(:expected) do
+        super().merge(item_type: be_a_constraint(Stannum::Constraint))
+      end
 
-      it { expect(constraint.options).to be == expected }
+      it { expect(constraint.options).to deep_match expected }
+
+      it 'should set the options' do
+        expect(constraint.options[:item_type].options)
+          .to be == item_type.options
+      end
     end
   end
 

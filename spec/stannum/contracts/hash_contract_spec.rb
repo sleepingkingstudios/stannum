@@ -119,7 +119,7 @@ RSpec.describe Stannum::Contracts::HashContract do
 
     describe 'with key_type: an Object' do
       let(:error_message) do
-        'key type must be a Class or a constraint'
+        'key type must be a Class or Module or a constraint'
       end
 
       it 'should raise an error' do
@@ -1085,24 +1085,30 @@ RSpec.describe Stannum::Contracts::HashContract do
 
     context 'when initialized with key_type: a class' do
       let(:constructor_options) { super().merge(key_type: String) }
-
-      it 'should return the options' do
-        expect(contract.options).to match expected.merge(
-          key_type: an_instance_of(Stannum::Constraints::Type)
-        )
+      let(:expected) do
+        super().merge(key_type: be_a_constraint(Stannum::Constraints::Type))
       end
 
-      it 'should return the key type' do
+      it { expect(contract.options).to deep_match expected }
+
+      it 'should set the expected type' do
         expect(contract.options[:key_type].expected_type).to be String
       end
     end
 
     context 'when initialized with key_type: a constraint' do
-      let(:key_type)            { Stannum::Constraints::Type.new(String) }
-      let(:expected)            { super().merge(key_type: key_type) }
+      let(:key_type)            { Stannum::Constraint.new }
       let(:constructor_options) { super().merge(key_type: key_type) }
+      let(:expected) do
+        super().merge(key_type: be_a_constraint(Stannum::Constraint))
+      end
 
-      it { expect(contract.options).to be == expected }
+      it { expect(contract.options).to deep_match expected }
+
+      it 'should set the options' do
+        expect(contract.options[:key_type].options)
+          .to be == key_type.options
+      end
     end
   end
 

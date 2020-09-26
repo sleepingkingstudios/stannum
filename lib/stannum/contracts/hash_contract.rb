@@ -1,6 +1,7 @@
 # frozen_string_literal: true
 
 require 'stannum/contracts'
+require 'stannum/support/coercion'
 
 module Stannum::Contracts
   # A HashContract defines constraints on an hash's values.
@@ -132,7 +133,7 @@ module Stannum::Contracts
       super(
         allow_extra_keys: allow_extra_keys,
         allow_hash_like:  allow_hash_like,
-        key_type:         resolve_key_type(key_type),
+        key_type:         coerce_key_type(key_type),
         **options,
         &block
       )
@@ -223,6 +224,14 @@ module Stannum::Contracts
       end
     end
 
+    def coerce_key_type(key_type)
+      Stannum::Support::Coercion.type_constraint(
+        key_type,
+        allow_nil: true,
+        as:        'key type'
+      )
+    end
+
     def define_constraints(&block)
       add_type_constraint
 
@@ -237,17 +246,6 @@ module Stannum::Contracts
 
     def key_type?
       !options[:key_type].nil?
-    end
-
-    def resolve_key_type(key_type)
-      return key_type if key_type.nil?
-      return key_type if key_type.is_a?(Stannum::Constraints::Base)
-
-      return Stannum::Constraints::Type.new(key_type) if key_type.is_a?(Class)
-
-      raise ArgumentError,
-        'key type must be a Class or a constraint',
-        caller(1..-1)
     end
 
     def valid_property?(property: nil, property_type: nil, **_options)
