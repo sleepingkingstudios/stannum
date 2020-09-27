@@ -8,8 +8,17 @@ module Spec::Support::Examples
   module ContractExamples
     extend RSpec::SleepingKingStudios::Concerns::SharedExampleGroup
 
-    def be_a_constraint_definition(properties)
-      be_a(Stannum::Contracts::Definition).and(have_attributes(properties))
+    def be_a_constraint_definition(expected_properties)
+      be_a(Stannum::Contracts::Definition).and(
+        satisfy do |definition|
+          properties =
+            expected_properties.each_key.with_object({}) do |key, hsh|
+              hsh[key] = definition.send(key)
+            end
+
+          expect(properties).to deep_match(expected_properties)
+        end
+      )
     end
 
     def equal_errors(expected)

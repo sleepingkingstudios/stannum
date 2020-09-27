@@ -16,7 +16,21 @@ module Stannum::Support
       #   generating an error message. Defaults to "type".
       # @param options [Hash<Symbol, Object>] Configuration options for the
       #   constraint. Defaults to an empty Hash.
-      def type_constraint(value, allow_nil: false, as: 'type', **options)
+      #
+      # @yield Builds a constraint from a Class or Module. If no block is given,
+      #   creates a Stannum::Constraints::Type constraint.
+      # @yieldparam value [Class, Module] The Class or Module used to build the
+      #   constraint.
+      # @yieldparam options [Hash<Symbol, Object>] Configuration options for the
+      #   constraint. Defaults to an empty Hash.
+      # @yieldreturn [Stannum::Constraints::Base] the generated constraint.
+      def type_constraint(
+        value,
+        allow_nil: false,
+        as:        'type',
+        **options,
+        &block
+      )
         return nil if allow_nil && value.nil?
 
         if value.is_a?(Stannum::Constraints::Base)
@@ -24,12 +38,20 @@ module Stannum::Support
         end
 
         if value.is_a?(Module)
-          return Stannum::Constraints::Type.new(value, **options)
+          return build_type_constraint(value, **options, &block)
         end
 
         raise ArgumentError,
           "#{as} must be a Class or Module or a constraint",
           caller(1..-1)
+      end
+
+      private
+
+      def build_type_constraint(value, **options)
+        return yield(value, **options) if block_given?
+
+        Stannum::Constraints::Type.new(value, **options)
       end
     end
   end

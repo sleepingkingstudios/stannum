@@ -118,10 +118,23 @@ RSpec.describe Stannum::Constraints::Types::Array do
       describe 'with an array with non-matching items' do
         let(:actual) { [1, 2, 3] }
         let(:expected_errors) do
-          {
-            data: { items: actual },
-            type: described_class::INVALID_ITEM_TYPE
-          }
+          [
+            {
+              data: { value: actual[0] },
+              path: [0],
+              type: described_class::INVALID_ITEM_TYPE
+            },
+            {
+              data: { value: actual[1] },
+              path: [1],
+              type: described_class::INVALID_ITEM_TYPE
+            },
+            {
+              data: { value: actual[2] },
+              path: [2],
+              type: described_class::INVALID_ITEM_TYPE
+            }
+          ]
         end
 
         include_examples 'should not match the constraint'
@@ -131,7 +144,8 @@ RSpec.describe Stannum::Constraints::Types::Array do
         let(:actual) { ['one', 2, 'three'] }
         let(:expected_errors) do
           {
-            data: { items: [2] },
+            data: { value: actual[1] },
+            path: [1],
             type: described_class::INVALID_ITEM_TYPE
           }
         end

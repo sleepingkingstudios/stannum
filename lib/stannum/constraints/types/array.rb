@@ -91,14 +91,16 @@ module Stannum::Constraints::Types
     end
 
     def non_matching_items(actual)
-      actual.reject { |item| item_type.matches?(item) }
+      actual.each.with_index.reject { |item, _| item_type.matches?(item) }
     end
 
     def update_errors_for(actual:, errors:)
       return super unless actual.is_a?(expected_type)
 
       unless item_type_matches?(actual)
-        errors.add(INVALID_ITEM_TYPE, items: non_matching_items(actual))
+        non_matching_items(actual).each do |item, index|
+          errors[index].add(INVALID_ITEM_TYPE, value: item)
+        end
       end
 
       errors

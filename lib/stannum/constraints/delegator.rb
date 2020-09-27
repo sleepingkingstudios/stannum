@@ -56,6 +56,16 @@ module Stannum::Constraints
       @receiver = value
     end
 
+    protected
+
+    def update_errors_for(actual:, errors:)
+      receiver.send(:update_errors_for, actual: actual, errors: errors)
+    end
+
+    def update_negated_errors_for(actual:, errors:)
+      receiver.send(:update_negated_errors_for, actual: actual, errors: errors)
+    end
+
     private
 
     def validate_receiver(receiver)

@@ -99,6 +99,38 @@ RSpec.describe Stannum::Support::Coercion do
           .to be == expected
       end
 
+      describe 'with a block' do
+        let(:block) do
+          lambda do |value, **options|
+            Stannum::Constraint.new(expected: value, **options)
+          end
+        end
+        let(:expected) { { expected: String } }
+
+        it 'should return a type constraint' do
+          expect(described_class.type_constraint(String, &block))
+            .to be_a Stannum::Constraint
+        end
+
+        it 'should set the options' do
+          expect(described_class.type_constraint(String, &block).options)
+            .to be == expected
+        end
+
+        describe 'with options: values' do
+          let(:options)  { { optional: true, key: 'value' } }
+          let(:expected) { super().merge(options) }
+
+          it 'should set the options' do
+            expect(
+              described_class.type_constraint(String, **options, &block)
+              .options
+            )
+              .to be == expected
+          end
+        end
+      end
+
       describe 'with options: values' do
         let(:options) { { optional: true, key: 'value' } }
 

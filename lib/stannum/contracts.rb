@@ -13,5 +13,6 @@ module Stannum
       'stannum/contracts/indifferent_hash_contract'
     autoload :PropertyContract, 'stannum/contracts/property_contract'
     autoload :Parameters,       'stannum/contracts/parameters'
+    autoload :TupleContract,    'stannum/contracts/tuple_contract'
   end
 end

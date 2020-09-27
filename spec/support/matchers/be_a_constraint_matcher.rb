@@ -8,6 +8,8 @@ require 'support/matchers'
 
 module Spec::Support::Matchers
   class BeAConstraintMatcher
+    include RSpec::Matchers::Composable
+
     # @param expected [Class, #matches?, nil] The expected constraint type. Can
     #   be a Class that extends Stannum::Constraint::Base or an RSpec matcher.
     #   Defaults to nil, which matches any constraint.
