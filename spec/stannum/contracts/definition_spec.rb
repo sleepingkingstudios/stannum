@@ -88,6 +88,44 @@ RSpec.describe Stannum::Contracts::Definition do
     end
   end
 
+  describe '#property_name' do
+    include_examples 'should have reader', :property_name, nil
+
+    context 'when property is a Array' do
+      let(:property) { %i[factory gadget name] }
+      let(:options)  { super().merge(property: property) }
+
+      it { expect(definition.property_name).to be property }
+    end
+
+    context 'when property is a Symbol' do
+      let(:property) { :name }
+      let(:options)  { super().merge(property: property) }
+
+      it { expect(definition.property_name).to be property }
+    end
+
+    context 'when property_name is a Array' do
+      let(:property)      { :name }
+      let(:property_name) { %i[factory gadget name] }
+      let(:options) do
+        super().merge(property: property, property_name: property_name)
+      end
+
+      it { expect(definition.property_name).to be property_name }
+    end
+
+    context 'when property_name is a Symbol' do
+      let(:property)      { %i[factory gadget name] }
+      let(:property_name) { :name }
+      let(:options) do
+        super().merge(property: property, property_name: property_name)
+      end
+
+      it { expect(definition.property_name).to be property_name }
+    end
+  end
+
   describe '#sanity?' do
     include_examples 'should define predicate', :sanity?, false
 

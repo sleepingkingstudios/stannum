@@ -50,6 +50,13 @@ module Stannum::Contracts
       options[:property]
     end
 
+    # @return [nil, String, Symbol, Array<String, Symbol>] the property name of
+    #   the constraint, used for generating errors. If not given, defaults to
+    #   the value of #property.
+    def property_name
+      options.fetch(:property_name, options[:property])
+    end
+
     # @return [Boolean] true if options[:sanity] is set to a truthy value;
     #   otherwise false.
     def sanity?
