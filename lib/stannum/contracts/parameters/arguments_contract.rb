@@ -19,28 +19,64 @@ module Stannum::Contracts::Parameters
 
     # Sets a constraint for the variadic arguments.
     #
-    # @param type [Stannum::Constraints::Base, Class, Module] The type or
-    #   constraint to add. If a constraint, the variadic arguments (if any) must
-    #   match the constraint. If the type is a Class or Module, then the
-    #   constraint is an Types::Array constraint with item_type: the given type,
-    #   and each item in the variadic arguments must match the given type.
+    # The given constraint must match the variadic arguments array as a whole.
+    # To constraint each individual item, use #set_variadic_item_constraint.
+    #
+    # @param type [Stannum::Constraints::Base] The constraint constraint to add.
+    #   The variadic arguments (an array) as a whole must match the given
+    #   constraint.
+    # @param as [Symbol] A human-friendly reference for the additional
+    #   arguments. Used when generating errors. Should be the same name used in
+    #   the method definition.
     #
     # @return [self] the contract.
     #
     # @raise [RuntimeError] if the variadic arguments constraint is already set.
-    def set_variadic_constraint(type) # rubocop:disable Naming/AccessorMethodName
+    #
+    # @see #set_variadic_item_constraint
+    def set_variadic_constraint(constraint, as: nil)
       raise 'variadic arguments constraint is already set' if allow_extra_items?
 
       options[:allow_extra_items] = true
 
-      variadic_constraint.receiver = coerce_item_type(type)
+      variadic_constraint.receiver = constraint
+
+      variadic_definition.options[:property_name] = as if as
 
       self
+    end
+
+    # Sets a constraint for the variadic argument items.
+    #
+    # The given type or constraint must individually match each item (if any) in
+    # the variadic arguments. To constrain the variadic arguments as a whole,
+    # use #set_variadic_constraint.
+    #
+    # @param type [Stannum::Constraints::Base, Class, Module] The type or
+    #   constraint to add. If the type is a Class or Module, then it is
+    #   converted to a Stannum::Constraints::Type. Each item in the variadic
+    #   arguments must match the given constraint.
+    # @param as [Symbol] A human-friendly reference for the additional
+    #   arguments. Used when generating errors. Should be the same name used in
+    #   the method definition.
+    #
+    # @return [self] the contract.
+    #
+    # @raise [RuntimeError] if the variadic arguments constraint is already set.
+    #
+    # @see #set_variadic_constraint
+    def set_variadic_item_constraint(item_type, as: nil)
+      type       = coerce_item_type(item_type)
+      constraint = Stannum::Constraints::Types::Array.new(item_type: type)
+
+      set_variadic_constraint(constraint, as: as)
     end
 
     private
 
     attr_reader :variadic_constraint
+
+    attr_reader :variadic_definition
 
     def add_extra_items_constraint
       count = -> { expected_count }
@@ -53,16 +89,12 @@ module Stannum::Contracts::Parameters
       )
 
       add_constraint @variadic_constraint
+
+      @variadic_definition = @constraints.last
     end
 
     def coerce_item_type(item_type)
-      Stannum::Support::Coercion.type_constraint(item_type, as: 'item type') \
-      do |value, **options|
-        Stannum::Constraints::Types::Array.new(
-          item_type: Stannum::Constraints::Type.new(value),
-          **options
-        )
-      end
+      Stannum::Support::Coercion.type_constraint(item_type, as: 'item type')
     end
   end
 end

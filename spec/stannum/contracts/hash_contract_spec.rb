@@ -619,6 +619,16 @@ RSpec.describe Stannum::Contracts::HashContract do
     end
   end
 
+  describe '#allow_extra_keys?' do
+    include_examples 'should have predicate', :allow_extra_keys?, false
+
+    context 'when initialized with allow_extra_keys: true' do
+      let(:constructor_options) { super().merge(allow_extra_keys: true) }
+
+      it { expect(contract.allow_extra_keys?).to be true }
+    end
+  end
+
   describe '#each_constraint' do
     let(:expected_keys) { Set.new }
     let(:builtin_definitions) do

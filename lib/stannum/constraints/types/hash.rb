@@ -131,7 +131,7 @@ module Stannum::Constraints::Types
     end
 
     def non_matching_values(actual)
-      actual.each_value.reject { |value| value_type.matches?(value) }
+      actual.each.reject { |_, value| value_type.matches?(value) }
     end
 
     def update_errors_for(actual:, errors:)
@@ -142,7 +142,9 @@ module Stannum::Constraints::Types
       end
 
       unless value_type_matches?(actual)
-        errors.add(INVALID_VALUE_TYPE, values: non_matching_values(actual))
+        non_matching_values(actual).each do |key, value|
+          errors[key].add(INVALID_VALUE_TYPE, value: value)
+        end
       end
 
       errors

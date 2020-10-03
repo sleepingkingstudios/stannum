@@ -3,6 +3,14 @@
 - What happens to a frozen constraint? A frozen contract?
   - Should freezing a contract freeze its constraints? #deep_freeze ?
 
+## Documentation Standards
+
+- Should provide a one-line short description.
+- Should provide a one+ paragraph short description.
+- Should document what errors look like in various circumstances.
+- Should provide examples of passing and failing objects.
+- Should document the methods.
+
 ## Development Notes
 
 - Refactor Constraints::Methods to Constraints::Signature ?
@@ -19,7 +27,7 @@
 
 ### Contract
 
-- Refactor #include to #compose (avoids collision when implementing DSL).
+- Refactor #include to #compose/#concat (avoids collision when implementing DSL).
 
 #### ::Builder
 

@@ -166,6 +166,12 @@ module Stannum::Contracts
       )
     end
 
+    # @return [true, false] if true, the contract will match hashes with keys
+    #   that are not constrained by the contract.
+    def allow_extra_keys?
+      options[:allow_extra_keys]
+    end
+
     # (see Stannum::Contracts::Base#each_constraint)
     def each_constraint
       return enum_for(:each_constraint) unless block_given?

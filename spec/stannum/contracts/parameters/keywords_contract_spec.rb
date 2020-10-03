@@ -1,61 +1,67 @@
 # frozen_string_literal: true
 
-require 'stannum/contracts/parameters/arguments_contract'
+require 'stannum/contracts/parameters/keywords_contract'
 
 require 'support/examples/constraint_examples'
 require 'support/examples/contract_examples'
 
-RSpec.describe Stannum::Contracts::Parameters::ArgumentsContract do
+RSpec.describe Stannum::Contracts::Parameters::KeywordsContract do
   include Spec::Support::Examples::ConstraintExamples
   include Spec::Support::Examples::ContractExamples
 
-  shared_context 'when the contract has many argument constraints' do
+  shared_context 'when the contract has many keyword constraints' do
     let(:constraints) do
       [
         {
-          constraint: Stannum::Constraints::Presence.new
+          constraint: Stannum::Constraints::Presence.new,
+          options:    { property: 'name' }
         },
         {
           constraint: Stannum::Constraints::Presence.new,
-          options:    { type: :index, key: 'value' }
+          options:    { property: 'size' }
         },
         {
           constraint: Stannum::Constraints::Type.new(Integer),
-          options:    { type: :index, ichi: 1, ni: 2, san: 3 }
+          options:    { property: 'mass' }
         }
       ]
     end
     let(:definitions) do
-      constraints.map.with_index do |definition, index|
-        be_a_constraint_definition(
+      constraints.map do |definition|
+        Stannum::Contracts::Definition.new(
           constraint: definition[:constraint],
           contract:   contract,
-          options:    { property: index, property_type: :index, sanity: false }
+          options:    { property_type: :key, sanity: false }
             .merge(definition.fetch(:options, {}))
         )
       end
     end
+    let(:expected_keys) do
+      Set.new(constraints.map { |hsh| hsh[:options][:property] })
+    end
+    let(:constructor_block) do
+      constraint_definitions = constraints
 
-    before(:example) do
-      constraints.each.with_index do |definition, index|
-        contract.add_index_constraint(
-          index,
-          definition[:constraint],
-          **definition.fetch(:options, {})
-        )
+      lambda do
+        constraint_definitions.each do |definition|
+          options  = definition.fetch(:options).dup
+          property = options.delete(:property)
+
+          key(property, definition[:constraint], **options)
+        end
       end
     end
   end
 
-  shared_context 'when the contract has a variadic arguments constraint' do
+  shared_context 'when the contract has a variadic keywords constraint' do
     let(:receiver) do
-      Stannum::Constraints::Types::Array.new(item_type: String)
+      Stannum::Constraints::Types::Hash.new(value_type: String)
     end
     let(:receiver_definition) do
-      be_a_constraint(Stannum::Constraints::Types::Array).and(
+      be_a_constraint(Stannum::Constraints::Types::Hash).and(
         satisfy do |constraint|
-          constraint.item_type.is_a?(Stannum::Constraints::Type) &&
-            constraint.item_type.expected_type == String
+          constraint.value_type.is_a?(Stannum::Constraints::Type) &&
+            constraint.value_type.expected_type == String
         end
       )
     end
@@ -64,16 +70,25 @@ RSpec.describe Stannum::Contracts::Parameters::ArgumentsContract do
   end
 
   subject(:contract) do
-    described_class.new(**constructor_options)
+    described_class.new(**constructor_options, &constructor_block)
   end
 
   let(:constructor_options) { {} }
-  let(:expected_options)    { { allow_extra_items: false } }
+  let(:constructor_block)   { -> {} }
+  let(:expected_options) do
+    {
+      allow_extra_keys: false,
+      allow_hash_like:  false,
+      key_type:         an_instance_of(
+        Stannum::Constraints::Hashes::IndifferentKey
+      )
+    }
+  end
 
-  describe '::EXTRA_ARGUMENTS_TYPE' do
+  describe '::EXTRA_KEYWORDS_TYPE' do
     include_examples 'should define immutable constant',
-      :EXTRA_ARGUMENTS_TYPE,
-      'stannum.constraints.parameters.extra_arguments'
+      :EXTRA_KEYWORDS_TYPE,
+      'stannum.constraints.parameters.extra_keywords'
   end
 
   describe '.new' do
@@ -91,19 +106,20 @@ RSpec.describe Stannum::Contracts::Parameters::ArgumentsContract do
 
   include_examples 'should implement the Contract methods'
 
-  describe '#allow_extra_items?' do
-    include_examples 'should have predicate', :allow_extra_items?, false
+  describe '#allow_extra_keys?' do
+    include_examples 'should have predicate', :allow_extra_keys?, false
 
-    wrap_context 'when the contract has a variadic arguments constraint' do
-      it { expect(contract.allow_extra_items?).to be true }
+    wrap_context 'when the contract has a variadic keywords constraint' do
+      it { expect(contract.allow_extra_keys?).to be true }
     end
   end
 
   describe '#each_constraint' do
-    let(:items_count) { 0 }
+    let(:expected_keys) { Set.new }
     let(:receiver_definition) do
-      be_a_constraint(Stannum::Constraints::Tuples::ExtraItems)
-        .and(satisfy { |constraint| constraint.expected_count == items_count })
+      be_a_constraint(Stannum::Constraints::Hashes::ExtraKeys).and(
+        satisfy { |constraint| constraint.expected_keys == expected_keys }
+      )
     end
     let(:delegator_definition) do
       be_a_constraint(Stannum::Constraints::Delegator).and(
@@ -115,7 +131,8 @@ RSpec.describe Stannum::Contracts::Parameters::ArgumentsContract do
     let(:builtin_definitions) do
       [
         be_a_constraint_definition(
-          constraint: be_a_constraint(Stannum::Constraints::Types::Tuple),
+          constraint: be_a_constraint(Stannum::Constraints::Type)
+                      .with_options(expected_type: Hash, required: true),
           contract:   contract,
           options:    { property: nil, sanity: true }
         ),
@@ -139,7 +156,7 @@ RSpec.describe Stannum::Contracts::Parameters::ArgumentsContract do
         .to yield_successive_args(*expected)
     end
 
-    wrap_context 'when the contract has many argument constraints' do
+    wrap_context 'when the contract has many keyword constraints' do
       let(:items_count) { definitions.count }
       let(:expected)    { builtin_definitions + definitions }
 
@@ -150,7 +167,7 @@ RSpec.describe Stannum::Contracts::Parameters::ArgumentsContract do
           .to yield_successive_args(*expected)
       end
 
-      wrap_context 'when the contract has a variadic arguments constraint' do
+      wrap_context 'when the contract has a variadic keywords constraint' do
         it 'should yield each definition' do
           expect { |block| contract.each_constraint(&block) }
             .to yield_successive_args(*expected)
@@ -158,7 +175,7 @@ RSpec.describe Stannum::Contracts::Parameters::ArgumentsContract do
       end
     end
 
-    wrap_context 'when the contract has a variadic arguments constraint' do
+    wrap_context 'when the contract has a variadic keywords constraint' do
       it 'should yield each definition' do
         expect { |block| contract.each_constraint(&block) }
           .to yield_successive_args(*expected)
@@ -167,11 +184,18 @@ RSpec.describe Stannum::Contracts::Parameters::ArgumentsContract do
   end
 
   describe '#each_pair' do
-    let(:actual)      { %w[ichi ni san] }
-    let(:items_count) { 0 }
+    let(:actual) do
+      {
+        'name' => 'Self-sealing Stem Bolt',
+        'mass' => 10,
+        'size' => 'Tiny'
+      }
+    end
+    let(:expected_keys) { Set.new }
     let(:receiver_definition) do
-      be_a_constraint(Stannum::Constraints::Tuples::ExtraItems)
-        .and(satisfy { |constraint| constraint.expected_count == items_count })
+      be_a_constraint(Stannum::Constraints::Hashes::ExtraKeys).and(
+        satisfy { |constraint| constraint.expected_keys == expected_keys }
+      )
     end
     let(:delegator_definition) do
       be_a_constraint(Stannum::Constraints::Delegator).and(
@@ -183,7 +207,8 @@ RSpec.describe Stannum::Contracts::Parameters::ArgumentsContract do
     let(:builtin_definitions) do
       [
         be_a_constraint_definition(
-          constraint: be_a_constraint(Stannum::Constraints::Types::Tuple),
+          constraint: be_a_constraint(Stannum::Constraints::Type)
+                      .with_options(expected_type: Hash, required: true),
           contract:   contract,
           options:    { property: nil, sanity: true }
         ),
@@ -202,18 +227,22 @@ RSpec.describe Stannum::Contracts::Parameters::ArgumentsContract do
 
     it { expect(contract.each_pair(actual)).to be_a Enumerator }
 
-    it { expect(contract.each_pair(actual).count).to be 2 + items_count }
+    it { expect(contract.each_pair(actual).count).to be 2 }
 
     it 'should yield each definition and the mapped property' do
       expect { |block| contract.each_pair(actual, &block) }
         .to yield_successive_args(*expected)
     end
 
-    wrap_context 'when the contract has many argument constraints' do
-      let(:items_count) { definitions.count }
+    wrap_context 'when the contract has many keyword constraints' do
+      let(:values) do
+        definitions.map do |definition|
+          contract.send(:map_value, actual, **definition.options)
+        end
+      end
       let(:expected) do
         builtin_definitions.zip(Array.new(builtin_definitions.size, actual)) +
-          definitions.zip(actual)
+          definitions.zip(values)
       end
 
       it { expect(contract.each_pair(actual).count).to be(expected.size) }
@@ -223,16 +252,16 @@ RSpec.describe Stannum::Contracts::Parameters::ArgumentsContract do
           .to yield_successive_args(*expected)
       end
 
-      wrap_context 'when the contract has a variadic arguments constraint' do
-        it 'should yield each definition and the mapped property' do
+      wrap_context 'when the contract has a variadic keywords constraint' do
+        it 'should yield each definition' do
           expect { |block| contract.each_pair(actual, &block) }
             .to yield_successive_args(*expected)
         end
       end
     end
 
-    wrap_context 'when the contract has a variadic arguments constraint' do
-      it 'should yield each definition and the mapped property' do
+    wrap_context 'when the contract has a variadic keywords constraint' do
+      it 'should yield each definition' do
         expect { |block| contract.each_pair(actual, &block) }
           .to yield_successive_args(*expected)
       end
@@ -296,9 +325,9 @@ RSpec.describe Stannum::Contracts::Parameters::ArgumentsContract do
       end
     end
 
-    wrap_context 'when the contract has a variadic arguments constraint' do
+    wrap_context 'when the contract has a variadic keywords constraint' do
       let(:constraint)    { Stannum::Constraint.new }
-      let(:error_message) { 'variadic arguments constraint is already set' }
+      let(:error_message) { 'variadic keywords constraint is already set' }
 
       it 'should raise an error' do
         expect { contract.set_variadic_constraint constraint }
@@ -307,40 +336,40 @@ RSpec.describe Stannum::Contracts::Parameters::ArgumentsContract do
     end
   end
 
-  describe '#set_variadic_item_constraint' do
+  describe '#set_variadic_value_constraint' do
     let(:definition) { contract.send(:variadic_definition) }
     let(:receiver)   { contract.send(:variadic_constraint).receiver }
 
     it 'should define the method' do
       expect(contract)
-        .to respond_to(:set_variadic_item_constraint)
+        .to respond_to(:set_variadic_value_constraint)
         .with(1).argument
         .and_keywords(:as)
     end
 
     it 'should return the contract' do
-      expect(contract.set_variadic_item_constraint Stannum::Constraint.new)
+      expect(contract.set_variadic_value_constraint Stannum::Constraint.new)
         .to be contract
     end
 
     describe 'with nil' do
       let(:error_message) do
-        'item type must be a Class or Module or a constraint'
+        'value type must be a Class or Module or a constraint'
       end
 
       it 'should raise an exception' do
-        expect { contract.set_variadic_item_constraint nil }
+        expect { contract.set_variadic_value_constraint nil }
           .to raise_error ArgumentError, error_message
       end
     end
 
     describe 'with an object' do
       let(:error_message) do
-        'item type must be a Class or Module or a constraint'
+        'value type must be a Class or Module or a constraint'
       end
 
       it 'should raise an exception' do
-        expect { contract.set_variadic_item_constraint Object.new.freeze }
+        expect { contract.set_variadic_value_constraint Object.new.freeze }
           .to raise_error ArgumentError, error_message
       end
     end
@@ -349,26 +378,28 @@ RSpec.describe Stannum::Contracts::Parameters::ArgumentsContract do
       let(:type) { String }
 
       it 'should update the variadic constraint', :aggregate_failures do
-        contract.set_variadic_item_constraint(type)
+        contract.set_variadic_value_constraint(type)
 
-        expect(receiver).to be_a Stannum::Constraints::Types::Array
-        expect(receiver.item_type).to be_a Stannum::Constraints::Type
-        expect(receiver.item_type.expected_type).to be type
+        expect(receiver).to be_a Stannum::Constraints::Types::Hash
+        expect(receiver.key_type).to be_a Stannum::Constraints::Types::Symbol
+        expect(receiver.value_type).to be_a Stannum::Constraints::Type
+        expect(receiver.value_type.expected_type).to be type
       end
 
       describe 'with as: a value' do
         it 'should update the variadic constraint', :aggregate_failures do
-          contract.set_variadic_item_constraint(type, as: :splatted)
+          contract.set_variadic_value_constraint(type)
 
-          expect(receiver).to be_a Stannum::Constraints::Types::Array
-          expect(receiver.item_type).to be_a Stannum::Constraints::Type
-          expect(receiver.item_type.expected_type).to be type
+          expect(receiver).to be_a Stannum::Constraints::Types::Hash
+          expect(receiver.key_type).to be_a Stannum::Constraints::Types::Symbol
+          expect(receiver.value_type).to be_a Stannum::Constraints::Type
+          expect(receiver.value_type.expected_type).to be type
         end
 
         it 'should update the property name' do
-          expect { contract.set_variadic_item_constraint(type, as: :splatted) }
+          expect { contract.set_variadic_value_constraint(type, as: :kwargs) }
             .to change(definition, :property_name)
-            .to be :splatted
+            .to be :kwargs
         end
       end
     end
@@ -377,38 +408,40 @@ RSpec.describe Stannum::Contracts::Parameters::ArgumentsContract do
       let(:constraint) { Stannum::Constraint.new(type: 'spec.type') }
 
       it 'should update the variadic constraint', :aggregate_failures do
-        contract.set_variadic_item_constraint(constraint)
+        contract.set_variadic_value_constraint(constraint)
 
-        expect(receiver).to be_a Stannum::Constraints::Types::Array
-        expect(receiver.item_type).to be_a Stannum::Constraint
-        expect(receiver.item_type.options).to be == constraint.options
+        expect(receiver).to be_a Stannum::Constraints::Types::Hash
+        expect(receiver.key_type).to be_a Stannum::Constraints::Types::Symbol
+        expect(receiver.value_type).to be_a Stannum::Constraint
+        expect(receiver.value_type.options).to be == constraint.options
       end
 
       describe 'with as: a value' do
         it 'should update the variadic constraint', :aggregate_failures do
-          contract.set_variadic_item_constraint(constraint, as: :splatted)
+          contract.set_variadic_value_constraint(constraint, as: :kwargs)
 
-          expect(receiver).to be_a Stannum::Constraints::Types::Array
-          expect(receiver.item_type).to be_a Stannum::Constraint
-          expect(receiver.item_type.options).to be == constraint.options
+          expect(receiver).to be_a Stannum::Constraints::Types::Hash
+          expect(receiver.key_type).to be_a Stannum::Constraints::Types::Symbol
+          expect(receiver.value_type).to be_a Stannum::Constraint
+          expect(receiver.value_type.options).to be == constraint.options
         end
 
         it 'should update the property name' do
           expect do
-            contract.set_variadic_item_constraint(constraint, as: :splatted)
+            contract.set_variadic_value_constraint(constraint, as: :kwargs)
           end
             .to change(definition, :property_name)
-            .to be :splatted
+            .to be :kwargs
         end
       end
     end
 
-    wrap_context 'when the contract has a variadic arguments constraint' do
+    wrap_context 'when the contract has a variadic keywords constraint' do
       let(:constraint)    { Stannum::Constraint.new }
-      let(:error_message) { 'variadic arguments constraint is already set' }
+      let(:error_message) { 'variadic keywords constraint is already set' }
 
       it 'should raise an error' do
-        expect { contract.set_variadic_item_constraint constraint }
+        expect { contract.set_variadic_value_constraint constraint }
           .to raise_error RuntimeError, error_message
       end
     end

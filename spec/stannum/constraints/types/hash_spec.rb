@@ -177,10 +177,23 @@ RSpec.describe Stannum::Constraints::Types::Hash do
       describe 'with a hash with non-matching values' do
         let(:actual) { { ichi: 1, ni: 2, san: 3 } }
         let(:expected_errors) do
-          {
-            data: { values: actual.values },
-            type: described_class::INVALID_VALUE_TYPE
-          }
+          [
+            {
+              data: { value: 1 },
+              path: %i[ichi],
+              type: described_class::INVALID_VALUE_TYPE
+            },
+            {
+              data: { value: 2 },
+              path: %i[ni],
+              type: described_class::INVALID_VALUE_TYPE
+            },
+            {
+              data: { value: 3 },
+              path: %i[san],
+              type: described_class::INVALID_VALUE_TYPE
+            }
+          ]
         end
 
         include_examples 'should not match the constraint'
@@ -190,7 +203,8 @@ RSpec.describe Stannum::Constraints::Types::Hash do
         let(:actual) { { ichi: '1', ni: 2, san: '3' } }
         let(:expected_errors) do
           {
-            data: { values: [2] },
+            data: { value: 2 },
+            path: %i[ni],
             type: described_class::INVALID_VALUE_TYPE
           }
         end
