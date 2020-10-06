@@ -5,6 +5,7 @@ require 'stannum'
 module Stannum
   # Namespace for pre-defined constraints.
   module Constraints
+    autoload :Absence,   'stannum/constraints/absence'
     autoload :Anything,  'stannum/constraints/anything'
     autoload :Base,      'stannum/constraints/base'
     autoload :Delegator, 'stannum/constraints/delegator'

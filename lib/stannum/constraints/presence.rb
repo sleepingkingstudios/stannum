@@ -9,7 +9,7 @@ module Stannum::Constraints
   #   constraint = Stannum::Constraints::Presence.new
   #
   #   constraint.matches?(nil) #=> false
-  #   constraint.matches?(Object.new)  #=> false
+  #   constraint.matches?(Object.new)  #=> true
   #
   # @example Using a Presence constraint with an Array
   #   constraint.matches?([])        #=> false
