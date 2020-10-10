@@ -22,7 +22,7 @@ module Stannum::Contracts::Parameters
     # The given constraint must match the variadic arguments array as a whole.
     # To constraint each individual item, use #set_variadic_item_constraint.
     #
-    # @param type [Stannum::Constraints::Base] The constraint constraint to add.
+    # @param constraint [Stannum::Constraints::Base] The constraint to add.
     #   The variadic arguments (an array) as a whole must match the given
     #   constraint.
     # @param as [Symbol] A human-friendly reference for the additional
@@ -52,7 +52,7 @@ module Stannum::Contracts::Parameters
     # the variadic arguments. To constrain the variadic arguments as a whole,
     # use #set_variadic_constraint.
     #
-    # @param type [Stannum::Constraints::Base, Class, Module] The type or
+    # @param item_type [Stannum::Constraints::Base, Class, Module] The type or
     #   constraint to add. If the type is a Class or Module, then it is
     #   converted to a Stannum::Constraints::Type. Each item in the variadic
     #   arguments must match the given constraint.

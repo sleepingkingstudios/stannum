@@ -147,6 +147,13 @@ Constraint testing should be done in the context of the `#match` and `#negated_m
 - MatchConstraint matcher (#match_constraint macro)
 - Matcher mixin - use a constraint in place of an RSpec matcher!
 
+## Support
+
+- Stannum::Support::Validations
+  - raise exception on invalid params
+  - #validate_integer
+  - #validate_name
+
 ## Structs
 
 - Refactor Stannum::Structs::Attribute to Stannum::Attribute.

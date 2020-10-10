@@ -7,6 +7,8 @@ module Stannum::Contracts
   module Parameters
     autoload :ArgumentsContract,
       'stannum/contracts/parameters/arguments_contract'
+    autoload :KeywordsContract,
+      'stannum/contracts/parameters/keywords_contract'
     autoload :SignatureContract,
       'stannum/contracts/parameters/signature_contract'
   end
