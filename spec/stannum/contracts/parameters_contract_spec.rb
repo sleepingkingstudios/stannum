@@ -350,9 +350,7 @@ RSpec.describe Stannum::Contracts::ParametersContract do
         let(:expected) do
           ary = [name, an_instance_of(Stannum::Constraint)]
 
-          next ary unless RUBY_VERSION < '2.7'
-
-          ary << {}
+          RUBY_VERSION < '2.7' ? ary << {} : ary
         end
 
         it 'should delegate to #add_keyword_constraint' do
@@ -409,9 +407,7 @@ RSpec.describe Stannum::Contracts::ParametersContract do
         let(:expected) do
           ary = [name, type]
 
-          next ary unless RUBY_VERSION < '2.7'
-
-          ary << {}
+          RUBY_VERSION < '2.7' ? ary << {} : ary
         end
 
         it 'should delegate to #add_keyword_constraint' do
@@ -441,9 +437,7 @@ RSpec.describe Stannum::Contracts::ParametersContract do
         let(:expected) do
           ary = [name, constraint]
 
-          next ary unless RUBY_VERSION < '2.7'
-
-          ary << {}
+          RUBY_VERSION < '2.7' ? ary << {} : ary
         end
 
         it 'should delegate to #add_keyword_constraint' do
@@ -555,9 +549,7 @@ RSpec.describe Stannum::Contracts::ParametersContract do
       let(:expected) do
         ary = [0, be_a_constraint]
 
-        next ary unless RUBY_VERSION < '2.7'
-
-        ary << {}
+        RUBY_VERSION < '2.7' ? ary << {} : ary
       end
 
       it 'should delegate to #add_index_constraint' do
@@ -615,9 +607,7 @@ RSpec.describe Stannum::Contracts::ParametersContract do
 
         next ary << options unless options.empty?
 
-        next ary unless RUBY_VERSION < '2.7'
-
-        ary << {}
+        RUBY_VERSION < '2.7' ? ary << {} : ary
       end
 
       it 'should delegate to #add_index_constraint' do
@@ -690,9 +680,7 @@ RSpec.describe Stannum::Contracts::ParametersContract do
 
         next ary << options unless options.empty?
 
-        next ary unless RUBY_VERSION < '2.7'
-
-        ary << {}
+        RUBY_VERSION < '2.7' ? ary << {} : ary
       end
 
       it 'should delegate to #add_index_constraint' do
@@ -829,9 +817,7 @@ RSpec.describe Stannum::Contracts::ParametersContract do
 
         next ary << options unless options.empty?
 
-        next ary unless RUBY_VERSION < '2.7'
-
-        ary << {}
+        RUBY_VERSION < '2.7' ? ary << {} : ary
       end
 
       it 'should delegate to #add_key_constraint' do
@@ -889,9 +875,7 @@ RSpec.describe Stannum::Contracts::ParametersContract do
 
         next ary << options unless options.empty?
 
-        next ary unless RUBY_VERSION < '2.7'
-
-        ary << {}
+        RUBY_VERSION < '2.7' ? ary << {} : ary
       end
 
       it 'should delegate to #add_key_constraint' do
