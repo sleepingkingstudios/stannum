@@ -1,13 +1,33 @@
 # Stannum Development
 
+- What happens to a frozen constraint? A frozen contract?
+  - Should freezing a contract freeze its constraints? #deep_freeze ?
+
+## Documentation Standards
+
+- Should provide a one-line short description.
+- Should provide a one+ paragraph short description.
+- Should document what errors look like in various circumstances.
+- Should provide examples of passing and failing objects.
+- Should document the methods.
+
 ## Development Notes
 
 - Refactor Constraints::Methods to Constraints::Signature ?
   - Refactor Map, Tuple constraints to Constraints::Signatures ?
+- Refactor Type constraints to include Type suffix ?
+  - e.g. Array => ArrayType (avoid collision with core class!)
+- Harmonize HashContract, TupleContract.
+  - define MapContract, TupleContract
+    - uses Signature sanity constraint
+    - defines a #type_constraint inner reader
+  - define HashContract < MapContract, ArrayContract < TupleContract
+    - uses Type sanity constraint
+    - overrides #type_constraint inner reader
 
 ### Contract
 
-- Refactor #include to #compose (avoids collision when implementing DSL).
+- Refactor #include to #compose/#concat (avoids collision when implementing DSL).
 
 #### ::Builder
 
@@ -43,7 +63,10 @@
 - Each constraint should define the `::TYPE` and `::NEGATED_TYPE` constants,
   and the `#type` and `#negated_type` readers.
 - Each constraint should define `#options` (default to empty hash).
-  - Treat `type`, `negated_type` as options? Override default types?
+  - Treat `type`, `negated_type` as options. Defaults to TYPE, NEGATED_TYPE
+  - Implement 'should implement the Constraint methods' shared examples
+    - Defines negated_type, options, type
+    - Extract implementations from 'implement Constraint interface' examples
 - Use terse contract class/file names:
   - Stannum::Contracts::IndifferentHash instead of IndifferentHashContract.
 
@@ -69,6 +92,8 @@ Constraint testing should be done in the context of the `#match` and `#negated_m
 
 - Constraints::Always
   - #does_not_match? and #matches? always return true
+- Constraints::Equality
+  - asserts actual == expected
 - Constraints::Never
   - #does_not_match? and #matches? always return false
 - Constraints::Numeric
@@ -80,10 +105,6 @@ Constraint testing should be done in the context of the `#match` and `#negated_m
     - max and/or min, gt/gte and/or lt/lte
 - Constraints::Size
   - options for :is, :max, :min - delegate to Constraints::Range?
-
-- Type::Lazy - takes a class or module name as a String or Symbol; only
-  evaluates when the constraint is first checked?
-- Type::Optional - allows nil value
 
 ### Type Constraints
 
@@ -125,6 +146,13 @@ Constraint testing should be done in the context of the `#match` and `#negated_m
 
 - MatchConstraint matcher (#match_constraint macro)
 - Matcher mixin - use a constraint in place of an RSpec matcher!
+
+## Support
+
+- Stannum::Support::Validations
+  - raise exception on invalid params
+  - #validate_integer
+  - #validate_name
 
 ## Structs
 

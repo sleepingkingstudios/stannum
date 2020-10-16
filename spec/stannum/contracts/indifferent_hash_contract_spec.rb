@@ -15,6 +15,15 @@ RSpec.describe Stannum::Contracts::IndifferentHashContract do
 
   let(:constructor_block)   { -> {} }
   let(:constructor_options) { {} }
+  let(:expected_options) do
+    {
+      allow_extra_keys: false,
+      allow_hash_like:  false,
+      key_type:         be_a_constraint(
+        Stannum::Constraints::Hashes::IndifferentKey
+      )
+    }
+  end
 
   describe '.new' do
     it 'should define the constructor' do
@@ -48,6 +57,8 @@ RSpec.describe Stannum::Contracts::IndifferentHashContract do
   end
 
   include_examples 'should implement the Constraint interface'
+
+  include_examples 'should implement the Constraint methods'
 
   include_examples 'should implement the Contract methods'
 

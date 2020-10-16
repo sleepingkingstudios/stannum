@@ -7,9 +7,9 @@ require 'support/examples/constraint_examples'
 RSpec.describe Stannum::Constraint do
   include Spec::Support::Examples::ConstraintExamples
 
-  subject(:constraint) { described_class.new(**options) }
+  subject(:constraint) { described_class.new(**constructor_options) }
 
-  let(:options) { {} }
+  let(:constructor_options) { {} }
 
   describe '.new' do
     it 'should define the constructor' do
@@ -24,156 +24,211 @@ RSpec.describe Stannum::Constraint do
 
   include_examples 'should implement the Constraint interface'
 
-  describe '#negated_type' do
-    include_examples 'should define reader',
-      :negated_type,
-      'stannum.constraints.valid'
+  include_examples 'should implement the Constraint methods'
 
-    context 'when initialized with a negated type' do
-      let(:negated_type) { 'spec.custom_negated_type' }
-      let(:options)      { super().merge(negated_type: negated_type) }
+  describe '#match' do
+    let(:match_method)    { :match }
+    let(:expected_errors) { { type: constraint.type } }
 
-      it { expect(constraint.negated_type).to be negated_type }
-    end
-  end
+    describe 'with nil' do
+      let(:actual) { nil }
 
-  describe '#options' do
-    let(:expected) do
-      {
-        negated_type: Stannum::Constraints::Base::NEGATED_TYPE,
-        type:         Stannum::Constraints::Base::TYPE
-      }.merge(options)
+      include_examples 'should not match the constraint'
     end
 
-    include_examples 'should have reader', :options, -> { be == expected }
+    describe 'with true' do
+      let(:actual) { true }
 
-    context 'when initialized with a negated type' do
-      let(:negated_type) { 'spec.custom_negated_type' }
-      let(:options)      { super().merge(negated_type: negated_type) }
-
-      it { expect(constraint.options).to be == expected }
+      include_examples 'should not match the constraint'
     end
 
-    context 'when initialized with a type' do
-      let(:type)    { 'spec.custom_type' }
-      let(:options) { super().merge(type: type) }
+    describe 'with false' do
+      let(:actual) { false }
 
-      it { expect(constraint.options).to be == expected }
+      include_examples 'should not match the constraint'
     end
 
-    context 'when initialized with options' do
-      let(:options) do
-        {
-          language:  'Ada',
-          log_level: 'panic',
-          strict:    true
-        }
+    describe 'with an integer' do
+      let(:actual) { 0 }
+
+      include_examples 'should not match the constraint'
+    end
+
+    describe 'with an Object' do
+      let(:actual) { Object.new.freeze }
+
+      include_examples 'should not match the constraint'
+    end
+
+    describe 'with an empty String' do
+      let(:actual) { '' }
+
+      include_examples 'should not match the constraint'
+    end
+
+    describe 'with a String' do
+      let(:actual) { 'a string' }
+
+      include_examples 'should not match the constraint'
+    end
+
+    describe 'with an empty Symbol' do
+      let(:actual) { :'' }
+
+      include_examples 'should not match the constraint'
+    end
+
+    describe 'with a Symbol' do
+      let(:actual) { :a_symbol }
+
+      include_examples 'should not match the constraint'
+    end
+
+    describe 'with an empty Array' do
+      let(:actual) { [] }
+
+      include_examples 'should not match the constraint'
+    end
+
+    describe 'with a Array' do
+      let(:actual) { %w[a b c] }
+
+      include_examples 'should not match the constraint'
+    end
+
+    describe 'with an empty Hash' do
+      let(:actual) { {} }
+
+      include_examples 'should not match the constraint'
+    end
+
+    describe 'with a Hash' do
+      let(:actual) { { a: 1, b: 2, c: 3 } }
+
+      include_examples 'should not match the constraint'
+    end
+
+    context 'when initialized with a block' do
+      subject(:constraint) do
+        described_class.new(**constructor_options, &constructor_block)
       end
 
-      it { expect(constraint.options).to be == expected }
+      let(:constructor_block) { ->(actual) { actual.nil? } }
+
+      describe 'with an object that does not match the block' do
+        let(:actual) { Object.new.freeze }
+
+        include_examples 'should not match the constraint'
+      end
+
+      describe 'with an object that matches the block' do
+        let(:actual) { nil }
+
+        include_examples 'should match the constraint'
+      end
     end
   end
 
-  describe '#type' do
-    include_examples 'should define reader',
-      :type,
-      'stannum.constraints.invalid'
+  describe '#negated_match' do
+    let(:match_method)    { :negated_match }
+    let(:expected_errors) { { type: constraint.negated_type } }
 
-    context 'when initialized with a type' do
-      let(:type)    { 'spec.custom_type' }
-      let(:options) { super().merge(type: type) }
+    describe 'with nil' do
+      let(:actual) { nil }
 
-      it { expect(constraint.type).to be type }
-    end
-  end
-
-  context 'when initialized without a block' do
-    let(:expected_errors) do
-      Stannum::Errors.new.add(constraint.type)
+      include_examples 'should match the constraint'
     end
 
-    include_examples 'should not match', nil, reversible: true
+    describe 'with true' do
+      let(:actual) { true }
 
-    include_examples 'should not match', true, reversible: true
-
-    include_examples 'should not match', false, reversible: true
-
-    include_examples 'should not match',
-      0,
-      as:         'an integer',
-      reversible: true
-
-    include_examples 'should not match', Object.new.freeze, reversible: true
-
-    include_examples 'should not match', 'a string', reversible: true
-
-    include_examples 'should not match', '', 'an empty string', reversible: true
-
-    include_examples 'should not match', :a_symbol, reversible: true
-
-    include_examples 'should not match',
-      [],
-      as:         'an empty array',
-      reversible: true
-
-    include_examples 'should not match',
-      %w[a b c],
-      as:         'an array',
-      reversible: true
-
-    include_examples 'should not match',
-      { a: 'a' },
-      as:         'a hash',
-      reversible: true
-
-    context 'when initialized with a type' do
-      let(:type)    { 'spec.custom_type' }
-      let(:options) { super().merge(type: type) }
-
-      include_examples 'should not match', nil, reversible: true
-    end
-  end
-
-  context 'when initialized with a block' do
-    subject(:constraint) { described_class.new(**options, &block) }
-
-    let(:block) { ->(actual) { actual.nil? } }
-    let(:expected_errors) do
-      Stannum::Errors.new.add(constraint.type)
-    end
-    let(:negated_errors) do
-      Stannum::Errors.new.add(constraint.negated_type)
+      include_examples 'should match the constraint'
     end
 
-    include_examples 'should match', nil, reversible: true
+    describe 'with false' do
+      let(:actual) { false }
 
-    include_examples 'should not match',
-      Object.new.freeze,
-      as:         'a non-nil object',
-      reversible: true
-
-    context 'when initialized with a type' do
-      let(:type)    { 'spec.custom_type' }
-      let(:options) { super().merge(type: type) }
-
-      include_examples 'should match', nil, reversible: true
-
-      include_examples 'should not match',
-        Object.new.freeze,
-        as:         'a non-nil object',
-        reversible: true
+      include_examples 'should match the constraint'
     end
 
-    context 'when initialized with a negated type' do
-      let(:negated_type) { 'spec.custom_negated_type' }
-      let(:options)      { super().merge(negated_type: negated_type) }
+    describe 'with an integer' do
+      let(:actual) { 0 }
 
-      include_examples 'should match', nil, reversible: true
+      include_examples 'should match the constraint'
+    end
 
-      include_examples 'should not match',
-        Object.new.freeze,
-        as:         'a non-nil object',
-        reversible: true
+    describe 'with an Object' do
+      let(:actual) { Object.new.freeze }
+
+      include_examples 'should match the constraint'
+    end
+
+    describe 'with an empty String' do
+      let(:actual) { '' }
+
+      include_examples 'should match the constraint'
+    end
+
+    describe 'with a String' do
+      let(:actual) { 'a string' }
+
+      include_examples 'should match the constraint'
+    end
+
+    describe 'with an empty Symbol' do
+      let(:actual) { :'' }
+
+      include_examples 'should match the constraint'
+    end
+
+    describe 'with a Symbol' do
+      let(:actual) { :a_symbol }
+
+      include_examples 'should match the constraint'
+    end
+
+    describe 'with an empty Array' do
+      let(:actual) { [] }
+
+      include_examples 'should match the constraint'
+    end
+
+    describe 'with a Array' do
+      let(:actual) { %w[a b c] }
+
+      include_examples 'should match the constraint'
+    end
+
+    describe 'with an empty Hash' do
+      let(:actual) { {} }
+
+      include_examples 'should match the constraint'
+    end
+
+    describe 'with a Hash' do
+      let(:actual) { { a: 1, b: 2, c: 3 } }
+
+      include_examples 'should match the constraint'
+    end
+
+    context 'when initialized with a block' do
+      subject(:constraint) do
+        described_class.new(**constructor_options, &constructor_block)
+      end
+
+      let(:constructor_block) { ->(actual) { actual.nil? } }
+
+      describe 'with an object that does not match the block' do
+        let(:actual) { Object.new.freeze }
+
+        include_examples 'should match the constraint'
+      end
+
+      describe 'with an object that matches the block' do
+        let(:actual) { nil }
+
+        include_examples 'should not match the constraint'
+      end
     end
   end
 end

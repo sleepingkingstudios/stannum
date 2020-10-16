@@ -153,6 +153,13 @@ module Stannum::Contracts
       !!options[:allow_extra_items]
     end
 
+    # (see Stannum::Contracts::Base#with_options)
+    def with_options(**options)
+      return super unless options.key?(:allow_extra_items)
+
+      raise ArgumentError, "can't change option :allow_extra_items"
+    end
+
     protected
 
     def expected_count

@@ -7,15 +7,9 @@ require 'support/examples/constraint_examples'
 RSpec.describe Stannum::Constraints::Base do
   include Spec::Support::Examples::ConstraintExamples
 
-  subject(:constraint) { described_class.new(**options) }
+  subject(:constraint) { described_class.new(**constructor_options) }
 
-  let(:options) { {} }
-  let(:expected_errors) do
-    Stannum::Errors.new.add(constraint.type)
-  end
-  let(:negated_errors) do
-    Stannum::Errors.new.add(constraint.negated_type)
-  end
+  let(:constructor_options) { {} }
 
   describe '::NEGATED_TYPE' do
     include_examples 'should define frozen constant',
@@ -37,42 +31,6 @@ RSpec.describe Stannum::Constraints::Base do
         .and_any_keywords
     end
   end
-
-  include_examples 'should implement the Constraint interface'
-
-  include_examples 'should not match', nil, reversible: true
-
-  include_examples 'should not match', true, reversible: true
-
-  include_examples 'should not match', false, reversible: true
-
-  include_examples 'should not match',
-    0,
-    as:         'an integer',
-    reversible: true
-
-  include_examples 'should not match', Object.new.freeze, reversible: true
-
-  include_examples 'should not match', 'a string', reversible: true
-
-  include_examples 'should not match', '', 'an empty string', reversible: true
-
-  include_examples 'should not match', :a_symbol, reversible: true
-
-  include_examples 'should not match',
-    [],
-    as:         'an empty array',
-    reversible: true
-
-  include_examples 'should not match',
-    %w[a b c],
-    as:         'an array',
-    reversible: true
-
-  include_examples 'should not match',
-    { a: 'a' },
-    as:         'a hash',
-    reversible: true
 
   describe '#does_not_match?' do
     context 'when #matches? returns false' do
@@ -101,12 +59,19 @@ RSpec.describe Stannum::Constraints::Base do
   end
 
   describe '#errors_for' do
-    it 'should return an errors object' do
-      expect(constraint.errors_for nil).to be_a Stannum::Errors
+    let(:expected_errors) do
+      Stannum::Errors.new.add(constraint.type)
     end
+
+    it { expect(constraint.errors_for nil).to be_a Stannum::Errors }
+
+    it { expect(constraint.errors_for nil).to be == expected_errors }
   end
 
   describe '#match' do
+    let(:expected_errors) { { type: constraint.type } }
+    let(:match_method)    { :match }
+
     context 'when #matches? returns false' do
       let(:actual) { nil }
 
@@ -116,7 +81,7 @@ RSpec.describe Stannum::Constraints::Base do
           .and_return(false)
       end
 
-      include_examples 'should not match the value'
+      include_examples 'should not match the constraint'
     end
 
     context 'when #matches? returns true' do
@@ -128,19 +93,28 @@ RSpec.describe Stannum::Constraints::Base do
           .and_return(true)
       end
 
-      include_examples 'should match the value'
+      include_examples 'should match the constraint'
     end
   end
 
+  describe '#matches?' do
+    it { expect(constraint.matches? nil).to be false }
+  end
+
   describe '#negated_errors_for' do
-    it 'should return an errors object' do
-      expect(constraint.negated_errors_for nil).to be_a Stannum::Errors
+    let(:negated_errors) do
+      Stannum::Errors.new.add(constraint.negated_type)
     end
+
+    it { expect(constraint.negated_errors_for nil).to be_a Stannum::Errors }
 
     it { expect(constraint.negated_errors_for nil).to be == negated_errors }
   end
 
   describe '#negated_match' do
+    let(:expected_errors) { { type: constraint.negated_type } }
+    let(:match_method)    { :negated_match }
+
     context 'when #does_not_match? returns false' do
       let(:actual) { nil }
 
@@ -150,7 +124,7 @@ RSpec.describe Stannum::Constraints::Base do
           .and_return(false)
       end
 
-      include_examples 'should not match the value', negated: true
+      include_examples 'should not match the constraint'
     end
 
     context 'when #does_not_match? returns true' do
@@ -162,35 +136,7 @@ RSpec.describe Stannum::Constraints::Base do
           .and_return(true)
       end
 
-      include_examples 'should match the value', negated: true
+      include_examples 'should match the constraint'
     end
-  end
-
-  describe '#negated_type' do
-    include_examples 'should define reader',
-      :negated_type,
-      'stannum.constraints.valid'
-  end
-
-  describe '#options' do
-    include_examples 'should have reader', :options, -> { be == {} }
-
-    context 'when the constraint defines options' do
-      let(:options) do
-        {
-          language:  'Ada',
-          log_level: 'panic',
-          strict:    true
-        }
-      end
-
-      it { expect(constraint.options).to be == options }
-    end
-  end
-
-  describe '#type' do
-    include_examples 'should define reader',
-      :type,
-      'stannum.constraints.invalid'
   end
 end

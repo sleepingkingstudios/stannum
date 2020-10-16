@@ -9,7 +9,7 @@ module Stannum::Constraints
   #   constraint = Stannum::Constraints::Presence.new
   #
   #   constraint.matches?(nil) #=> false
-  #   constraint.matches?(Object.new)  #=> false
+  #   constraint.matches?(Object.new)  #=> true
   #
   # @example Using a Presence constraint with an Array
   #   constraint.matches?([])        #=> false
@@ -38,15 +38,5 @@ module Stannum::Constraints
       true
     end
     alias match? matches?
-
-    # @return [String] the error type generated for a matching object.
-    def negated_type
-      NEGATED_TYPE
-    end
-
-    # @return [String] the error type generated for a non-matching object.
-    def type
-      TYPE
-    end
   end
 end

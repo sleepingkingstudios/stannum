@@ -442,6 +442,10 @@ module Stannum::Contracts
 
     protected
 
+    attr_accessor :constraints
+
+    attr_accessor :included
+
     def add_errors_for(definition, value, errors)
       definition
         .constraint
@@ -460,6 +464,15 @@ module Stannum::Contracts
           actual: value,
           errors: map_errors(errors, **definition.options)
         )
+    end
+
+    def copy_properties(source, options: nil, **_)
+      super
+
+      self.constraints = source.constraints.dup
+      self.included    = source.included.dup
+
+      self
     end
 
     def map_errors(errors, **_options)

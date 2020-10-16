@@ -21,7 +21,8 @@ module Spec
 
       add_constraint(
         Stannum::Constraints::Presence.new,
-        property: :name
+        property:      :name,
+        property_name: :registered_name
       )
 
       add_constraint(

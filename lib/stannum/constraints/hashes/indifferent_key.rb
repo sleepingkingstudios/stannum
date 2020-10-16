@@ -52,16 +52,6 @@ module Stannum::Constraints::Hashes
     end
     alias match? matches?
 
-    # @return [String] the error type generated for a matching object.
-    def negated_type
-      NEGATED_TYPE
-    end
-
-    # @return [String] the error type generated for a non-matching object.
-    def type
-      TYPE
-    end
-
     private
 
     def indifferent_key_type?(actual)

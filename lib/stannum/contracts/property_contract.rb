@@ -168,11 +168,11 @@ module Stannum::Contracts
     protected
 
     def map_errors(errors, **options)
-      property = options[:property]
+      property_name = options.fetch(:property_name, options[:property])
 
-      return errors if property.nil?
+      return errors if property_name.nil?
 
-      errors.dig(*Array(property))
+      errors.dig(*Array(property_name))
     end
 
     def map_value(actual, **options)

@@ -38,10 +38,9 @@ module Stannum
   #
   # @see Stannum::Constraints::Base
   class Constraint < Stannum::Constraints::Base
-    # @overload initialize(negated_type: nil, type: nil)
-    #   @param negated_type [String] The error type generated for a matching
-    #     object.
-    #   @param type [String] The error type generated for a non-matching object.
+    # @overload initialize(**options)
+    #   @param options [Hash<Symbol, Object>] Configuration options for the
+    #     constraint. Defaults to an empty Hash.
     #
     #   @yield The definition for the constraint. Each time #matches? is called
     #     for this constraint, the given object will be passed to this block and
@@ -51,19 +50,11 @@ module Stannum
     #     constraint, otherwise false.
     #
     #   @see #matches?
-    def initialize(negated_type: nil, type: nil, **options, &block)
-      @negated_type = negated_type || Stannum::Constraints::Base::NEGATED_TYPE
-      @type         = type         || Stannum::Constraints::Base::TYPE
-      @definition   = block
+    def initialize(**options, &block)
+      @definition = block
 
-      super(negated_type: @negated_type, type: @type, **options)
+      super(**options)
     end
-
-    # @return [String] the error type generated for a matching object.
-    attr_reader :negated_type
-
-    # @return [String] the error type generated for a non-matching object.
-    attr_reader :type
 
     # (see Stannum::Constraints::Base#matches?)
     def matches?(actual)

@@ -8,8 +8,17 @@ module Spec::Support::Examples
   module ContractExamples
     extend RSpec::SleepingKingStudios::Concerns::SharedExampleGroup
 
-    def be_a_constraint_definition(properties)
-      be_a(Stannum::Contracts::Definition).and(have_attributes(properties))
+    def be_a_constraint_definition(expected_properties)
+      be_a(Stannum::Contracts::Definition).and(
+        satisfy do |definition|
+          properties =
+            expected_properties.each_key.with_object({}) do |key, hsh|
+              hsh[key] = definition.send(key)
+            end
+
+          expect(properties).to deep_match(expected_properties)
+        end
+      )
     end
 
     def equal_errors(expected)
@@ -838,6 +847,31 @@ module Spec::Support::Examples
         end
       end
 
+      describe '#clone' do
+        let(:copy) { subject.clone }
+
+        it 'should return the constraints' do
+          expect(copy.send :constraints).to be == subject.send(:constraints)
+        end
+
+        it 'should return the included contracts' do
+          expect(copy.send :included).to be == subject.send(:included)
+        end
+
+        it 'should duplicate the constraints' do
+          expect { copy.add_constraint(Stannum::Constraints::Base.new) }
+            .not_to(change { subject.send(:constraints) })
+        end
+
+        it 'should duplicate the included contracts' do
+          contract = Stannum::Contracts::Base.new
+          contract.add_constraint(Stannum::Constraints::Base.new)
+
+          expect { copy.include(contract) }
+            .not_to(change { subject.send(:included) })
+        end
+      end
+
       describe '#does_not_match?' do
         include_context 'when #each_pair is stubbed'
 
@@ -892,6 +926,31 @@ module Spec::Support::Examples
           wrap_context 'when #each_pair yields many matching constraints' do
             it { expect(status).to be false }
           end
+        end
+      end
+
+      describe '#dup' do
+        let(:copy) { subject.dup }
+
+        it 'should return the constraints' do
+          expect(copy.send :constraints).to be == subject.send(:constraints)
+        end
+
+        it 'should return the included contracts' do
+          expect(copy.send :included).to be == subject.send(:included)
+        end
+
+        it 'should duplicate the constraints' do
+          expect { copy.add_constraint(Stannum::Constraints::Base.new) }
+            .not_to(change { subject.send(:constraints) })
+        end
+
+        it 'should duplicate the included contracts' do
+          contract = Stannum::Contracts::Base.new
+          contract.add_constraint(Stannum::Constraints::Base.new)
+
+          expect { copy.include(contract) }
+            .not_to(change { subject.send(:included) })
         end
       end
 
@@ -1357,6 +1416,31 @@ module Spec::Support::Examples
 
             it { expect(errors).to equal_errors(wrapped_errors) }
           end
+        end
+      end
+
+      describe '#with_options' do
+        let(:copy) { subject.with_options(key: 'value') }
+
+        it 'should return the constraints' do
+          expect(copy.send :constraints).to be == subject.send(:constraints)
+        end
+
+        it 'should return the included contracts' do
+          expect(copy.send :included).to be == subject.send(:included)
+        end
+
+        it 'should duplicate the constraints' do
+          expect { copy.add_constraint(Stannum::Constraints::Base.new) }
+            .not_to(change { subject.send(:constraints) })
+        end
+
+        it 'should duplicate the included contracts' do
+          contract = Stannum::Contracts::Base.new
+          contract.add_constraint(Stannum::Constraints::Base.new)
+
+          expect { copy.include(contract) }
+            .not_to(change { subject.send(:included) })
         end
       end
     end

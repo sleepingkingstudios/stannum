@@ -7,9 +7,13 @@ require 'support/examples/constraint_examples'
 RSpec.describe Stannum::Constraints::Methods do
   include Spec::Support::Examples::ConstraintExamples
 
-  subject(:constraint) { described_class.new(*expected_methods) }
+  subject(:constraint) do
+    described_class.new(*expected_methods, **constructor_options)
+  end
 
-  let(:expected_methods) { %i[[] each size] }
+  let(:expected_methods)    { %i[[] each size] }
+  let(:constructor_options) { {} }
+  let(:expected_options)    { { expected_methods: expected_methods } }
 
   describe '::NEGATED_TYPE' do
     include_examples 'should define frozen constant',
@@ -59,6 +63,8 @@ RSpec.describe Stannum::Constraints::Methods do
   end
 
   include_examples 'should implement the Constraint interface'
+
+  include_examples 'should implement the Constraint methods'
 
   describe '#expected_methods' do
     include_examples 'should define reader',
@@ -173,34 +179,5 @@ RSpec.describe Stannum::Constraints::Methods do
 
       include_examples 'should not match the constraint'
     end
-  end
-
-  describe '#negated_type' do
-    include_examples 'should define reader',
-      :negated_type,
-      'stannum.constraints.has_methods'
-  end
-
-  describe '#options' do
-    let(:expected) { { expected_methods: expected_methods } }
-
-    include_examples 'should have reader', :options, -> { be == expected }
-
-    context 'when initialized with options' do
-      subject(:constraint) do
-        described_class.new(*expected_methods, **options)
-      end
-
-      let(:options)  { { key: 'value' } }
-      let(:expected) { super().merge(options) }
-
-      it { expect(constraint.options).to be == expected }
-    end
-  end
-
-  describe '#type' do
-    include_examples 'should define reader',
-      :type,
-      'stannum.constraints.does_not_have_methods'
   end
 end

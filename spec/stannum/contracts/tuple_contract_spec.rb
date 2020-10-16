@@ -88,6 +88,7 @@ RSpec.describe Stannum::Contracts::TupleContract do
 
   let(:constructor_block)   { -> {} }
   let(:constructor_options) { {} }
+  let(:expected_options)    { { allow_extra_items: false } }
 
   describe '::Builder' do
     include Spec::Support::Examples::ContractBuilderExamples
@@ -183,6 +184,8 @@ RSpec.describe Stannum::Contracts::TupleContract do
   end
 
   include_examples 'should implement the Constraint interface'
+
+  include_examples 'should implement the Constraint methods'
 
   include_examples 'should implement the Contract methods'
 
@@ -906,6 +909,17 @@ RSpec.describe Stannum::Contracts::TupleContract do
             property_type: :index
           )
         ).to be true
+      end
+    end
+  end
+
+  describe '#with_options' do
+    describe 'with allow_extra_items: value' do
+      let(:error_message) { "can't change option :allow_extra_items" }
+
+      it 'should raise an exception' do
+        expect { contract.with_options(allow_extra_items: true) }
+          .to raise_error ArgumentError, error_message
       end
     end
   end

@@ -28,6 +28,8 @@ RSpec.describe Stannum::Constraints::Nothing do
 
   include_examples 'should implement the Constraint interface'
 
+  include_examples 'should implement the Constraint methods'
+
   describe '#match' do
     let(:match_method) { :match }
     let(:expected_errors) do
@@ -111,90 +113,6 @@ RSpec.describe Stannum::Constraints::Nothing do
 
       include_examples 'should not match the constraint'
     end
-
-    context 'when initialized with type: value' do
-      let(:type)                { 'spec.type' }
-      let(:constructor_options) { super().merge(type: type) }
-      let(:expected_errors)     { { type: type } }
-
-      describe 'with nil' do
-        let(:actual) { nil }
-
-        include_examples 'should not match the constraint'
-      end
-
-      describe 'with true' do
-        let(:actual) { true }
-
-        include_examples 'should not match the constraint'
-      end
-
-      describe 'with false' do
-        let(:actual) { false }
-
-        include_examples 'should not match the constraint'
-      end
-
-      describe 'with an integer' do
-        let(:actual) { 0 }
-
-        include_examples 'should not match the constraint'
-      end
-
-      describe 'with an Object' do
-        let(:actual) { Object.new.freeze }
-
-        include_examples 'should not match the constraint'
-      end
-
-      describe 'with an empty String' do
-        let(:actual) { '' }
-
-        include_examples 'should not match the constraint'
-      end
-
-      describe 'with a String' do
-        let(:actual) { 'a string' }
-
-        include_examples 'should not match the constraint'
-      end
-
-      describe 'with an empty Symbol' do
-        let(:actual) { :'' }
-
-        include_examples 'should not match the constraint'
-      end
-
-      describe 'with a Symbol' do
-        let(:actual) { :a_symbol }
-
-        include_examples 'should not match the constraint'
-      end
-
-      describe 'with an empty Array' do
-        let(:actual) { [] }
-
-        include_examples 'should not match the constraint'
-      end
-
-      describe 'with a Array' do
-        let(:actual) { %w[a b c] }
-
-        include_examples 'should not match the constraint'
-      end
-
-      describe 'with an empty Hash' do
-        let(:actual) { {} }
-
-        include_examples 'should not match the constraint'
-      end
-
-      describe 'with a Hash' do
-        let(:actual) { { a: 1, b: 2, c: 3 } }
-
-        include_examples 'should not match the constraint'
-      end
-    end
   end
 
   describe '#negated_match' do
@@ -276,43 +194,6 @@ RSpec.describe Stannum::Constraints::Nothing do
       let(:actual) { { a: 1, b: 2, c: 3 } }
 
       include_examples 'should match the constraint'
-    end
-  end
-
-  describe '#negated_type' do
-    include_examples 'should define reader',
-      :negated_type,
-      'stannum.constraints.valid'
-  end
-
-  describe '#options' do
-    let(:expected_options) do
-      { type: described_class::TYPE }
-    end
-
-    include_examples 'should have reader',
-      :options,
-      -> { be == expected_options }
-
-    context 'when initialized with type: value' do
-      let(:type)                { 'spec.type' }
-      let(:constructor_options) { super().merge(type: type) }
-      let(:expected_options)    { super().merge(type: type) }
-
-      it { expect(constraint.options).to be == expected_options }
-    end
-  end
-
-  describe '#type' do
-    include_examples 'should define reader',
-      :type,
-      'stannum.constraints.anything'
-
-    context 'when initialized with type: value' do
-      let(:type)                { 'spec.type' }
-      let(:constructor_options) { super().merge(type: type) }
-
-      it { expect(constraint.type).to be == type }
     end
   end
 end

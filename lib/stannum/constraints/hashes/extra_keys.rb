@@ -32,14 +32,14 @@ module Stannum::Constraints::Hashes
     def initialize(expected_keys, **options)
       validate_expected_keys(expected_keys)
 
-      super(**options)
-
-      @expected_keys =
+      expected_keys =
         if expected_keys.is_a?(Array)
           Set.new(expected_keys)
         else
           expected_keys
         end
+
+      super(expected_keys: expected_keys, **options)
     end
 
     # @return [true, false] true if the object responds to #[] and #keys and the
@@ -52,9 +52,11 @@ module Stannum::Constraints::Hashes
 
     # @return [Array] the expected keys.
     def expected_keys
-      return @expected_keys unless @expected_keys.is_a?(Proc)
+      keys = options[:expected_keys]
 
-      Set.new(@expected_keys.call)
+      return keys unless keys.is_a?(Proc)
+
+      Set.new(keys.call)
     end
 
     # @return [true, false] true if the object responds to #[] and #keys and the
@@ -65,16 +67,6 @@ module Stannum::Constraints::Hashes
       Set.new(actual.keys) <= expected_keys
     end
     alias match? matches?
-
-    # @return [String] the error type generated for a matching object.
-    def negated_type
-      NEGATED_TYPE
-    end
-
-    # @return [String] the error type generated for a non-matching object.
-    def type
-      TYPE
-    end
 
     private
 

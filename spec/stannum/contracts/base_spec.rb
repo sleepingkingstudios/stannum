@@ -383,6 +383,8 @@ RSpec.describe Stannum::Contracts::Base do
 
   include_examples 'should implement the Constraint interface'
 
+  include_examples 'should implement the Constraint methods'
+
   include_examples 'should implement the Contract methods'
 
   describe '#add_constraint' do

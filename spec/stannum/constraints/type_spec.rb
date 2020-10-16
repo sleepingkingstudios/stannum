@@ -15,6 +15,7 @@ RSpec.describe Stannum::Constraints::Type do
 
   let(:expected_type)       { String }
   let(:constructor_options) { {} }
+  let(:expected_options)    { { expected_type: expected_type, required: true } }
 
   describe '::NEGATED_TYPE' do
     include_examples 'should define frozen constant',
@@ -62,6 +63,8 @@ RSpec.describe Stannum::Constraints::Type do
   end
 
   include_examples 'should implement the Constraint interface'
+
+  include_examples 'should implement the Constraint methods'
 
   include_examples 'should implement the Optional interface'
 
@@ -191,35 +194,31 @@ RSpec.describe Stannum::Constraints::Type do
     end
   end
 
-  describe '#negated_type' do
-    include_examples 'should define reader',
-      :negated_type,
-      'stannum.constraints.is_type'
-  end
+  describe '#with_options' do
+    let(:copy) { subject.with_options(**options) }
 
-  describe '#options' do
-    let(:expected) do
-      {
-        expected_type: expected_type,
-        required:      true
-      }
+    describe 'with optional: false' do
+      let(:options) { { optional: false } }
+
+      it { expect(copy.options[:required]).to be true }
     end
 
-    include_examples 'should have reader', :options, -> { be == expected }
+    describe 'with optional: true' do
+      let(:options) { { optional: true } }
 
-    context 'when initialized with options' do
-      subject(:constraint) { described_class.new(expected_type, **options) }
-
-      let(:options)  { { key: 'value' } }
-      let(:expected) { super().merge(options) }
-
-      it { expect(constraint.options).to be == expected }
+      it { expect(copy.options[:required]).to be false }
     end
-  end
 
-  describe '#type' do
-    include_examples 'should define reader',
-      :type,
-      'stannum.constraints.is_not_type'
+    describe 'with required: false' do
+      let(:options) { { required: false } }
+
+      it { expect(copy.options[:required]).to be false }
+    end
+
+    describe 'with required: true' do
+      let(:options) { { required: true } }
+
+      it { expect(copy.options[:required]).to be true }
+    end
   end
 end

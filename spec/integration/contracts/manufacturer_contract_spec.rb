@@ -75,7 +75,7 @@ RSpec.describe Spec::ManufacturerContract do
           {
             data:    {},
             message: nil,
-            path:    %i[name],
+            path:    %i[registered_name],
             type:    Stannum::Constraints::Presence::TYPE
           },
           {
@@ -156,7 +156,7 @@ RSpec.describe Spec::ManufacturerContract do
           {
             data:    {},
             message: nil,
-            path:    %i[name],
+            path:    %i[registered_name],
             type:    Stannum::Constraints::Presence::TYPE
           },
           {
@@ -277,7 +277,7 @@ RSpec.describe Spec::ManufacturerContract do
           {
             data:    {},
             message: nil,
-            path:    %i[name],
+            path:    %i[registered_name],
             type:    Stannum::Constraints::Presence::NEGATED_TYPE
           }
         ]
@@ -308,7 +308,7 @@ RSpec.describe Spec::ManufacturerContract do
           {
             data:    {},
             message: nil,
-            path:    %i[name],
+            path:    %i[registered_name],
             type:    Stannum::Constraints::Presence::NEGATED_TYPE
           },
           {
@@ -354,7 +354,7 @@ RSpec.describe Spec::ManufacturerContract do
           {
             data:    {},
             message: nil,
-            path:    %i[name],
+            path:    %i[registered_name],
             type:    Stannum::Constraints::Presence::NEGATED_TYPE
           }
         ]
@@ -387,7 +387,7 @@ RSpec.describe Spec::ManufacturerContract do
           {
             data:    {},
             message: nil,
-            path:    %i[name],
+            path:    %i[registered_name],
             type:    Stannum::Constraints::Presence::NEGATED_TYPE
           },
           {

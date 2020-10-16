@@ -194,6 +194,8 @@ RSpec.describe Stannum::Contracts::PropertyContract do
 
   include_examples 'should implement the Constraint interface'
 
+  include_examples 'should implement the Constraint methods'
+
   include_examples 'should implement the Contract methods'
 
   describe '#add_constraint' do
@@ -565,6 +567,48 @@ RSpec.describe Stannum::Contracts::PropertyContract do
 
       it 'should return the errors for the property' do
         expect(contract.send :map_errors, errors, property: property)
+          .to be == errors[:manufacturer][:address][:street]
+      end
+    end
+
+    describe 'with a property name' do
+      let(:property)      { :name }
+      let(:property_name) { :custom_name }
+      let(:options) do
+        {
+          property:      property,
+          property_name: property_name
+        }
+      end
+
+      before(:example) do
+        errors[:custom_name].add('is too silly')
+        errors[:name].add('is too serious')
+      end
+
+      it 'should return the errors for the property' do
+        expect(contract.send :map_errors, errors, **options)
+          .to be == errors[:custom_name]
+      end
+    end
+
+    describe 'with a nested property name' do
+      let(:property)      { %i[manufacturer address state] }
+      let(:property_name) { %i[manufacturer address street] }
+      let(:options) do
+        {
+          property:      property,
+          property_name: property_name
+        }
+      end
+
+      before(:example) do
+        errors[:manufacturer][:address][:state].add('is a Canadian province')
+        errors[:manufacturer][:address][:street].add('is not on the map')
+      end
+
+      it 'should return the errors for the property' do
+        expect(contract.send :map_errors, errors, **options)
           .to be == errors[:manufacturer][:address][:street]
       end
     end

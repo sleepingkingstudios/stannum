@@ -8,169 +8,6 @@ module Spec::Support::Examples
   module ConstraintExamples
     extend RSpec::SleepingKingStudios::Concerns::SharedExampleGroup
 
-    shared_examples 'should match the constraint' do
-      let(:actual_status) do
-        status, _ = subject.send(match_method, actual)
-
-        status
-      end
-      let(:actual_errors) do
-        _, errors = subject.send(match_method, actual)
-
-        errors
-      end
-
-      it { expect(actual_status).to be true }
-
-      it { expect(actual_errors).to be nil }
-    end
-
-    shared_examples 'should not match the constraint' do
-      let(:actual_status) do
-        status, _ = subject.send(match_method, actual)
-
-        status
-      end
-      let(:actual_errors) do
-        _, errors = subject.send(match_method, actual)
-
-        errors
-      end
-      let(:wrapped_errors) do
-        (expected_errors.is_a?(Array) ? expected_errors : [expected_errors])
-          .map do |error|
-            {
-              data:    {},
-              message: nil,
-              path:    []
-            }.merge(error)
-          end
-      end
-
-      it { expect(actual_status).to be false }
-
-      it { expect(actual_errors.to_a).to be == wrapped_errors }
-    end
-
-    shared_examples 'should match the value' do |negated: false|
-      method_name = negated ? :negated_match : :match
-
-      it 'should return true', :aggregate_failures do
-        success, errors = subject.send(method_name, actual)
-
-        expect(success).to be true
-        expect(errors).to  be nil
-      end
-    end
-
-    shared_examples 'should not match the value' do |negated: false|
-      method_name = negated ? :negated_match      : :match
-      errors_name = negated ? :negated_errors_for : :errors_for
-
-      it 'should return false and the errors', :aggregate_failures do
-        success, errors = subject.send(method_name, actual)
-
-        expect(success).to be false
-        expect(errors).to  be == subject.send(errors_name, actual)
-      end
-    end
-
-    shared_examples 'should match' do |value, as: nil, reversible: false|
-      describe '#match' do
-        describe "with #{as || value.inspect}" do
-          let(:actual) { value.is_a?(Proc) ? instance_exec(&value) : value }
-
-          include_examples 'should match the value'
-        end
-      end
-
-      describe '#matches?' do
-        describe "with #{as || value.inspect}" do
-          let(:actual) { value.is_a?(Proc) ? instance_exec(&value) : value }
-
-          it { expect(subject.matches? actual).to be true }
-        end
-      end
-
-      if reversible
-        include_examples 'should not match when negated', value, as: as
-      end
-    end
-
-    shared_examples 'should not match' do |value, as: nil, reversible: false|
-      describe '#errors_for' do
-        describe "with #{as || value.inspect}" do
-          let(:actual) { value.is_a?(Proc) ? instance_exec(&value) : value }
-
-          it { expect(subject.errors_for(actual)).to be == expected_errors }
-        end
-      end
-
-      describe '#match' do
-        describe "with #{as || value.inspect}" do
-          let(:actual) { value.is_a?(Proc) ? instance_exec(&value) : value }
-
-          include_examples 'should not match the value'
-        end
-      end
-
-      describe '#matches?' do
-        describe "with #{as || value.inspect}" do
-          let(:actual) { value.is_a?(Proc) ? instance_exec(&value) : value }
-
-          it { expect(subject.matches? actual).to be false }
-        end
-      end
-
-      include_examples 'should match when negated', value, as: nil if reversible
-    end
-
-    shared_examples 'should match when negated' do |value, as: nil|
-      describe '#does_not_match?' do
-        describe "with #{as || value.inspect}" do
-          let(:actual) { value.is_a?(Proc) ? instance_exec(&value) : value }
-
-          it { expect(subject.does_not_match? actual).to be true }
-        end
-      end
-
-      describe '#negated_match' do
-        describe "with #{as || value.inspect}" do
-          let(:actual) { value.is_a?(Proc) ? instance_exec(&value) : value }
-
-          include_examples 'should match the value', negated: true
-        end
-      end
-    end
-
-    shared_examples 'should not match when negated' do |value, as: nil|
-      describe '#does_not_match?' do
-        describe "with #{as || value.inspect}" do
-          let(:actual) { value.is_a?(Proc) ? instance_exec(&value) : value }
-
-          it { expect(subject.does_not_match? actual).to be false }
-        end
-      end
-
-      describe '#negated_errors_for' do
-        describe "with #{as || value.inspect}" do
-          let(:actual) { value.is_a?(Proc) ? instance_exec(&value) : value }
-
-          it 'should return the errors' do
-            expect(subject.negated_errors_for(actual)).to be == negated_errors
-          end
-        end
-      end
-
-      describe '#negated_match' do
-        describe "with #{as || value.inspect}" do
-          let(:actual) { value.is_a?(Proc) ? instance_exec(&value) : value }
-
-          include_examples 'should not match the value', negated: true
-        end
-      end
-    end
-
     shared_examples 'should implement the Constraint interface' do
       describe '#does_not_match?' do
         it 'should define the method' do
@@ -251,6 +88,158 @@ module Spec::Support::Examples
           expect(subject).to respond_to(:negated_match).with(1).argument
         end
       end
+
+      describe '#negated_type' do
+        include_examples 'should have reader', :negated_type
+      end
+
+      describe '#options' do
+        include_examples 'should have reader', :options
+      end
+
+      describe '#type' do
+        include_examples 'should have reader', :type
+      end
+
+      describe '#with_options' do
+        it { expect(subject).to respond_to(:with_options).with_any_keywords }
+      end
+    end
+
+    shared_examples 'should implement the Constraint methods' do
+      describe '#clone' do
+        let(:copy) { subject.clone }
+
+        it { expect(copy).not_to be subject }
+
+        it { expect(copy).to be_a described_class }
+
+        it { expect(copy.options).to be == subject.options }
+
+        it 'should duplicate the options' do
+          expect { copy.options.update(key: 'value') }
+            .not_to change(subject, :options)
+        end
+      end
+
+      describe '#dup' do
+        let(:copy) { subject.dup }
+
+        it { expect(copy).not_to be subject }
+
+        it { expect(copy).to be_a described_class }
+
+        it { expect(copy.options).to be == subject.options }
+
+        it 'should duplicate the options' do
+          expect { copy.options.update(key: 'value') }
+            .not_to change(subject, :options)
+        end
+      end
+
+      describe '#negated_type' do
+        it { expect(subject.type).to be == described_class::TYPE }
+
+        context 'when initialized with negated_type: value' do
+          let(:constructor_options) do
+            super().merge(negated_type: 'spec.negated_type')
+          end
+
+          it { expect(subject.negated_type).to be == 'spec.negated_type' }
+        end
+      end
+
+      describe '#options' do
+        let(:expected_options) do
+          defined?(super()) ? super() : constructor_options
+        end
+
+        it { expect(subject.options).to deep_match expected_options }
+
+        context 'when initialized with options' do
+          let(:constructor_options) { super().merge(key: 'value') }
+          let(:expected_options)    { super().merge(key: 'value') }
+
+          it { expect(subject.options).to deep_match expected_options }
+        end
+      end
+
+      describe '#type' do
+        it { expect(subject.type).to be == described_class::TYPE }
+
+        context 'when initialized with type: value' do
+          let(:constructor_options) { super().merge(type: 'spec.type') }
+
+          it { expect(subject.type).to be == 'spec.type' }
+        end
+      end
+
+      describe '#with_options' do
+        let(:options) { {} }
+        let(:copy)    { subject.with_options(**options) }
+
+        it { expect(copy).not_to be subject }
+
+        it { expect(copy).to be_a described_class }
+
+        it { expect(copy.options).to be == subject.options }
+
+        it 'should duplicate the options' do
+          expect { copy.options.update(key: 'value') }
+            .not_to change(subject, :options)
+        end
+
+        describe 'with options' do
+          let(:options)          { { key: 'value' } }
+          let(:expected_options) { subject.options.merge(options) }
+
+          it { expect(copy.options).to be == expected_options }
+        end
+      end
+    end
+
+    shared_examples 'should match the constraint' do
+      let(:actual_status) do
+        status, _ = subject.send(match_method, actual)
+
+        status
+      end
+      let(:actual_errors) do
+        _, errors = subject.send(match_method, actual)
+
+        errors
+      end
+
+      it { expect(actual_status).to be true }
+
+      it { expect(actual_errors).to be nil }
+    end
+
+    shared_examples 'should not match the constraint' do
+      let(:actual_status) do
+        status, _ = subject.send(match_method, actual)
+
+        status
+      end
+      let(:actual_errors) do
+        _, errors = subject.send(match_method, actual)
+
+        errors
+      end
+      let(:wrapped_errors) do
+        (expected_errors.is_a?(Array) ? expected_errors : [expected_errors])
+          .map do |error|
+            {
+              data:    {},
+              message: nil,
+              path:    []
+            }.merge(error)
+          end
+      end
+
+      it { expect(actual_status).to be false }
+
+      it { expect(actual_errors.to_a).to be == wrapped_errors }
     end
 
     shared_examples 'should match the type constraint' do
