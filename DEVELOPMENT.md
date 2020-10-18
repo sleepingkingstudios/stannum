@@ -115,7 +115,9 @@ Constraint testing should be done in the context of the `#match` and `#negated_m
 - Types::Boolean
 - Types::Float
 - Types::Hash
-- Types::IndifferentHash
+  - Types::HashWithIndifferentKeys
+  - Types::HashWithStringKeys
+  - Types::HashWithSymbolKeys
 - Types::Integer
 - Types::Nil
 - Types::String

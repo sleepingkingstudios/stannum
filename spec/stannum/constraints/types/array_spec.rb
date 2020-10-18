@@ -158,6 +158,16 @@ RSpec.describe Stannum::Constraints::Types::Array do
 
         include_examples 'should match the constraint'
       end
+
+      context 'when the constraint is optional' do
+        let(:constructor_options) { super().merge(required: false) }
+
+        describe 'with nil' do
+          let(:actual) { nil }
+
+          include_examples 'should match the constraint'
+        end
+      end
     end
   end
 
@@ -200,13 +210,17 @@ RSpec.describe Stannum::Constraints::Types::Array do
 
         include_examples 'should not match the constraint'
       end
-    end
-  end
 
-  describe '#negated_type' do
-    include_examples 'should define reader',
-      :negated_type,
-      Stannum::Constraints::Type::NEGATED_TYPE
+      context 'when the constraint is optional' do
+        let(:constructor_options) { super().merge(required: false) }
+
+        describe 'with nil' do
+          let(:actual) { nil }
+
+          include_examples 'should not match the constraint'
+        end
+      end
+    end
   end
 
   describe '#options' do
@@ -216,14 +230,6 @@ RSpec.describe Stannum::Constraints::Types::Array do
         item_type:     nil,
         required:      true
       }.merge(constructor_options)
-    end
-
-    include_examples 'should have reader', :options, -> { be == expected }
-
-    context 'when initialized with options' do
-      let(:constructor_options) { { key: 'value' } }
-
-      it { expect(constraint.options).to be == expected }
     end
 
     context 'when initialized with item_type: a Class' do
@@ -254,11 +260,5 @@ RSpec.describe Stannum::Constraints::Types::Array do
           .to be == item_type.options
       end
     end
-  end
-
-  describe '#type' do
-    include_examples 'should define reader',
-      :type,
-      Stannum::Constraints::Type::TYPE
   end
 end

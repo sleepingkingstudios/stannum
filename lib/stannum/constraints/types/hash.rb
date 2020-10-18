@@ -47,8 +47,6 @@ module Stannum::Constraints::Types
     # @param options [Hash<Symbol, Object>] Configuration options for the
     #   constraint. Defaults to an empty Hash.
     def initialize(key_type: nil, value_type: nil, **options)
-      # key_type = Stannum::Constraints::Types::
-
       super(
         ::Hash,
         key_type:   coerce_key_type(key_type),
@@ -123,6 +121,8 @@ module Stannum::Constraints::Types
     def key_type_matches?(actual)
       return true unless key_type
 
+      return true if actual.nil?
+
       actual.each_key.all? { |key| key_type.matches?(key) }
     end
 
@@ -152,6 +152,8 @@ module Stannum::Constraints::Types
 
     def value_type_matches?(actual)
       return true unless value_type
+
+      return true if actual.nil?
 
       actual.each_value.all? { |value| value_type.matches?(value) }
     end
