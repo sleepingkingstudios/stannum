@@ -1,10 +1,10 @@
 # frozen_string_literal: true
 
-require 'stannum/constraints/types/hash_with_string_keys'
+require 'stannum/constraints/types/hash_with_symbol_keys'
 
 require 'support/examples/constraint_examples'
 
-RSpec.describe Stannum::Constraints::Types::HashWithStringKeys do
+RSpec.describe Stannum::Constraints::Types::HashWithSymbolKeys do
   include Spec::Support::Examples::ConstraintExamples
 
   subject(:constraint) { described_class.new(**constructor_options) }
@@ -13,7 +13,7 @@ RSpec.describe Stannum::Constraints::Types::HashWithStringKeys do
   let(:expected_options) do
     {
       expected_type: Hash,
-      key_type:      be_a_constraint(Stannum::Constraints::Types::String),
+      key_type:      be_a_constraint(Stannum::Constraints::Types::Symbol),
       required:      true,
       value_type:    nil
     }
@@ -75,7 +75,7 @@ RSpec.describe Stannum::Constraints::Types::HashWithStringKeys do
   describe '#key_type' do
     include_examples 'should have reader',
       :key_type,
-      -> { be_a_constraint(Stannum::Constraints::Types::String) }
+      -> { be_a_constraint(Stannum::Constraints::Types::Symbol) }
   end
 
   describe '#match' do
@@ -91,7 +91,7 @@ RSpec.describe Stannum::Constraints::Types::HashWithStringKeys do
     include_examples 'should match the type constraint'
 
     describe 'with a hash with non-matching keys' do
-      let(:actual) { { ichi: 1, ni: 2, san: 3 } }
+      let(:actual) { { 'ichi' => 1, 'ni' => 2, 'san' => 3 } }
       let(:expected_errors) do
         {
           data: { keys: actual.keys },
@@ -103,10 +103,10 @@ RSpec.describe Stannum::Constraints::Types::HashWithStringKeys do
     end
 
     describe 'with a hash with mixed matching and non-matching keys' do
-      let(:actual) { { 'ichi' => 1, ni: 2, 'san' => 3 } }
+      let(:actual) { { ichi: 1, 'ni' => 2, san: 3 } }
       let(:expected_errors) do
         {
-          data: { keys: %i[ni] },
+          data: { keys: %w[ni] },
           type: described_class::INVALID_KEY_TYPE
         }
       end
@@ -115,7 +115,7 @@ RSpec.describe Stannum::Constraints::Types::HashWithStringKeys do
     end
 
     describe 'with a hash with matching keys' do
-      let(:actual) { { 'ichi' => 1, 'ni' => 2, 'san' => 3 } }
+      let(:actual) { { ichi: 1, ni: 2, san: 3 } }
 
       include_examples 'should match the constraint'
     end
@@ -141,7 +141,7 @@ RSpec.describe Stannum::Constraints::Types::HashWithStringKeys do
       end
 
       describe 'with a hash with non-matching values' do
-        let(:actual) { { 'ichi' => 1, 'ni' => 2, 'san' => 3 } }
+        let(:actual) { { ichi: 1, ni: 2, san: 3 } }
         let(:expected_errors) do
           [
             {
@@ -166,7 +166,7 @@ RSpec.describe Stannum::Constraints::Types::HashWithStringKeys do
       end
 
       describe 'with a hash with mixed matching and non-matching values' do
-        let(:actual) { { 'ichi' => '1', 'ni' => 2, 'san' => '3' } }
+        let(:actual) { { ichi: '1', ni: 2, san: '3' } }
         let(:expected_errors) do
           {
             data: { value: 2 },
@@ -179,7 +179,7 @@ RSpec.describe Stannum::Constraints::Types::HashWithStringKeys do
       end
 
       describe 'with a hash with matching values' do
-        let(:actual) { { 'ichi' => '1', 'ni' => '2', 'san' => '3' } }
+        let(:actual) { { ichi: '1', ni: '2', san: '3' } }
 
         include_examples 'should match the constraint'
       end
@@ -215,13 +215,13 @@ RSpec.describe Stannum::Constraints::Types::HashWithStringKeys do
     end
 
     describe 'with a hash with non-matching keys' do
-      let(:actual) { { ichi: 1, ni: 2, san: 3 } }
+      let(:actual) { { 'ichi' => 1, 'ni' => 2, 'san' => 3 } }
 
       include_examples 'should not match the constraint'
     end
 
     describe 'with a hash with matching keys' do
-      let(:actual) { { 'ichi' => 1, 'ni' => 2, 'san' => 3 } }
+      let(:actual) { { ichi: 1, ni: 2, san: 3 } }
 
       include_examples 'should not match the constraint'
     end
@@ -247,13 +247,13 @@ RSpec.describe Stannum::Constraints::Types::HashWithStringKeys do
       end
 
       describe 'with a hash with non-matching values' do
-        let(:actual) { { 'ichi' => 1, 'ni' => 2, 'san' => 3 } }
+        let(:actual) { { ichi: 1, ni: 2, san: 3 } }
 
         include_examples 'should not match the constraint'
       end
 
       describe 'with a hash with matching values' do
-        let(:actual) { { 'ichi' => '1', 'ni' => '2', 'san' => '3' } }
+        let(:actual) { { ichi: '1', ni: '2', san: '3' } }
 
         include_examples 'should not match the constraint'
       end
@@ -274,7 +274,7 @@ RSpec.describe Stannum::Constraints::Types::HashWithStringKeys do
     let(:expected) do
       {
         expected_type: Hash,
-        key_type:      be_a_constraint(Stannum::Constraints::Types::String),
+        key_type:      be_a_constraint(Stannum::Constraints::Types::Symbol),
         required:      true,
         value_type:    nil
       }.merge(constructor_options)
