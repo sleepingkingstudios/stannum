@@ -87,6 +87,8 @@ module Stannum::Constraints::Types
     def item_type_matches?(actual)
       return true unless item_type
 
+      return true if actual.nil?
+
       actual.all? { |item| item_type.matches?(item) }
     end
 

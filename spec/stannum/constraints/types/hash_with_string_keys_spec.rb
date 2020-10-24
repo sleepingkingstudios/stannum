@@ -1,10 +1,10 @@
 # frozen_string_literal: true
 
-require 'stannum/constraints/types/hash'
+require 'stannum/constraints/types/hash_with_string_keys'
 
 require 'support/examples/constraint_examples'
 
-RSpec.describe Stannum::Constraints::Types::Hash do
+RSpec.describe Stannum::Constraints::Types::HashWithStringKeys do
   include Spec::Support::Examples::ConstraintExamples
 
   subject(:constraint) { described_class.new(**constructor_options) }
@@ -13,7 +13,7 @@ RSpec.describe Stannum::Constraints::Types::Hash do
   let(:expected_options) do
     {
       expected_type: Hash,
-      key_type:      nil,
+      key_type:      be_a_constraint(Stannum::Constraints::Types::String),
       required:      true,
       value_type:    nil
     }
@@ -22,13 +22,13 @@ RSpec.describe Stannum::Constraints::Types::Hash do
   describe '::INVALID_KEY_TYPE' do
     include_examples 'should define frozen constant',
       :INVALID_KEY_TYPE,
-      'stannum.constraints.types.hash.invalid_key'
+      Stannum::Constraints::Types::Hash::INVALID_KEY_TYPE
   end
 
   describe '::INVALID_VALUE_TYPE' do
     include_examples 'should define frozen constant',
       :INVALID_VALUE_TYPE,
-      'stannum.constraints.types.hash.invalid_value'
+      Stannum::Constraints::Types::Hash::INVALID_VALUE_TYPE
   end
 
   describe '::NEGATED_TYPE' do
@@ -48,19 +48,8 @@ RSpec.describe Stannum::Constraints::Types::Hash do
       expect(described_class)
         .to be_constructible
         .with(0).arguments
-        .and_keywords(:key_type, :value_type)
+        .and_keywords(:value_type)
         .and_any_keywords
-    end
-
-    describe 'with key_type: an Object' do
-      let(:error_message) do
-        'key type must be a Class or Module or a constraint'
-      end
-
-      it 'should raise an error' do
-        expect { described_class.new(key_type: Object.new.freeze) }
-          .to raise_error ArgumentError, error_message
-      end
     end
 
     describe 'with value_type: an Object' do
@@ -84,31 +73,9 @@ RSpec.describe Stannum::Constraints::Types::Hash do
   end
 
   describe '#key_type' do
-    include_examples 'should have reader', :key_type, nil
-
-    context 'when initialized with key_type: nil' do
-      let(:constructor_options) { super().merge(key_type: nil) }
-
-      it { expect(constraint.key_type).to be nil }
-    end
-
-    context 'when initialized with key_type: a Class' do
-      let(:key_type)            { String }
-      let(:constructor_options) { super().merge(key_type: key_type) }
-
-      it { expect(constraint.key_type).to be_a Stannum::Constraints::Type }
-
-      it { expect(constraint.key_type.expected_type).to be key_type }
-    end
-
-    context 'when initialized with key_type: a constraint' do
-      let(:key_type)            { Stannum::Constraint.new }
-      let(:constructor_options) { super().merge(key_type: key_type) }
-
-      it { expect(constraint.key_type).to be_a Stannum::Constraint }
-
-      it { expect(constraint.key_type.options).to be == key_type.options }
-    end
+    include_examples 'should have reader',
+      :key_type,
+      -> { be_a_constraint(Stannum::Constraints::Types::String) }
   end
 
   describe '#match' do
@@ -123,54 +90,43 @@ RSpec.describe Stannum::Constraints::Types::Hash do
 
     include_examples 'should match the type constraint'
 
-    context 'when key_type is set' do
-      let(:key_type)            { Symbol }
-      let(:constructor_options) { super().merge(key_type: key_type) }
+    describe 'with a hash with non-matching keys' do
+      let(:actual) { { ichi: 1, ni: 2, san: 3 } }
+      let(:expected_errors) do
+        {
+          data: { keys: actual.keys },
+          type: described_class::INVALID_KEY_TYPE
+        }
+      end
 
-      describe 'with an empty hash' do
-        let(:actual) { {} }
+      include_examples 'should not match the constraint'
+    end
+
+    describe 'with a hash with mixed matching and non-matching keys' do
+      let(:actual) { { 'ichi' => 1, ni: 2, 'san' => 3 } }
+      let(:expected_errors) do
+        {
+          data: { keys: %i[ni] },
+          type: described_class::INVALID_KEY_TYPE
+        }
+      end
+
+      include_examples 'should not match the constraint'
+    end
+
+    describe 'with a hash with matching keys' do
+      let(:actual) { { 'ichi' => 1, 'ni' => 2, 'san' => 3 } }
+
+      include_examples 'should match the constraint'
+    end
+
+    context 'when the constraint is optional' do
+      let(:constructor_options) { super().merge(required: false) }
+
+      describe 'with nil' do
+        let(:actual) { nil }
 
         include_examples 'should match the constraint'
-      end
-
-      describe 'with a hash with non-matching keys' do
-        let(:actual) { { 'ichi' => 1, 'ni' => 2, 'san' => 3 } }
-        let(:expected_errors) do
-          {
-            data: { keys: actual.keys },
-            type: described_class::INVALID_KEY_TYPE
-          }
-        end
-
-        include_examples 'should not match the constraint'
-      end
-
-      describe 'with a hash with mixed matching and non-matching keys' do
-        let(:actual) { { :ichi => 1, 'ni' => 2, :san => 3 } }
-        let(:expected_errors) do
-          {
-            data: { keys: %w[ni] },
-            type: described_class::INVALID_KEY_TYPE
-          }
-        end
-
-        include_examples 'should not match the constraint'
-      end
-
-      describe 'with a hash with matching keys' do
-        let(:actual) { { ichi: 1, ni: 2, san: 3 } }
-
-        include_examples 'should match the constraint'
-      end
-
-      context 'when the constraint is optional' do
-        let(:constructor_options) { super().merge(required: false) }
-
-        describe 'with nil' do
-          let(:actual) { nil }
-
-          include_examples 'should match the constraint'
-        end
       end
     end
 
@@ -185,7 +141,7 @@ RSpec.describe Stannum::Constraints::Types::Hash do
       end
 
       describe 'with a hash with non-matching values' do
-        let(:actual) { { ichi: 1, ni: 2, san: 3 } }
+        let(:actual) { { 'ichi' => 1, 'ni' => 2, 'san' => 3 } }
         let(:expected_errors) do
           [
             {
@@ -210,7 +166,7 @@ RSpec.describe Stannum::Constraints::Types::Hash do
       end
 
       describe 'with a hash with mixed matching and non-matching values' do
-        let(:actual) { { ichi: '1', ni: 2, san: '3' } }
+        let(:actual) { { 'ichi' => '1', 'ni' => 2, 'san' => '3' } }
         let(:expected_errors) do
           {
             data: { value: 2 },
@@ -223,7 +179,7 @@ RSpec.describe Stannum::Constraints::Types::Hash do
       end
 
       describe 'with a hash with matching values' do
-        let(:actual) { { ichi: '1', ni: '2', san: '3' } }
+        let(:actual) { { 'ichi' => '1', 'ni' => '2', 'san' => '3' } }
 
         include_examples 'should match the constraint'
       end
@@ -252,36 +208,31 @@ RSpec.describe Stannum::Constraints::Types::Hash do
 
     include_examples 'should match the negated type constraint'
 
-    context 'when key_type is set' do
-      let(:key_type)            { Symbol }
-      let(:constructor_options) { super().merge(key_type: key_type) }
+    describe 'with an empty hash' do
+      let(:actual) { {} }
 
-      describe 'with an empty hash' do
-        let(:actual) { {} }
+      include_examples 'should not match the constraint'
+    end
+
+    describe 'with a hash with non-matching keys' do
+      let(:actual) { { ichi: 1, ni: 2, san: 3 } }
+
+      include_examples 'should not match the constraint'
+    end
+
+    describe 'with a hash with matching keys' do
+      let(:actual) { { 'ichi' => 1, 'ni' => 2, 'san' => 3 } }
+
+      include_examples 'should not match the constraint'
+    end
+
+    context 'when the constraint is optional' do
+      let(:constructor_options) { super().merge(required: false) }
+
+      describe 'with nil' do
+        let(:actual) { nil }
 
         include_examples 'should not match the constraint'
-      end
-
-      describe 'with a hash with non-matching keys' do
-        let(:actual) { { 'ichi' => 1, 'ni' => 2, 'san' => 3 } }
-
-        include_examples 'should not match the constraint'
-      end
-
-      describe 'with a hash with matching keys' do
-        let(:actual) { { ichi: 1, ni: 2, san: 3 } }
-
-        include_examples 'should not match the constraint'
-      end
-
-      context 'when the constraint is optional' do
-        let(:constructor_options) { super().merge(required: false) }
-
-        describe 'with nil' do
-          let(:actual) { nil }
-
-          include_examples 'should not match the constraint'
-        end
       end
     end
 
@@ -296,13 +247,13 @@ RSpec.describe Stannum::Constraints::Types::Hash do
       end
 
       describe 'with a hash with non-matching values' do
-        let(:actual) { { ichi: 1, ni: 2, san: 3 } }
+        let(:actual) { { 'ichi' => 1, 'ni' => 2, 'san' => 3 } }
 
         include_examples 'should not match the constraint'
       end
 
       describe 'with a hash with matching values' do
-        let(:actual) { { ichi: '1', ni: '2', san: '3' } }
+        let(:actual) { { 'ichi' => '1', 'ni' => '2', 'san' => '3' } }
 
         include_examples 'should not match the constraint'
       end
@@ -323,38 +274,10 @@ RSpec.describe Stannum::Constraints::Types::Hash do
     let(:expected) do
       {
         expected_type: Hash,
-        key_type:      nil,
+        key_type:      be_a_constraint(Stannum::Constraints::Types::String),
         required:      true,
         value_type:    nil
       }.merge(constructor_options)
-    end
-
-    context 'when initialized with key_type: a Class' do
-      let(:key_type)            { String }
-      let(:constructor_options) { super().merge(key_type: key_type) }
-      let(:expected) do
-        super().merge(key_type: be_a_constraint(Stannum::Constraints::Type))
-      end
-
-      it { expect(constraint.options).to deep_match expected }
-
-      it 'should set the expected type' do
-        expect(constraint.options[:key_type].expected_type).to be key_type
-      end
-    end
-
-    context 'when initialized with key_type: a constraint' do
-      let(:key_type)            { Stannum::Constraint.new }
-      let(:constructor_options) { super().merge(key_type: key_type) }
-      let(:expected) do
-        super().merge(key_type: be_a_constraint(Stannum::Constraint))
-      end
-
-      it { expect(constraint.options).to deep_match expected }
-
-      it 'should set the options' do
-        expect(constraint.options[:key_type].options).to be == key_type.options
-      end
     end
 
     context 'when initialized with value_type: a Class' do

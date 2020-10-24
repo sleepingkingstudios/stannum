@@ -1,9 +1,33 @@
 # Stannum Development
 
+## Version 0.1
+
 - What happens to a frozen constraint? A frozen contract?
   - Should freezing a contract freeze its constraints? #deep_freeze ?
 
-## Documentation Standards
+### Constraints
+
+#### Type Constraints
+
+- Types::BigDecimalType
+- Types::BooleanType
+- Types::FloatType
+- Types::IntegerType
+
+### Contracts
+
+- Refactor #include to #concat (avoids collision when implementing DSL).
+
+#### ::Builder
+
+- Implement #concat(contract):
+  ```ruby
+  contract = Stannum::Contract.new do
+    concat(OtherContract)
+  end
+  ```
+
+### Documentation
 
 - Should provide a one-line short description.
 - Should provide a one+ paragraph short description.
@@ -11,7 +35,7 @@
 - Should provide examples of passing and failing objects.
 - Should document the methods.
 
-## Development Notes
+### Refactoring
 
 - Refactor Constraints::Methods to Constraints::Signature ?
   - Refactor Map, Tuple constraints to Constraints::Signatures ?
@@ -24,19 +48,49 @@
   - define HashContract < MapContract, ArrayContract < TupleContract
     - uses Type sanity constraint
     - overrides #type_constraint inner reader
+- Refactor Stannum::Structs::Attribute to Stannum::Attribute.
+- Refactor Stannum::Structs::Attributes to Stannum::Schema.
 
-### Contract
+### Standardization
 
-- Refactor #include to #compose/#concat (avoids collision when implementing DSL).
+- Always return a `Stannum::Errors` from `match`.
+- Refactor `#errors_for` to always check `#matches`.
 
-#### ::Builder
+## Future Versions
 
-- Implement #compose(contract):
-  ```ruby
-  contract = Stannum::Contract.new do
-    compose OtherContract
-  end
-  ```
+### Constraints
+
+- Constraints::Always
+  - #does_not_match? and #matches? always return true
+- Constraints::Equality
+  - asserts actual == expected
+- Constraints::Never
+  - #does_not_match? and #matches? always return false
+- Constraints::Numeric
+  - asserts actual is numeric value
+  - options for integer, greater/less than
+- Constraints::Range
+  - asserts actual in range
+  - initialize with range or params
+    - max and/or min, gt/gte and/or lt/lte
+- Constraints::Size
+  - options for :is, :max, :min - delegate to Constraints::Range?
+
+#### Type Constraints
+
+- .instance method (caches instance by params (if any))
+  - a large application does not need 50 Type::String objects
+- Types::Boolean
+- Types::Array
+  - add support for allowing/disallowing empty arrays (default to allowed)
+- Types::Hash
+  - add support for allowing/disallowing empty hashes (default to allowed)
+- Types::String
+  - add support for allowing/disallowing empty strings (default to allowed)
+- Types::Symbol
+  - add support for allowing/disallowing empty symbols (default to allowed)
+
+### Contracts
 
 #### DSL
 
@@ -56,80 +110,7 @@
   - Builder executes each method.
 - Revise integration specs!
 
-### Standardization
-
-- Always return a `Stannum::Errors` from `match`.
-- Refactor `#errors_for` to always check `#matches`.
-- Each constraint should define the `::TYPE` and `::NEGATED_TYPE` constants,
-  and the `#type` and `#negated_type` readers.
-- Each constraint should define `#options` (default to empty hash).
-  - Treat `type`, `negated_type` as options. Defaults to TYPE, NEGATED_TYPE
-  - Implement 'should implement the Constraint methods' shared examples
-    - Defines negated_type, options, type
-    - Extract implementations from 'implement Constraint interface' examples
-- Use terse contract class/file names:
-  - Stannum::Contracts::IndifferentHash instead of IndifferentHashContract.
-
-### Sanity Constraints
-
-#### Property-specific Sanity Constraints
-
-NOT SUPPORTED DIRECTLY
-
-- Instead of adding multiple constraints for the property, add one contract for
-  the property which contains the individual constraints. If any of the
-  constraints are sanity constraints, the contract will short-circuit
-  accordingly. Probably.
-- Integration test this!
-
-### Testing Constraints and Contracts
-
-Constraint testing should be done in the context of the `#match` and `#negated_match` methods to avoid duplication. This tests both the status and the error(s).
-
-## Future Versions
-
-### Pre-Defined Constraints
-
-- Constraints::Always
-  - #does_not_match? and #matches? always return true
-- Constraints::Equality
-  - asserts actual == expected
-- Constraints::Never
-  - #does_not_match? and #matches? always return false
-- Constraints::Numeric
-  - asserts actual is numeric value
-  - options for integer, greater/less than
-- Constraints::Range
-  - asserts actual in range
-  - initialize with range or params
-    - max and/or min, gt/gte and/or lt/lte
-- Constraints::Size
-  - options for :is, :max, :min - delegate to Constraints::Range?
-
-### Type Constraints
-
-- .instance method (caches instance by params (if any))
-  - a large application does not need 50 Type::String objects
-- Types::Array
-- Types::ArrayOf(type [class or constraint])
-- Types::Boolean
-- Types::Float
-- Types::Hash
-- Types::IndifferentHash
-- Types::Integer
-- Types::Nil
-- Types::String
-  - add support for allowing/disallowing empty strings
-- Types::Symbol
-  - add support for allowing/disallowing empty symbols
-
-## Contracts
-
-### ParametersContract
-
-- actual => { arguments: [], block: true, keywords: {} }
-
-## Errors
+### Errors
 
 - clean up error types
 - #generate_message(error)
@@ -142,19 +123,14 @@ Constraint testing should be done in the context of the `#match` and `#negated_m
   - if type, call include?(type: type)
   - errors.any? { |actual| actual >= expected }
 
-## RSpec
+### RSpec
 
 - MatchConstraint matcher (#match_constraint macro)
 - Matcher mixin - use a constraint in place of an RSpec matcher!
 
-## Support
+### Support
 
 - Stannum::Support::Validations
   - raise exception on invalid params
   - #validate_integer
   - #validate_name
-
-## Structs
-
-- Refactor Stannum::Structs::Attribute to Stannum::Attribute.
-- Refactor Stannum::Structs::Attributes to Stannum::Schema.
