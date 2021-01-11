@@ -9,6 +9,7 @@ module Stannum
     autoload :Anything,  'stannum/constraints/anything'
     autoload :Base,      'stannum/constraints/base'
     autoload :Delegator, 'stannum/constraints/delegator'
+    autoload :Enum,      'stannum/constraints/enum'
     autoload :Hashes,    'stannum/constraints/hashes'
     autoload :Identity,  'stannum/constraints/identity'
     autoload :Methods,   'stannum/constraints/methods'
