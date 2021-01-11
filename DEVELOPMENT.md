@@ -7,6 +7,13 @@
 
 ### Constraints
 
+- EnumConstraint
+  - takes Array (converts to Set) of values
+  - matches iff values include? actual
+- UnionConstraint
+  - takes list of Constraints
+  - matches iff actual matches any of the constraints
+
 #### Type Constraints
 
 - Types::BigDecimalType
@@ -89,6 +96,8 @@
   - add support for allowing/disallowing empty strings (default to allowed)
 - Types::Symbol
   - add support for allowing/disallowing empty symbols (default to allowed)
+- Types::Union
+  - redefine IndifferentKey as subclass ?
 
 ### Contracts
 
