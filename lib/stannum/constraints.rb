@@ -18,5 +18,6 @@ module Stannum
     autoload :Tuples,    'stannum/constraints/tuples'
     autoload :Type,      'stannum/constraints/type'
     autoload :Types,     'stannum/constraints/types'
+    autoload :Union,     'stannum/constraints/union'
   end
 end
