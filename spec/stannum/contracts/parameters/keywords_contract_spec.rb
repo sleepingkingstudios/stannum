@@ -131,8 +131,14 @@ RSpec.describe Stannum::Contracts::Parameters::KeywordsContract do
     let(:builtin_definitions) do
       [
         be_a_constraint_definition(
-          constraint: be_a_constraint(Stannum::Constraints::Type)
-                      .with_options(expected_type: Hash, required: true),
+          constraint: be_a_constraint(Stannum::Constraints::Types::Hash)
+                      .with_options(
+                        allow_empty:   true,
+                        expected_type: Hash,
+                        key_type:      nil,
+                        required:      true,
+                        value_type:    nil
+                      ),
           contract:   contract,
           options:    { property: nil, sanity: true }
         ),
@@ -208,7 +214,13 @@ RSpec.describe Stannum::Contracts::Parameters::KeywordsContract do
       [
         be_a_constraint_definition(
           constraint: be_a_constraint(Stannum::Constraints::Type)
-                      .with_options(expected_type: Hash, required: true),
+                      .with_options(
+                        allow_empty:   true,
+                        expected_type: Hash,
+                        key_type:      nil,
+                        required:      true,
+                        value_type:    nil
+                      ),
           contract:   contract,
           options:    { property: nil, sanity: true }
         ),

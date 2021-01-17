@@ -12,6 +12,7 @@ RSpec.describe Stannum::Constraints::Types::Hash do
   let(:constructor_options) { {} }
   let(:expected_options) do
     {
+      allow_empty:   true,
       expected_type: Hash,
       key_type:      nil,
       required:      true,
@@ -48,7 +49,7 @@ RSpec.describe Stannum::Constraints::Types::Hash do
       expect(described_class)
         .to be_constructible
         .with(0).arguments
-        .and_keywords(:key_type, :value_type)
+        .and_keywords(:allow_empty, :key_type, :value_type)
         .and_any_keywords
     end
 
@@ -78,6 +79,22 @@ RSpec.describe Stannum::Constraints::Types::Hash do
   include_examples 'should implement the Constraint interface'
 
   include_examples 'should implement the Constraint methods'
+
+  describe '#allow_empty?' do
+    include_examples 'should define predicate', :allow_empty?, true
+
+    context 'when initialized with allow_empty: false' do
+      let(:constructor_options) { super().merge(allow_empty: false) }
+
+      it { expect(constraint.allow_empty?).to be false }
+    end
+
+    context 'when initialized with allow_empty: true' do
+      let(:constructor_options) { super().merge(allow_empty: true) }
+
+      it { expect(constraint.allow_empty?).to be true }
+    end
+  end
 
   describe '#expected_type' do
     include_examples 'should have reader', :expected_type, ::Hash
@@ -115,13 +132,43 @@ RSpec.describe Stannum::Constraints::Types::Hash do
     let(:match_method) { :match }
     let(:expected_errors) do
       {
-        data: { required: constraint.required?, type: Hash },
+        data: {
+          allow_empty: constraint.allow_empty?,
+          required:    constraint.required?,
+          type:        Hash
+        },
         type: constraint.type
       }
     end
     let(:matching) { {} }
 
     include_examples 'should match the type constraint'
+
+    context 'when allow_empty is false' do
+      let(:constructor_options) { super().merge(allow_empty: false) }
+      let(:expected_errors) do
+        {
+          data: {
+            allow_empty: constraint.allow_empty?,
+            required:    constraint.required?,
+            type:        Hash
+          },
+          type: Stannum::Constraints::Presence::TYPE
+        }
+      end
+
+      describe 'with an empty hash' do
+        let(:actual) { {} }
+
+        include_examples 'should not match the constraint'
+      end
+
+      describe 'with a non-empty hash' do
+        let(:actual) { { 'ichi' => 1, 'ni' => 2, 'san' => 3 } }
+
+        include_examples 'should match the constraint'
+      end
+    end
 
     context 'when key_type is set' do
       let(:key_type)            { Symbol }
@@ -244,13 +291,33 @@ RSpec.describe Stannum::Constraints::Types::Hash do
     let(:match_method) { :negated_match }
     let(:expected_errors) do
       {
-        data: { required: constraint.required?, type: Hash },
+        data: {
+          allow_empty: constraint.allow_empty?,
+          required:    constraint.required?,
+          type:        Hash
+        },
         type: constraint.negated_type
       }
     end
     let(:matching) { {} }
 
     include_examples 'should match the negated type constraint'
+
+    context 'when allow_empty is false' do
+      let(:constructor_options) { super().merge(allow_empty: false) }
+
+      describe 'with an empty hash' do
+        let(:actual) { {} }
+
+        include_examples 'should not match the constraint'
+      end
+
+      describe 'with a non-empty hash' do
+        let(:actual) { { 'ichi' => 1, 'ni' => 2, 'san' => 3 } }
+
+        include_examples 'should not match the constraint'
+      end
+    end
 
     context 'when key_type is set' do
       let(:key_type)            { Symbol }
@@ -322,11 +389,26 @@ RSpec.describe Stannum::Constraints::Types::Hash do
   describe '#options' do
     let(:expected) do
       {
+        allow_empty:   true,
         expected_type: Hash,
         key_type:      nil,
         required:      true,
         value_type:    nil
       }.merge(constructor_options)
+    end
+
+    context 'when initialized with allow_empty: false' do
+      let(:constructor_options) { super().merge(allow_empty: false) }
+      let(:expected)            { super().merge(allow_empty: false) }
+
+      it { expect(constraint.options).to deep_match expected }
+    end
+
+    context 'when initialized with allow_empty: true' do
+      let(:constructor_options) { super().merge(allow_empty: true) }
+      let(:expected)            { super().merge(allow_empty: true) }
+
+      it { expect(constraint.options).to deep_match expected }
     end
 
     context 'when initialized with key_type: a Class' do
