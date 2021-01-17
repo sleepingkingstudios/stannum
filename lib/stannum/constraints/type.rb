@@ -73,18 +73,6 @@ module Stannum::Constraints
     end
     alias match? matches?
 
-    # @return [true, false] false if the constraint accepts nil values,
-    #   otherwise true.
-    def optional?
-      !options[:required]
-    end
-
-    # @return [true, false] true if the constraint accepts nil values,
-    #   otherwise false.
-    def required?
-      options[:required]
-    end
-
     # (see Stannum::Constraints::Base#with_options)
     def with_options(**options)
       super(**resolve_required_option(**options))

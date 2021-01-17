@@ -181,7 +181,7 @@ module Stannum::Contracts
         # otherwise, an included HashContract with a subset of the expected keys
         # would cause a false negative.
         if definition.constraint.is_a?(Stannum::Constraints::Hashes::ExtraKeys)
-          next unless self == definition.contract
+          next unless equal?(definition.contract)
         end
 
         yield definition

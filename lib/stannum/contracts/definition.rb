@@ -40,8 +40,8 @@ module Stannum::Contracts
     def ==(other)
       other.is_a?(self.class) &&
         other.constraint == constraint &&
-        other.contract   == contract &&
-        other.options    == options
+        other.contract.equal?(contract) &&
+        other.options == options
     end
 
     # @return [nil, String, Symbol, Array<String, Symbol>] the property scope of

@@ -32,6 +32,48 @@ RSpec.describe Stannum::Constraints::Base do
     end
   end
 
+  describe '#==' do
+    describe 'with nil' do
+      it { expect(constraint == nil).to be false } # rubocop:disable Style/NilComparison
+    end
+
+    describe 'with an Object' do
+      it { expect(constraint == Object.new.freeze).to be false }
+    end
+
+    describe 'with a subclass instance' do
+      it { expect(constraint == Class.new(described_class).new).to be false }
+    end
+
+    describe 'with a constraint instance with different options' do
+      let(:other) { described_class.new(other_option: 'value') }
+
+      it { expect(constraint == other).to be false }
+    end
+
+    describe 'with a constraint instance with identical options' do
+      let(:other) { described_class.new(**constraint.options) }
+
+      it { expect(constraint == other).to be true }
+    end
+
+    context 'when initialized with options' do
+      let(:constructor_options) { super().merge(key: 'value') }
+
+      describe 'with a constraint instance with different options' do
+        let(:other) { described_class.new(other_option: 'value') }
+
+        it { expect(constraint == other).to be false }
+      end
+
+      describe 'with a constraint instance with identical options' do
+        let(:other) { described_class.new(**constraint.options) }
+
+        it { expect(constraint == other).to be true }
+      end
+    end
+  end
+
   describe '#does_not_match?' do
     context 'when #matches? returns false' do
       let(:actual) { nil }

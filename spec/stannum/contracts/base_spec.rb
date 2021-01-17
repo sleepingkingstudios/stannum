@@ -387,6 +387,140 @@ RSpec.describe Stannum::Contracts::Base do
 
   include_examples 'should implement the Contract methods'
 
+  describe '#==' do
+    describe 'with nil' do
+      it { expect(contract == nil).to be false } # rubocop:disable Style/NilComparison
+    end
+
+    describe 'with an Object' do
+      it { expect(contract == Object.new.freeze).to be false }
+    end
+
+    describe 'with a subclass instance' do
+      it { expect(contract == Class.new(described_class).new).to be false }
+    end
+
+    describe 'with a contract instance with different constraints' do
+      let(:other) do
+        described_class
+          .new(**contract.options)
+          .add_constraint(Stannum::Constraint.new)
+      end
+
+      it { expect(contract == other).to be false }
+    end
+
+    describe 'with a contract instance with different options' do
+      let(:other) { described_class.new(other_option: 'value') }
+
+      it { expect(contract == other).to be false }
+    end
+
+    describe 'with a contract instance with identical options' do
+      let(:other) { described_class.new(**contract.options) }
+
+      it { expect(contract == other).to be true }
+    end
+
+    wrap_context 'when the contract has one constraint' do
+      describe 'with a contract instance with different options' do
+        let(:other) { described_class.new(**contract.options) }
+
+        before(:example) do
+          constraints.each do |definition|
+            other.add_constraint(
+              definition[:constraint],
+              **definition.fetch(:options, {}).merge(key: 'value')
+            )
+          end
+        end
+
+        it { expect(contract == other).to be false }
+      end
+
+      describe 'with a contract instance with an identical constraint' do
+        let(:other) { described_class.new(**contract.options) }
+
+        before(:example) do
+          constraints.each do |definition|
+            other.add_constraint(
+              definition[:constraint],
+              **definition.fetch(:options, {})
+            )
+          end
+        end
+
+        it { expect(contract == other).to be true }
+      end
+    end
+
+    wrap_context 'when the contract has many constraints' do
+      describe 'with a contract instance with missing constraints' do
+        let(:other) { described_class.new(**contract.options) }
+
+        it { expect(contract == other).to be false }
+      end
+
+      describe 'with a contract instance with extra constraints' do
+        let(:other) { described_class.new(**contract.options) }
+
+        before(:example) do
+          constraints.each do |definition|
+            other.add_constraint(
+              definition[:constraint],
+              **definition.fetch(:options, {})
+            )
+          end
+
+          other.add_constraint(Stannum::Constraint.new)
+        end
+
+        it { expect(contract == other).to be false }
+      end
+
+      describe 'with a contract instance with identical constraints' do
+        let(:other) { described_class.new(**contract.options) }
+
+        before(:example) do
+          constraints.each do |definition|
+            other.add_constraint(
+              definition[:constraint],
+              **definition.fetch(:options, {})
+            )
+          end
+        end
+
+        it { expect(contract == other).to be true }
+      end
+    end
+
+    context 'when initialized with options' do
+      let(:constructor_options) { super().merge(key: 'value') }
+
+      describe 'with a contract instance with different constraints' do
+        let(:other) do
+          described_class
+            .new(**contract.options)
+            .add_constraint(Stannum::Constraint.new)
+        end
+
+        it { expect(contract == other).to be false }
+      end
+
+      describe 'with a contract instance with different options' do
+        let(:other) { described_class.new(other_option: 'value') }
+
+        it { expect(contract == other).to be false }
+      end
+
+      describe 'with a contract instance with identical options' do
+        let(:other) { described_class.new(**contract.options) }
+
+        it { expect(contract == other).to be true }
+      end
+    end
+  end
+
   describe '#add_constraint' do
     it 'should define the method' do
       expect(contract)
