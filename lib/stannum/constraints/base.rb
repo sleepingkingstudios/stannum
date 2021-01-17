@@ -33,6 +33,16 @@ module Stannum::Constraints
     # @return [Hash<Symbol, Object>] Configuration options for the constraint.
     attr_reader :options
 
+    # Performs an equality comparison.
+    #
+    # @param other [Object] The object to compare.
+    #
+    # @return [true, false] true if the other object has the same class and
+    #   options; otherwise false.
+    def ==(other)
+      other.class == self.class && options == other.options
+    end
+
     # Produces a shallow copy of the constraint.
     #
     # @param freeze [true, false] If true, copies the frozen status of the

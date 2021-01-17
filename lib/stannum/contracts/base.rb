@@ -99,6 +99,9 @@ module Stannum::Contracts
   #   errors.to_a
   #   #=> []
   class Base < Stannum::Constraints::Base # rubocop:disable Metrics/ClassLength
+    STOP_ITERATION = Object.new.freeze
+    private_constant :STOP_ITERATION
+
     # @param options [Hash<Symbol, Object>] Configuration options for the
     #   contract. Defaults to an empty Hash.
     def initialize(**options, &block)
@@ -108,6 +111,16 @@ module Stannum::Contracts
       super(**options)
 
       define_constraints(&block)
+    end
+
+    # Performs an equality comparison.
+    #
+    # @param other [Object] The object to compare.
+    #
+    # @return [true, false] true if the other object has the same class,
+    #   options, and constraints; otherwise false.
+    def ==(other)
+      super && equal_definitions?(other)
     end
 
     # @!method errors_for(actual)
@@ -475,6 +488,16 @@ module Stannum::Contracts
       self
     end
 
+    def each_unscoped_constraint
+      return enum_for(:each_unscoped_constraint) unless block_given?
+
+      each_included_contract do |contract|
+        contract.each_constraint { |definition| yield definition }
+      end
+
+      @constraints.each { |definition| yield definition }
+    end
+
     def map_errors(errors, **_options)
       errors
     end
@@ -495,14 +518,24 @@ module Stannum::Contracts
       @included.each { |contract| yield contract }
     end
 
-    def each_unscoped_constraint
-      return enum_for(:each_unscoped_constraint) unless block_given?
+    def equal_definitions?(other) # rubocop:disable Metrics/AbcSize, Metrics/CyclomaticComplexity, Metrics/MethodLength, Metrics/PerceivedComplexity
+      own_defns   = each_unscoped_constraint
+      other_defns = other.each_unscoped_constraint
 
-      each_included_contract do |contract|
-        contract.each_constraint { |definition| yield definition }
+      loop do
+        # rubocop:disable Layout/EmptyLinesAroundExceptionHandlingKeywords, Lint/RedundantCopDisableDirective
+        u = begin; own_defns.next;   rescue StopIteration; STOP_ITERATION; end
+        v = begin; other_defns.next; rescue StopIteration; STOP_ITERATION; end
+        # rubocop:enable Layout/EmptyLinesAroundExceptionHandlingKeywords, Lint/RedundantCopDisableDirective
+
+        return true if u == STOP_ITERATION && v == STOP_ITERATION
+
+        return false if u == STOP_ITERATION || v == STOP_ITERATION
+
+        unless u.constraint == v.constraint && u.options == v.options
+          return false
+        end
       end
-
-      @constraints.each { |definition| yield definition }
     end
 
     def update_errors_for(actual:, errors:)
