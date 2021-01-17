@@ -12,6 +12,7 @@ RSpec.describe Stannum::Constraints::Types::Array do
   let(:constructor_options) { {} }
   let(:expected_options) do
     {
+      allow_empty:   true,
       expected_type: Array,
       item_type:     nil,
       required:      true
@@ -41,7 +42,7 @@ RSpec.describe Stannum::Constraints::Types::Array do
       expect(described_class)
         .to be_constructible
         .with(0).arguments
-        .and_keywords(:item_type)
+        .and_keywords(:allow_empty, :item_type)
         .and_any_keywords
     end
 
@@ -60,6 +61,22 @@ RSpec.describe Stannum::Constraints::Types::Array do
   include_examples 'should implement the Constraint interface'
 
   include_examples 'should implement the Constraint methods'
+
+  describe '#allow_empty?' do
+    include_examples 'should define predicate', :allow_empty?, true
+
+    context 'when initialized with allow_empty: false' do
+      let(:constructor_options) { super().merge(allow_empty: false) }
+
+      it { expect(constraint.allow_empty?).to be false }
+    end
+
+    context 'when initialized with allow_empty: true' do
+      let(:constructor_options) { super().merge(allow_empty: true) }
+
+      it { expect(constraint.allow_empty?).to be true }
+    end
+  end
 
   describe '#expected_type' do
     include_examples 'should have reader', :expected_type, ::Array
@@ -97,13 +114,43 @@ RSpec.describe Stannum::Constraints::Types::Array do
     let(:match_method) { :match }
     let(:expected_errors) do
       {
-        data: { required: constraint.required?, type: Array },
+        data: {
+          allow_empty: constraint.allow_empty?,
+          required:    constraint.required?,
+          type:        Array
+        },
         type: constraint.type
       }
     end
     let(:matching) { [] }
 
     include_examples 'should match the type constraint'
+
+    context 'when allow_empty is false' do
+      let(:constructor_options) { super().merge(allow_empty: false) }
+
+      describe 'with an empty array' do
+        let(:actual) { [] }
+        let(:expected_errors) do
+          {
+            data: {
+              allow_empty: constraint.allow_empty?,
+              required:    constraint.required?,
+              type:        Array
+            },
+            type: Stannum::Constraints::Presence::TYPE
+          }
+        end
+
+        include_examples 'should not match the constraint'
+      end
+
+      describe 'with a non-empty array' do
+        let(:actual) { [1, 2, 3] }
+
+        include_examples 'should match the constraint'
+      end
+    end
 
     context 'when item_type is set' do
       let(:item_type)           { String }
@@ -175,13 +222,33 @@ RSpec.describe Stannum::Constraints::Types::Array do
     let(:match_method) { :negated_match }
     let(:expected_errors) do
       {
-        data: { required: constraint.required?, type: Array },
+        data: {
+          allow_empty: constraint.allow_empty?,
+          required:    constraint.required?,
+          type:        Array
+        },
         type: constraint.negated_type
       }
     end
     let(:matching) { [] }
 
     include_examples 'should match the negated type constraint'
+
+    context 'when allow_empty is false' do
+      let(:constructor_options) { super().merge(allow_empty: false) }
+
+      describe 'with an empty array' do
+        let(:actual) { [] }
+
+        include_examples 'should not match the constraint'
+      end
+
+      describe 'with a non-empty array' do
+        let(:actual) { [1, 2, 3] }
+
+        include_examples 'should not match the constraint'
+      end
+    end
 
     context 'when item_type is set' do
       let(:item_type)           { String }
@@ -226,10 +293,25 @@ RSpec.describe Stannum::Constraints::Types::Array do
   describe '#options' do
     let(:expected) do
       {
+        allow_empty:   true,
         expected_type: Array,
         item_type:     nil,
         required:      true
       }.merge(constructor_options)
+    end
+
+    context 'when initialized with allow_empty: false' do
+      let(:constructor_options) { super().merge(allow_empty: false) }
+      let(:expected)            { super().merge(allow_empty: false) }
+
+      it { expect(constraint.options).to deep_match expected }
+    end
+
+    context 'when initialized with allow_empty: true' do
+      let(:constructor_options) { super().merge(allow_empty: true) }
+      let(:expected)            { super().merge(allow_empty: true) }
+
+      it { expect(constraint.options).to deep_match expected }
     end
 
     context 'when initialized with item_type: a Class' do
