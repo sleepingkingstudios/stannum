@@ -94,15 +94,19 @@ module Stannum::Constraints
 
     # rubocop:disable Lint/UnusedMethodArgument
     def update_errors_for(actual:, errors:)
-      errors.add(type, required: required?, type: expected_type)
+      errors.add(type, **error_properties)
     end
 
     def update_negated_errors_for(actual:, errors:)
-      errors.add(negated_type, required: required?, type: expected_type)
+      errors.add(negated_type, **error_properties)
     end
     # rubocop:enable Lint/UnusedMethodArgument
 
     private
+
+    def error_properties
+      { required: required?, type: expected_type }
+    end
 
     def matches_type?(actual)
       actual.is_a?(expected_type) || (optional? && actual.nil?)

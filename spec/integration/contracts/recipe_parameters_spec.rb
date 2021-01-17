@@ -30,7 +30,7 @@ RSpec.describe Spec::RecipeParameters do
       let(:expected_errors) do
         [
           {
-            data:    { required: true, type: Hash },
+            data:    { allow_empty: true, required: true, type: Hash },
             message: nil,
             path:    [],
             type:    Stannum::Constraints::Type::TYPE
@@ -48,13 +48,13 @@ RSpec.describe Spec::RecipeParameters do
       let(:expected_errors) do
         [
           {
-            data:    { required: true, type: Array },
+            data:    { allow_empty: true, required: true, type: Array },
             message: nil,
             path:    %i[arguments],
             type:    Stannum::Constraints::Type::TYPE
           },
           {
-            data:    { required: true, type: Hash },
+            data:    { allow_empty: true, required: true, type: Hash },
             message: nil,
             path:    %i[keywords],
             type:    Stannum::Constraints::Type::TYPE
@@ -190,7 +190,7 @@ RSpec.describe Spec::RecipeParameters do
       let(:expected_errors) do
         [
           {
-            data:    { required: true, type: Hash },
+            data:    { allow_empty: true, required: true, type: Hash },
             message: nil,
             path:    %i[],
             type:    Stannum::Constraints::Type::NEGATED_TYPE
@@ -220,7 +220,7 @@ RSpec.describe Spec::RecipeParameters do
       let(:expected_errors) do
         [
           {
-            data:    { required: true, type: Hash },
+            data:    { allow_empty: true, required: true, type: Hash },
             message: nil,
             path:    %i[],
             type:    Stannum::Constraints::Type::NEGATED_TYPE
@@ -232,7 +232,7 @@ RSpec.describe Spec::RecipeParameters do
             type:    Stannum::Constraints::Hashes::ExtraKeys::NEGATED_TYPE
           },
           {
-            data:    { required: true, type: Array },
+            data:    { allow_empty: true, required: true, type: Array },
             message: nil,
             path:    %i[arguments],
             type:    Stannum::Constraints::Type::NEGATED_TYPE
@@ -244,19 +244,19 @@ RSpec.describe Spec::RecipeParameters do
             type:    Stannum::Constraints::Methods::NEGATED_TYPE
           },
           {
-            data:    { required: true, type: Array },
+            data:    { allow_empty: true, required: true, type: Array },
             message: nil,
             path:    %i[arguments tools],
             type:    Stannum::Constraints::Type::NEGATED_TYPE
           },
           {
-            data:    { required: true, type: Hash },
+            data:    { allow_empty: true, required: true, type: Hash },
             message: nil,
             path:    %i[keywords],
             type:    Stannum::Constraints::Type::NEGATED_TYPE
           },
           {
-            data:    { required: true, type: Hash },
+            data:    { allow_empty: true, required: true, type: Hash },
             message: nil,
             path:    %i[keywords ingredients],
             type:    Stannum::Constraints::Type::NEGATED_TYPE
@@ -288,7 +288,7 @@ RSpec.describe Spec::RecipeParameters do
       let(:expected_errors) do
         [
           {
-            data:    { required: true, type: Hash },
+            data:    { allow_empty: true, required: true, type: Hash },
             message: nil,
             path:    %i[],
             type:    Stannum::Constraints::Type::NEGATED_TYPE
@@ -300,7 +300,7 @@ RSpec.describe Spec::RecipeParameters do
             type:    Stannum::Constraints::Hashes::ExtraKeys::NEGATED_TYPE
           },
           {
-            data:    { required: true, type: Array },
+            data:    { allow_empty: true, required: true, type: Array },
             message: nil,
             path:    %i[arguments],
             type:    Stannum::Constraints::Type::NEGATED_TYPE
@@ -312,19 +312,19 @@ RSpec.describe Spec::RecipeParameters do
             type:    Stannum::Constraints::Methods::NEGATED_TYPE
           },
           {
-            data:    { required: true, type: Array },
+            data:    { allow_empty: true, required: true, type: Array },
             message: nil,
             path:    %i[arguments tools],
             type:    Stannum::Constraints::Type::NEGATED_TYPE
           },
           {
-            data:    { required: true, type: Hash },
+            data:    { allow_empty: true, required: true, type: Hash },
             message: nil,
             path:    %i[keywords],
             type:    Stannum::Constraints::Type::NEGATED_TYPE
           },
           {
-            data:    { required: true, type: Hash },
+            data:    { allow_empty: true, required: true, type: Hash },
             message: nil,
             path:    %i[keywords ingredients],
             type:    Stannum::Constraints::Type::NEGATED_TYPE
@@ -354,7 +354,7 @@ RSpec.describe Spec::RecipeParameters do
       let(:expected_errors) do
         [
           {
-            data:    { required: true, type: Hash },
+            data:    { allow_empty: true, required: true, type: Hash },
             message: nil,
             path:    %i[],
             type:    Stannum::Constraints::Type::NEGATED_TYPE
@@ -366,7 +366,7 @@ RSpec.describe Spec::RecipeParameters do
             type:    Stannum::Constraints::Hashes::ExtraKeys::NEGATED_TYPE
           },
           {
-            data:    { required: true, type: Array },
+            data:    { allow_empty: true, required: true, type: Array },
             message: nil,
             path:    %i[arguments],
             type:    Stannum::Constraints::Type::NEGATED_TYPE
@@ -378,19 +378,19 @@ RSpec.describe Spec::RecipeParameters do
             type:    Stannum::Constraints::Methods::NEGATED_TYPE
           },
           {
-            data:    { required: true, type: Array },
+            data:    { allow_empty: true, required: true, type: Array },
             message: nil,
             path:    %i[arguments tools],
             type:    Stannum::Constraints::Type::NEGATED_TYPE
           },
           {
-            data:    { required: true, type: Hash },
+            data:    { allow_empty: true, required: true, type: Hash },
             message: nil,
             path:    %i[keywords],
             type:    Stannum::Constraints::Type::NEGATED_TYPE
           },
           {
-            data:    { required: true, type: Hash },
+            data:    { allow_empty: true, required: true, type: Hash },
             message: nil,
             path:    %i[keywords ingredients],
             type:    Stannum::Constraints::Type::NEGATED_TYPE
@@ -430,7 +430,7 @@ RSpec.describe Spec::RecipeParameters do
       let(:expected_errors) do
         [
           {
-            data:    { required: true, type: Hash },
+            data:    { allow_empty: true, required: true, type: Hash },
             message: nil,
             path:    %i[],
             type:    Stannum::Constraints::Type::NEGATED_TYPE
@@ -442,7 +442,7 @@ RSpec.describe Spec::RecipeParameters do
             type:    Stannum::Constraints::Hashes::ExtraKeys::NEGATED_TYPE
           },
           {
-            data:    { required: true, type: Array },
+            data:    { allow_empty: true, required: true, type: Array },
             message: nil,
             path:    %i[arguments],
             type:    Stannum::Constraints::Type::NEGATED_TYPE
@@ -454,19 +454,19 @@ RSpec.describe Spec::RecipeParameters do
             type:    Stannum::Constraints::Methods::NEGATED_TYPE
           },
           {
-            data:    { required: true, type: Array },
+            data:    { allow_empty: true, required: true, type: Array },
             message: nil,
             path:    %i[arguments tools],
             type:    Stannum::Constraints::Type::NEGATED_TYPE
           },
           {
-            data:    { required: true, type: Hash },
+            data:    { allow_empty: true, required: true, type: Hash },
             message: nil,
             path:    %i[keywords],
             type:    Stannum::Constraints::Type::NEGATED_TYPE
           },
           {
-            data:    { required: true, type: Hash },
+            data:    { allow_empty: true, required: true, type: Hash },
             message: nil,
             path:    %i[keywords ingredients],
             type:    Stannum::Constraints::Type::NEGATED_TYPE
@@ -496,7 +496,7 @@ RSpec.describe Spec::RecipeParameters do
       let(:expected_errors) do
         [
           {
-            data:    { required: true, type: Hash },
+            data:    { allow_empty: true, required: true, type: Hash },
             message: nil,
             path:    %i[],
             type:    Stannum::Constraints::Type::NEGATED_TYPE
@@ -508,7 +508,7 @@ RSpec.describe Spec::RecipeParameters do
             type:    Stannum::Constraints::Hashes::ExtraKeys::NEGATED_TYPE
           },
           {
-            data:    { required: true, type: Array },
+            data:    { allow_empty: true, required: true, type: Array },
             message: nil,
             path:    %i[arguments],
             type:    Stannum::Constraints::Type::NEGATED_TYPE
@@ -520,19 +520,19 @@ RSpec.describe Spec::RecipeParameters do
             type:    Stannum::Constraints::Methods::NEGATED_TYPE
           },
           {
-            data:    { required: true, type: Array },
+            data:    { allow_empty: true, required: true, type: Array },
             message: nil,
             path:    %i[arguments tools],
             type:    Stannum::Constraints::Type::NEGATED_TYPE
           },
           {
-            data:    { required: true, type: Hash },
+            data:    { allow_empty: true, required: true, type: Hash },
             message: nil,
             path:    %i[keywords],
             type:    Stannum::Constraints::Type::NEGATED_TYPE
           },
           {
-            data:    { required: true, type: Hash },
+            data:    { allow_empty: true, required: true, type: Hash },
             message: nil,
             path:    %i[keywords ingredients],
             type:    Stannum::Constraints::Type::NEGATED_TYPE
@@ -555,7 +555,7 @@ RSpec.describe Spec::RecipeParameters do
       let(:expected_errors) do
         [
           {
-            data:    { required: true, type: Hash },
+            data:    { allow_empty: true, required: true, type: Hash },
             message: nil,
             path:    %i[],
             type:    Stannum::Constraints::Type::NEGATED_TYPE
@@ -567,7 +567,7 @@ RSpec.describe Spec::RecipeParameters do
             type:    Stannum::Constraints::Hashes::ExtraKeys::NEGATED_TYPE
           },
           {
-            data:    { required: true, type: Array },
+            data:    { allow_empty: true, required: true, type: Array },
             message: nil,
             path:    %i[arguments],
             type:    Stannum::Constraints::Type::NEGATED_TYPE
@@ -579,19 +579,19 @@ RSpec.describe Spec::RecipeParameters do
             type:    Stannum::Constraints::Methods::NEGATED_TYPE
           },
           {
-            data:    { required: true, type: Array },
+            data:    { allow_empty: true, required: true, type: Array },
             message: nil,
             path:    %i[arguments tools],
             type:    Stannum::Constraints::Type::NEGATED_TYPE
           },
           {
-            data:    { required: true, type: Hash },
+            data:    { allow_empty: true, required: true, type: Hash },
             message: nil,
             path:    %i[keywords],
             type:    Stannum::Constraints::Type::NEGATED_TYPE
           },
           {
-            data:    { required: true, type: Hash },
+            data:    { allow_empty: true, required: true, type: Hash },
             message: nil,
             path:    %i[keywords ingredients],
             type:    Stannum::Constraints::Type::NEGATED_TYPE

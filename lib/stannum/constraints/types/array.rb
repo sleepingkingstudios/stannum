@@ -22,21 +22,39 @@ module Stannum::Constraints::Types
   #   constraint.matches?([])                # => true
   #   constraint.matches?([1, 2, 3])         # => false
   #   constraint.matches?(%w[one two three]) # => true
+  #
+  # @example Using an Array type constraint with a presence constraint
+  #   constraint = Stannum::Constraints::Types::Array.new(allow_empty: false)
+  #
+  #   constraint.matches?(nil)               # => false
+  #   constraint.matches?(Object.new)        # => false
+  #   constraint.matches?([])                # => false
+  #   constraint.matches?([1, 2, 3])         # => true
+  #   constraint.matches?(%w[one two three]) # => true
   class Array < Stannum::Constraints::Type
     # The :type of the error generated for an array with invalid items.
     INVALID_ITEM_TYPE = 'stannum.constraints.types.array.invalid_item'
 
+    # @param allow_empty [true, false] If false, then the constraint will not
+    #   match against an Array with no items.
     # @param item_type [Stannum::Constraints::Base, Class, nil] If set, then
     #   the constraint will check the types of each item in the Array against
     #   the expected type and will fail if any items do not match.
     # @param options [Hash<Symbol, Object>] Configuration options for the
     #   constraint. Defaults to an empty Hash.
-    def initialize(item_type: nil, **options)
+    def initialize(allow_empty: true, item_type: nil, **options)
       super(
         ::Array,
-        item_type: coerce_item_type(item_type),
+        allow_empty: !!allow_empty,
+        item_type:   coerce_item_type(item_type),
         **options
       )
+    end
+
+    # @return [true, false] if false, then the constraint will not
+    #   match against an Array with no items.
+    def allow_empty?
+      options[:allow_empty]
     end
 
     # Checks that the object is not an Array instance.
@@ -68,6 +86,8 @@ module Stannum::Constraints::Types
     def matches?(actual)
       return false unless super
 
+      return false unless presence_matches?(actual)
+
       return false unless item_type_matches?(actual)
 
       true
@@ -76,12 +96,23 @@ module Stannum::Constraints::Types
 
     private
 
+    def add_presence_error(errors)
+      errors.add(
+        Stannum::Constraints::Presence::TYPE,
+        **error_properties
+      )
+    end
+
     def coerce_item_type(item_type)
       Stannum::Support::Coercion.type_constraint(
         item_type,
         allow_nil: true,
         as:        'item type'
       )
+    end
+
+    def error_properties
+      super().merge(allow_empty: allow_empty?)
     end
 
     def item_type_matches?(actual)
@@ -96,8 +127,14 @@ module Stannum::Constraints::Types
       actual.each.with_index.reject { |item, _| item_type.matches?(item) }
     end
 
+    def presence_matches?(actual)
+      allow_empty? || !actual.empty?
+    end
+
     def update_errors_for(actual:, errors:)
       return super unless actual.is_a?(expected_type)
+
+      return add_presence_error(errors) unless presence_matches?(actual)
 
       unless item_type_matches?(actual)
         non_matching_items(actual).each do |item, index|

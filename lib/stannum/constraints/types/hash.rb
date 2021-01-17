@@ -31,6 +31,15 @@ module Stannum::Constraints::Types
   #   constraint.matches?({})               # => true
   #   constraint.matches?({ key: :value })  # => false
   #   constraint.matches?({ key: 'value' }) # => true
+  #
+  # @example Using a Hash type constraint with a presence constraint
+  #   constraint = Stannum::Constraints::Types::Hash.new(allow_empty: false)
+  #
+  #   constraint.matches?(nil)              # => false
+  #   constraint.matches?(Object.new)       # => false
+  #   constraint.matches?({})               # => false
+  #   constraint.matches?({ key: :value })  # => true
+  #   constraint.matches?({ key: 'value' }) # => true
   class Hash < Stannum::Constraints::Type
     # The :type of the error generated for a hash with invalid keys.
     INVALID_KEY_TYPE = 'stannum.constraints.types.hash.invalid_key'
@@ -38,6 +47,8 @@ module Stannum::Constraints::Types
     # The :type of the error generated for a hash with invalid values.
     INVALID_VALUE_TYPE = 'stannum.constraints.types.hash.invalid_value'
 
+    # @param allow_empty [true, false] If false, then the constraint will not
+    #   match against a Hash with no keys.
     # @param key_type [Stannum::Constraints::Base, Class, nil] If set, then the
     #   constraint will check the types of each key in the Hash against the
     #   expected type and will fail if any keys do not match.
@@ -46,13 +57,20 @@ module Stannum::Constraints::Types
     #   the expected type and will fail if any values do not match.
     # @param options [Hash<Symbol, Object>] Configuration options for the
     #   constraint. Defaults to an empty Hash.
-    def initialize(key_type: nil, value_type: nil, **options)
+    def initialize(allow_empty: true, key_type: nil, value_type: nil, **options)
       super(
         ::Hash,
-        key_type:   coerce_key_type(key_type),
-        value_type: coerce_value_type(value_type),
+        allow_empty: !!allow_empty,
+        key_type:    coerce_key_type(key_type),
+        value_type:  coerce_value_type(value_type),
         **options
       )
+    end
+
+    # @return [true, false] if false, then the constraint will not
+    #   match against a Hash with no keys.
+    def allow_empty?
+      options[:allow_empty]
     end
 
     # Checks that the object is not a Hash instance.
@@ -86,6 +104,8 @@ module Stannum::Constraints::Types
     def matches?(actual)
       return false unless super
 
+      return false unless presence_matches?(actual)
+
       return false unless key_type_matches?(actual)
 
       return false unless value_type_matches?(actual)
@@ -102,6 +122,19 @@ module Stannum::Constraints::Types
 
     private
 
+    def add_invalid_key_errors(actual:, errors:)
+      non_matching_values(actual).each do |key, value|
+        errors[key].add(INVALID_VALUE_TYPE, value: value)
+      end
+    end
+
+    def add_presence_error(errors)
+      errors.add(
+        Stannum::Constraints::Presence::TYPE,
+        **error_properties
+      )
+    end
+
     def coerce_key_type(key_type)
       Stannum::Support::Coercion.type_constraint(
         key_type,
@@ -116,6 +149,10 @@ module Stannum::Constraints::Types
         allow_nil: true,
         as:        'value type'
       )
+    end
+
+    def error_properties
+      super().merge(allow_empty: allow_empty?)
     end
 
     def key_type_matches?(actual)
@@ -134,17 +171,21 @@ module Stannum::Constraints::Types
       actual.each.reject { |_, value| value_type.matches?(value) }
     end
 
+    def presence_matches?(actual)
+      allow_empty? || !actual.empty?
+    end
+
     def update_errors_for(actual:, errors:)
       return super unless actual.is_a?(expected_type)
+
+      return add_presence_error(errors) unless presence_matches?(actual)
 
       unless key_type_matches?(actual)
         errors.add(INVALID_KEY_TYPE, keys: non_matching_keys(actual))
       end
 
       unless value_type_matches?(actual)
-        non_matching_values(actual).each do |key, value|
-          errors[key].add(INVALID_VALUE_TYPE, value: value)
-        end
+        add_invalid_key_errors(actual: actual, errors: errors)
       end
 
       errors
