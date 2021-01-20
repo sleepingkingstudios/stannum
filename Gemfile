@@ -8,7 +8,9 @@ group :development, :test do
   gem 'byebug', '~> 11.0'
 end
 
-gem 'sleeping_king_studios-tasks',
-  git: 'https://github.com/sleepingkingstudios/sleeping_king_studios-tasks'
+gem 'rspec-sleeping_king_studios',
+  git: 'https://github.com/sleepingkingstudios/rspec-sleeping_king_studios'
+
+gem 'sleeping_king_studios-tasks', '~> 0.4', '>= 0.4.1'
 
 gem 'yard', '~> 0.9', require: false, group: :doc
