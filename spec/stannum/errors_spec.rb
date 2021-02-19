@@ -184,15 +184,10 @@ RSpec.describe Stannum::Errors do
       end
     end
     let(:expected_other_errors) do
-      normalized_key =
-        if defined?(key)
-          key.is_a?(String) ? [key.intern] : [key]
-        else
-          []
-        end
+      base_path = defined?(key) ? [key] : []
 
       raw_other_errors.map do |err|
-        err.merge(path: [*normalized_key, *err[:path]])
+        err.merge(path: [*base_path, *err[:path]])
       end
     end
   end
@@ -303,6 +298,156 @@ RSpec.describe Stannum::Errors do
         it { expect(errors.send(method_name, other)).to be true }
       end
     end
+
+    context 'when the errors has many child errors with string keys' do
+      include_context 'when the errors has many child errors'
+
+      let(:child_path) { 'spells' }
+
+      describe 'with nil' do
+        it { expect(errors.send(method_name, nil)).to be false }
+      end
+
+      describe 'with an object' do
+        it { expect(errors.send(method_name, Object.new.freeze)).to be false }
+      end
+
+      describe 'with an empty array' do
+        it { expect(errors.send(method_name, [])).to be false }
+      end
+
+      describe 'with an empty errors object' do
+        it { expect(errors.send(method_name, other)).to be false }
+      end
+
+      describe 'with an array with non-matching errors' do
+        let(:other_errors) { %w[empty valid right_side_up] }
+
+        before(:example) do
+          other_errors.each { |type| other[child_path].add(type) }
+        end
+
+        it { expect(errors.send(method_name, other.to_a)).to be false }
+      end
+
+      describe 'with an errors object with non-matching errors' do
+        let(:other_errors) { %w[empty valid right_side_up] }
+
+        before(:example) do
+          other_errors.each { |type| other[child_path].add(type) }
+        end
+
+        it { expect(errors.send(method_name, other)).to be false }
+      end
+
+      describe 'with an array with matching errors' do
+        let(:other_errors) { %w[empty valid right_side_up] }
+
+        before(:example) do
+          raw_child_errors.each do |error|
+            other[child_path]
+              .add(
+                error.fetch(:type),
+                message: error[:message],
+                **error.fetch(:data, {})
+              )
+          end
+        end
+
+        it { expect(errors.send(method_name, other.to_a)).to be true }
+      end
+
+      describe 'with an errors object with matching errors' do
+        let(:other_errors) { %w[empty valid right_side_up] }
+
+        before(:example) do
+          raw_child_errors.each do |error|
+            other[child_path]
+              .add(
+                error.fetch(:type),
+                message: error[:message],
+                **error.fetch(:data, {})
+              )
+          end
+        end
+
+        it { expect(errors.send(method_name, other)).to be true }
+      end
+    end
+
+    context 'when the errors has many child errors with symbol keys' do
+      include_context 'when the errors has many child errors'
+
+      describe 'with nil' do
+        it { expect(errors.send(method_name, nil)).to be false }
+      end
+
+      describe 'with an object' do
+        it { expect(errors.send(method_name, Object.new.freeze)).to be false }
+      end
+
+      describe 'with an empty array' do
+        it { expect(errors.send(method_name, [])).to be false }
+      end
+
+      describe 'with an empty errors object' do
+        it { expect(errors.send(method_name, other)).to be false }
+      end
+
+      describe 'with an array with non-matching errors' do
+        let(:other_errors) { %w[empty valid right_side_up] }
+
+        before(:example) do
+          other_errors.each { |type| other[child_path].add(type) }
+        end
+
+        it { expect(errors.send(method_name, other.to_a)).to be false }
+      end
+
+      describe 'with an errors object with non-matching errors' do
+        let(:other_errors) { %w[empty valid right_side_up] }
+
+        before(:example) do
+          other_errors.each { |type| other[child_path].add(type) }
+        end
+
+        it { expect(errors.send(method_name, other)).to be false }
+      end
+
+      describe 'with an array with matching errors' do
+        let(:other_errors) { %w[empty valid right_side_up] }
+
+        before(:example) do
+          raw_child_errors.each do |error|
+            other[child_path]
+              .add(
+                error.fetch(:type),
+                message: error[:message],
+                **error.fetch(:data, {})
+              )
+          end
+        end
+
+        it { expect(errors.send(method_name, other.to_a)).to be true }
+      end
+
+      describe 'with an errors object with matching errors' do
+        let(:other_errors) { %w[empty valid right_side_up] }
+
+        before(:example) do
+          raw_child_errors.each do |error|
+            other[child_path]
+              .add(
+                error.fetch(:type),
+                message: error[:message],
+                **error.fetch(:data, {})
+              )
+          end
+        end
+
+        it { expect(errors.send(method_name, other)).to be true }
+      end
+    end
   end
 
   subject(:errors) { described_class.new }
@@ -351,8 +496,6 @@ RSpec.describe Stannum::Errors do
       it { expect(errors['potions']).to be == described_class.new }
 
       it { expect(errors['potions']).to be cached }
-
-      it { expect(errors['potions']).to be errors[:potions] }
     end
 
     describe 'with a symbol' do
@@ -363,15 +506,17 @@ RSpec.describe Stannum::Errors do
       it { expect(errors[:potions]).to be cached }
     end
 
-    wrap_context 'when the errors has many child errors' do
+    context 'when the errors has many child errors with string keys' do
+      include_context 'when the errors has many child errors'
+
+      let(:child_path) { 'spells' }
+
       describe 'with a string that does not match an existing key' do
         let(:cached) { errors['potions'] }
 
         it { expect(errors['potions']).to be == described_class.new }
 
         it { expect(errors['potions']).to be cached }
-
-        it { expect(errors['potions']).to be errors[:potions] }
       end
 
       describe 'with a string that matches an existing key' do
@@ -383,8 +528,26 @@ RSpec.describe Stannum::Errors do
         it { expect(errors['spells']).to be == expected_errors }
 
         it { expect(errors['spells']).to be cached }
+      end
 
-        it { expect(errors['spells']).to be errors[:spells] }
+      describe 'with a symbol that does not match an existing key' do
+        let(:cached) { errors[:potions] }
+
+        it { expect(errors[:potions]).to be == described_class.new }
+
+        it { expect(errors[:potions]).to be cached }
+      end
+    end
+
+    context 'when the errors has many child errors with symbol keys' do
+      include_context 'when the errors has many child errors'
+
+      describe 'with a string that does not match an existing key' do
+        let(:cached) { errors['potions'] }
+
+        it { expect(errors['potions']).to be == described_class.new }
+
+        it { expect(errors['potions']).to be cached }
       end
 
       describe 'with a symbol that does not match an existing key' do
@@ -434,9 +597,7 @@ RSpec.describe Stannum::Errors do
       include_context 'with another errors object'
 
       let(:expected_errors) do
-        normalized_key = key.is_a?(String) ? key.intern : key
-
-        super().reject { |err| err[:path][0] == normalized_key }
+        super().reject { |err| err[:path][0] == key }
       end
       let(:error_message) do
         'value must be an instance of Stannum::Errors, an array of error' \
@@ -979,7 +1140,7 @@ RSpec.describe Stannum::Errors do
 
       it { expect(errors.dig('potions')).to be cached }
 
-      it { expect(errors.dig('potions')).to be errors[:potions] }
+      it { expect(errors.dig('potions')).to be errors['potions'] }
     end
 
     describe 'with a symbol' do
@@ -1042,7 +1203,7 @@ RSpec.describe Stannum::Errors do
 
       it { expect(errors.dig(['potions'])).to be cached }
 
-      it { expect(errors.dig(['potions'])).to be errors[:potions] }
+      it { expect(errors.dig(['potions'])).to be errors['potions'] }
     end
 
     describe 'with an array with a symbol' do
@@ -1071,7 +1232,11 @@ RSpec.describe Stannum::Errors do
       end
     end
 
-    wrap_context 'when the errors has many child errors' do
+    context 'when the errors has many child errors with string keys' do
+      include_context 'when the errors has many child errors'
+
+      let(:child_path) { 'spells' }
+
       describe 'with a string that does not match an existing key' do
         let(:cached) { errors.dig('potions') }
 
@@ -1079,7 +1244,7 @@ RSpec.describe Stannum::Errors do
 
         it { expect(errors.dig('potions')).to be cached }
 
-        it { expect(errors.dig('potions')).to be errors[:potions] }
+        it { expect(errors.dig('potions')).to be errors['potions'] }
       end
 
       describe 'with a string that matches an existing key' do
@@ -1092,7 +1257,54 @@ RSpec.describe Stannum::Errors do
 
         it { expect(errors.dig('spells')).to be cached }
 
-        it { expect(errors.dig('spells')).to be errors[:spells] }
+        it { expect(errors.dig('spells')).to be errors['spells'] }
+      end
+
+      describe 'with a symbol that does not match an existing key' do
+        let(:cached) { errors.dig(:potions) }
+
+        it { expect(errors.dig(:potions)).to be == described_class.new }
+
+        it { expect(errors.dig(:potions)).to be cached }
+
+        it { expect(errors.dig(:potions)).to be errors[:potions] }
+      end
+
+      describe 'with an array that does not match an existing key' do
+        let(:cached) { errors.dig(['potions']) }
+
+        it { expect(errors.dig(['potions'])).to be == described_class.new }
+
+        it { expect(errors.dig(['potions'])).to be cached }
+
+        it { expect(errors.dig(['potions'])).to be errors['potions'] }
+      end
+
+      describe 'with an array that matches an existing key' do
+        let(:cached) { errors.dig(['spells']) }
+        let(:expected_errors) do
+          expected_child_errors.map { |hsh| hsh.merge(path: []) }
+        end
+
+        it { expect(errors.dig(['spells'])).to be == expected_errors }
+
+        it { expect(errors.dig(['spells'])).to be cached }
+
+        it { expect(errors.dig(['spells'])).to be errors['spells'] }
+      end
+    end
+
+    context 'when the errors has many child errors' do
+      include_context 'when the errors has many child errors'
+
+      describe 'with a string that does not match an existing key' do
+        let(:cached) { errors.dig('potions') }
+
+        it { expect(errors.dig('potions')).to be == described_class.new }
+
+        it { expect(errors.dig('potions')).to be cached }
+
+        it { expect(errors.dig('potions')).to be errors['potions'] }
       end
 
       describe 'with a symbol that does not match an existing key' do
@@ -1150,22 +1362,7 @@ RSpec.describe Stannum::Errors do
 
         it { expect(errors.dig('potions')).to be cached }
 
-        it { expect(errors.dig('potions')).to be errors[:potions] }
-      end
-
-      describe 'with a string that matches an existing key' do
-        let(:cached) { errors.dig('guilds') }
-        let(:expected_errors) do
-          expected_nested_errors.map do |hsh|
-            hsh.merge(path: hsh[:path][1..-1])
-          end
-        end
-
-        it { expect(errors.dig('guilds')).to be == expected_errors }
-
-        it { expect(errors.dig('guilds')).to be cached }
-
-        it { expect(errors.dig('guilds')).to be errors[:guilds] }
+        it { expect(errors.dig('potions')).to be errors['potions'] }
       end
 
       describe 'with a symbol that does not match an existing key' do

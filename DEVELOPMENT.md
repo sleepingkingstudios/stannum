@@ -51,6 +51,32 @@
 - Refactor Stannum::Structs::Attribute to Stannum::Attribute.
 - Refactor Stannum::Structs::Attributes to Stannum::Schema.
 
+### Errors
+
+Implement #grouped_by_path ?
+
+#### Messages
+
+Implement #messages(strategy:, \*\*options)
+
+- Implement #with_messages(strategy:, \*\*options)
+  - returns a copy of Errors
+  - for each error, calculates message using strategy, options
+
+#### Strategies
+
+Default Strategy
+
+- Implement #call(error:, \*\*options)
+- Pulls from config/locales/en.rb
+- See https://medium.com/cedarcode/i18n-dynamic-ruby-translations-with-lambdas-4716f5fe4af9
+- INCLUDE config/locales IN GEM FILES!!!
+
+### RSpec
+
+- MatchErrorsMatcher
+  - Internally, converts both errors to arrays and uses `deep_match`.
+
 ### Standardization
 
 - Always return a `Stannum::Errors` from `match`.
@@ -124,6 +150,10 @@
 - #include?(type OR hash)
   - if type, call include?(type: type)
   - errors.any? { |actual| actual >= expected }
+
+#### Strategies
+
+- I18n strategy
 
 ### RSpec
 

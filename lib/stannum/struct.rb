@@ -207,7 +207,7 @@ module Stannum
 
         validate_attribute_name(attr_name)
 
-        [attr_name.nil? ? attr_name : attr_name.to_s, constraint]
+        [attr_name.nil? ? attr_name : attr_name.intern, constraint]
       end
 
       def validate_attribute_name(name)
