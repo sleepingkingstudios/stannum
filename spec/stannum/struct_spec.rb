@@ -279,8 +279,8 @@ RSpec.describe Stannum::Struct do
         end
 
         it 'should return the errors' do
-          expect(described_class::Contract.errors_for(struct))
-            .to be == expected_errors
+          expect(described_class::Contract.errors_for(struct).to_a)
+            .to deep_match expected_errors.to_a
         end
 
         it { expect(described_class::Contract.matches?(struct)).to be false }
@@ -938,7 +938,7 @@ RSpec.describe Stannum::Struct do
           .to include(
             have_attributes(
               constraint: constraint,
-              property:   'name'
+              property:   :name
             )
           )
       end
@@ -956,7 +956,7 @@ RSpec.describe Stannum::Struct do
           .to include(
             have_attributes(
               constraint: constraint,
-              property:   'name'
+              property:   :name
             )
           )
       end
@@ -1069,7 +1069,7 @@ RSpec.describe Stannum::Struct do
             .to include(
               have_attributes(
                 constraint: constraint,
-                property:   'name'
+                property:   :name
               )
             )
         end
@@ -1087,7 +1087,7 @@ RSpec.describe Stannum::Struct do
             .to include(
               have_attributes(
                 constraint: constraint,
-                property:   'name'
+                property:   :name
               )
             )
         end

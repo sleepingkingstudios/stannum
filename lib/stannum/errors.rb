@@ -227,7 +227,7 @@ module Stannum
     #
     # @see #dig
     def [](key)
-      key = normalize_key(key)
+      validate_key(key)
 
       @children[key]
     end
@@ -290,7 +290,8 @@ module Stannum
     #
     # @see #[]
     def []=(key, value)
-      key   = normalize_key(key)
+      validate_key(key)
+
       value = normalize_value(value, allow_nil: true)
 
       @children[key] = value
@@ -579,14 +580,6 @@ module Stannum
       child
     end
 
-    def normalize_key(key)
-      return key if key.is_a?(Integer) || key.is_a?(Symbol)
-
-      return key.intern if key.is_a?(String)
-
-      raise ArgumentError, 'key must be an Integer, a String or a Symbol'
-    end
-
     def normalize_message(message)
       return if message.nil?
 
@@ -625,6 +618,14 @@ module Stannum
 
     def tools
       SleepingKingStudios::Tools::Toolbelt.instance
+    end
+
+    def validate_key(key)
+      return if key.is_a?(Integer) || key.is_a?(Symbol) || key.is_a?(String)
+
+      raise ArgumentError,
+        'key must be an Integer, a String or a Symbol',
+        caller(1..-1)
     end
   end
 end

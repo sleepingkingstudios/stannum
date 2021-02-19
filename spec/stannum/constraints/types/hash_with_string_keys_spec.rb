@@ -199,17 +199,17 @@ RSpec.describe Stannum::Constraints::Types::HashWithStringKeys do
           [
             {
               data: { value: 1 },
-              path: %i[ichi],
+              path: %w[ichi],
               type: described_class::INVALID_VALUE_TYPE
             },
             {
               data: { value: 2 },
-              path: %i[ni],
+              path: %w[ni],
               type: described_class::INVALID_VALUE_TYPE
             },
             {
               data: { value: 3 },
-              path: %i[san],
+              path: %w[san],
               type: described_class::INVALID_VALUE_TYPE
             }
           ]
@@ -223,7 +223,7 @@ RSpec.describe Stannum::Constraints::Types::HashWithStringKeys do
         let(:expected_errors) do
           {
             data: { value: 2 },
-            path: %i[ni],
+            path: %w[ni],
             type: described_class::INVALID_VALUE_TYPE
           }
         end
