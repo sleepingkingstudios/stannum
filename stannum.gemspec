@@ -21,6 +21,11 @@ Gem::Specification.new do |gem|
   gem.homepage    = 'http://sleepingkingstudios.com'
   gem.license     = 'MIT'
 
+  gem.metadata = {
+    'bug_tracker_uri' => 'https://github.com/sleepingkingstudios/stannum/issues',
+    'source_code_uri' => 'https://github.com/sleepingkingstudios/stannum'
+  }
+
   gem.require_path = 'lib'
   gem.files        = Dir['lib/**/*.rb', 'LICENSE', '*.md']
 
