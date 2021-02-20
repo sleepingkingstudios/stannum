@@ -16,5 +16,10 @@ module Stannum
     def self.strategy
       @strategy ||= DefaultStrategy.new
     end
+
+    # @param strategy [#call] The strategy to use to generate error messages.
+    def self.strategy=(strategy)
+      @strategy = strategy
+    end
   end
 end
