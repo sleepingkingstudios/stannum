@@ -223,7 +223,7 @@ module Spec::Support::Examples
       it { expect(actual_errors).to be nil }
     end
 
-    shared_examples 'should not match the constraint' do
+    shared_examples 'should not match the constraint' do |messages: false|
       let(:actual_status) do
         status, _ = subject.send(match_method, actual)
 
@@ -235,7 +235,31 @@ module Spec::Support::Examples
         errors
       end
       let(:wrapped_errors) do
-        (expected_errors.is_a?(Array) ? expected_errors : [expected_errors])
+        errors =
+          if expected_errors.is_a?(Array)
+            expected_errors
+          else
+            [expected_errors]
+          end
+
+        errors
+          .map do |error|
+            {
+              data:    {},
+              message: nil,
+              path:    []
+            }.merge(error)
+          end
+      end
+      let(:wrapped_messages) do
+        errors =
+          if expected_messages.is_a?(Array)
+            expected_messages
+          else
+            [expected_messages]
+          end
+
+        errors
           .map do |error|
             {
               data:    {},
@@ -248,6 +272,12 @@ module Spec::Support::Examples
       it { expect(actual_status).to be false }
 
       it { expect(actual_errors.to_a).to be == wrapped_errors }
+
+      if messages
+        it 'should generate the error messages' do
+          expect(actual_errors.with_messages.to_a).to be == wrapped_messages
+        end
+      end
     end
 
     shared_examples 'should match the type constraint' do
