@@ -22,6 +22,10 @@ module Stannum::Constraints
 
     # @param options [Hash<Symbol, Object>] Configuration options for the
     #   constraint. Defaults to an empty Hash.
+    # @option options [String] :message The default error message generated for
+    #   a non-matching object.
+    # @option options [String] :negated_message The default error message
+    #   generated for a matching object.
     # @option options [String] :negated_type The type of the error generated for
     #    a matching object.
     # @option options [String] :type The type of the error generated for a
@@ -163,6 +167,12 @@ module Stannum::Constraints
     end
     alias match? matches?
 
+    # @return [String, nil] the default error message generated for a
+    #   non-matching object.
+    def message
+      options[:message]
+    end
+
     # Generates an errors object for the given object when negated.
     #
     # The errors object represents the difference between the given object and
@@ -221,6 +231,12 @@ module Stannum::Constraints
       does_not_match?(actual) ? true : [false, negated_errors_for(actual)]
     end
 
+    # @return [String, nil] The default error message generated for a matching
+    #   object.
+    def negated_message
+      options[:negated_message]
+    end
+
     # @return [String] the error type generated for a matching object.
     def negated_type
       options.fetch(:negated_type, self.class::NEGATED_TYPE)
@@ -252,11 +268,11 @@ module Stannum::Constraints
 
     # rubocop:disable Lint/UnusedMethodArgument
     def update_errors_for(actual:, errors:)
-      errors.add(type)
+      errors.add(type, message: message)
     end
 
     def update_negated_errors_for(actual:, errors:)
-      errors.add(negated_type)
+      errors.add(negated_type, message: negated_message)
     end
     # rubocop:enable Lint/UnusedMethodArgument
   end

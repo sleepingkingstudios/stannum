@@ -521,15 +521,19 @@ module Stannum
 
     # Creates a copy of the errors and generates error messages for each error.
     #
+    # @param force [Boolean] If true, overrides any messages already defined for
+    #   the errors.
     # @param strategy [#call] The strategy to use to generate the error
     #   messages.
     #
     # @return [Stannum::Errors] the copy of the errors object.
-    def with_messages(strategy: nil)
+    def with_messages(force: false, strategy: nil)
       strategy ||= Stannum::Messages.strategy
 
       dup.tap do |errors|
         errors.each_error do |error|
+          next unless force || error[:message].nil? || error[:message].empty?
+
           message = strategy.call(error[:type], **(error[:data] || {}))
 
           error[:message] = message

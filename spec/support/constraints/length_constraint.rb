@@ -9,6 +9,8 @@ module Spec
     TYPE = 'spec.constraints.wrong_length'
 
     def initialize(expected)
+      super()
+
       @expected = expected
     end
 
