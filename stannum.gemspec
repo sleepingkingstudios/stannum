@@ -27,7 +27,7 @@ Gem::Specification.new do |gem|
   }
 
   gem.require_path = 'lib'
-  gem.files        = Dir['lib/**/*.rb', 'LICENSE', '*.md']
+  gem.files        = Dir['config/locales/*', 'lib/**/*.rb', 'LICENSE', '*.md']
 
   gem.add_runtime_dependency 'sleeping_king_studios-tools', '~> 1.0'
 
