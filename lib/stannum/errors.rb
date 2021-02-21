@@ -519,7 +519,39 @@ module Stannum
       update_errors(value)
     end
 
+    # Creates a copy of the errors and generates error messages for each error.
+    #
+    # @param force [Boolean] If true, overrides any messages already defined for
+    #   the errors.
+    # @param strategy [#call] The strategy to use to generate the error
+    #   messages.
+    #
+    # @return [Stannum::Errors] the copy of the errors object.
+    def with_messages(force: false, strategy: nil)
+      strategy ||= Stannum::Messages.strategy
+
+      dup.tap do |errors|
+        errors.each_error do |error|
+          next unless force || error[:message].nil? || error[:message].empty?
+
+          message = strategy.call(error[:type], **(error[:data] || {}))
+
+          error[:message] = message
+        end
+      end
+    end
+
     protected
+
+    def each_error
+      return enum_for(:each_error) unless block_given?
+
+      @errors.each { |item| yield item }
+
+      @children.each_value do |child|
+        child.each_error { |item| yield item }
+      end
+    end
 
     def update_errors(other_errors)
       other_errors.each do |error|
