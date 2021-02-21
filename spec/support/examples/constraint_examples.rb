@@ -2,6 +2,8 @@
 
 require 'rspec/sleeping_king_studios/concerns/shared_example_group'
 
+require 'stannum/rspec/match_errors'
+
 require 'support/examples'
 
 module Spec::Support::Examples
@@ -239,7 +241,7 @@ module Spec::Support::Examples
 
       it { expect(actual_status).to be false }
 
-      it { expect(actual_errors.to_a).to be == wrapped_errors }
+      it { expect(actual_errors.to_a).to match_errors wrapped_errors }
     end
 
     shared_examples 'should match the type constraint' do
