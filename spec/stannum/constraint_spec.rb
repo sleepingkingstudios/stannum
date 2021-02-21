@@ -27,85 +27,86 @@ RSpec.describe Stannum::Constraint do
   include_examples 'should implement the Constraint methods'
 
   describe '#match' do
-    let(:match_method)    { :match }
-    let(:expected_errors) { { type: constraint.type } }
+    let(:match_method)      { :match }
+    let(:expected_errors)   { { type: constraint.type } }
+    let(:expected_messages) { expected_errors.merge(message: 'is invalid') }
 
     describe 'with nil' do
       let(:actual) { nil }
 
-      include_examples 'should not match the constraint'
+      include_examples 'should not match the constraint', messages: true
     end
 
     describe 'with true' do
       let(:actual) { true }
 
-      include_examples 'should not match the constraint'
+      include_examples 'should not match the constraint', messages: true
     end
 
     describe 'with false' do
       let(:actual) { false }
 
-      include_examples 'should not match the constraint'
+      include_examples 'should not match the constraint', messages: true
     end
 
     describe 'with an integer' do
       let(:actual) { 0 }
 
-      include_examples 'should not match the constraint'
+      include_examples 'should not match the constraint', messages: true
     end
 
     describe 'with an Object' do
       let(:actual) { Object.new.freeze }
 
-      include_examples 'should not match the constraint'
+      include_examples 'should not match the constraint', messages: true
     end
 
     describe 'with an empty String' do
       let(:actual) { '' }
 
-      include_examples 'should not match the constraint'
+      include_examples 'should not match the constraint', messages: true
     end
 
     describe 'with a String' do
       let(:actual) { 'a string' }
 
-      include_examples 'should not match the constraint'
+      include_examples 'should not match the constraint', messages: true
     end
 
     describe 'with an empty Symbol' do
       let(:actual) { :'' }
 
-      include_examples 'should not match the constraint'
+      include_examples 'should not match the constraint', messages: true
     end
 
     describe 'with a Symbol' do
       let(:actual) { :a_symbol }
 
-      include_examples 'should not match the constraint'
+      include_examples 'should not match the constraint', messages: true
     end
 
     describe 'with an empty Array' do
       let(:actual) { [] }
 
-      include_examples 'should not match the constraint'
+      include_examples 'should not match the constraint', messages: true
     end
 
     describe 'with a Array' do
       let(:actual) { %w[a b c] }
 
-      include_examples 'should not match the constraint'
+      include_examples 'should not match the constraint', messages: true
     end
 
     describe 'with an empty Hash' do
       let(:actual) { {} }
 
-      include_examples 'should not match the constraint'
+      include_examples 'should not match the constraint', messages: true
     end
 
     describe 'with a Hash' do
       let(:actual) { { a: 1, b: 2, c: 3 } }
 
-      include_examples 'should not match the constraint'
+      include_examples 'should not match the constraint', messages: true
     end
 
     context 'when initialized with a block' do
@@ -118,7 +119,7 @@ RSpec.describe Stannum::Constraint do
       describe 'with an object that does not match the block' do
         let(:actual) { Object.new.freeze }
 
-        include_examples 'should not match the constraint'
+        include_examples 'should not match the constraint', messages: true
       end
 
       describe 'with an object that matches the block' do
@@ -130,8 +131,9 @@ RSpec.describe Stannum::Constraint do
   end
 
   describe '#negated_match' do
-    let(:match_method)    { :negated_match }
-    let(:expected_errors) { { type: constraint.negated_type } }
+    let(:match_method)      { :negated_match }
+    let(:expected_errors)   { { type: constraint.negated_type } }
+    let(:expected_messages) { expected_errors.merge(message: 'is valid') }
 
     describe 'with nil' do
       let(:actual) { nil }
@@ -227,7 +229,7 @@ RSpec.describe Stannum::Constraint do
       describe 'with an object that matches the block' do
         let(:actual) { nil }
 
-        include_examples 'should not match the constraint'
+        include_examples 'should not match the constraint', messages: true
       end
     end
   end
