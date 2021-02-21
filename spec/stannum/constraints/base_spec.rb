@@ -108,6 +108,18 @@ RSpec.describe Stannum::Constraints::Base do
     it { expect(constraint.errors_for nil).to be_a Stannum::Errors }
 
     it { expect(constraint.errors_for nil).to be == expected_errors }
+
+    context 'when initialized with message: value' do
+      let(:message) { 'is invalid' }
+      let(:constructor_options) do
+        super().merge(message: message)
+      end
+      let(:expected_errors) do
+        Stannum::Errors.new.add(constraint.type, message: message)
+      end
+
+      it { expect(constraint.errors_for nil).to be == expected_errors }
+    end
   end
 
   describe '#match' do
@@ -143,6 +155,19 @@ RSpec.describe Stannum::Constraints::Base do
     it { expect(constraint.matches? nil).to be false }
   end
 
+  describe '#message' do
+    include_examples 'should define reader', :message, -> { be nil }
+
+    context 'when initialized with message: value' do
+      let(:message) { 'is invalid' }
+      let(:constructor_options) do
+        super().merge(message: message)
+      end
+
+      it { expect(constraint.message).to be == message }
+    end
+  end
+
   describe '#negated_errors_for' do
     let(:negated_errors) do
       Stannum::Errors.new.add(constraint.negated_type)
@@ -151,6 +176,21 @@ RSpec.describe Stannum::Constraints::Base do
     it { expect(constraint.negated_errors_for nil).to be_a Stannum::Errors }
 
     it { expect(constraint.negated_errors_for nil).to be == negated_errors }
+
+    context 'when initialized with message: value' do
+      let(:negated_message) { 'is valid' }
+      let(:constructor_options) do
+        super().merge(negated_message: negated_message)
+      end
+      let(:expected_errors) do
+        Stannum::Errors.new.add(
+          constraint.negated_type,
+          message: negated_message
+        )
+      end
+
+      it { expect(constraint.negated_errors_for nil).to be == expected_errors }
+    end
   end
 
   describe '#negated_match' do
@@ -179,6 +219,49 @@ RSpec.describe Stannum::Constraints::Base do
       end
 
       include_examples 'should match the constraint'
+    end
+  end
+
+  describe '#negated_message' do
+    include_examples 'should define reader', :negated_message, -> { be nil }
+
+    context 'when initialized with negated_message: value' do
+      let(:negated_message) { 'is valid' }
+      let(:constructor_options) do
+        super().merge(negated_message: negated_message)
+      end
+
+      it { expect(constraint.negated_message).to be == negated_message }
+    end
+  end
+
+  describe '#negated_type' do
+    include_examples 'should define reader',
+      :negated_type,
+      -> { be == described_class::NEGATED_TYPE }
+
+    context 'when initialized with type: value' do
+      let(:negated_type) { 'spec.custom_negated_type' }
+      let(:constructor_options) do
+        super().merge(negated_type: negated_type)
+      end
+
+      it { expect(constraint.negated_type).to be == negated_type }
+    end
+  end
+
+  describe '#type' do
+    include_examples 'should define reader',
+      :type,
+      -> { be == described_class::TYPE }
+
+    context 'when initialized with type: value' do
+      let(:type) { 'spec.custom_type' }
+      let(:constructor_options) do
+        super().merge(type: type)
+      end
+
+      it { expect(constraint.type).to be == type }
     end
   end
 end

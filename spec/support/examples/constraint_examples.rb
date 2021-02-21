@@ -54,6 +54,10 @@ module Spec::Support::Examples
         it { expect(subject).to alias_method(:matches?).as(:match?) }
       end
 
+      describe '#message' do
+        include_examples 'should have reader', :message
+      end
+
       describe '#negated_errors_for' do
         let(:actual) { Object.new.freeze }
 
@@ -89,6 +93,10 @@ module Spec::Support::Examples
         it 'should define the method' do
           expect(subject).to respond_to(:negated_match).with(1).argument
         end
+      end
+
+      describe '#negated_message' do
+        include_examples 'should have reader', :negated_message
       end
 
       describe '#negated_type' do
