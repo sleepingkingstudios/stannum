@@ -53,24 +53,9 @@
 
 ### Errors
 
-Implement #grouped_by_path ?
-
-#### Messages
-
-Implement #messages(strategy:, \*\*options)
-
-- Implement #with_messages(strategy:, \*\*options)
-  - returns a copy of Errors
-  - for each error, calculates message using strategy, options
-
-#### Strategies
-
-Default Strategy
-
-- Implement #call(error:, \*\*options)
-- Pulls from config/locales/en.rb
-- See https://medium.com/cedarcode/i18n-dynamic-ruby-translations-with-lambdas-4716f5fe4af9
-- INCLUDE config/locales IN GEM FILES!!!
+- Implement #grouped_by_path
+  - Takes block argument - groups by yielded
+  - E.g. `errors.with_messages.grouped_by_path { |err| err[:message] }`
 
 ### RSpec
 

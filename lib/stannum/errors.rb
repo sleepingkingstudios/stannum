@@ -457,6 +457,20 @@ module Stannum
     end
     alias blank? empty?
 
+    # @todo Document #group_by_path
+    def group_by_path
+      grouped = Hash.new { |hsh, key| hsh[key] = [] }
+
+      each do |error|
+        path  = error[:path]
+        value = block_given? ? yield(error) : error
+
+        grouped[path] << value
+      end
+
+      grouped
+    end
+
     # Adds the given errors to a copy of the errors object.
     #
     # Creates a copy of the errors object, and then adds each error in the

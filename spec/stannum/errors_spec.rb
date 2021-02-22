@@ -1739,6 +1739,75 @@ RSpec.describe Stannum::Errors do
     include_examples 'should determine the equality'
   end
 
+  describe '#group_by_path' do
+    shared_examples 'should group the errors by path' do
+      it { expect(errors.group_by_path).to be == expected }
+
+      describe 'with a block' do
+        let(:block) { ->(err) { err[:type] } }
+
+        it { expect(errors.group_by_path(&block)).to be == expected }
+      end
+    end
+
+    let(:block)       { ->(err) { err } }
+    let(:error_paths) { [] }
+    let(:expected) do
+      error_paths.each.with_object({}) do |path, hsh|
+        hsh[path] =
+          expected_errors.select { |err| err[:path] == path }.map(&block)
+      end
+    end
+
+    it { expect(errors).to respond_to(:group_by_path).with(0).arguments }
+
+    include_examples 'should group the errors by path'
+
+    wrap_context 'when the errors has many root errors' do
+      let(:error_paths) { [[]] }
+
+      include_examples 'should group the errors by path'
+    end
+
+    wrap_context 'when the errors has many child errors' do
+      let(:error_paths) { [%i[spells]] }
+
+      include_examples 'should group the errors by path'
+    end
+
+    wrap_context 'when the errors has many deeply nested errors' do
+      let(:error_paths) do
+        [
+          [:guilds, 0],
+          [:guilds, 1, :members],
+          [:guilds, 2, :members, 0]
+        ]
+      end
+
+      include_examples 'should group the errors by path'
+    end
+
+    wrap_context 'when the errors has many errors at different paths' do
+      let(:error_paths) do
+        [
+          [],
+          %i[spells],
+          [:guilds, 0],
+          [:guilds, 1, :members],
+          [:guilds, 2, :members, 0]
+        ]
+      end
+
+      include_examples 'should group the errors by path'
+    end
+
+    wrap_context 'when the errors has many indexed errors' do
+      let(:error_paths) { [[0], [1], [2]] }
+
+      include_examples 'should group the errors by path'
+    end
+  end
+
   describe '#merge' do
     shared_examples 'should dup and update the errors' do
       let(:expected_errors) do
