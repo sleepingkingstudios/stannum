@@ -73,7 +73,7 @@ RSpec.describe Stannum::Messages::DefaultStrategy do
 
     describe 'with an error type with no corresponding value' do
       let(:error_type) { 'spec.undefined_error' }
-      let(:expected)   { "no message defined for #{error_type}" }
+      let(:expected)   { "no message defined for #{error_type.inspect}" }
 
       it { expect(strategy.call(error_type)).to be == expected }
     end

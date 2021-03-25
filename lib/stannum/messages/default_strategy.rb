@@ -76,7 +76,7 @@ module Stannum::Messages
 
       return message.call(error_type, options) if message.is_a?(Proc)
 
-      return "no message defined for #{error_type}" if message.nil?
+      return "no message defined for #{error_type.inspect}" if message.nil?
 
       "configuration is a namespace at #{error_type}"
     end
