@@ -1808,6 +1808,39 @@ RSpec.describe Stannum::Errors do
     end
   end
 
+  describe '#inspect' do
+    let(:expected) do
+      str = Object.instance_method(:inspect).bind(errors).call
+      oid = str[2...-1].split(' ').first.split(':').last
+
+      "#<Stannum::Errors:#{oid} @summary=%{#{errors.summary}}>"
+    end
+
+    it { expect(errors.inspect).to be == expected }
+
+    # rubocop:disable RSpec/RepeatedExampleGroupBody
+    wrap_context 'when the errors has many root errors' do
+      it { expect(errors.inspect).to be == expected }
+    end
+
+    wrap_context 'when the errors has many child errors' do
+      it { expect(errors.inspect).to be == expected }
+    end
+
+    wrap_context 'when the errors has many deeply nested errors' do
+      it { expect(errors.inspect).to be == expected }
+    end
+
+    wrap_context 'when the errors has many errors at different paths' do
+      it { expect(errors.inspect).to be == expected }
+    end
+
+    wrap_context 'when the errors has many indexed errors' do
+      it { expect(errors.inspect).to be == expected }
+    end
+    # rubocop:enable RSpec/RepeatedExampleGroupBody
+  end
+
   describe '#merge' do
     shared_examples 'should dup and update the errors' do
       let(:expected_errors) do
@@ -1949,6 +1982,63 @@ RSpec.describe Stannum::Errors do
       it { expect(errors.size).to be expected_errors.size }
     end
     # rubocop:enable RSpec/RepeatedExampleGroupBody
+  end
+
+  describe '#summary' do
+    it { expect(errors).to respond_to(:summary).with(0).arguments }
+
+    it { expect(errors.summary).to be == '' }
+
+    wrap_context 'when the errors has many root errors' do
+      let(:expected) do
+        'no message defined for "blank", no message defined for "invalid",' \
+        ' is upside down'
+      end
+
+      it { expect(errors.summary).to be == expected }
+    end
+
+    wrap_context 'when the errors has many child errors' do
+      let(:expected) do
+        'spells: no message defined for "mana_exhausted", spells: no message' \
+        ' defined for "missing_component", spells: can\'t cast spells of that' \
+        ' element'
+      end
+
+      it { expect(errors.summary).to be == expected }
+    end
+
+    wrap_context 'when the errors has many deeply nested errors' do
+      let(:expected) do
+        'guilds[0]: is not recruiting, guilds[1].members: no message defined' \
+        ' for "empty", guilds[2].members[0]: no message defined for' \
+        ' "late_paying_dues"'
+      end
+
+      it { expect(errors.summary).to be == expected }
+    end
+
+    wrap_context 'when the errors has many errors at different paths' do
+      let(:expected) do
+        'no message defined for "blank", no message defined for "invalid", is' \
+        ' upside down, spells: no message defined for "mana_exhausted",' \
+        ' spells: no message defined for "missing_component", spells: can\'t' \
+        ' cast spells of that element, guilds[0]: is not recruiting,' \
+        ' guilds[1].members: no message defined for "empty",' \
+        ' guilds[2].members[0]: no message defined for "late_paying_dues"'
+      end
+
+      it { expect(errors.summary).to be == expected }
+    end
+
+    wrap_context 'when the errors has many indexed errors' do
+      let(:expected) do
+        '0: no message defined for "target_invincible", 1: no message defined' \
+        ' for "target_immune", 2: target was able to evade your fireball'
+      end
+
+      it { expect(errors.summary).to be == expected }
+    end
   end
 
   describe '#to_a' do

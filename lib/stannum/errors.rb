@@ -457,7 +457,24 @@ module Stannum
     end
     alias blank? empty?
 
-    # @todo Document #group_by_path
+    # Groups the errors by the error path.
+    #
+    # Generates a Hash whose keys are the unique error :path values. For each
+    # path, the corresponding value is the Array of all errors with that path.
+    #
+    # This will flatten paths: an error with path [:parts] will be grouped in a
+    # separate array from a part with path [:parts, :assemblies].
+    #
+    # Errors with an empty path will be grouped with a key of an empty Array.
+    #
+    # @return [Hash<Array, Array>] the errors grouped by the error path.
+    #
+    # @overload group_by_path
+    #
+    # @overload group_by_path(&block)
+    #   Groups the values returned by the block by the error path.
+    #
+    #   @yieldparam error [Hash<Symbol>] the error Hash.
     def group_by_path
       grouped = Hash.new { |hsh, key| hsh[key] = [] }
 
@@ -469,6 +486,13 @@ module Stannum
       end
 
       grouped
+    end
+
+    # @return [String] a human-readable representation of the object.
+    def inspect
+      oid = super[2...-1].split(' ').first.split(':').last
+
+      "#<#{self.class.name}:#{oid} @summary=%{#{summary}}>"
     end
 
     # Adds the given errors to a copy of the errors object.
@@ -502,6 +526,15 @@ module Stannum
       end
     end
     alias count size
+
+    # Generates a text summary of the errors.
+    #
+    # @return [String] the text summary.
+    def summary
+      with_messages
+        .map { |error| generate_summary_item(error) }
+        .join(', ')
+    end
 
     # Generates an array of error objects.
     #
@@ -594,6 +627,24 @@ module Stannum
       other_hashes = Set.new(other_errors.map(&:hash))
 
       hashes == other_hashes
+    end
+
+    def generate_summary_item(error)
+      path = generate_summary_path(error[:path])
+
+      return error[:message] if path.nil? || path.empty?
+
+      "#{path}: #{error[:message]}"
+    end
+
+    def generate_summary_path(path)
+      return nil if path.empty?
+
+      return path.first.to_s if path.size == 1
+
+      path[1..-1].reduce(path.first.to_s) do |str, item|
+        item.is_a?(Integer) ? "#{str}[#{item}]" : "#{str}.#{item}"
+      end
     end
 
     def invalid_value_error(allow_nil)
