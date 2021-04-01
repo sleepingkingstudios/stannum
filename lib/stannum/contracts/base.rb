@@ -206,7 +206,7 @@ module Stannum::Contracts
     # @see #negated_match
     def does_not_match?(actual)
       each_pair(actual) do |definition, value|
-        if definition.constraint.does_not_match?(value)
+        if definition.contract.match_negated_constraint(definition, value)
           next unless definition.sanity?
 
           return true
@@ -372,7 +372,7 @@ module Stannum::Contracts
       errors = Stannum::Errors.new
 
       each_pair(actual) do |definition, value|
-        next if definition.constraint.matches?(value)
+        next if definition.contract.match_constraint(definition, value)
 
         status = false
 
@@ -401,7 +401,9 @@ module Stannum::Contracts
     # @see #match
     def matches?(actual)
       each_pair(actual) do |definition, value|
-        return false unless definition.constraint.matches?(value)
+        unless definition.contract.match_constraint(definition, value)
+          return false
+        end
       end
 
       true
@@ -439,7 +441,7 @@ module Stannum::Contracts
       errors = Stannum::Errors.new
 
       each_pair(actual) do |definition, value|
-        if definition.constraint.does_not_match?(value)
+        if definition.contract.match_negated_constraint(definition, value)
           next unless definition.sanity?
 
           return [true, errors]
@@ -498,6 +500,14 @@ module Stannum::Contracts
       @constraints.each { |definition| yield definition }
     end
 
+    def match_constraint(definition, value)
+      definition.constraint.matches?(value)
+    end
+
+    def match_negated_constraint(definition, value)
+      definition.constraint.does_not_match?(value)
+    end
+
     def map_errors(errors, **_options)
       errors
     end
@@ -540,7 +550,7 @@ module Stannum::Contracts
 
     def update_errors_for(actual:, errors:)
       each_pair(actual) do |definition, value|
-        next if definition.constraint.matches?(value)
+        next if match_constraint(definition, value)
 
         definition.contract.add_errors_for(definition, value, errors)
 
@@ -552,7 +562,7 @@ module Stannum::Contracts
 
     def update_negated_errors_for(actual:, errors:)
       each_pair(actual) do |definition, value|
-        if definition.constraint.does_not_match?(value)
+        if match_negated_constraint(definition, value)
           next unless definition.sanity?
 
           return errors

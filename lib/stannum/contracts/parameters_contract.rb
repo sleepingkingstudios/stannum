@@ -27,7 +27,7 @@ module Stannum::Contracts
   # @example Defining A Parameters Contract With Arguments
   #   contract = Stannum::Contracts::ParametersContract.new do
   #     argument :name, String
-  #     argument :size, String, optional: true
+  #     argument :size, String, default: true
   #   end
   #
   #   contract.matches?(
@@ -54,6 +54,11 @@ module Stannum::Contracts
   #     { arguments: ['Widget'], keywords: {}, block: nil }
   #   )
   #   #=> true
+  #
+  #   contract.matches?(
+  #     { arguments: ['Widget', nil], keywords: {}, block: nil }
+  #   )
+  #   #=> false
   #
   #   contract.matches?(
   #     { arguments: ['Widget', 'Small'], keywords: {}, block: nil }
@@ -391,15 +396,7 @@ module Stannum::Contracts
     #
     # @return [Stannum::Contracts::ParametersContract] the contract.
     def add_argument_constraint(index, type, **options)
-      index ||= next_index
-
-      unless index.is_a?(Integer)
-        raise ArgumentError, 'index must be an integer'
-      end
-
-      constraint = Stannum::Support::Coercion.type_constraint(type, **options)
-
-      arguments_contract.add_index_constraint(index, constraint, **options)
+      arguments_contract.add_argument_constraint(index, type, **options)
 
       self
     end
@@ -534,12 +531,6 @@ module Stannum::Contracts
     def keywords_contract
       @keywords_contract ||=
         Stannum::Contracts::Parameters::KeywordsContract.new
-    end
-
-    def next_index
-      @next_index ||= -1
-
-      @next_index += 1
     end
   end
 end

@@ -10,7 +10,7 @@ module Spec
       super do
         argument :action, Symbol
 
-        argument :record_class, Class, optional: true
+        argument :record_class, Class, default: true
 
         keyword :role, String, optional: true
 
