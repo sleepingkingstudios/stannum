@@ -417,13 +417,7 @@ module Stannum::Contracts
     #
     # @return [Stannum::Contracts::ParametersContract] the contract.
     def add_keyword_constraint(keyword, type, **options)
-      unless keyword.is_a?(Symbol)
-        raise ArgumentError, 'keyword must be a symbol'
-      end
-
-      constraint = Stannum::Support::Coercion.type_constraint(type, **options)
-
-      keywords_contract.add_key_constraint(keyword, constraint, **options)
+      keywords_contract.add_keyword_constraint(keyword, type, **options)
 
       self
     end

@@ -10,6 +10,9 @@ module Stannum::Contracts::Parameters
     # The :type of the error generated for extra keywords.
     EXTRA_KEYWORDS_TYPE = 'stannum.constraints.parameters.extra_keywords'
 
+    # Value used when keywords hash does not have a value for the given key.
+    UNDEFINED = Object.new.freeze
+
     # @param options [Hash<Symbol, Object>] Configuration options for the
     #   contract. Defaults to an empty Hash.
     def initialize(**options)
@@ -19,6 +22,35 @@ module Stannum::Contracts::Parameters
         key_type:         Stannum::Constraints::Hashes::IndifferentKey.new,
         **options
       )
+    end
+
+    # Adds a keyword constraint to the contract.
+    #
+    # Generates a keyword constraint based on the given type. If the type is
+    # a constraint, then the given constraint will be copied with the given
+    # options and added for the given keyword. If the type is a Class or a
+    # Module, then a Stannum::Constraints::Type constraint will be created with
+    # the given type and options and added for the keyword.
+    #
+    # @param keyword [Symbol] The keyword to constrain.
+    # @param type [Class, Module, Stannum::Constraints:Base] The expected type
+    #   of the argument.
+    # @param default [Boolean] If true, the keyword has a default value, and
+    #   the constraint will ignore keywords with no value at that key.
+    # @param options [Hash<Symbol, Object>] Configuration options for the
+    #   constraint. Defaults to an empty Hash.
+    #
+    # @return [Stannum::Contracts::Parameters::KeywordsContract] the contract.
+    def add_keyword_constraint(keyword, type, default: false, **options)
+      unless keyword.is_a?(Symbol)
+        raise ArgumentError, 'keyword must be a symbol'
+      end
+
+      constraint = Stannum::Support::Coercion.type_constraint(type, **options)
+
+      add_key_constraint(keyword, constraint, default: !!default, **options)
+
+      self
     end
 
     # Sets a constraint for the variadic keywords.
@@ -77,6 +109,42 @@ module Stannum::Contracts::Parameters
       )
 
       set_variadic_constraint(constraint, as: as)
+    end
+
+    protected
+
+    def add_errors_for(definition, value, errors)
+      return super unless value == UNDEFINED
+
+      super(definition, nil, errors)
+    end
+
+    def add_negated_errors_for(definition, value, errors)
+      return super unless value == UNDEFINED
+
+      super(definition, nil, errors)
+    end
+
+    def map_value(actual, **options)
+      return super unless options[:property_type] == :key
+
+      return super unless actual.is_a?(Hash)
+
+      return super if actual.key?(options[:property])
+
+      UNDEFINED
+    end
+
+    def match_constraint(definition, value)
+      return super unless value == UNDEFINED
+
+      definition.options[:default] ? true : super(definition, nil)
+    end
+
+    def match_negated_constraint(definition, value)
+      return super unless value == UNDEFINED
+
+      definition.options[:default] ? false : super(definition, nil)
     end
 
     private

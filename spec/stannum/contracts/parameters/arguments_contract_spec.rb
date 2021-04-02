@@ -787,6 +787,16 @@ RSpec.describe Stannum::Contracts::Parameters::ArgumentsContract do
 
         it { expect(result).to be true }
       end
+
+      describe 'with an arguments array with explicit nil values' do
+        let(:actual) { [Object.new.freeze, nil, nil] }
+
+        it { expect(result).to be false }
+
+        it { expect(errors[1]).not_to be_empty }
+
+        it { expect(errors[2]).not_to be_empty }
+      end
     end
   end
 

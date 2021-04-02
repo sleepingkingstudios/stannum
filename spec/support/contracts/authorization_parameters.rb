@@ -12,7 +12,7 @@ module Spec
 
         argument :record_class, Class, default: true
 
-        keyword :role, String, optional: true
+        keyword :role, String, default: true
 
         keyword :user, Stannum::Constraints::Type.new(Spec::User)
       end
