@@ -1,6 +1,7 @@
 # frozen_string_literal: true
 
 require 'stannum'
+require 'stannum/rspec/validate_parameter'
 
 require 'support/commands/build_gadget'
 require 'support/structs/factory'
@@ -8,12 +9,20 @@ require 'support/structs/gadget'
 require 'support/structs/gizmo'
 
 RSpec.describe Spec::BuildGadget do
+  include Stannum::RSpec::Matchers
+
   subject(:command) { described_class.new(factory: factory) }
 
   let(:factory) { Spec::Factory.new }
 
   describe '.new' do
     let(:error_message) { 'invalid parameters for #new' }
+
+    it 'should validate the factory argument' do
+      expect(described_class)
+        .to validate_parameter(:new, :factory)
+        .using_constraint(Spec::Factory)
+    end
 
     describe 'with no parameters' do
       it 'should raise an exception' do
@@ -61,6 +70,18 @@ RSpec.describe Spec::BuildGadget do
         keywords:  keywords,
         block:     nil
       )
+    end
+
+    it 'should validate the attributes keyword' do
+      expect(command)
+        .to validate_parameter(:call, :attributes)
+        .using_constraint(Hash)
+    end
+
+    it 'should validate the gadget_class keyword' do
+      expect(command)
+        .to validate_parameter(:call, :gadget_class)
+        .using_constraint(Class)
     end
 
     describe 'with no parameters' do
