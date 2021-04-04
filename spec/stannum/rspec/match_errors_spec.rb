@@ -4,7 +4,7 @@ require 'stannum/errors'
 require 'stannum/rspec/match_errors'
 
 RSpec.describe RSpec::Matchers do # rubocop:disable RSpec/FilePath
-  let(:example_group) { self }
+  let(:example_group) { Object.new.extend(Stannum::RSpec::Matchers) }
 
   describe '#match_errors' do
     let(:expected) { Stannum::Errors.new }

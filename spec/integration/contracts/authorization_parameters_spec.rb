@@ -1,9 +1,13 @@
 # frozen_string_literal: true
 
+require 'stannum/rspec/match_errors'
+
 require 'support/contracts/authorization_parameters'
 
 # @note Integration spec for Stannum::Contracts::ParametersContract.
 RSpec.describe Spec::AuthorizationParameters do
+  include Stannum::RSpec::Matchers
+
   subject(:contract) { described_class.new }
 
   describe '.new' do
