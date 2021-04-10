@@ -285,10 +285,9 @@ module Stannum::RSpec
       @validation_handler_called = false
       @validation_errors         = nil
 
-      allow(actual).to receive(:handle_invalid_parameters) \
-      do |errors:, **_|
+      allow(actual).to receive(:handle_invalid_parameters) do |keywords|
         @validation_handler_called = true
-        @validation_errors         = errors
+        @validation_errors         = keywords[:errors]
       end
 
       yield
@@ -305,6 +304,8 @@ module Stannum::RSpec
     end
 
     def scoped_errors(indexed: false)
+      return [] if @validation_errors.nil?
+
       case parameter_type
       when :argument
         parameter_key = indexed ? parameter_index : parameter_name
