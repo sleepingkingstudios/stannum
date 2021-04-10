@@ -211,6 +211,26 @@ RSpec.describe Stannum::ParameterValidation do
       end
         .to raise_error ArgumentError, error_message
     end
+
+    context 'when the errors object has errors' do
+      let(:errors) do
+        super().add('spec.example_error', message: 'Something went wrong.')
+      end
+      let(:error_message) do
+        super() + ": #{errors.summary}"
+      end
+
+      it 'should raise an exception' do
+        expect do
+          instance.send(
+            :handle_invalid_parameters,
+            errors:      errors,
+            method_name: method_name
+          )
+        end
+          .to raise_error ArgumentError, error_message
+      end
+    end
   end
 
   describe '#match_parameters_to_contract' do

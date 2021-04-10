@@ -149,8 +149,11 @@ module Stannum
 
     private
 
-    def handle_invalid_parameters(errors:, method_name:) # rubocop:disable Lint/UnusedMethodArgument
-      raise ArgumentError, "invalid parameters for ##{method_name}"
+    def handle_invalid_parameters(errors:, method_name:)
+      error_message = "invalid parameters for ##{method_name}"
+      error_message += ": #{errors.summary}" unless errors.empty?
+
+      raise ArgumentError, error_message
     end
 
     def match_parameters_to_contract( # rubocop:disable Metrics/MethodLength

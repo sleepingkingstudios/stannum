@@ -16,7 +16,9 @@ RSpec.describe Spec::BuildGadget do
   let(:factory) { Spec::Factory.new }
 
   describe '.new' do
-    let(:error_message) { 'invalid parameters for #new' }
+    let(:error_message) do
+      /invalid parameters for #new/
+    end
 
     it 'should validate the factory argument' do
       expect(described_class)
