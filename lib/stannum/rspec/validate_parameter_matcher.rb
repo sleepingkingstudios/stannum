@@ -14,6 +14,48 @@ module Stannum::RSpec
   class ValidateParameterMatcher # rubocop:disable Metrics/ClassLength
     include RSpec::Mocks::ExampleMethods
 
+    class << self
+      def add_parameter_mapping(map:, match:)
+        raise ArgumentError, 'map must be a Proc'   unless map.is_a?(Proc)
+        raise ArgumentError, 'match must be a Proc' unless match.is_a?(Proc)
+
+        parameter_mappings << { match: match, map: map }
+      end
+
+      def map_parameters(actual:, method_name:)
+        parameter_mappings.each do |keywords|
+          match = keywords.fetch(:match)
+          map   = keywords.fetch(:map)
+
+          next unless match.call(actual: actual, method_name: method_name)
+
+          return map.call(actual: actual, method_name: method_name)
+        end
+
+        # Call #super_method to bypass the validation wrapper.
+        actual.method(method_name).super_method.parameters
+      end
+
+      private
+
+      def default_parameter_mappings
+        [
+          {
+            match: lambda do |actual:, method_name:, **_|
+              actual.is_a?(Class) && method_name == :new
+            end,
+            map:   lambda do |actual:, **_|
+              actual.instance_method(:initialize).parameters
+            end
+          }
+        ]
+      end
+
+      def parameter_mappings
+        @parameter_mappings ||= default_parameter_mappings
+      end
+    end
+
     # @param method_name [String, Symbol] The name of the method with validated
     #   parameters.
     # @param parameter_name [String, Symbol] The name of the validated method
@@ -273,12 +315,7 @@ module Stannum::RSpec
     end
 
     def method_parameters
-      if actual.is_a?(Class) && method_name == :new
-        return actual.instance_method(:initialize).parameters
-      end
-
-      # Call #super_method to bypass the validation wrapper.
-      actual.method(method_name).super_method.parameters
+      self.class.map_parameters(actual: actual, method_name: method_name)
     end
 
     def mock_validation_handler

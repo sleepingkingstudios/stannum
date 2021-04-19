@@ -30,10 +30,23 @@ module Spec
       keyword :gadget_class, Class, default: true
     end
 
+    def valid?(*arguments)
+      validate(*arguments)
+    end
+    validate_parameters :valid? do
+      argument :gadget, Spec::Gadget
+    end
+
     private
 
-    def handle_invalid_parameters(errors:, **_)
-      [false, errors]
+    def handle_invalid_parameters(errors:, method_name:)
+      return [false, errors] if method_name == :call
+
+      super
+    end
+
+    def validate(gadget)
+      Spec::Gadget.contract.matches?(gadget)
     end
   end
 end

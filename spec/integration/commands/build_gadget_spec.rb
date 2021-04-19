@@ -15,6 +15,23 @@ RSpec.describe Spec::BuildGadget do
 
   let(:factory) { Spec::Factory.new }
 
+  around(:example) do |example|
+    matcher_class     = Stannum::RSpec::ValidateParameterMatcher
+    previous_mappings = matcher_class.send(:parameter_mappings).dup
+
+    matcher_class.add_parameter_mapping(
+      match: ->(method_name:, **_) { method_name == :valid? },
+      map:   ->(actual:, **_)      { actual.method(:validate).parameters }
+    )
+
+    example.call
+  ensure
+    matcher_class.instance_variable_set(
+      :@parameter_mappings,
+      previous_mappings
+    )
+  end
+
   describe '.new' do
     let(:error_message) do
       /invalid parameters for #new/
@@ -142,6 +159,47 @@ RSpec.describe Spec::BuildGadget do
       it 'should build a gadget' do
         expect(command.call(**keywords))
           .to be == [true, Spec::Gizmo.new({})]
+      end
+    end
+  end
+
+  describe '#valid?' do
+    let(:error_message) do
+      /invalid parameters for #valid?/
+    end
+
+    it 'should validate the gadget attribute' do
+      expect(command)
+        .to validate_parameter(:valid?, :gadget)
+        .using_constraint(Spec::Gadget)
+    end
+
+    describe 'with no parameters' do
+      it 'should raise an exception' do
+        expect { command.valid? }
+          .to raise_error ArgumentError, error_message
+      end
+    end
+
+    describe 'with gadget: nil' do
+      it 'should raise an exception' do
+        expect { command.valid?(nil) }
+          .to raise_error ArgumentError, error_message
+      end
+    end
+
+    describe 'with gadget: an Object' do
+      it 'should raise an exception' do
+        expect { command.valid?(Object.new.freeze) }
+          .to raise_error ArgumentError, error_message
+      end
+    end
+
+    describe 'with gadget: a gadget instance' do
+      let(:gadget) { Spec::Gadget.new }
+
+      it 'should validate the gadget' do
+        expect(command.valid?(gadget)).to be false
       end
     end
   end

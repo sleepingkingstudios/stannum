@@ -116,7 +116,11 @@ module Stannum
 
           return result unless result == VALIDATION_SUCCESS
 
-          super(*arguments, **keywords, &block) if result
+          if keywords.empty?
+            super(*arguments, &block)
+          else
+            super(*arguments, **keywords, &block)
+          end
         end
       end
       # rubocop:enable Metrics/MethodLength

@@ -34,6 +34,155 @@ RSpec.describe Stannum::RSpec::ValidateParameterMatcher do
     end
   end
 
+  describe '.add_parameter_mapping' do
+    it 'should define the class method' do
+      expect(described_class)
+        .to respond_to(:add_parameter_mapping)
+        .with(0).arguments
+        .and_keywords(:map, :match)
+    end
+
+    describe 'with map: nil' do
+      let(:error_message) do
+        'map must be a Proc'
+      end
+
+      it 'should raise an exception' do
+        expect { described_class.add_parameter_mapping map: nil, match: -> {} }
+          .to raise_error ArgumentError, error_message
+      end
+    end
+
+    describe 'with map: an Object' do
+      let(:error_message) do
+        'map must be a Proc'
+      end
+
+      it 'should raise an exception' do
+        expect do
+          described_class.add_parameter_mapping(
+            map:   Object.new.freeze,
+            match: -> {}
+          )
+        end
+          .to raise_error ArgumentError, error_message
+      end
+    end
+
+    describe 'with match: nil' do
+      let(:error_message) do
+        'match must be a Proc'
+      end
+
+      it 'should raise an exception' do
+        expect { described_class.add_parameter_mapping map: -> {}, match: nil }
+          .to raise_error ArgumentError, error_message
+      end
+    end
+
+    describe 'with match: an Object' do
+      let(:error_message) do
+        'match must be a Proc'
+      end
+
+      it 'should raise an exception' do
+        expect do
+          described_class.add_parameter_mapping(
+            map:   -> {},
+            match: Object.new.freeze
+          )
+        end
+          .to raise_error ArgumentError, error_message
+      end
+    end
+  end
+
+  describe '.map_parameters' do
+    let(:actual) { Spec::ExampleCommand.new }
+    let(:parameters) do
+      described_class.map_parameters(actual: actual, method_name: method_name)
+    end
+    let(:expected) do
+      [
+        %i[req action],
+        %i[opt record_class],
+        %i[opt resource_id],
+        %i[keyreq user],
+        %i[key auth_token],
+        %i[key role],
+        %i[block callback]
+      ]
+    end
+
+    example_class 'Spec::ExampleCommand' do |klass|
+      klass.include Stannum::ParameterValidation
+
+      klass.define_method(:call) {}
+    end
+
+    it 'should define the class method' do
+      expect(described_class)
+        .to respond_to(:map_parameters)
+        .with(0).arguments
+        .and_keywords(:actual, :method_name)
+    end
+
+    describe 'with an unmapped method name' do
+      let(:method_name) { :call }
+
+      before(:example) do
+        Spec::ExampleCommand.define_method(:call, &implementation)
+
+        Spec::ExampleCommand.validate_parameters(:call) {}
+      end
+
+      it 'should return the superclass method parameters' do
+        expect(parameters).to be == expected
+      end
+    end
+
+    describe 'with a class and :new' do
+      let(:actual)      { Spec::ExampleCommand }
+      let(:method_name) { :new }
+
+      before(:example) do
+        Spec::ExampleCommand.define_method(:initialize, &implementation)
+      end
+
+      it 'should return the :initialize instance method parameters' do
+        expect(parameters).to be == expected
+      end
+    end
+
+    context 'when the matcher defines a parameter mapping' do
+      let(:method_name) { :call }
+
+      before(:example) do
+        Spec::ExampleCommand.define_method(:process, &implementation)
+      end
+
+      around(:example) do |example|
+        previous_mappings = described_class.send(:parameter_mappings).dup
+
+        described_class.add_parameter_mapping(
+          match: ->(method_name:, **_) { method_name == :call },
+          map:   ->(actual:, **_)      { actual.method(:process).parameters }
+        )
+
+        example.call
+      ensure
+        described_class.instance_variable_set(
+          :@parameter_mappings,
+          previous_mappings
+        )
+      end
+
+      it 'should return the :process method parameters' do
+        expect(parameters).to be == expected
+      end
+    end
+  end
+
   describe '#description' do
     let(:expected) do
       "validate the #{parameter_name.inspect} parameter"
@@ -379,6 +528,18 @@ RSpec.describe Stannum::RSpec::ValidateParameterMatcher do
     end
 
     shared_examples 'should validate the parameter' do
+      it 'should query the method parameters' do
+        allow(described_class).to receive(:map_parameters).and_call_original
+
+        matcher.matches?(actual)
+
+        expect(described_class)
+          .to have_received(:map_parameters)
+          .with(actual: actual, method_name: method_name)
+          .at_least(1).times
+          .at_most(2).times
+      end
+
       context 'when the method validation accepts nil values' do
         let(:failure_message) do
           super() +
