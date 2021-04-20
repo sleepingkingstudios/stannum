@@ -15,5 +15,13 @@ module Spec
     end
 
     constraint(:quantity) { |qty| qty.is_a?(Integer) && qty >= 0 }
+
+    def active?
+      !!@active
+    end
+
+    def activate!
+      @active = true
+    end
   end
 end

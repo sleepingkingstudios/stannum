@@ -32,8 +32,7 @@ module Stannum::RSpec
           return map.call(actual: actual, method_name: method_name)
         end
 
-        # Call #super_method to bypass the validation wrapper.
-        actual.method(method_name).super_method.parameters
+        unwrapped_method(actual: actual, method_name: method_name).parameters
       end
 
       private
@@ -53,6 +52,17 @@ module Stannum::RSpec
 
       def parameter_mappings
         @parameter_mappings ||= default_parameter_mappings
+      end
+
+      def unwrapped_method(actual:, method_name:)
+        method      = actual.method(method_name)
+        validations = Stannum::ParameterValidation::MethodValidations
+
+        until method.nil?
+          return method unless method.owner.is_a?(validations)
+
+          method = method.super_method
+        end
       end
     end
 

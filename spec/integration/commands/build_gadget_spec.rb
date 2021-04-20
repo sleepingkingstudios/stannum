@@ -8,6 +8,7 @@ require 'support/structs/factory'
 require 'support/structs/gadget'
 require 'support/structs/gizmo'
 
+# @note Integration spec for Stannum::ParameterValidation.
 RSpec.describe Spec::BuildGadget do
   include Stannum::RSpec::Matchers
 

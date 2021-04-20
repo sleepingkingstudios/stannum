@@ -14,12 +14,119 @@ RSpec.describe Stannum::ParameterValidation do
   end
 
   describe '::MethodValidations' do
-    subject { described_class.new }
+    subject(:validations) { described_class.new }
 
     let(:described_class) { Stannum::ParameterValidation::MethodValidations }
 
+    describe '#add_contract' do
+      let(:method_name) { :do_something }
+      let(:contract)    { Stannum::Contract.new }
+
+      it { expect(validations).to respond_to(:add_contract).with(2).arguments }
+
+      it 'should add the contract to the contracts' do
+        expect { validations.add_contract(method_name, contract) }
+          .to change(validations, :contracts)
+          .to(satisfy { |contracts| contracts[method_name] = contract })
+      end
+    end
+
     describe '#contracts' do
       include_examples 'should define reader', :contracts, -> { {} }
+
+      context 'when there is a contract defined' do
+        let(:method_name) { :do_something }
+        let(:contract)    { Stannum::Contract.new }
+        let(:expected)    { { method_name => contract } }
+
+        before(:example) do
+          validations.add_contract(method_name, contract)
+        end
+
+        it { expect(validations.contracts).to be == expected }
+      end
+
+      context 'with included validations from a parent class' do
+        let(:included) { described_class.new }
+
+        before(:example) do
+          validations.include(included)
+        end
+
+        context 'when there is a contract defined on the parent class' do
+          let(:parent_method_name) { :do_something_else }
+          let(:parent_contract)    { Stannum::Contract.new }
+          let(:expected)           { { parent_method_name => parent_contract } }
+
+          before(:example) do
+            included.add_contract(parent_method_name, parent_contract)
+          end
+
+          it { expect(validations.contracts).to be == expected }
+
+          it { expect(included.contracts).to be == expected }
+        end
+
+        context 'when there is a contract defined on the subclass' do
+          let(:method_name) { :do_something }
+          let(:contract)    { Stannum::Contract.new }
+          let(:expected)    { { method_name => contract } }
+
+          before(:example) do
+            validations.add_contract(method_name, contract)
+          end
+
+          it { expect(validations.contracts).to be == expected }
+
+          it { expect(included.contracts).to be == {} }
+        end
+
+        context 'when there are contracts defined on the parent class and' \
+                ' subclass' \
+        do
+          let(:method_name)        { :do_something }
+          let(:contract)           { Stannum::Contract.new }
+          let(:parent_method_name) { :do_something_else }
+          let(:parent_contract)    { Stannum::Contract.new }
+          let(:expected) do
+            {
+              method_name        => contract,
+              parent_method_name => parent_contract
+            }
+          end
+          let(:parent_expected) { { parent_method_name => parent_contract } }
+
+          before(:example) do
+            included.add_contract(parent_method_name, parent_contract)
+
+            validations.add_contract(method_name, contract)
+          end
+
+          it { expect(validations.contracts).to be == expected }
+
+          it { expect(included.contracts).to be == parent_expected }
+        end
+
+        context 'when the subclass overrides a contract defined on the' \
+                ' parent class' \
+        do
+          let(:method_name)        { :do_something }
+          let(:contract)           { Stannum::Contract.new }
+          let(:parent_contract)    { Stannum::Contract.new }
+          let(:expected)           { { method_name => contract } }
+          let(:parent_expected)    { { method_name => parent_contract } }
+
+          before(:example) do
+            included.add_contract(method_name, parent_contract)
+
+            validations.add_contract(method_name, contract)
+          end
+
+          it { expect(validations.contracts).to be == expected }
+
+          it { expect(included.contracts).to be == parent_expected }
+        end
+      end
     end
   end
 
@@ -47,6 +154,30 @@ RSpec.describe Stannum::ParameterValidation do
     it 'should define the ::MethodValidations constant' do
       expect(other::MethodValidations)
         .to be_a described_class::MethodValidations
+    end
+
+    it 'should initialize the contracts' do
+      expect(other::MethodValidations.contracts).to be == {}
+    end
+
+    it 'should add ::MethodValidations to ancestors' do
+      expect(other.ancestors).to include other::MethodValidations
+    end
+  end
+
+  describe '.inherited' do
+    let(:other) { Spec::ExampleSubclass }
+
+    example_class 'Spec::ExampleSubclass', 'Spec::ExampleClass'
+
+    it 'should define the ::MethodValidations constant' do
+      expect(other::MethodValidations)
+        .to be_a described_class::MethodValidations
+    end
+
+    it 'should not be the superclass validations constant' do
+      expect(other::MethodValidations)
+        .not_to be Spec::ExampleClass::MethodValidations
     end
 
     it 'should initialize the contracts' do
@@ -181,6 +312,346 @@ RSpec.describe Stannum::ParameterValidation do
             .with(*arguments, **keywords)
         end
         # rubocop:enable RSpec/SubjectStub
+      end
+    end
+
+    context 'with a subclass' do
+      let(:instance) { Spec::ExampleSubclass.new }
+
+      example_class 'Spec::ExampleSubclass', 'Spec::ExampleClass'
+
+      context 'with a validation on the parent class' do
+        it 'should add a parameters contract to ::MethodValidations' do
+          Spec::ExampleClass.validate_parameters(method_name, &validations)
+
+          expect(
+            Spec::ExampleSubclass::MethodValidations.contracts[method_name]
+          )
+            .to be_a Stannum::Contracts::ParametersContract
+        end
+
+        # rubocop:disable RSpec/NestedGroups
+        context 'when the method is called' do
+          let(:arguments) { %w[ichi ni san] }
+          let(:keywords)  { { one: 1, two: 2, three: 3 } }
+          let(:block)     { -> {} }
+          let(:match)     { true }
+          let(:errors)    { Stannum::Errors.new }
+          let(:contract) do
+            Spec::ExampleClass::MethodValidations.contracts[method_name]
+          end
+
+          before(:example) do
+            Spec::ExampleClass.validate_parameters(method_name, &validations)
+          end
+
+          it 'should call the contract' do
+            allow(contract).to receive(:match).and_return(match, errors)
+
+            begin
+              instance.send(method_name, *arguments, **keywords, &block)
+            rescue ArgumentError # rubocop:disable Lint/HandleExceptions
+              # Do nothing.
+            end
+
+            expect(contract)
+              .to have_received(:match)
+              .with(arguments: arguments, block: block, keywords: keywords)
+          end
+
+          context 'when the parameters do not match the contract' do
+            let(:expected_errors) do
+              Stannum::Contracts::ParametersContract
+                .new(&validations)
+                .errors_for(
+                  arguments: arguments,
+                  keywords:  keywords,
+                  block:     block
+                )
+            end
+
+            # rubocop:disable RSpec/SubjectStub
+            it 'should call the error handler' do
+              allow(instance).to receive(:handle_invalid_parameters)
+
+              instance.send(method_name, *arguments, **keywords, &block)
+
+              expect(instance)
+                .to have_received(:handle_invalid_parameters)
+                .with(errors: expected_errors, method_name: method_name)
+            end
+
+            it 'should not call the method implementation' do
+              allow(instance).to receive(:handle_invalid_parameters)
+              allow(instance).to receive(:inner_method)
+
+              instance.send(method_name, *arguments, **keywords, &block)
+
+              expect(instance).not_to have_received(:inner_method)
+            end
+            # rubocop:enable RSpec/SubjectStub
+
+            context 'when the subclass defines a custom handler' do
+              before(:example) do
+                Spec::ExampleClass.define_method(:handle_invalid_parameters) \
+                do |**_|
+                  :failure
+                end
+              end
+
+              it 'should call the custom handler' do
+                expect(
+                  instance.send(method_name, *arguments, **keywords, &block)
+                )
+                  .to be :failure
+              end
+            end
+          end
+
+          context 'when the parameters match the contract' do
+            let(:validations) do
+              lambda do
+                arguments :args,   String
+                keywords  :kwargs, Integer
+              end
+            end
+
+            # rubocop:disable RSpec/SubjectStub
+            it 'should call the method implementation' do
+              allow(instance).to receive(:inner_method)
+
+              instance.send(method_name, *arguments, **keywords, &block)
+
+              expect(instance).to have_received(:inner_method)
+                .with(*arguments, **keywords)
+            end
+            # rubocop:enable RSpec/SubjectStub
+          end
+        end
+        # rubocop:enable RSpec/NestedGroups
+      end
+
+      context 'with a validation on the subclass' do
+        it 'should add a parameters contract to ::MethodValidations' do
+          Spec::ExampleSubclass.validate_parameters(method_name, &validations)
+
+          expect(
+            Spec::ExampleSubclass::MethodValidations.contracts[method_name]
+          )
+            .to be_a Stannum::Contracts::ParametersContract
+        end
+
+        # rubocop:disable RSpec/NestedGroups
+        context 'when the method is called' do
+          let(:arguments) { %w[ichi ni san] }
+          let(:keywords)  { { one: 1, two: 2, three: 3 } }
+          let(:block)     { -> {} }
+          let(:match)     { true }
+          let(:errors)    { Stannum::Errors.new }
+          let(:contract) do
+            Spec::ExampleClass::MethodValidations.contracts[method_name]
+          end
+
+          before(:example) do
+            Spec::ExampleClass.validate_parameters(method_name, &validations)
+          end
+
+          it 'should call the contract' do
+            allow(contract).to receive(:match).and_return(match, errors)
+
+            begin
+              instance.send(method_name, *arguments, **keywords, &block)
+            rescue ArgumentError # rubocop:disable Lint/HandleExceptions
+              # Do nothing.
+            end
+
+            expect(contract)
+              .to have_received(:match)
+              .with(arguments: arguments, block: block, keywords: keywords)
+          end
+
+          context 'when the parameters do not match the contract' do
+            let(:expected_errors) do
+              Stannum::Contracts::ParametersContract
+                .new(&validations)
+                .errors_for(
+                  arguments: arguments,
+                  keywords:  keywords,
+                  block:     block
+                )
+            end
+
+            # rubocop:disable RSpec/SubjectStub
+            it 'should call the error handler' do
+              allow(instance).to receive(:handle_invalid_parameters)
+
+              instance.send(method_name, *arguments, **keywords, &block)
+
+              expect(instance)
+                .to have_received(:handle_invalid_parameters)
+                .with(errors: expected_errors, method_name: method_name)
+            end
+
+            it 'should not call the method implementation' do
+              allow(instance).to receive(:handle_invalid_parameters)
+              allow(instance).to receive(:inner_method)
+
+              instance.send(method_name, *arguments, **keywords, &block)
+
+              expect(instance).not_to have_received(:inner_method)
+            end
+            # rubocop:enable RSpec/SubjectStub
+
+            context 'when the subclass defines a custom handler' do
+              before(:example) do
+                Spec::ExampleClass.define_method(:handle_invalid_parameters) \
+                do |**_|
+                  :failure
+                end
+              end
+
+              it 'should call the custom handler' do
+                expect(
+                  instance.send(method_name, *arguments, **keywords, &block)
+                )
+                  .to be :failure
+              end
+            end
+          end
+
+          context 'when the parameters match the contract' do
+            let(:validations) do
+              lambda do
+                arguments :args,   String
+                keywords  :kwargs, Integer
+              end
+            end
+
+            # rubocop:disable RSpec/SubjectStub
+            it 'should call the method implementation' do
+              allow(instance).to receive(:inner_method)
+
+              instance.send(method_name, *arguments, **keywords, &block)
+
+              expect(instance).to have_received(:inner_method)
+                .with(*arguments, **keywords)
+            end
+            # rubocop:enable RSpec/SubjectStub
+          end
+        end
+        # rubocop:enable RSpec/NestedGroups
+      end
+
+      context 'with a validation on both the parent class and the subclass' do
+        it 'should add a parameters contract to ::MethodValidations' do
+          Spec::ExampleClass.validate_parameters(method_name) {}
+          Spec::ExampleSubclass.validate_parameters(method_name, &validations)
+
+          expect(
+            Spec::ExampleSubclass::MethodValidations.contracts[method_name]
+          )
+            .to be_a Stannum::Contracts::ParametersContract
+        end
+
+        # rubocop:disable RSpec/NestedGroups
+        context 'when the method is called' do
+          let(:arguments) { %w[ichi ni san] }
+          let(:keywords)  { { one: 1, two: 2, three: 3 } }
+          let(:block)     { -> {} }
+          let(:match)     { true }
+          let(:errors)    { Stannum::Errors.new }
+          let(:contract) do
+            Spec::ExampleClass::MethodValidations.contracts[method_name]
+          end
+
+          before(:example) do
+            Spec::ExampleClass.validate_parameters(method_name, &validations)
+          end
+
+          it 'should call the contract' do
+            allow(contract).to receive(:match).and_return(match, errors)
+
+            begin
+              instance.send(method_name, *arguments, **keywords, &block)
+            rescue ArgumentError # rubocop:disable Lint/HandleExceptions
+              # Do nothing.
+            end
+
+            expect(contract)
+              .to have_received(:match)
+              .with(arguments: arguments, block: block, keywords: keywords)
+          end
+
+          context 'when the parameters do not match the contract' do
+            let(:expected_errors) do
+              Stannum::Contracts::ParametersContract
+                .new(&validations)
+                .errors_for(
+                  arguments: arguments,
+                  keywords:  keywords,
+                  block:     block
+                )
+            end
+
+            # rubocop:disable RSpec/SubjectStub
+            it 'should call the error handler' do
+              allow(instance).to receive(:handle_invalid_parameters)
+
+              instance.send(method_name, *arguments, **keywords, &block)
+
+              expect(instance)
+                .to have_received(:handle_invalid_parameters)
+                .with(errors: expected_errors, method_name: method_name)
+            end
+
+            it 'should not call the method implementation' do
+              allow(instance).to receive(:handle_invalid_parameters)
+              allow(instance).to receive(:inner_method)
+
+              instance.send(method_name, *arguments, **keywords, &block)
+
+              expect(instance).not_to have_received(:inner_method)
+            end
+            # rubocop:enable RSpec/SubjectStub
+
+            context 'when the subclass defines a custom handler' do
+              before(:example) do
+                Spec::ExampleClass.define_method(:handle_invalid_parameters) \
+                do |**_|
+                  :failure
+                end
+              end
+
+              it 'should call the custom handler' do
+                expect(
+                  instance.send(method_name, *arguments, **keywords, &block)
+                )
+                  .to be :failure
+              end
+            end
+          end
+
+          context 'when the parameters match the contract' do
+            let(:validations) do
+              lambda do
+                arguments :args,   String
+                keywords  :kwargs, Integer
+              end
+            end
+
+            # rubocop:disable RSpec/SubjectStub
+            it 'should call the method implementation' do
+              allow(instance).to receive(:inner_method)
+
+              instance.send(method_name, *arguments, **keywords, &block)
+
+              expect(instance).to have_received(:inner_method)
+                .with(*arguments, **keywords)
+            end
+            # rubocop:enable RSpec/SubjectStub
+          end
+        end
+        # rubocop:enable RSpec/NestedGroups
       end
     end
   end

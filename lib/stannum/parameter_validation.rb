@@ -82,8 +82,24 @@ module Stannum
         @contracts = {}
       end
 
+      def add_contract(method_name, contract)
+        @contracts[method_name] = contract
+      end
+
       # @return [Hash] the validation contracts defined for the class.
-      attr_reader :contracts
+      def contracts
+        ancestors
+          .select do |ancestor|
+            ancestor.is_a? Stannum::ParameterValidation::MethodValidations
+          end
+          .map(&:own_contracts)
+          .reduce(:merge)
+      end
+
+      # @api private
+      def own_contracts
+        @contracts
+      end
     end
 
     # Defines a DSL for validating method parameters.
@@ -102,7 +118,7 @@ module Stannum
         method_name = method_name.intern
         contract    = Stannum::Contracts::ParametersContract.new(&validations)
 
-        self::MethodValidations.contracts[method_name] = contract
+        self::MethodValidations.add_contract(method_name, contract)
 
         self::MethodValidations.define_method(method_name) \
         do |*arguments, **keywords, &block|
@@ -124,11 +140,20 @@ module Stannum
         end
       end
       # rubocop:enable Metrics/MethodLength
+
+      private
+
+      def inherited(subclass)
+        super
+
+        Stannum::ParameterValidation.add_method_validations(subclass)
+
+        subclass::MethodValidations.include(self::MethodValidations)
+      end
     end
 
     class << self
-      private
-
+      # @api private
       def add_method_validations(other)
         other.extend(ClassMethods)
 
@@ -137,6 +162,8 @@ module Stannum
         other.const_set(:MethodValidations, validations)
         other.prepend(validations)
       end
+
+      private
 
       def extended(other)
         super
