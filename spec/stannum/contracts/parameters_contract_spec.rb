@@ -531,9 +531,14 @@ RSpec.describe Stannum::Contracts::ParametersContract do
 
   describe '#add_argument_constraint' do
     let(:arguments_contract) { contract.send(:arguments_contract) }
+    let(:expected) do
+      ary = [nil, String]
+
+      RUBY_VERSION < '2.7' ? ary << {} : ary
+    end
 
     before(:example) do
-      allow(arguments_contract).to receive(:add_index_constraint)
+      allow(arguments_contract).to receive(:add_argument_constraint)
     end
 
     it 'should define the method' do
@@ -545,198 +550,24 @@ RSpec.describe Stannum::Contracts::ParametersContract do
 
     it { expect(contract.add_argument_constraint(nil, String)).to be contract }
 
-    describe 'with index: nil' do
-      let(:expected) do
-        ary = [0, be_a_constraint]
+    it 'should delegate to the arguments contract' do
+      contract.add_argument_constraint(nil, String)
 
-        RUBY_VERSION < '2.7' ? ary << {} : ary
-      end
+      expect(arguments_contract)
+        .to have_received(:add_argument_constraint)
+        .with(*expected)
+    end
 
-      it 'should delegate to #add_index_constraint' do
-        contract.add_argument_constraint(nil, String)
+    describe 'with options' do
+      let(:options)  { { key: :value } }
+      let(:expected) { [nil, String] }
+
+      it 'should delegate to the arguments contract' do
+        contract.add_argument_constraint(nil, String, **options)
 
         expect(arguments_contract)
-          .to have_received(:add_index_constraint)
-          .with(*expected)
-      end
-    end
-
-    describe 'with index: an object' do
-      let(:error_message) { 'index must be an integer' }
-
-      it 'should raise an error' do
-        expect do
-          contract.add_argument_constraint(Object.new.freeze, String)
-        end
-          .to raise_error ArgumentError, error_message
-      end
-    end
-
-    describe 'with type: nil' do
-      let(:error_message) do
-        'type must be a Class or Module or a constraint'
-      end
-
-      it 'should raise an error' do
-        expect { contract.add_argument_constraint(nil, nil) }
-          .to raise_error ArgumentError, error_message
-      end
-    end
-
-    describe 'with type: an object' do
-      let(:error_message) do
-        'type must be a Class or Module or a constraint'
-      end
-
-      it 'should raise an error' do
-        expect { contract.add_argument_constraint(nil, Object.new.freeze) }
-          .to raise_error ArgumentError, error_message
-      end
-    end
-
-    describe 'with type: a class' do
-      let(:index)   { 0 }
-      let(:type)    { String }
-      let(:options) { {} }
-      let(:expected) do
-        ary = [
-          index,
-          be_a_constraint(Stannum::Constraints::Type)
-            .with_options(expected_type: type, required: true, **options)
-        ]
-
-        next ary << options unless options.empty?
-
-        RUBY_VERSION < '2.7' ? ary << {} : ary
-      end
-
-      it 'should delegate to #add_index_constraint' do
-        contract.add_argument_constraint(nil, type)
-
-        expect(arguments_contract)
-          .to have_received(:add_index_constraint)
-          .with(*expected)
-      end
-
-      describe 'with index: an integer' do
-        let(:index) { 2 }
-
-        it 'should delegate to #add_index_constraint' do
-          contract.add_argument_constraint(index, type)
-
-          expect(arguments_contract)
-            .to have_received(:add_index_constraint)
-            .with(*expected)
-        end
-      end
-
-      describe 'with options' do
-        let(:options) { { key: 'value' } }
-
-        it 'should delegate to #add_index_constraint' do
-          contract.add_argument_constraint(nil, type, **options)
-
-          expect(arguments_contract)
-            .to have_received(:add_index_constraint)
-            .with(*expected)
-        end
-      end
-
-      wrap_context 'when the contract has many argument constraints' do
-        let(:index) { 3 }
-
-        it 'should delegate to #add_index_constraint' do
-          contract.add_argument_constraint(nil, type)
-
-          expect(arguments_contract)
-            .to have_received(:add_index_constraint)
-            .with(*expected)
-        end
-
-        describe 'with index: value' do
-          let(:index) { 2 }
-
-          it 'should delegate to #add_index_constraint' do
-            contract.add_argument_constraint(index, type)
-
-            expect(arguments_contract)
-              .to have_received(:add_index_constraint)
-              .with(*expected)
-          end
-        end
-      end
-    end
-
-    describe 'with type: a constraint' do
-      let(:index)      { 0 }
-      let(:constraint) { Stannum::Constraints::Type.new(String) }
-      let(:options)    { {} }
-      let(:expected) do
-        ary = [
-          index,
-          be_a_constraint(Stannum::Constraints::Type)
-            .with_options(expected_type: String, required: true, **options)
-        ]
-
-        next ary << options unless options.empty?
-
-        RUBY_VERSION < '2.7' ? ary << {} : ary
-      end
-
-      it 'should delegate to #add_index_constraint' do
-        contract.add_argument_constraint(nil, constraint)
-
-        expect(arguments_contract)
-          .to have_received(:add_index_constraint)
-          .with(*expected)
-      end
-
-      describe 'with index: value' do
-        let(:index) { 2 }
-
-        it 'should delegate to #add_index_constraint' do
-          contract.add_argument_constraint(index, constraint)
-
-          expect(arguments_contract)
-            .to have_received(:add_index_constraint)
-            .with(*expected)
-        end
-      end
-
-      describe 'with options' do
-        let(:options) { { key: 'value' } }
-
-        it 'should delegate to #add_index_constraint' do
-          contract.add_argument_constraint(nil, constraint, **options)
-
-          expect(arguments_contract)
-            .to have_received(:add_index_constraint)
-            .with(*expected)
-        end
-      end
-
-      wrap_context 'when the contract has many argument constraints' do
-        let(:index) { 3 }
-
-        it 'should delegate to #add_index_constraint' do
-          contract.add_argument_constraint(nil, constraint)
-
-          expect(arguments_contract)
-            .to have_received(:add_index_constraint)
-            .with(*expected)
-        end
-
-        describe 'with index: value' do
-          let(:index) { 2 }
-
-          it 'should delegate to #add_index_constraint' do
-            contract.add_argument_constraint(index, constraint)
-
-            expect(arguments_contract)
-              .to have_received(:add_index_constraint)
-              .with(*expected)
-          end
-        end
+          .to have_received(:add_argument_constraint)
+          .with(*expected, **options)
       end
     end
   end
@@ -744,9 +575,14 @@ RSpec.describe Stannum::Contracts::ParametersContract do
   describe '#add_keyword_constraint' do
     let(:keyword)           { :option }
     let(:keywords_contract) { contract.send(:keywords_contract) }
+    let(:expected) do
+      ary = [keyword, String]
+
+      RUBY_VERSION < '2.7' ? ary << {} : ary
+    end
 
     before(:example) do
-      allow(keywords_contract).to receive(:add_key_constraint)
+      allow(keywords_contract).to receive(:add_keyword_constraint)
     end
 
     it 'should define the method' do
@@ -761,163 +597,24 @@ RSpec.describe Stannum::Contracts::ParametersContract do
         .to be contract
     end
 
-    describe 'with keyword: nil' do
-      let(:error_message) { 'keyword must be a symbol' }
+    it 'should delegate to the keywords_contract contract' do
+      contract.add_keyword_constraint(keyword, String)
 
-      it 'should raise an error' do
-        expect do
-          contract.add_keyword_constraint(nil, String)
-        end
-          .to raise_error ArgumentError, error_message
-      end
+      expect(keywords_contract)
+        .to have_received(:add_keyword_constraint)
+        .with(*expected)
     end
 
-    describe 'with keyword: an object' do
-      let(:error_message) { 'keyword must be a symbol' }
+    describe 'with options' do
+      let(:options)  { { key: :value } }
+      let(:expected) { [keyword, String] }
 
-      it 'should raise an error' do
-        expect do
-          contract.add_keyword_constraint(Object.new.freeze, String)
-        end
-          .to raise_error ArgumentError, error_message
-      end
-    end
-
-    describe 'with type: nil' do
-      let(:error_message) do
-        'type must be a Class or Module or a constraint'
-      end
-
-      it 'should raise an error' do
-        expect { contract.add_keyword_constraint(keyword, nil) }
-          .to raise_error ArgumentError, error_message
-      end
-    end
-
-    describe 'with type: an object' do
-      let(:error_message) do
-        'type must be a Class or Module or a constraint'
-      end
-
-      it 'should raise an error' do
-        expect { contract.add_keyword_constraint(keyword, Object.new.freeze) }
-          .to raise_error ArgumentError, error_message
-      end
-    end
-
-    describe 'with type: a class' do
-      let(:type)    { String }
-      let(:options) { {} }
-      let(:expected) do
-        ary = [
-          keyword,
-          be_a_constraint(Stannum::Constraints::Type)
-            .with_options(expected_type: type, required: true, **options)
-        ]
-
-        next ary << options unless options.empty?
-
-        RUBY_VERSION < '2.7' ? ary << {} : ary
-      end
-
-      it 'should delegate to #add_key_constraint' do
-        contract.add_keyword_constraint(keyword, type)
+      it 'should delegate to the keywords contract' do
+        contract.add_keyword_constraint(keyword, String, **options)
 
         expect(keywords_contract)
-          .to have_received(:add_key_constraint)
-          .with(*expected)
-      end
-
-      describe 'with options' do
-        let(:options) { { key: 'value' } }
-
-        it 'should delegate to #add_key_constraint' do
-          contract.add_keyword_constraint(keyword, type, **options)
-
-          expect(keywords_contract)
-            .to have_received(:add_key_constraint)
-            .with(*expected)
-        end
-      end
-
-      wrap_context 'when the contract has many keyword constraints' do
-        it 'should delegate to #add_key_constraint' do
-          contract.add_keyword_constraint(keyword, type)
-
-          expect(keywords_contract)
-            .to have_received(:add_key_constraint)
-            .with(*expected)
-        end
-
-        describe 'with options' do
-          let(:options) { { key: 'value' } }
-
-          it 'should delegate to #add_key_constraint' do
-            contract.add_keyword_constraint(keyword, type, **options)
-
-            expect(keywords_contract)
-              .to have_received(:add_key_constraint)
-              .with(*expected)
-          end
-        end
-      end
-    end
-
-    describe 'with type: a constraint' do
-      let(:constraint) { Stannum::Constraints::Type.new(String) }
-      let(:options)    { {} }
-      let(:expected) do
-        ary = [
-          keyword,
-          be_a_constraint(Stannum::Constraints::Type)
-            .with_options(expected_type: String, required: true, **options)
-        ]
-
-        next ary << options unless options.empty?
-
-        RUBY_VERSION < '2.7' ? ary << {} : ary
-      end
-
-      it 'should delegate to #add_key_constraint' do
-        contract.add_keyword_constraint(keyword, constraint)
-
-        expect(keywords_contract)
-          .to have_received(:add_key_constraint)
-          .with(*expected)
-      end
-
-      describe 'with options' do
-        let(:options) { { key: 'value' } }
-
-        it 'should delegate to #add_key_constraint' do
-          contract.add_keyword_constraint(keyword, constraint, **options)
-
-          expect(keywords_contract)
-            .to have_received(:add_key_constraint)
-            .with(*expected)
-        end
-      end
-
-      wrap_context 'when the contract has many keyword constraints' do
-        it 'should delegate to #add_key_constraint' do
-          contract.add_keyword_constraint(keyword, constraint)
-
-          expect(keywords_contract)
-            .to have_received(:add_key_constraint)
-            .with(*expected)
-        end
-
-        describe 'with options' do
-          let(:options) { { key: 'value' } }
-
-          it 'should delegate to #add_key_constraint' do
-            contract.add_keyword_constraint(keyword, constraint, **options)
-
-            expect(keywords_contract)
-              .to have_received(:add_key_constraint)
-              .with(*expected)
-          end
-        end
+          .to have_received(:add_keyword_constraint)
+          .with(*expected, **options)
       end
     end
   end

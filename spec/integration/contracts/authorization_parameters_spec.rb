@@ -1,9 +1,13 @@
 # frozen_string_literal: true
 
+require 'stannum/rspec/match_errors'
+
 require 'support/contracts/authorization_parameters'
 
 # @note Integration spec for Stannum::Contracts::ParametersContract.
 RSpec.describe Spec::AuthorizationParameters do
+  include Stannum::RSpec::Matchers
+
   subject(:contract) { described_class.new }
 
   describe '.new' do
@@ -33,7 +37,7 @@ RSpec.describe Spec::AuthorizationParameters do
         ]
       end
 
-      it { expect(errors).to be == expected_errors }
+      it { expect(errors).to match_errors(expected_errors) }
 
       it { expect(status).to be false }
     end
@@ -57,7 +61,7 @@ RSpec.describe Spec::AuthorizationParameters do
         ]
       end
 
-      it { expect(errors).to be == expected_errors }
+      it { expect(errors).to match_errors(expected_errors) }
 
       it { expect(status).to be false }
     end
@@ -81,7 +85,7 @@ RSpec.describe Spec::AuthorizationParameters do
         ]
       end
 
-      it { expect(errors).to be == expected_errors }
+      it { expect(errors).to match_errors(expected_errors) }
 
       it { expect(status).to be false }
     end
@@ -99,7 +103,7 @@ RSpec.describe Spec::AuthorizationParameters do
         ]
       end
 
-      it { expect(errors).to be == expected_errors }
+      it { expect(errors).to match_errors(expected_errors) }
 
       it { expect(status).to be false }
     end
@@ -115,7 +119,7 @@ RSpec.describe Spec::AuthorizationParameters do
             type:    Stannum::Constraints::Type::TYPE
           },
           {
-            data:    { required: false, type: Class },
+            data:    { required: true, type: Class },
             message: nil,
             path:    %i[arguments record_class],
             type:    Stannum::Constraints::Type::TYPE
@@ -123,7 +127,7 @@ RSpec.describe Spec::AuthorizationParameters do
         ]
       end
 
-      it { expect(errors).to be == expected_errors }
+      it { expect(errors).to match_errors(expected_errors) }
 
       it { expect(status).to be false }
     end
@@ -134,6 +138,24 @@ RSpec.describe Spec::AuthorizationParameters do
       it { expect(errors).to be == [] }
 
       it { expect(status).to be true }
+    end
+
+    describe 'with explicit nil arguments' do
+      let(:actual) { super().merge(arguments: [:process, nil]) }
+      let(:expected_errors) do
+        [
+          {
+            data:    { required: true, type: Class },
+            message: nil,
+            path:    %i[arguments record_class],
+            type:    Stannum::Constraints::Type::TYPE
+          }
+        ]
+      end
+
+      it { expect(errors).to match_errors(expected_errors) }
+
+      it { expect(status).to be false }
     end
 
     describe 'with all arguments' do
@@ -170,7 +192,7 @@ RSpec.describe Spec::AuthorizationParameters do
         ]
       end
 
-      it { expect(errors).to be == expected_errors }
+      it { expect(errors).to match_errors(expected_errors) }
 
       it { expect(status).to be false }
     end
@@ -188,7 +210,7 @@ RSpec.describe Spec::AuthorizationParameters do
         ]
       end
 
-      it { expect(errors).to be == expected_errors }
+      it { expect(errors).to match_errors(expected_errors) }
 
       it { expect(status).to be false }
     end
@@ -200,21 +222,21 @@ RSpec.describe Spec::AuthorizationParameters do
       let(:expected_errors) do
         [
           {
-            data:    { required: true, type: Spec::User },
+            data:    { required: true, type: String },
             message: nil,
-            path:    %i[keywords user],
+            path:    %i[keywords role],
             type:    Stannum::Constraints::Type::TYPE
           },
           {
-            data:    { required: false, type: String },
+            data:    { required: true, type: Spec::User },
             message: nil,
-            path:    %i[keywords role],
+            path:    %i[keywords user],
             type:    Stannum::Constraints::Type::TYPE
           }
         ]
       end
 
-      it { expect(errors).to be == expected_errors }
+      it { expect(errors).to match_errors(expected_errors) }
 
       it { expect(status).to be false }
     end
@@ -227,6 +249,31 @@ RSpec.describe Spec::AuthorizationParameters do
       it { expect(errors).to be == [] }
 
       it { expect(status).to be true }
+    end
+
+    describe 'with explicit nil keywords' do
+      let(:actual) do
+        super().merge(
+          keywords: {
+            role: nil,
+            user: Spec::User.new(name: 'Kevin Flynn')
+          }
+        )
+      end
+      let(:expected_errors) do
+        [
+          {
+            data:    { required: true, type: String },
+            message: nil,
+            path:    %i[keywords role],
+            type:    Stannum::Constraints::Type::TYPE
+          }
+        ]
+      end
+
+      it { expect(errors).to match_errors(expected_errors) }
+
+      it { expect(status).to be false }
     end
 
     describe 'with all keywords' do
@@ -275,7 +322,7 @@ RSpec.describe Spec::AuthorizationParameters do
         ]
       end
 
-      it { expect(errors).to be == expected_errors }
+      it { expect(errors).to match_errors(expected_errors) }
 
       it { expect(status).to be false }
     end
@@ -330,7 +377,7 @@ RSpec.describe Spec::AuthorizationParameters do
         ]
       end
 
-      it { expect(errors).to be == expected_errors }
+      it { expect(errors).to match_errors(expected_errors) }
 
       it { expect(status).to be false }
     end
@@ -370,7 +417,7 @@ RSpec.describe Spec::AuthorizationParameters do
             type:    Stannum::Constraints::Tuples::ExtraItems::NEGATED_TYPE
           },
           {
-            data:    { required: false, type: Class },
+            data:    { required: true, type: Class },
             message: nil,
             path:    %i[arguments record_class],
             type:    Stannum::Constraints::Type::NEGATED_TYPE
@@ -388,7 +435,7 @@ RSpec.describe Spec::AuthorizationParameters do
             type:    Stannum::Constraints::Hashes::ExtraKeys::NEGATED_TYPE
           },
           {
-            data:    { required: false, type: String },
+            data:    { required: true, type: String },
             message: nil,
             path:    %i[keywords role],
             type:    Stannum::Constraints::Type::NEGATED_TYPE
@@ -402,7 +449,7 @@ RSpec.describe Spec::AuthorizationParameters do
         ]
       end
 
-      it { expect(errors).to be == expected_errors }
+      it { expect(errors).to match_errors(expected_errors) }
 
       it { expect(status).to be false }
     end
@@ -447,7 +494,7 @@ RSpec.describe Spec::AuthorizationParameters do
             type:    Stannum::Constraints::Type::NEGATED_TYPE
           },
           {
-            data:    { required: false, type: Class },
+            data:    { required: true, type: Class },
             message: nil,
             path:    %i[arguments record_class],
             type:    Stannum::Constraints::Type::NEGATED_TYPE
@@ -465,7 +512,7 @@ RSpec.describe Spec::AuthorizationParameters do
             type:    Stannum::Constraints::Hashes::ExtraKeys::NEGATED_TYPE
           },
           {
-            data:    { required: false, type: String },
+            data:    { required: true, type: String },
             message: nil,
             path:    %i[keywords role],
             type:    Stannum::Constraints::Type::NEGATED_TYPE
@@ -485,7 +532,7 @@ RSpec.describe Spec::AuthorizationParameters do
         ]
       end
 
-      it { expect(errors).to be == expected_errors }
+      it { expect(errors).to match_errors(expected_errors) }
 
       it { expect(status).to be false }
     end

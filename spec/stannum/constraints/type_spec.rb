@@ -197,6 +197,38 @@ RSpec.describe Stannum::Constraints::Type do
   describe '#with_options' do
     let(:copy) { subject.with_options(**options) }
 
+    describe 'with empty options' do
+      let(:options) { {} }
+
+      context 'when the constraint is optional' do
+        let(:constructor_options) { { required: false } }
+
+        it { expect(copy.options[:required]).to be false }
+      end
+
+      context 'when the constraint is required' do
+        let(:constructor_options) { { required: true } }
+
+        it { expect(copy.options[:required]).to be true }
+      end
+    end
+
+    describe 'with key: value' do
+      let(:options) { { key: :value } }
+
+      context 'when the constraint is optional' do
+        let(:constructor_options) { { required: false } }
+
+        it { expect(copy.options[:required]).to be false }
+      end
+
+      context 'when the constraint is required' do
+        let(:constructor_options) { { required: true } }
+
+        it { expect(copy.options[:required]).to be true }
+      end
+    end
+
     describe 'with optional: false' do
       let(:options) { { optional: false } }
 

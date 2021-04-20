@@ -9,6 +9,7 @@ require 'support/examples'
 module Spec::Support::Examples
   module ConstraintExamples
     extend RSpec::SleepingKingStudios::Concerns::SharedExampleGroup
+    include Stannum::RSpec::Matchers
 
     shared_examples 'should implement the Constraint interface' do
       describe '#does_not_match?' do

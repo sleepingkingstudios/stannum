@@ -30,7 +30,11 @@ module Stannum::RSpec
     def does_not_match?(actual)
       @actual = actual.is_a?(Stannum::Errors) ? actual.to_a : actual
 
-      errors? && deep_matcher.does_not_match?(@actual)
+      errors? && equality_matcher.does_not_match?(@actual)
+    rescue NoMethodError
+      # :nocov:
+      errors? && !equality_matcher.matches?(@actual)
+      # :nocov:
     end
 
     # @return [String] a summary message describing a failed expectation.
@@ -40,7 +44,7 @@ module Stannum::RSpec
                ' object is not an array or Errors object'
       end
 
-      deep_matcher.failure_message
+      equality_matcher.failure_message
     end
 
     # @return [String] a summary message describing a failed negated
@@ -51,7 +55,7 @@ module Stannum::RSpec
                ' object is not an array or Errors object'
       end
 
-      deep_matcher.failure_message_when_negated
+      equality_matcher.failure_message_when_negated
     end
 
     # Checks that the given errors match the expected errors.
@@ -66,15 +70,20 @@ module Stannum::RSpec
     def matches?(actual)
       @actual = actual.is_a?(Stannum::Errors) ? actual.to_a : actual
 
-      errors? && deep_matcher.matches?(@actual)
+      errors? && equality_matcher.matches?(@actual)
     end
 
     private
 
-    def deep_matcher
-      @deep_matcher ||=
+    def equality_matcher
+      @equality_matcher ||=
         RSpec::SleepingKingStudios::Matchers::Core::DeepMatcher
         .new(@expected)
+    rescue NameError
+      # :nocov:
+      @equality_matcher ||=
+        RSpec::Matchers::BuiltIn::Eq.new(@expected_errors.to_a)
+      # :nocov:
     end
 
     def errors?

@@ -75,6 +75,8 @@ module Stannum::Constraints
 
     # (see Stannum::Constraints::Base#with_options)
     def with_options(**options)
+      options = options.merge(required_by_default: required?)
+
       super(**resolve_required_option(**options))
     end
 

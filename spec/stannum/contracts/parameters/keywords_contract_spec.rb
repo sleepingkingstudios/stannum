@@ -14,41 +14,99 @@ RSpec.describe Stannum::Contracts::Parameters::KeywordsContract do
       [
         {
           constraint: Stannum::Constraints::Presence.new,
-          options:    { property: 'name' }
+          options:    { property: :name }
         },
         {
           constraint: Stannum::Constraints::Presence.new,
-          options:    { property: 'size' }
+          options:    { property: :size }
         },
         {
           constraint: Stannum::Constraints::Type.new(Integer),
-          options:    { property: 'mass' }
+          options:    { property: :mass }
         }
       ]
     end
     let(:definitions) do
       constraints.map do |definition|
-        Stannum::Contracts::Definition.new(
+        options = definition.fetch(:options, {})
+
+        be_a_constraint_definition(
           constraint: definition[:constraint],
           contract:   contract,
-          options:    { property_type: :key, sanity: false }
-            .merge(definition.fetch(:options, {}))
+          options:    {
+            default:       false,
+            property_type: :key,
+            sanity:        false
+          }
+            .merge(options)
         )
       end
     end
     let(:expected_keys) do
-      Set.new(constraints.map { |hsh| hsh[:options][:property] })
+      Set.new(constraints.map { |hsh| hsh[:options][:property].intern })
     end
-    let(:constructor_block) do
-      constraint_definitions = constraints
 
-      lambda do
-        constraint_definitions.each do |definition|
-          options  = definition.fetch(:options).dup
-          property = options.delete(:property)
+    before(:example) do
+      constraints.each do |definition|
+        options  = definition.fetch(:options).dup
+        property = options.delete(:property)
 
-          key(property, definition[:constraint], **options)
-        end
+        contract.add_keyword_constraint(
+          property.intern,
+          definition[:constraint],
+          **options
+        )
+      end
+    end
+  end
+
+  shared_context 'when the contract has keyword constraints with defaults' do
+    let(:constraints) do
+      [
+        {
+          constraint: Stannum::Constraints::Presence.new,
+          options:    { property: :name }
+        },
+        {
+          constraint: Stannum::Constraints::Presence.new,
+          options:    { property: :size, default: true }
+        },
+        {
+          constraint: Stannum::Constraints::Type.new(Integer),
+          options:    { property: :mass, default: true }
+        }
+      ]
+    end
+    let(:definitions) do
+      constraints.map do |definition|
+        options = definition.fetch(:options, {})
+
+        be_a_constraint_definition(
+          constraint: definition[:constraint],
+          contract:   contract,
+          options:    {
+            default:       false,
+            property_type: :key,
+            sanity:        false
+          }
+            .merge(options)
+        )
+      end
+    end
+    let(:expected_keys) do
+      Set.new(constraints.map { |hsh| hsh[:options][:property].intern })
+    end
+
+    before(:example) do
+      constraints.each do |definition|
+        options  = definition.fetch(:options).dup
+        property = options.delete(:property)
+
+        contract.add_keyword_constraint(
+          property.intern,
+          definition[:constraint],
+          **options
+        )
       end
     end
   end
@@ -91,6 +149,10 @@ RSpec.describe Stannum::Contracts::Parameters::KeywordsContract do
       'stannum.constraints.parameters.extra_keywords'
   end
 
+  describe '::UNDEFINED' do
+    include_examples 'should define immutable constant', :UNDEFINED
+  end
+
   describe '.new' do
     it 'should define the constructor' do
       expect(described_class)
@@ -105,6 +167,247 @@ RSpec.describe Stannum::Contracts::Parameters::KeywordsContract do
   include_examples 'should implement the Constraint methods'
 
   include_examples 'should implement the Contract methods'
+
+  describe '#add_errors_for' do
+    describe 'with value: UNDEFINED' do
+      let(:value)      { described_class::UNDEFINED }
+      let(:errors)     { Stannum::Errors.new }
+      let(:options)    { {} }
+      let(:constraint) { Stannum::Constraints::Presence.new }
+      let(:definition) do
+        Stannum::Contracts::Definition.new(
+          constraint: constraint,
+          contract:   contract,
+          options:    options
+        )
+      end
+
+      it 'should add the errors from the constraint' do
+        expect(contract.send(:add_errors_for, definition, value, errors))
+          .to be == constraint.errors_for(nil)
+      end
+
+      it 'should delegate to the constraint with value: nil' do
+        allow(constraint).to receive(:update_errors_for)
+
+        contract.send(:add_errors_for, definition, value, errors)
+
+        expect(constraint)
+          .to have_received(:update_errors_for)
+          .with(actual: nil, errors: errors)
+      end
+    end
+  end
+
+  describe '#add_negated_errors_for' do
+    describe 'with value: UNDEFINED' do
+      let(:value)      { described_class::UNDEFINED }
+      let(:errors)     { Stannum::Errors.new }
+      let(:options)    { {} }
+      let(:constraint) { Stannum::Constraints::Presence.new }
+      let(:definition) do
+        Stannum::Contracts::Definition.new(
+          constraint: constraint,
+          contract:   contract,
+          options:    options
+        )
+      end
+
+      it 'should add the errors from the constraint' do
+        expect(
+          contract.send(:add_negated_errors_for, definition, value, errors)
+        )
+          .to be == constraint.negated_errors_for(nil)
+      end
+
+      it 'should delegate to the constraint with value: nil' do
+        allow(constraint).to receive(:update_negated_errors_for)
+
+        contract.send(:add_negated_errors_for, definition, value, errors)
+
+        expect(constraint)
+          .to have_received(:update_negated_errors_for)
+          .with(actual: nil, errors: errors)
+      end
+    end
+  end
+
+  describe '#add_keyword_constraint' do
+    let(:keyword)    { :option }
+    let(:definition) { contract.each_constraint.to_a.last }
+
+    it 'should define the method' do
+      expect(contract)
+        .to respond_to(:add_keyword_constraint)
+        .with(2).arguments
+        .and_keywords(:default, :sanity)
+        .and_any_keywords
+    end
+
+    it 'should return the contract' do
+      expect(contract.add_keyword_constraint(keyword, String)).to be contract
+    end
+
+    describe 'with default: false' do
+      let(:expected_constraint) do
+        be_a(Stannum::Constraints::Type).and(
+          have_attributes(expected_type: String)
+        )
+      end
+
+      it 'should add the constraint to the contract' do
+        expect do
+          contract.add_keyword_constraint(keyword, String, default: false)
+        end
+          .to change { contract.each_constraint.count }
+          .by(1)
+      end
+
+      it 'should store the contract' do # rubocop:disable RSpec/ExampleLength
+        contract.add_keyword_constraint(keyword, String, default: false)
+
+        expect(definition).to be_a_constraint_definition(
+          constraint: expected_constraint,
+          contract:   contract,
+          options:    {
+            default:       false,
+            property:      keyword,
+            property_type: :key,
+            sanity:        false
+          }
+        )
+      end
+    end
+
+    describe 'with default: true' do
+      let(:expected_constraint) do
+        be_a(Stannum::Constraints::Type).and(
+          have_attributes(expected_type: String)
+        )
+      end
+
+      it 'should add the constraint to the contract' do
+        expect do
+          contract.add_keyword_constraint(keyword, String, default: true)
+        end
+          .to change { contract.each_constraint.count }
+          .by(1)
+      end
+
+      it 'should store the contract' do # rubocop:disable RSpec/ExampleLength
+        contract.add_keyword_constraint(keyword, String, default: true)
+
+        expect(definition).to be_a_constraint_definition(
+          constraint: expected_constraint,
+          contract:   contract,
+          options:    {
+            default:       true,
+            property:      keyword,
+            property_type: :key,
+            sanity:        false
+          }
+        )
+      end
+    end
+
+    describe 'with keyword: nil' do
+      let(:error_message) { 'keyword must be a symbol' }
+
+      it 'should raise an error' do
+        expect do
+          contract.add_keyword_constraint(nil, String)
+        end
+          .to raise_error ArgumentError, error_message
+      end
+    end
+
+    describe 'with keyword: an object' do
+      let(:error_message) { 'keyword must be a symbol' }
+
+      it 'should raise an error' do
+        expect do
+          contract.add_keyword_constraint(Object.new.freeze, String)
+        end
+          .to raise_error ArgumentError, error_message
+      end
+    end
+
+    describe 'with type: nil' do
+      let(:error_message) do
+        'type must be a Class or Module or a constraint'
+      end
+
+      it 'should raise an error' do
+        expect { contract.add_keyword_constraint(keyword, nil) }
+          .to raise_error ArgumentError, error_message
+      end
+    end
+
+    describe 'with type: an object' do
+      let(:error_message) do
+        'type must be a Class or Module or a constraint'
+      end
+
+      it 'should raise an error' do
+        expect { contract.add_keyword_constraint(keyword, Object.new.freeze) }
+          .to raise_error ArgumentError, error_message
+      end
+    end
+
+    describe 'with type: a class' do
+      let(:expected_constraint) do
+        be_a(Stannum::Constraints::Type).and(
+          have_attributes(expected_type: Symbol)
+        )
+      end
+
+      it 'should add the constraint to the contract' do
+        expect { contract.add_keyword_constraint(keyword, Symbol) }
+          .to change { contract.each_constraint.count }
+          .by(1)
+      end
+
+      it 'should store the contract' do # rubocop:disable RSpec/ExampleLength
+        contract.add_keyword_constraint(keyword, Symbol)
+
+        expect(definition).to be_a_constraint_definition(
+          constraint: expected_constraint,
+          contract:   contract,
+          options:    {
+            default:       false,
+            property:      keyword,
+            property_type: :key,
+            sanity:        false
+          }
+        )
+      end
+    end
+
+    describe 'with type: a constraint' do
+      let(:constraint) { Stannum::Constraints::Type.new(String) }
+
+      it 'should add the constraint to the contract' do
+        expect { contract.add_keyword_constraint(keyword, constraint) }
+          .to change { contract.each_constraint.count }
+          .by(1)
+      end
+
+      it 'should store the contract' do # rubocop:disable RSpec/ExampleLength
+        contract.add_keyword_constraint(keyword, constraint)
+
+        expect(definition).to be_a_constraint_definition(
+          constraint: constraint,
+          contract:   contract,
+          options:    {
+            default:       false,
+            property:      keyword,
+            property_type: :key,
+            sanity:        false
+          }
+        )
+      end
+    end
+  end
 
   describe '#allow_extra_keys?' do
     include_examples 'should have predicate', :allow_extra_keys?, false
@@ -162,6 +465,7 @@ RSpec.describe Stannum::Contracts::Parameters::KeywordsContract do
         .to yield_successive_args(*expected)
     end
 
+    # rubocop:disable RSpec/RepeatedExampleGroupBody
     wrap_context 'when the contract has many keyword constraints' do
       let(:items_count) { definitions.count }
       let(:expected)    { builtin_definitions + definitions }
@@ -181,6 +485,26 @@ RSpec.describe Stannum::Contracts::Parameters::KeywordsContract do
       end
     end
 
+    wrap_context 'when the contract has keyword constraints with defaults' do
+      let(:items_count) { definitions.count }
+      let(:expected)    { builtin_definitions + definitions }
+
+      it { expect(contract.each_constraint.count).to be(2 + constraints.size) }
+
+      it 'should yield each definition' do
+        expect { |block| contract.each_constraint(&block) }
+          .to yield_successive_args(*expected)
+      end
+
+      wrap_context 'when the contract has a variadic keywords constraint' do
+        it 'should yield each definition' do
+          expect { |block| contract.each_constraint(&block) }
+            .to yield_successive_args(*expected)
+        end
+      end
+    end
+    # rubocop:enable RSpec/RepeatedExampleGroupBody
+
     wrap_context 'when the contract has a variadic keywords constraint' do
       it 'should yield each definition' do
         expect { |block| contract.each_constraint(&block) }
@@ -192,9 +516,9 @@ RSpec.describe Stannum::Contracts::Parameters::KeywordsContract do
   describe '#each_pair' do
     let(:actual) do
       {
-        'name' => 'Self-sealing Stem Bolt',
-        'mass' => 10,
-        'size' => 'Tiny'
+        name: 'Self-sealing Stem Bolt',
+        mass: 10,
+        size: 'Tiny'
       }
     end
     let(:expected_keys) { Set.new }
@@ -248,8 +572,10 @@ RSpec.describe Stannum::Contracts::Parameters::KeywordsContract do
 
     wrap_context 'when the contract has many keyword constraints' do
       let(:values) do
-        definitions.map do |definition|
-          contract.send(:map_value, actual, **definition.options)
+        constraints.map do |definition|
+          options = definition.fetch(:options, {}).merge(property_type: :key)
+
+          contract.send(:map_value, actual, **options)
         end
       end
       let(:expected) do
@@ -272,10 +598,321 @@ RSpec.describe Stannum::Contracts::Parameters::KeywordsContract do
       end
     end
 
+    wrap_context 'when the contract has keyword constraints with defaults' do
+      let(:values) do
+        constraints.map do |definition|
+          options  = definition.fetch(:options, {}).merge(property_type: :key)
+          property = options[:property]
+
+          next described_class::UNDEFINED unless actual.key?(property)
+
+          contract.send(:map_value, actual, **options)
+        end
+      end
+      let(:expected) do
+        builtin_definitions.zip(Array.new(builtin_definitions.size, actual)) +
+          definitions.zip(values)
+      end
+
+      describe 'with an empty hash' do
+        let(:actual) { {} }
+
+        it { expect(contract.each_pair(actual).count).to be(expected.size) }
+
+        it 'should yield each definition and the mapped property' do
+          expect { |block| contract.each_pair(actual, &block) }
+            .to yield_successive_args(*expected)
+        end
+
+        wrap_context 'when the contract has a variadic keywords constraint' do
+          it 'should yield each definition' do
+            expect { |block| contract.each_pair(actual, &block) }
+              .to yield_successive_args(*expected)
+          end
+        end
+      end
+
+      describe 'with a hash with required values' do
+        let(:actual) { { name: 'Self-sealing Stem Bolt' } }
+
+        it { expect(contract.each_pair(actual).count).to be(expected.size) }
+
+        it 'should yield each definition and the mapped property' do
+          expect { |block| contract.each_pair(actual, &block) }
+            .to yield_successive_args(*expected)
+        end
+
+        wrap_context 'when the contract has a variadic keywords constraint' do
+          it 'should yield each definition' do
+            expect { |block| contract.each_pair(actual, &block) }
+              .to yield_successive_args(*expected)
+          end
+        end
+      end
+
+      describe 'with a hash with required and optional values' do
+        it { expect(contract.each_pair(actual).count).to be(expected.size) }
+
+        it 'should yield each definition and the mapped property' do
+          expect { |block| contract.each_pair(actual, &block) }
+            .to yield_successive_args(*expected)
+        end
+
+        wrap_context 'when the contract has a variadic keywords constraint' do
+          it 'should yield each definition' do
+            expect { |block| contract.each_pair(actual, &block) }
+              .to yield_successive_args(*expected)
+          end
+        end
+      end
+    end
+
     wrap_context 'when the contract has a variadic keywords constraint' do
       it 'should yield each definition' do
         expect { |block| contract.each_pair(actual, &block) }
           .to yield_successive_args(*expected)
+      end
+    end
+  end
+
+  describe '#map_value' do
+    let(:actual) { Struct.new(:name).new('Alan Bradley') }
+
+    it { expect(contract.send(:map_value, actual)).to be actual }
+
+    it 'should return the property' do
+      expect(contract.send(:map_value, actual, property: :name))
+        .to be == actual.name
+    end
+
+    describe 'with property type: :key' do
+      let(:actual)  { { name: 'Self-sealing Stem Bolt' } }
+      let(:options) { { property: property, property_type: :key } }
+
+      context 'when the hash does not have the specified key' do
+        let(:property) { :mass }
+
+        it 'should return the indexed value' do
+          expect(contract.send(:map_value, actual, **options))
+            .to be == described_class::UNDEFINED
+        end
+      end
+
+      context 'when the hash has the specified key' do
+        let(:property) { :name }
+
+        it 'should return the indexed value' do
+          expect(contract.send(:map_value, actual, **options))
+            .to be == actual[property]
+        end
+      end
+    end
+  end
+
+  describe '#match' do
+    wrap_context 'when the contract has keyword constraints with defaults' do
+      let(:result) { contract.match(actual).first }
+      let(:errors) { contract.match(actual).last }
+
+      describe 'with an empty keywords hash' do
+        let(:actual) { {} }
+
+        it { expect(result).to be false }
+
+        it { expect(errors[:mass]).to be_empty }
+
+        it { expect(errors[:name]).not_to be_empty }
+
+        it { expect(errors[:size]).to be_empty }
+      end
+
+      describe 'with a keywords hash with required values' do
+        let(:actual) { { name: 'Self-sealing Stem Bolt' } }
+
+        it { expect(result).to be true }
+      end
+
+      describe 'with a keywords hash with required and optional values' do
+        let(:actual) do
+          {
+            name: 'Self-sealing Stem Bolt',
+            mass: 10,
+            size: 'Tiny'
+          }
+        end
+
+        it { expect(result).to be true }
+      end
+
+      describe 'with a keywords hash with explicit nils' do
+        let(:actual) do
+          {
+            name: 'Self-sealing Stem Bolt',
+            mass: nil,
+            size: nil
+          }
+        end
+
+        it { expect(result).to be false }
+
+        it { expect(errors[:mass]).not_to be_empty }
+
+        it { expect(errors[:name]).to be_empty }
+
+        it { expect(errors[:size]).not_to be_empty }
+      end
+    end
+  end
+
+  describe '#match_constraint' do
+    describe 'with value: UNDEFINED' do
+      let(:value)      { described_class::UNDEFINED }
+      let(:options)    { {} }
+      let(:constraint) { Stannum::Constraints::Presence.new }
+      let(:definition) do
+        Stannum::Contracts::Definition.new(
+          constraint: constraint,
+          options:    options
+        )
+      end
+
+      context 'when the constraint has default: false' do
+        it 'should match nil to the constraint' do
+          expect(contract.send(:match_constraint, definition, value))
+            .to be == constraint.matches?(nil)
+        end
+
+        it 'should delegate to the constraint' do
+          allow(constraint).to receive(:matches?)
+
+          contract.send(:match_constraint, definition, value)
+
+          expect(constraint).to have_received(:matches?).with(nil)
+        end
+      end
+
+      context 'when the constraint has default: true' do
+        let(:options) { { default: true } }
+
+        it 'should return true' do
+          expect(contract.send(:match_constraint, definition, value))
+            .to be true
+        end
+
+        it 'should not delegate to the constraint' do
+          allow(constraint).to receive(:matches?)
+
+          contract.send(:match_constraint, definition, value)
+
+          expect(constraint).not_to have_received(:matches?)
+        end
+      end
+    end
+  end
+
+  describe '#match_negated_constraint' do
+    describe 'with value: UNDEFINED' do
+      let(:value)      { described_class::UNDEFINED }
+      let(:options)    { {} }
+      let(:constraint) { Stannum::Constraints::Presence.new }
+      let(:definition) do
+        Stannum::Contracts::Definition.new(
+          constraint: constraint,
+          options:    options
+        )
+      end
+
+      context 'when the constraint has default: false' do
+        it 'should match nil to the constraint' do
+          expect(contract.send(:match_negated_constraint, definition, value))
+            .to be == constraint.does_not_match?(nil)
+        end
+
+        it 'should delegate to the constraint' do
+          allow(constraint).to receive(:does_not_match?)
+
+          contract.send(:match_negated_constraint, definition, value)
+
+          expect(constraint).to have_received(:does_not_match?).with(nil)
+        end
+      end
+
+      context 'when the constraint has default: true' do
+        let(:options) { { default: true } }
+
+        it 'should return false' do
+          expect(contract.send(:match_negated_constraint, definition, value))
+            .to be false
+        end
+
+        it 'should not delegate to the constraint' do
+          allow(constraint).to receive(:does_not_match?)
+
+          contract.send(:match_negated_constraint, definition, value)
+
+          expect(constraint).not_to have_received(:does_not_match?)
+        end
+      end
+    end
+  end
+
+  describe '#negated_match' do
+    wrap_context 'when the contract has keyword constraints with defaults' do
+      let(:result) { contract.negated_match(actual).first }
+      let(:errors) { contract.negated_match(actual).last }
+
+      describe 'with an empty keywords hash' do
+        let(:actual) { {} }
+
+        it { expect(result).to be false }
+      end
+
+      describe 'with a keywords hash with required values' do
+        let(:actual) { { name: 'Self-sealing Stem Bolt' } }
+
+        it { expect(result).to be false }
+
+        it { expect(errors[:mass]).not_to be_empty }
+
+        it { expect(errors[:name]).not_to be_empty }
+
+        it { expect(errors[:size]).not_to be_empty }
+      end
+
+      describe 'with a keywords hash with required and optional values' do
+        let(:actual) do
+          {
+            name: 'Self-sealing Stem Bolt',
+            mass: 10,
+            size: 'Tiny'
+          }
+        end
+
+        it { expect(result).to be false }
+
+        it { expect(errors[:mass]).not_to be_empty }
+
+        it { expect(errors[:name]).not_to be_empty }
+
+        it { expect(errors[:size]).not_to be_empty }
+      end
+
+      describe 'with a keywords hash with explicit nils' do
+        let(:actual) do
+          {
+            name: 'Self-sealing Stem Bolt',
+            mass: nil,
+            size: nil
+          }
+        end
+
+        it { expect(result).to be false }
+
+        it { expect(errors[:mass]).to be_empty }
+
+        it { expect(errors[:name]).not_to be_empty }
+
+        it { expect(errors[:size]).to be_empty }
       end
     end
   end
