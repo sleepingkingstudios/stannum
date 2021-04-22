@@ -14,6 +14,8 @@ module Stannum::RSpec
   class ValidateParameterMatcher # rubocop:disable Metrics/ClassLength
     include RSpec::Mocks::ExampleMethods
 
+    class InvalidParameterHandledError < StandardError; end
+
     class << self
       def add_parameter_mapping(map:, match:)
         raise ArgumentError, 'map must be a Proc'   unless map.is_a?(Proc)
@@ -233,6 +235,8 @@ module Stannum::RSpec
 
       mock_validation_handler do
         actual.send(method_name, *arguments, **keywords, &block)
+      rescue InvalidParameterHandledError # rubocop:disable Lint/HandleExceptions
+        # Do nothing.
       end
     rescue ArgumentError # rubocop:disable Lint/HandleExceptions
     end
@@ -335,6 +339,8 @@ module Stannum::RSpec
       allow(actual).to receive(:handle_invalid_parameters) do |keywords|
         @validation_handler_called = true
         @validation_errors         = keywords[:errors]
+
+        raise InvalidParameterHandledError
       end
 
       yield

@@ -1119,6 +1119,54 @@ RSpec.describe Stannum::RSpec::ValidateParameterMatcher do
 
       include_examples 'should validate the parameter'
     end
+
+    describe 'with a custom validation' do
+      let(:constraint)     { Stannum::Constraints::Presence.new }
+      let(:parameter_name) { :value }
+
+      before(:example) do
+        value_constraint = constraint
+
+        Spec::ExampleCommand.define_method(:call) do |value|
+          contract = Stannum::Contracts::ParametersContract.new do
+            argument :value, value_constraint
+          end
+
+          match_parameters_to_contract(
+            arguments:   [value],
+            contract:    contract,
+            method_name: :call
+          )
+
+          # :nocov:
+          raise 'Something went wrong.'
+          # :nocov:
+        end
+
+        Spec::ExampleCommand.validate_parameters :call do
+          argument :value, Object
+        end
+      end
+
+      it 'should query the method parameters' do
+        allow(described_class).to receive(:map_parameters).and_call_original
+
+        matcher.matches?(actual)
+
+        expect(described_class)
+          .to have_received(:map_parameters)
+          .with(actual: actual, method_name: method_name)
+          .at_least(1).times
+          .at_most(2).times
+      end
+
+      it { expect(matcher.matches?(actual)).to be true }
+
+      it 'should not call the method implementation' do
+        expect { matcher.matches?(actual) }
+          .not_to raise_error
+      end
+    end
   end
 
   describe '#method_name' do
