@@ -303,7 +303,7 @@ module Stannum::RSpec
     def matches_expected_error?
       return true unless expected_constraint
 
-      @expected_errors = expected_constraint.errors_for(actual)
+      @expected_errors = expected_constraint.errors_for(parameter_value)
 
       if @expected_errors.all? { |error| scoped_errors.include?(error) }
         return true

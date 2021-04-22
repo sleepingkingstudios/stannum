@@ -654,9 +654,11 @@ RSpec.describe Stannum::RSpec::ValidateParameterMatcher do
           let(:matcher) { super().using_constraint(constraint) }
 
           context 'when the errors do not match the expected errors' do
-            let(:constraint)          { Stannum::Constraints::Nothing.new }
+            let(:constraint)          { Spec::CustomConstraint.new }
             let(:expected_constraint) { constraint }
-            let(:expected_errors)     { expected_constraint.errors_for(actual) }
+            let(:expected_errors) do
+              expected_constraint.errors_for(parameter_value)
+            end
             let(:failure_message) do
               matcher =
                 RSpec::SleepingKingStudios::Matchers::Core::DeepMatcher
@@ -668,6 +670,14 @@ RSpec.describe Stannum::RSpec::ValidateParameterMatcher do
                 ", but the errors do not match:\n\n" +
                 matcher.failure_message
             end
+
+            example_class 'Spec::CustomConstraint', \
+              Stannum::Constraints::Nothing \
+              do |klass|
+                klass.define_method :update_errors_for do |actual:, errors:|
+                  errors.add(type, message: message, value: actual.class.name)
+                end
+              end
 
             it { expect(matcher.matches?(actual)).to be false }
 
