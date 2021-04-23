@@ -8,6 +8,7 @@ module Stannum
     autoload :Absence,   'stannum/constraints/absence'
     autoload :Anything,  'stannum/constraints/anything'
     autoload :Base,      'stannum/constraints/base'
+    autoload :Boolean,   'stannum/constraints/boolean'
     autoload :Delegator, 'stannum/constraints/delegator'
     autoload :Enum,      'stannum/constraints/enum'
     autoload :Hashes,    'stannum/constraints/hashes'
