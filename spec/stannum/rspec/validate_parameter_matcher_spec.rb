@@ -527,6 +527,40 @@ RSpec.describe Stannum::RSpec::ValidateParameterMatcher do
       end
     end
 
+    shared_examples 'should require the parameter is validated' \
+    do |unvalidated_parameter_name|
+      context 'when the method does not validate the parameter' do
+        let(:parameter_name) { unvalidated_parameter_name }
+        let(:failure_message) do
+          super() +
+            ", but ##{method_name} does not expect a"\
+            " #{parameter_name.inspect} #{parameter_type}"
+        end
+
+        it { expect(matcher.matches?(actual)).to be false }
+
+        include_examples 'should set the failure message'
+
+        context 'when the expected constraint is a constraint' do
+          let(:constraint) { Stannum::Constraint.new }
+          let(:matcher)    { super().using_constraint(constraint) }
+
+          it { expect(matcher.matches?(actual)).to be false }
+
+          include_examples 'should set the failure message'
+        end
+
+        context 'when the expected constraint is a type' do
+          let(:type)    { Struct }
+          let(:matcher) { super().using_constraint(type) }
+
+          it { expect(matcher.matches?(actual)).to be false }
+
+          include_examples 'should set the failure message'
+        end
+      end
+    end
+
     shared_examples 'should validate the parameter' do
       it 'should query the method parameters' do
         allow(described_class).to receive(:map_parameters).and_call_original
@@ -541,15 +575,37 @@ RSpec.describe Stannum::RSpec::ValidateParameterMatcher do
       end
 
       context 'when the method validation accepts nil values' do
-        let(:failure_message) do
-          super() +
-            ", but #{parameter_value.inspect} is a valid value for the" \
-            " #{parameter_name.inspect} #{parameter_type}"
+        let(:validations) { optional_validations }
+
+        it { expect(matcher.matches?(actual)).to be true }
+
+        context 'when the expected constraint is a constraint' do
+          let(:constraint) { Stannum::Constraint.new }
+          let(:matcher)    { super().using_constraint(constraint) }
+          let(:failure_message) do
+            super() +
+              ", but #{parameter_value.inspect} is a valid value for the" \
+              " #{parameter_name.inspect} #{parameter_type}"
+          end
+
+          it { expect(matcher.matches?(actual)).to be false }
+
+          include_examples 'should set the failure message'
         end
 
-        it { expect(matcher.matches?(actual)).to be false }
+        context 'when the expected constraint is a type' do
+          let(:type)    { Struct }
+          let(:matcher) { super().using_constraint(type) }
+          let(:failure_message) do
+            super() +
+              ", but #{parameter_value.inspect} is a valid value for the" \
+              " #{parameter_name.inspect} #{parameter_type}"
+          end
 
-        include_examples 'should set the failure message'
+          it { expect(matcher.matches?(actual)).to be false }
+
+          include_examples 'should set the failure message'
+        end
       end
 
       context 'when the method validation does not accept nil values' do
@@ -626,7 +682,8 @@ RSpec.describe Stannum::RSpec::ValidateParameterMatcher do
         end
       end
 
-      context 'when the method validation accepts the custom value' do
+      context 'when the method validation accepts the value' do
+        let(:validations)     { optional_validations }
         let(:matcher)         { super().with_value(parameter_value) }
         let(:parameter_value) { valid_value }
         let(:failure_message) do
@@ -640,7 +697,7 @@ RSpec.describe Stannum::RSpec::ValidateParameterMatcher do
         include_examples 'should set the failure message'
       end
 
-      context 'when the method validation does not accept the custom value' do
+      context 'when the method validation does not accept the value' do
         let(:matcher)         { super().with_value(parameter_value) }
         let(:parameter_value) { invalid_value }
         let(:validations)     { required_validations }
@@ -807,7 +864,8 @@ RSpec.describe Stannum::RSpec::ValidateParameterMatcher do
       let(:valid_value)       { String }
       let(:actual_type)       { Class }
       let(:actual_constraint) { Stannum::Constraints::Type.new(Class) }
-      let(:validations) do
+      let(:validations)       { -> {} }
+      let(:optional_validations) do
         lambda do
           argument :action,       Symbol
           argument :record_class, Class, optional: true
@@ -830,18 +888,8 @@ RSpec.describe Stannum::RSpec::ValidateParameterMatcher do
           .validate_parameters(method_name, &validations)
       end
 
-      context 'when the method does not validate the parameter' do
-        let(:parameter_name) { :resource_id }
-        let(:failure_message) do
-          super() +
-            ", but ##{method_name} does not expect a"\
-            " #{parameter_name.inspect} #{parameter_type}"
-        end
-
-        it { expect(matcher.matches?(actual)).to be false }
-
-        include_examples 'should set the failure message'
-      end
+      include_examples 'should require the parameter is validated',
+        :resource_id
 
       include_examples 'should validate the parameter'
     end
@@ -853,7 +901,8 @@ RSpec.describe Stannum::RSpec::ValidateParameterMatcher do
       let(:valid_value)       { 'admin' }
       let(:actual_type)       { String }
       let(:actual_constraint) { Stannum::Constraints::Type.new(String) }
-      let(:validations) do
+      let(:validations)       { -> {} }
+      let(:optional_validations) do
         lambda do
           keyword :role, String, optional: true
           keyword :user, Spec::ExampleUser
@@ -878,18 +927,8 @@ RSpec.describe Stannum::RSpec::ValidateParameterMatcher do
           .validate_parameters(method_name, &validations)
       end
 
-      context 'when the method does not validate the parameter' do
-        let(:parameter_name) { :auth_token }
-        let(:failure_message) do
-          super() +
-            ", but ##{method_name} does not expect a"\
-            " #{parameter_name.inspect} #{parameter_type}"
-        end
-
-        it { expect(matcher.matches?(actual)).to be false }
-
-        include_examples 'should set the failure message'
-      end
+      include_examples 'should require the parameter is validated',
+        :auth_token
 
       include_examples 'should validate the parameter'
     end
@@ -908,7 +947,8 @@ RSpec.describe Stannum::RSpec::ValidateParameterMatcher do
       let(:type_constraint) do
         Stannum::Constraints::Type.new(Proc)
       end
-      let(:validations) do
+      let(:validations) { -> {} }
+      let(:optional_validations) do
         lambda do
           argument :action, Symbol
 
@@ -950,7 +990,8 @@ RSpec.describe Stannum::RSpec::ValidateParameterMatcher do
       let(:valid_value)       { String }
       let(:actual_type)       { Class }
       let(:actual_constraint) { Stannum::Constraints::Type.new(Class) }
-      let(:validations) do
+      let(:validations)       { -> {} }
+      let(:optional_validations) do
         lambda do
           argument :action,       Symbol
           argument :record_class, Class, optional: true
@@ -969,18 +1010,8 @@ RSpec.describe Stannum::RSpec::ValidateParameterMatcher do
         Spec::ExampleCommand.validate_parameters(method_name, &validations)
       end
 
-      context 'when the method does not validate the parameter' do
-        let(:parameter_name) { :resource_id }
-        let(:failure_message) do
-          super() +
-            ", but ##{method_name} does not expect a"\
-            " #{parameter_name.inspect} #{parameter_type}"
-        end
-
-        it { expect(matcher.matches?(actual)).to be false }
-
-        include_examples 'should set the failure message'
-      end
+      include_examples 'should require the parameter is validated',
+        :resource_id
 
       include_examples 'should validate the parameter'
     end
@@ -991,7 +1022,8 @@ RSpec.describe Stannum::RSpec::ValidateParameterMatcher do
       let(:valid_value)       { 'admin' }
       let(:actual_type)       { String }
       let(:actual_constraint) { Stannum::Constraints::Type.new(String) }
-      let(:validations) do
+      let(:validations)       { -> {} }
+      let(:optional_validations) do
         lambda do
           keyword :role, String, optional: true
           keyword :user, Spec::ExampleUser
@@ -1012,18 +1044,8 @@ RSpec.describe Stannum::RSpec::ValidateParameterMatcher do
         Spec::ExampleCommand.validate_parameters(method_name, &validations)
       end
 
-      context 'when the method does not validate the parameter' do
-        let(:parameter_name) { :auth_token }
-        let(:failure_message) do
-          super() +
-            ", but ##{method_name} does not expect a"\
-            " #{parameter_name.inspect} #{parameter_type}"
-        end
-
-        it { expect(matcher.matches?(actual)).to be false }
-
-        include_examples 'should set the failure message'
-      end
+      include_examples 'should require the parameter is validated',
+        :auth_token
 
       include_examples 'should validate the parameter'
     end
@@ -1041,7 +1063,8 @@ RSpec.describe Stannum::RSpec::ValidateParameterMatcher do
       let(:type_constraint) do
         Stannum::Constraints::Type.new(Proc)
       end
-      let(:validations) do
+      let(:validations) { -> {} }
+      let(:optional_validations) do
         lambda do
           argument :action, Symbol
 
@@ -1081,7 +1104,8 @@ RSpec.describe Stannum::RSpec::ValidateParameterMatcher do
       let(:valid_value)       { String }
       let(:actual_type)       { Class }
       let(:actual_constraint) { Stannum::Constraints::Type.new(Class) }
-      let(:validations) do
+      let(:validations)       { -> {} }
+      let(:optional_validations) do
         lambda do
           argument :action,       Symbol
           argument :record_class, Class, optional: true
@@ -1104,28 +1128,19 @@ RSpec.describe Stannum::RSpec::ValidateParameterMatcher do
           .validate_parameters(method_name, &validations)
       end
 
-      context 'when the method does not validate the parameter' do
-        let(:parameter_name) { :resource_id }
-        let(:failure_message) do
-          super() +
-            ", but ##{method_name} does not expect a"\
-            " #{parameter_name.inspect} #{parameter_type}"
-        end
-
-        it { expect(matcher.matches?(actual)).to be false }
-
-        include_examples 'should set the failure message'
-      end
+      include_examples 'should require the parameter is validated',
+        :resource_id
 
       include_examples 'should validate the parameter'
     end
 
     describe 'with a custom validation' do
-      let(:constraint)     { Stannum::Constraints::Presence.new }
-      let(:parameter_name) { :value }
+      let(:actual_constraint) { Stannum::Constraints::Presence.new }
+      let(:parameter_name)    { :value }
+      let(:parameter_type)    { 'argument' }
 
       before(:example) do
-        value_constraint = constraint
+        value_constraint = actual_constraint
 
         Spec::ExampleCommand.define_method(:call) do |value|
           contract = Stannum::Contracts::ParametersContract.new do
@@ -1165,6 +1180,37 @@ RSpec.describe Stannum::RSpec::ValidateParameterMatcher do
       it 'should not call the method implementation' do
         expect { matcher.matches?(actual) }
           .not_to raise_error
+      end
+
+      context 'when the expected constraint is a constraint' do
+        let(:matcher) { super().using_constraint(constraint) }
+
+        context 'when the errors do not match the expected errors' do
+          let(:constraint)          { Stannum::Constraints::Nothing.new }
+          let(:expected_constraint) { constraint }
+          let(:expected_errors)     { expected_constraint.errors_for(actual) }
+          let(:failure_message) do
+            matcher =
+              RSpec::SleepingKingStudios::Matchers::Core::DeepMatcher
+              .new(expected_errors.to_a)
+
+            matcher.matches?(actual_constraint.errors_for(actual).to_a)
+
+            super() +
+              ", but the errors do not match:\n\n" +
+              matcher.failure_message
+          end
+
+          it { expect(matcher.matches?(actual)).to be false }
+
+          include_examples 'should set the failure message'
+        end
+
+        context 'when the errors match the expected errors' do
+          let(:constraint) { actual_constraint }
+
+          it { expect(matcher.matches?(actual)).to be true }
+        end
       end
     end
   end

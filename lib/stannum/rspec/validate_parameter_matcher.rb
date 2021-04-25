@@ -163,7 +163,7 @@ module Stannum::RSpec
     #
     # @return [true, false] true if the object validates the parameter,
     #   otherwise false.
-    def matches?(actual) # rubocop:disable Metrics/CyclomaticComplexity
+    def matches?(actual) # rubocop:disable Metrics/CyclomaticComplexity, Metrics/MethodLength, Metrics/PerceivedComplexity
       @actual         = actual
       @failure_reason = nil
 
@@ -171,6 +171,10 @@ module Stannum::RSpec
       return false unless responds_to_method?
       return false unless validates_method?
       return false unless method_has_parameter?
+
+      if @expected_constraint.nil? && @parameter_value.nil?
+        return validates_method_parameter?
+      end
 
       call_validated_method
 
@@ -417,15 +421,22 @@ module Stannum::RSpec
       end
     end
 
-    def validates_method_parameter?
-      case parameter_type
-      when :argument
-        validates_method_argument?
-      when :keyword
-        validates_method_keyword?
-      when :block
-        validates_method_block?
-      end
+    def validates_method_parameter? # rubocop:disable Metrics/MethodLength
+      validates_parameter =
+        case parameter_type
+        when :argument
+          validates_method_argument?
+        when :keyword
+          validates_method_keyword?
+        when :block
+          validates_method_block?
+        end
+
+      return true if validates_parameter
+
+      @failure_reason = :parameter_not_validated
+
+      false
     end
 
     def validation_contracts
