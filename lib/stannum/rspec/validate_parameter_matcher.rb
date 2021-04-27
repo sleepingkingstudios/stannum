@@ -84,6 +84,9 @@ module Stannum::RSpec
     # @return [String, Symbol] the name of the method with validated parameters.
     attr_reader :method_name
 
+    # @return [Hash] the configured parameters to match.
+    attr_reader :parameters
+
     # @return [String, Symbol] the name of the validated method parameter.
     attr_reader :parameter_name
 
@@ -135,7 +138,7 @@ module Stannum::RSpec
           "##{method_name} does not expect a #{parameter_name.inspect}" \
           " #{parameter_type}"
         when :valid_parameter_value
-          "#{parameter_value.inspect} is a valid value for the" \
+          "#{valid_value.inspect} is a valid value for the" \
           " #{parameter_name.inspect} #{parameter_type}"
         end
 
@@ -163,7 +166,7 @@ module Stannum::RSpec
     #
     # @return [true, false] true if the object validates the parameter,
     #   otherwise false.
-    def matches?(actual) # rubocop:disable Metrics/CyclomaticComplexity, Metrics/MethodLength, Metrics/PerceivedComplexity
+    def matches?(actual) # rubocop:disable Metrics/AbcSize, Metrics/CyclomaticComplexity, Metrics/MethodLength, Metrics/PerceivedComplexity
       @actual         = actual
       @failure_reason = nil
 
@@ -172,7 +175,7 @@ module Stannum::RSpec
       return false unless validates_method?
       return false unless method_has_parameter?
 
-      if @expected_constraint.nil? && @parameter_value.nil?
+      if @expected_constraint.nil? && @parameters.nil? && @parameter_value.nil?
         return validates_method_parameter?
       end
 
@@ -200,6 +203,29 @@ module Stannum::RSpec
       self
     end
 
+    # Specifies custom parameters to test.
+    #
+    # The matcher will pass if and only if the method fails validation with the
+    # specified parameters.
+    #
+    # @param arguments [Array] A list of arguments to test.
+    # @param keywords [Hash] A hash of keywords to test.
+    #
+    # @return [Stannum::RSpec::ValidateParameterMatcher] the matcher.
+    def with_parameters(*arguments, **keywords, &block)
+      if @parameter_value
+        raise 'cannot use both #with_parameters and #with_value'
+      end
+
+      @parameters = [
+        arguments,
+        keywords,
+        block
+      ]
+
+      self
+    end
+
     # Specifies an invalid value for the parameter.
     #
     # @param parameter_value [Object] The invalid value for the validated
@@ -207,6 +233,8 @@ module Stannum::RSpec
     #
     # @return [Stannum::RSpec::ValidateParameterMatcher] the matcher.
     def with_value(parameter_value)
+      raise 'cannot use both #with_parameters and #with_value' if @parameters
+
       @parameter_value = parameter_value
 
       self
@@ -223,8 +251,7 @@ module Stannum::RSpec
     def build_parameters
       case parameter_type
       when :argument
-        parameters       = method_parameters
-        @parameter_index = find_parameter_index(parameters)
+        @parameter_index = find_parameter_index(method_parameters)
 
         [[*Array.new(parameter_index, nil), parameter_value], {}, nil]
       when :keyword
@@ -235,7 +262,7 @@ module Stannum::RSpec
     end
 
     def call_validated_method
-      arguments, keywords, block = build_parameters
+      arguments, keywords, block = @parameters || build_parameters
 
       mock_validation_handler do
         actual.send(method_name, *arguments, **keywords, &block)
@@ -245,10 +272,16 @@ module Stannum::RSpec
     rescue ArgumentError # rubocop:disable Lint/HandleExceptions
     end
 
-    def disallow_fluent_options!
+    def disallow_fluent_options! # rubocop:disable Metrics/MethodLength
       unless @expected_constraint.nil?
         raise RuntimeError,
           '#does_not_match? with #using_constraint is not supported',
+          caller[1..-1]
+      end
+
+      unless @parameters.nil?
+        raise RuntimeError,
+          '#does_not_match? with #with_parameters is not supported',
           caller[1..-1]
       end
 
@@ -333,7 +366,8 @@ module Stannum::RSpec
     end
 
     def method_parameters
-      self.class.map_parameters(actual: actual, method_name: method_name)
+      @method_parameters ||=
+        self.class.map_parameters(actual: actual, method_name: method_name)
     end
 
     def mock_validation_handler
@@ -360,11 +394,12 @@ module Stannum::RSpec
       false
     end
 
-    def scoped_errors(indexed: false)
+    def scoped_errors(indexed: false) # rubocop:disable Metrics/MethodLength
       return [] if @validation_errors.nil?
 
       case parameter_type
       when :argument
+        @parameter_index ||= find_parameter_index(method_parameters)
         parameter_key = indexed ? parameter_index : parameter_name
 
         @validation_errors[:arguments][parameter_key]
@@ -389,6 +424,23 @@ module Stannum::RSpec
       @failure_reason = :valid_parameter_value
 
       true
+    end
+
+    def valid_value # rubocop:disable Metrics/MethodLength
+      return @parameter_value if @parameter_value
+
+      return nil unless @parameters
+
+      case parameter_type
+      when :argument
+        @parameter_index ||= find_parameter_index(method_parameters)
+
+        parameters[0][parameter_index]
+      when :keyword
+        parameters[1][parameter_name]
+      when :block
+        parameters[2]
+      end
     end
 
     def validates_method?
