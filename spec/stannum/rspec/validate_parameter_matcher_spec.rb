@@ -279,6 +279,18 @@ RSpec.describe Stannum::RSpec::ValidateParameterMatcher do
       end
     end
 
+    context 'when the matcher has expected parameters' do
+      let(:matcher) { super().with_parameters }
+      let(:error_message) do
+        '#does_not_match? with #with_parameters is not supported'
+      end
+
+      it 'should raise an exception' do
+        expect { matcher.does_not_match?(actual) }
+          .to raise_error RuntimeError, error_message
+      end
+    end
+
     context 'when the matcher has a parameter value' do
       let(:matcher) { super().with_value(Object.new.freeze) }
       let(:error_message) do
@@ -682,6 +694,111 @@ RSpec.describe Stannum::RSpec::ValidateParameterMatcher do
         end
       end
 
+      context 'when the method accepts the parameters' do
+        let(:validations) { optional_validations }
+        let(:matcher) do
+          super().with_parameters(
+            *invalid_parameters[:arguments],
+            **invalid_parameters[:keywords],
+            &invalid_parameters[:block]
+          )
+        end
+        let(:failure_message) do
+          super() +
+            ", but #{custom_value.inspect} is a valid value for the" \
+            " #{parameter_name.inspect} #{parameter_type}"
+        end
+
+        it { expect(matcher.matches?(actual)).to be false }
+
+        include_examples 'should set the failure message'
+      end
+
+      context 'when the method does not accept the parameters' do
+        let(:validations)     { required_validations }
+        let(:matcher)         { super().with_value(parameter_value) }
+
+        it { expect(matcher.matches?(actual)).to be true }
+
+        context 'when the expected constraint is a constraint' do
+          let(:matcher) { super().using_constraint(constraint) }
+
+          context 'when the errors do not match the expected errors' do
+            let(:constraint)          { Spec::CustomConstraint.new }
+            let(:expected_constraint) { constraint }
+            let(:expected_errors) do
+              expected_constraint.errors_for(parameter_value)
+            end
+            let(:failure_message) do
+              matcher =
+                RSpec::SleepingKingStudios::Matchers::Core::DeepMatcher
+                .new(expected_errors.to_a)
+
+              matcher.matches?(actual_constraint.errors_for(actual).to_a)
+
+              super() +
+                ", but the errors do not match:\n\n" +
+                matcher.failure_message
+            end
+
+            example_class 'Spec::CustomConstraint', \
+              Stannum::Constraints::Nothing \
+              do |klass|
+                klass.define_method :update_errors_for do |actual:, errors:|
+                  errors.add(type, message: message, value: actual.class.name)
+                end
+              end
+
+            it { expect(matcher.matches?(actual)).to be false }
+
+            include_examples 'should set the failure message'
+          end
+
+          context 'when the errors match the expected errors' do
+            let(:constraint) { actual_constraint }
+
+            it { expect(matcher.matches?(actual)).to be true }
+          end
+        end
+
+        context 'when the expected constraint is a type' do
+          let(:matcher) { super().using_constraint(type) }
+          let(:validations) do
+            defined?(type_validations) ? type_validations : required_validations
+          end
+          let(:actual_constraint) do
+            defined?(type_constraint) ? type_constraint : super()
+          end
+
+          context 'when the errors do not match the expected errors' do
+            let(:type)                { Struct }
+            let(:expected_constraint) { Stannum::Constraints::Type.new(type) }
+            let(:expected_errors)     { expected_constraint.errors_for(actual) }
+            let(:failure_message) do
+              matcher =
+                RSpec::SleepingKingStudios::Matchers::Core::DeepMatcher
+                .new(expected_errors.to_a)
+
+              matcher.matches?(actual_constraint.errors_for(actual).to_a)
+
+              super() +
+                ", but the errors do not match:\n\n" +
+                matcher.failure_message
+            end
+
+            it { expect(matcher.matches?(actual)).to be false }
+
+            include_examples 'should set the failure message'
+          end
+
+          context 'when the errors match the expected errors' do
+            let(:type) { actual_type }
+
+            it { expect(matcher.matches?(actual)).to be true }
+          end
+        end
+      end
+
       context 'when the method validation accepts the value' do
         let(:validations)     { optional_validations }
         let(:matcher)         { super().with_value(parameter_value) }
@@ -792,6 +909,15 @@ RSpec.describe Stannum::RSpec::ValidateParameterMatcher do
 
     let(:actual)         { Spec::ExampleCommand.new }
     let(:parameter_type) { 'parameter' }
+    let(:invalid_parameters) do
+      {
+        arguments: [:create],
+        keywords:  {
+          user: Spec::ExampleUser.new
+        },
+        block:     -> {}
+      }
+    end
     let(:failure_message) do
       "expected ##{method_name} to validate the #{parameter_name.inspect}" \
       " #{parameter_type}"
@@ -802,6 +928,8 @@ RSpec.describe Stannum::RSpec::ValidateParameterMatcher do
 
       klass.define_method(:call) {}
     end
+
+    example_class 'Spec::ExampleUser'
 
     it { expect(matcher).to respond_to(:matches?).with(1).argument }
 
@@ -862,6 +990,7 @@ RSpec.describe Stannum::RSpec::ValidateParameterMatcher do
       let(:parameter_type)    { 'argument' }
       let(:required_name)     { :action }
       let(:valid_value)       { String }
+      let(:custom_value)      { nil }
       let(:actual_type)       { Class }
       let(:actual_constraint) { Stannum::Constraints::Type.new(Class) }
       let(:validations)       { -> {} }
@@ -899,6 +1028,7 @@ RSpec.describe Stannum::RSpec::ValidateParameterMatcher do
       let(:parameter_name)    { :role }
       let(:parameter_type)    { 'keyword' }
       let(:valid_value)       { 'admin' }
+      let(:custom_value)      { nil }
       let(:actual_type)       { String }
       let(:actual_constraint) { Stannum::Constraints::Type.new(String) }
       let(:validations)       { -> {} }
@@ -914,8 +1044,6 @@ RSpec.describe Stannum::RSpec::ValidateParameterMatcher do
           keyword :user, Spec::ExampleUser
         end
       end
-
-      example_class 'Spec::ExampleUser'
 
       before(:example) do
         Spec::ExampleCommand.extend(Stannum::ParameterValidation)
@@ -939,6 +1067,7 @@ RSpec.describe Stannum::RSpec::ValidateParameterMatcher do
       let(:parameter_type)      { 'block' }
       let(:invalid_value)       { -> {} }
       let(:valid_value)         { ->(_) {} }
+      let(:custom_value)        { invalid_parameters[:block] }
       let(:invalid_typed_value) { nil }
       let(:actual_type)         { Proc }
       let(:actual_constraint) do
@@ -988,6 +1117,7 @@ RSpec.describe Stannum::RSpec::ValidateParameterMatcher do
       let(:parameter_type)    { 'argument' }
       let(:required_name)     { :action }
       let(:valid_value)       { String }
+      let(:custom_value)      { nil }
       let(:actual_type)       { Class }
       let(:actual_constraint) { Stannum::Constraints::Type.new(Class) }
       let(:validations)       { -> {} }
@@ -1020,6 +1150,7 @@ RSpec.describe Stannum::RSpec::ValidateParameterMatcher do
       let(:parameter_name)    { :role }
       let(:parameter_type)    { 'keyword' }
       let(:valid_value)       { 'admin' }
+      let(:custom_value)      { nil }
       let(:actual_type)       { String }
       let(:actual_constraint) { Stannum::Constraints::Type.new(String) }
       let(:validations)       { -> {} }
@@ -1035,8 +1166,6 @@ RSpec.describe Stannum::RSpec::ValidateParameterMatcher do
           keyword :user, Spec::ExampleUser
         end
       end
-
-      example_class 'Spec::ExampleUser'
 
       before(:example) do
         Spec::ExampleCommand.define_method(:call, &implementation)
@@ -1055,6 +1184,7 @@ RSpec.describe Stannum::RSpec::ValidateParameterMatcher do
       let(:parameter_type)      { 'block' }
       let(:invalid_value)       { -> {} }
       let(:valid_value)         { ->(_) {} }
+      let(:custom_value)        { invalid_parameters[:block] }
       let(:invalid_typed_value) { nil }
       let(:actual_type)         { Proc }
       let(:actual_constraint) do
@@ -1102,6 +1232,7 @@ RSpec.describe Stannum::RSpec::ValidateParameterMatcher do
       let(:parameter_type)    { 'argument' }
       let(:required_name)     { :action }
       let(:valid_value)       { String }
+      let(:custom_value)      { nil }
       let(:actual_type)       { Class }
       let(:actual_constraint) { Stannum::Constraints::Type.new(Class) }
       let(:validations)       { -> {} }
@@ -1219,6 +1350,10 @@ RSpec.describe Stannum::RSpec::ValidateParameterMatcher do
     include_examples 'should define reader', :method_name, -> { method_name }
   end
 
+  describe '#parameters' do
+    include_examples 'should define reader', :parameters, nil
+  end
+
   describe '#parameter_name' do
     include_examples 'should define reader',
       :parameter_name,
@@ -1312,6 +1447,43 @@ RSpec.describe Stannum::RSpec::ValidateParameterMatcher do
     end
   end
 
+  describe '#with_parameters' do
+    let(:arguments) { %w[ichi ni san] }
+    let(:keywords)  { { key: :value } }
+    let(:block)     { -> {} }
+
+    it 'should define the method' do
+      expect(matcher)
+        .to respond_to(:with_parameters)
+        .with_unlimited_arguments
+        .and_any_keywords
+        .and_a_block
+    end
+
+    it 'should return the matcher' do
+      expect(matcher.with_parameters(*arguments, **keywords, &block))
+        .to be matcher
+    end
+
+    it 'should set the parameters' do
+      expect { matcher.with_parameters(*arguments, **keywords, &block) }
+        .to change(matcher, :parameters)
+        .to be == [arguments, keywords, block]
+    end
+
+    context 'when the matcher has a parameter value' do
+      let(:matcher) { super().with_value(Object.new.freeze) }
+      let(:error_message) do
+        'cannot use both #with_parameters and #with_value'
+      end
+
+      it 'should raise an exception' do
+        expect { matcher.with_parameters(*arguments, **keywords, &block) }
+          .to raise_error RuntimeError, error_message
+      end
+    end
+  end
+
   describe '#with_value' do
     let(:parameter_value) { 'invalid value' }
 
@@ -1323,6 +1495,18 @@ RSpec.describe Stannum::RSpec::ValidateParameterMatcher do
       expect { matcher.with_value(parameter_value) }
         .to change(matcher, :parameter_value)
         .to be == parameter_value
+    end
+
+    context 'when the matcher has custom parameters' do
+      let(:matcher) { super().with_parameters }
+      let(:error_message) do
+        'cannot use both #with_parameters and #with_value'
+      end
+
+      it 'should raise an exception' do
+        expect { matcher.with_value(parameter_value) }
+          .to raise_error RuntimeError, error_message
+      end
     end
   end
 end
