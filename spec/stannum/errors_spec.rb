@@ -2201,7 +2201,7 @@ RSpec.describe Stannum::Errors do
 
       describe 'with strategy: value' do
         let(:strategy) do
-          lambda do |type, data|
+          lambda do |type, **data|
             "#{type}: #{data.inspect}"
           end
         end

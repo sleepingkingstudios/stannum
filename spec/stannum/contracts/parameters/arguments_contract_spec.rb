@@ -30,7 +30,7 @@ RSpec.describe Stannum::Contracts::Parameters::ArgumentsContract do
         options = definition.fetch(:options, {})
 
         be_a_constraint_definition(
-          constraint: definition[:constraint].with_options(options),
+          constraint: definition[:constraint].with_options(**options),
           contract:   contract,
           options:    {
             default:       false,
@@ -74,9 +74,11 @@ RSpec.describe Stannum::Contracts::Parameters::ArgumentsContract do
       constraints.map.with_index do |definition, index|
         options            = definition.fetch(:options, {})
         constraint_options = options.dup.tap { |hsh| hsh.delete(:default) }
+        constraint         =
+          definition[:constraint].with_options(**constraint_options)
 
         be_a_constraint_definition(
-          constraint: definition[:constraint].with_options(constraint_options),
+          constraint: constraint,
           contract:   contract,
           options:    {
             default:       false,
