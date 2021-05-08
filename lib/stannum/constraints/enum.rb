@@ -1,5 +1,7 @@
 # frozen_string_literal: true
 
+require 'set'
+
 require 'stannum/constraints/base'
 
 module Stannum::Constraints
