@@ -49,12 +49,15 @@ module Stannum::Constraints
 
     # Produces a shallow copy of the constraint.
     #
-    # @param freeze [true, false] If true, copies the frozen status of the
-    #   constraint. Defaults to true.
+    # @param freeze [true, false, nil] If true or false, sets the frozen status
+    #   of the cloned constraint; otherwise, copies the frozen status of the
+    #   original. Defaults to nil.
     #
     # @return [Stannum::Constraints::Base] the cloned constraint.
-    def clone(freeze: true)
-      super.copy_properties(self)
+    def clone(freeze: nil)
+      freeze = true if freeze.nil? && RUBY_VERSION <= '3.0.0'
+
+      super(freeze: freeze).copy_properties(self)
     end
 
     # Checks that the given object does not match the constraint.

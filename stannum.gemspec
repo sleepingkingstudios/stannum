@@ -26,12 +26,14 @@ Gem::Specification.new do |gem|
     'source_code_uri' => 'https://github.com/sleepingkingstudios/stannum'
   }
 
-  gem.require_path = 'lib'
-  gem.files        = Dir['config/locales/*', 'lib/**/*.rb', 'LICENSE', '*.md']
+  gem.required_ruby_version = '>= 2.6'
+  gem.require_path          = 'lib'
+  gem.files                 =
+    Dir['config/locales/*', 'lib/**/*.rb', 'LICENSE', '*.md']
 
-  gem.add_runtime_dependency 'sleeping_king_studios-tools', '~> 1.0'
+  gem.add_runtime_dependency 'sleeping_king_studios-tools', '~> 1.0', '>= 1.0.2'
 
-  gem.add_development_dependency 'simplecov', '~> 0.17'
+  gem.add_development_dependency 'simplecov', '~> 0.21'
   gem.add_development_dependency 'rspec', '~> 3.9'
   gem.add_development_dependency 'rspec-sleeping_king_studios', '~> 2.5'
   gem.add_development_dependency 'rubocop', '~> 0.76.0'
