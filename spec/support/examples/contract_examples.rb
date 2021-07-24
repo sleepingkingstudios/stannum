@@ -854,8 +854,8 @@ module Spec::Support::Examples
           expect(copy.send :constraints).to be == subject.send(:constraints)
         end
 
-        it 'should return the included contracts' do
-          expect(copy.send :included).to be == subject.send(:included)
+        it 'should return the concatenated contracts' do
+          expect(copy.send :concatenated).to be == subject.send(:concatenated)
         end
 
         it 'should duplicate the constraints' do
@@ -863,12 +863,12 @@ module Spec::Support::Examples
             .not_to(change { subject.send(:constraints) })
         end
 
-        it 'should duplicate the included contracts' do
+        it 'should duplicate the concatenated contracts' do
           contract = Stannum::Contracts::Base.new
           contract.add_constraint(Stannum::Constraints::Base.new)
 
           expect { copy.include(contract) }
-            .not_to(change { subject.send(:included) })
+            .not_to(change { subject.send(:concatenated) })
         end
       end
 
@@ -936,8 +936,8 @@ module Spec::Support::Examples
           expect(copy.send :constraints).to be == subject.send(:constraints)
         end
 
-        it 'should return the included contracts' do
-          expect(copy.send :included).to be == subject.send(:included)
+        it 'should return the concatenated contracts' do
+          expect(copy.send :concatenated).to be == subject.send(:concatenated)
         end
 
         it 'should duplicate the constraints' do
@@ -945,12 +945,12 @@ module Spec::Support::Examples
             .not_to(change { subject.send(:constraints) })
         end
 
-        it 'should duplicate the included contracts' do
+        it 'should duplicate the concatenated contracts' do
           contract = Stannum::Contracts::Base.new
           contract.add_constraint(Stannum::Constraints::Base.new)
 
           expect { copy.include(contract) }
-            .not_to(change { subject.send(:included) })
+            .not_to(change { subject.send(:concatenated) })
         end
       end
 
@@ -1426,8 +1426,8 @@ module Spec::Support::Examples
           expect(copy.send :constraints).to be == subject.send(:constraints)
         end
 
-        it 'should return the included contracts' do
-          expect(copy.send :included).to be == subject.send(:included)
+        it 'should return the concatenated contracts' do
+          expect(copy.send :concatenated).to be == subject.send(:concatenated)
         end
 
         it 'should duplicate the constraints' do
@@ -1435,12 +1435,12 @@ module Spec::Support::Examples
             .not_to(change { subject.send(:constraints) })
         end
 
-        it 'should duplicate the included contracts' do
+        it 'should duplicate the concatenated contracts' do
           contract = Stannum::Contracts::Base.new
           contract.add_constraint(Stannum::Constraints::Base.new)
 
           expect { copy.include(contract) }
-            .not_to(change { subject.send(:included) })
+            .not_to(change { subject.send(:concatenated) })
         end
       end
     end

@@ -122,10 +122,12 @@ RSpec.describe Stannum::Structs::Factory do
           .not_to be Spec::AncestorStruct::Contract
       end
 
-      it 'should include the parent ::Contract' do
+      it 'should concatenate the parent ::Contract' do
         factory.call(Spec::CustomStruct)
 
-        expect(Spec::CustomStruct::Contract.send(:each_included_contract).to_a)
+        expect(
+          Spec::CustomStruct::Contract.send(:each_concatenated_contract).to_a
+        )
           .to include(Spec::AncestorStruct::Contract)
       end
     end
