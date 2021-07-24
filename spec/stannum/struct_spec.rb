@@ -797,10 +797,6 @@ RSpec.describe Stannum::Struct do
   describe '.constraint' do
     let(:constraint) { Stannum::Constraint.new {} }
 
-    def attribute_constraints
-      described_class::Attributes::Contract.send(:each_constraint).to_a
-    end
-
     def constraints
       described_class::Contract.send(:each_constraint).to_a
     end
@@ -872,11 +868,6 @@ RSpec.describe Stannum::Struct do
         end
           .to yield_with_args(struct)
       end
-
-      it 'should not change the attribute constraints' do
-        expect { described_class.constraint('name') {} }
-          .not_to change(attribute_constraints, :to_a)
-      end
     end
 
     describe 'with attribute name: a String and a block' do
@@ -897,11 +888,6 @@ RSpec.describe Stannum::Struct do
           constraint.matches?(value)
         end
           .to yield_with_args(value)
-      end
-
-      it 'should not change the attribute constraints' do
-        expect { described_class.constraint('name') {} }
-          .not_to change(attribute_constraints, :to_a)
       end
     end
 
@@ -924,11 +910,6 @@ RSpec.describe Stannum::Struct do
         end
           .to yield_with_args(value)
       end
-
-      it 'should not change the attribute constraints' do
-        expect { described_class.constraint(:name) {} }
-          .not_to change(attribute_constraints, :to_a)
-      end
     end
 
     describe 'with attribute name: a String and constraint: a constraint' do
@@ -941,11 +922,6 @@ RSpec.describe Stannum::Struct do
               property:   :name
             )
           )
-      end
-
-      it 'should not change the attribute constraints' do
-        expect { described_class.constraint('name', constraint) }
-          .not_to change(attribute_constraints, :to_a)
       end
     end
 
@@ -960,11 +936,6 @@ RSpec.describe Stannum::Struct do
             )
           )
       end
-
-      it 'should not change the attribute constraints' do
-        expect { described_class.constraint(:name, constraint) }
-          .not_to change(attribute_constraints, :to_a)
-      end
     end
 
     describe 'with constraint: a constraint' do
@@ -977,11 +948,6 @@ RSpec.describe Stannum::Struct do
               property:   nil
             )
           )
-      end
-
-      it 'should not change the attribute constraints' do
-        expect { described_class.constraint(constraint) }
-          .not_to change(attribute_constraints, :to_a)
       end
     end
 
@@ -1002,11 +968,6 @@ RSpec.describe Stannum::Struct do
             constraint.matches?(struct)
           end
             .to yield_with_args(struct)
-        end
-
-        it 'should not change the attribute constraints' do
-          expect { described_class.constraint('name') {} }
-            .not_to change(attribute_constraints, :to_a)
         end
       end
 
@@ -1029,11 +990,6 @@ RSpec.describe Stannum::Struct do
           end
             .to yield_with_args(value)
         end
-
-        it 'should not change the attribute constraints' do
-          expect { described_class.constraint('name') {} }
-            .not_to change(attribute_constraints, :to_a)
-        end
       end
 
       describe 'with attribute name: a Symbol and a block' do
@@ -1055,11 +1011,6 @@ RSpec.describe Stannum::Struct do
           end
             .to yield_with_args(value)
         end
-
-        it 'should not change the attribute constraints' do
-          expect { described_class.constraint(:name) {} }
-            .not_to change(attribute_constraints, :to_a)
-        end
       end
 
       describe 'with attribute name: a String and constraint: a constraint' do
@@ -1072,11 +1023,6 @@ RSpec.describe Stannum::Struct do
                 property:   :name
               )
             )
-        end
-
-        it 'should not change the attribute constraints' do
-          expect { described_class.constraint('name', constraint) }
-            .not_to change(attribute_constraints, :to_a)
         end
       end
 
@@ -1091,11 +1037,6 @@ RSpec.describe Stannum::Struct do
               )
             )
         end
-
-        it 'should not change the attribute constraints' do
-          expect { described_class.constraint(:name, constraint) }
-            .not_to change(attribute_constraints, :to_a)
-        end
       end
 
       describe 'with constraint: a constraint' do
@@ -1108,11 +1049,6 @@ RSpec.describe Stannum::Struct do
                 property:   nil
               )
             )
-        end
-
-        it 'should not change the attribute constraints' do
-          expect { described_class.constraint(constraint) }
-            .not_to change(attribute_constraints, :to_a)
         end
       end
     end

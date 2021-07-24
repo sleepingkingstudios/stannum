@@ -14,9 +14,6 @@ module Stannum::Structs
 
     def initialize
       @attributes = {}
-      contract    = Stannum::Contracts::IndifferentHashContract.new
-
-      const_set(:Contract, contract)
     end
 
     # @!method each
@@ -55,13 +52,6 @@ module Stannum::Structs
       attributes.fetch(key.to_s)
     end
 
-    # Contract for validating a data hash against the attributes.
-    #
-    # @return [Stannum::Contract]
-    def contract
-      self::Contract
-    end
-
     # rubocop:disable Metrics/MethodLength
 
     # @api private
@@ -83,7 +73,6 @@ module Stannum::Structs
         raise ArgumentError, "attribute #{name.inspect} already exists"
       end
 
-      define_constraint(attribute)
       define_reader(attribute.name, attribute.reader_name)
       define_writer(attribute.name, attribute.writer_name, attribute.default)
 
@@ -118,19 +107,6 @@ module Stannum::Structs
         .reduce(&:merge)
     end
 
-    def define_constraint(attribute)
-      constraint = Stannum::Constraints::Type.new(
-        attribute.type,
-        required: attribute.required?
-      )
-
-      self::Contract.add_constraint(
-        constraint,
-        property:      attribute.reader_name,
-        property_type: :key
-      )
-    end
-
     def define_reader(attr_name, reader_name)
       define_method(reader_name) { @attributes[attr_name] }
     end
@@ -139,14 +115,6 @@ module Stannum::Structs
       define_method(writer_name) do |value|
         @attributes[attr_name] = value.nil? ? default_value : value
       end
-    end
-
-    def included(other)
-      super
-
-      return unless other.is_a?(Stannum::Structs::Attributes)
-
-      other::Contract.include(self::Contract)
     end
 
     def validate_key(key)

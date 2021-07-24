@@ -2,6 +2,8 @@
 
 ## Version 0.1
 
+- Remove Struct::Attributes::Contract
+  - To test if an attributes hash is valid, call new(attributes: attributes) and pass into Contract.
 - What happens to a frozen constraint? A frozen contract?
   - Should freezing a contract freeze its constraints? #deep_freeze ?
 
@@ -17,15 +19,6 @@
 ### Contracts
 
 - Refactor #include to #concat (avoids collision when implementing DSL).
-
-#### ::Builder
-
-- Implement #concat(contract):
-  ```ruby
-  contract = Stannum::Contract.new do
-    concat(OtherContract)
-  end
-  ```
 
 ### Documentation
 
@@ -50,17 +43,6 @@
     - overrides #type_constraint inner reader
 - Refactor Stannum::Structs::Attribute to Stannum::Attribute.
 - Refactor Stannum::Structs::Attributes to Stannum::Schema.
-
-### Errors
-
-- Implement #grouped_by_path
-  - Takes block argument - groups by yielded
-  - E.g. `errors.with_messages.grouped_by_path { |err| err[:message] }`
-
-### RSpec
-
-- MatchErrorsMatcher
-  - Internally, converts both errors to arrays and uses `deep_match`.
 
 ### Standardization
 
@@ -104,6 +86,15 @@
   - redefine IndifferentKey as subclass ?
 
 ### Contracts
+
+#### ::Builder
+
+- Implement #concat(contract):
+  ```ruby
+  contract = Stannum::Contract.new do
+    concat(OtherContract)
+  end
+  ```
 
 #### DSL
 
