@@ -105,8 +105,8 @@ module Stannum::Contracts
     # @param options [Hash<Symbol, Object>] Configuration options for the
     #   contract. Defaults to an empty Hash.
     def initialize(**options, &block)
-      @constraints = []
-      @included    = []
+      @constraints  = []
+      @concatenated = []
 
       super(**options)
 
@@ -220,8 +220,8 @@ module Stannum::Contracts
 
     # Iterates through the constraints defined for the contract.
     #
-    # Any constraints defined on included contracts are yielded, followed by any
-    # constraints defined on the contract itself.
+    # Any constraints defined on concatenated contracts are yielded, followed by
+    # any constraints defined on the contract itself.
     #
     # Each constraint is represented as a Stannum::Contracts::Definition, which
     # encapsulates the constraint, the original contract, and the options
@@ -235,10 +235,10 @@ module Stannum::Contracts
     #
     # @overload each_constraint
     #   @yieldparam definition [Stannum::Contracts::Definition] Each definition
-    #     from the contract or included contracts.
+    #     from the contract or concatenated contracts.
     #
+    # @see #concat
     # @see #each_pair
-    # @see #include
     def each_constraint
       return enum_for(:each_constraint) unless block_given?
 
@@ -276,7 +276,7 @@ module Stannum::Contracts
     #
     # @overload each_pair(actual)
     #   @yieldparam definition [Stannum::Contracts::Definition] Each definition
-    #     from the contract or included contracts.
+    #     from the contract or concatenated contracts.
     #   @yieldparam value [Object] The mapped value for that constraint.
     #
     # @see #each_constraint
@@ -292,11 +292,12 @@ module Stannum::Contracts
 
     # Include the constraints from the given other contract.
     #
-    # Merges the constraints from the included contract into the original. This
-    # is a dynamic process - if constraints are added to the included contract
-    # at a later point, they will also be added to the original. This is also
-    # recursive - including a contract will also merge the constraints from any
-    # contracts that were themselves included in the included contract.
+    # Merges the constraints from the concatenated contract into the original.
+    # This is a dynamic process - if constraints are added to the concatenated
+    # contract at a later point, they will also be added to the original. This
+    # is also recursive - concatenating a contract will also merge the
+    # constraints from any contracts that were themselves concatenated in the
+    # concatenated contract.
     #
     # There are two approaches for adding one contract to another. The first and
     # simplest is to take advantage of the fact that each contract is, itself, a
@@ -306,22 +307,22 @@ module Stannum::Contracts
     # constraints directly (such as the :allow_extra_keys functionality in
     # HashContract) will fail.
     #
-    # Including a contract in another is a much closer relationship. Each time
-    # the constraints on the original contract are enumerated, it will also
-    # yield the constraints from the included contract (and from any contracts
-    # that are included in that contract, recursively).
+    # Concatenating a contract in another is a much closer relationship. Each
+    # time the constraints on the original contract are enumerated, it will also
+    # yield the constraints from the concatenated contract (and from any
+    # contracts that are concatenated in that contract, recursively).
     #
     # To sum up, use #add_constraint when you want to constrain a property of
-    # the actual object with a contract. Use #include when you want to add more
+    # the actual object with a contract. Use #concat when you want to add more
     # constraints about the object itself.
     #
-    # @example Including A Contract
-    #   included_contract = Stannum::Contract.new
+    # @example Concatenating A Contract
+    #   concatenated_contract = Stannum::Contract.new
     #     .add_constraint(Stannum::Constraint.new { |int| int < 10 })
     #
     #   original_contract = Stannum::Contract.new
     #     .add_constraint(Stannum::Constraint.new { |int| int >= 0 })
-    #     .include(included_contract)
+    #     .concat(concatenated_contract)
     #
     #   original_contract.matches?(-1) #=> a failing result
     #   original_contract.matches?(0)  #=> a passing result
@@ -336,7 +337,7 @@ module Stannum::Contracts
     def include(other)
       validate_contract(other)
 
-      @included << other
+      @concatenated << other
 
       self
     end
@@ -457,9 +458,9 @@ module Stannum::Contracts
 
     protected
 
-    attr_accessor :constraints
+    attr_accessor :concatenated
 
-    attr_accessor :included
+    attr_accessor :constraints
 
     def add_errors_for(definition, value, errors)
       definition
@@ -484,8 +485,8 @@ module Stannum::Contracts
     def copy_properties(source, options: nil, **_)
       super
 
-      self.constraints = source.constraints.dup
-      self.included    = source.included.dup
+      self.constraints  = source.constraints.dup
+      self.concatenated = source.concatenated.dup
 
       self
     end
@@ -493,7 +494,7 @@ module Stannum::Contracts
     def each_unscoped_constraint
       return enum_for(:each_unscoped_constraint) unless block_given?
 
-      each_included_contract do |contract|
+      each_concatenated_contract do |contract|
         contract.each_constraint { |definition| yield definition }
       end
 
@@ -522,10 +523,10 @@ module Stannum::Contracts
       self.class::Builder.new(self).instance_exec(&block) if block_given?
     end
 
-    def each_included_contract
-      return enum_for(:each_included_contract) unless block_given?
+    def each_concatenated_contract
+      return enum_for(:each_concatenated_contract) unless block_given?
 
-      @included.each { |contract| yield contract }
+      @concatenated.each { |contract| yield contract }
     end
 
     def equal_definitions?(other) # rubocop:disable Metrics/AbcSize, Metrics/CyclomaticComplexity, Metrics/MethodLength, Metrics/PerceivedComplexity
