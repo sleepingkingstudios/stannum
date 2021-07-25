@@ -1,76 +1,36 @@
 # frozen_string_literal: true
 
-require 'stannum/constraints/methods'
+require 'stannum/constraints/signatures/tuple'
 
 require 'support/examples/constraint_examples'
 
-RSpec.describe Stannum::Constraints::Methods do
+RSpec.describe Stannum::Constraints::Signatures::Tuple do
   include Spec::Support::Examples::ConstraintExamples
 
-  subject(:constraint) do
-    described_class.new(*expected_methods, **constructor_options)
-  end
+  subject(:constraint) { described_class.new(**constructor_options) }
 
-  let(:expected_methods)    { %i[[] each size] }
   let(:constructor_options) { {} }
-  let(:expected_options)    { { expected_methods: expected_methods } }
+  let(:expected_options)    { { expected_methods: %i[[] each size] } }
 
   describe '::NEGATED_TYPE' do
     include_examples 'should define frozen constant',
       :NEGATED_TYPE,
-      'stannum.constraints.has_methods'
+      Stannum::Constraints::Signature::NEGATED_TYPE
+  end
 
+  describe '::TYPE' do
     include_examples 'should define frozen constant',
       :TYPE,
-      'stannum.constraints.does_not_have_methods'
+      Stannum::Constraints::Signature::TYPE
   end
 
   describe '.new' do
-    it 'should define the constructor' do
-      expect(described_class)
-        .to be_constructible
-        .with(1).argument
-        .and_unlimited_arguments
-        .and_any_keywords
-    end
-
-    describe 'with no arguments' do
-      let(:error_message) { "expected methods can't be blank" }
-
-      it 'should raise an error' do
-        expect { described_class.new }
-          .to raise_error(ArgumentError, error_message)
-      end
-    end
-
-    describe 'with nil' do
-      let(:error_message) { 'expected method must be a String or Symbol' }
-
-      it 'should raise an error' do
-        expect { described_class.new nil }
-          .to raise_error(ArgumentError, error_message)
-      end
-    end
-
-    describe 'with an Object' do
-      let(:error_message) { 'expected method must be a String or Symbol' }
-
-      it 'should raise an error' do
-        expect { described_class.new Object.new.freeze }
-          .to raise_error(ArgumentError, error_message)
-      end
-    end
+    it { expect(described_class).to be_constructible.with(0).arguments }
   end
 
   include_examples 'should implement the Constraint interface'
 
   include_examples 'should implement the Constraint methods'
-
-  describe '#expected_methods' do
-    include_examples 'should define reader',
-      :expected_methods,
-      -> { be == expected_methods }
-  end
 
   describe '#match' do
     let(:match_method) { :match }
@@ -81,8 +41,8 @@ RSpec.describe Stannum::Constraints::Methods do
         {
           type: described_class::TYPE,
           data: {
-            missing: expected_methods,
-            methods: expected_methods
+            missing: %i[[] each size],
+            methods: %i[[] each size]
           }
         }
       end
@@ -96,8 +56,8 @@ RSpec.describe Stannum::Constraints::Methods do
         {
           type: described_class::TYPE,
           data: {
-            missing: expected_methods,
-            methods: expected_methods
+            missing: %i[[] each size],
+            methods: %i[[] each size]
           }
         }
       end
@@ -112,7 +72,7 @@ RSpec.describe Stannum::Constraints::Methods do
           type: described_class::TYPE,
           data: {
             missing: %i[each size],
-            methods: expected_methods
+            methods: %i[[] each size]
           }
         }
       end
@@ -153,7 +113,7 @@ RSpec.describe Stannum::Constraints::Methods do
           type: described_class::NEGATED_TYPE,
           data: {
             missing: %i[each size],
-            methods: expected_methods
+            methods: %i[[] each size]
           }
         }
       end
@@ -172,7 +132,7 @@ RSpec.describe Stannum::Constraints::Methods do
           type: described_class::NEGATED_TYPE,
           data: {
             missing: %i[],
-            methods: expected_methods
+            methods: %i[[] each size]
           }
         }
       end

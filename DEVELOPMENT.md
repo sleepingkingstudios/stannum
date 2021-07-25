@@ -30,8 +30,6 @@
 
 ### Refactoring
 
-- Refactor Constraints::Methods to Constraints::Signature ?
-  - Refactor Map, Tuple constraints to Constraints::Signatures ?
 - Refactor Type constraints to include Type suffix ?
   - e.g. Array => ArrayType (avoid collision with core class!)
 - Harmonize HashContract, TupleContract.

@@ -25,7 +25,7 @@ RSpec.describe Spec::BaseballContract do
             },
             message: nil,
             path:    [],
-            type:    Stannum::Constraints::Types::Tuple::TYPE
+            type:    Stannum::Constraints::Signatures::Tuple::TYPE
           }
         ]
       end
@@ -193,7 +193,7 @@ RSpec.describe Spec::BaseballContract do
             },
             message: nil,
             path:    [],
-            type:    Stannum::Constraints::Types::Tuple::NEGATED_TYPE
+            type:    Stannum::Constraints::Signatures::Tuple::NEGATED_TYPE
           },
           {
             data:    {},
@@ -220,7 +220,7 @@ RSpec.describe Spec::BaseballContract do
             },
             message: nil,
             path:    [],
-            type:    Stannum::Constraints::Types::Tuple::NEGATED_TYPE
+            type:    Stannum::Constraints::Signatures::Tuple::NEGATED_TYPE
           },
           {
             data:    {},
@@ -253,7 +253,7 @@ RSpec.describe Spec::BaseballContract do
             },
             message: nil,
             path:    [],
-            type:    Stannum::Constraints::Types::Tuple::NEGATED_TYPE
+            type:    Stannum::Constraints::Signatures::Tuple::NEGATED_TYPE
           },
           {
             data:    {},
@@ -280,7 +280,7 @@ RSpec.describe Spec::BaseballContract do
             },
             message: nil,
             path:    [],
-            type:    Stannum::Constraints::Types::Tuple::NEGATED_TYPE
+            type:    Stannum::Constraints::Signatures::Tuple::NEGATED_TYPE
           },
           {
             data:    {},
@@ -319,7 +319,7 @@ RSpec.describe Spec::BaseballContract do
             },
             message: nil,
             path:    [],
-            type:    Stannum::Constraints::Types::Tuple::NEGATED_TYPE
+            type:    Stannum::Constraints::Signatures::Tuple::NEGATED_TYPE
           },
           {
             data:    {},
@@ -364,7 +364,7 @@ RSpec.describe Spec::BaseballContract do
             },
             message: nil,
             path:    [],
-            type:    Stannum::Constraints::Types::Tuple::NEGATED_TYPE
+            type:    Stannum::Constraints::Signatures::Tuple::NEGATED_TYPE
           },
           {
             data:    {},

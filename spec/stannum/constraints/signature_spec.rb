@@ -1,36 +1,76 @@
 # frozen_string_literal: true
 
-require 'stannum/constraints/types/tuple'
+require 'stannum/constraints/signature'
 
 require 'support/examples/constraint_examples'
 
-RSpec.describe Stannum::Constraints::Types::Tuple do
+RSpec.describe Stannum::Constraints::Signature do
   include Spec::Support::Examples::ConstraintExamples
 
-  subject(:constraint) { described_class.new(**constructor_options) }
+  subject(:constraint) do
+    described_class.new(*expected_methods, **constructor_options)
+  end
 
+  let(:expected_methods)    { %i[[] each size] }
   let(:constructor_options) { {} }
-  let(:expected_options)    { { expected_methods: %i[[] each size] } }
+  let(:expected_options)    { { expected_methods: expected_methods } }
 
   describe '::NEGATED_TYPE' do
     include_examples 'should define frozen constant',
       :NEGATED_TYPE,
-      Stannum::Constraints::Methods::NEGATED_TYPE
-  end
+      'stannum.constraints.has_methods'
 
-  describe '::TYPE' do
     include_examples 'should define frozen constant',
       :TYPE,
-      Stannum::Constraints::Methods::TYPE
+      'stannum.constraints.does_not_have_methods'
   end
 
   describe '.new' do
-    it { expect(described_class).to be_constructible.with(0).arguments }
+    it 'should define the constructor' do
+      expect(described_class)
+        .to be_constructible
+        .with(1).argument
+        .and_unlimited_arguments
+        .and_any_keywords
+    end
+
+    describe 'with no arguments' do
+      let(:error_message) { "expected methods can't be blank" }
+
+      it 'should raise an error' do
+        expect { described_class.new }
+          .to raise_error(ArgumentError, error_message)
+      end
+    end
+
+    describe 'with nil' do
+      let(:error_message) { 'expected method must be a String or Symbol' }
+
+      it 'should raise an error' do
+        expect { described_class.new nil }
+          .to raise_error(ArgumentError, error_message)
+      end
+    end
+
+    describe 'with an Object' do
+      let(:error_message) { 'expected method must be a String or Symbol' }
+
+      it 'should raise an error' do
+        expect { described_class.new Object.new.freeze }
+          .to raise_error(ArgumentError, error_message)
+      end
+    end
   end
 
   include_examples 'should implement the Constraint interface'
 
   include_examples 'should implement the Constraint methods'
+
+  describe '#expected_methods' do
+    include_examples 'should define reader',
+      :expected_methods,
+      -> { be == expected_methods }
+  end
 
   describe '#match' do
     let(:match_method) { :match }
@@ -41,8 +81,8 @@ RSpec.describe Stannum::Constraints::Types::Tuple do
         {
           type: described_class::TYPE,
           data: {
-            missing: %i[[] each size],
-            methods: %i[[] each size]
+            missing: expected_methods,
+            methods: expected_methods
           }
         }
       end
@@ -56,8 +96,8 @@ RSpec.describe Stannum::Constraints::Types::Tuple do
         {
           type: described_class::TYPE,
           data: {
-            missing: %i[[] each size],
-            methods: %i[[] each size]
+            missing: expected_methods,
+            methods: expected_methods
           }
         }
       end
@@ -72,7 +112,7 @@ RSpec.describe Stannum::Constraints::Types::Tuple do
           type: described_class::TYPE,
           data: {
             missing: %i[each size],
-            methods: %i[[] each size]
+            methods: expected_methods
           }
         }
       end
@@ -113,7 +153,7 @@ RSpec.describe Stannum::Constraints::Types::Tuple do
           type: described_class::NEGATED_TYPE,
           data: {
             missing: %i[each size],
-            methods: %i[[] each size]
+            methods: expected_methods
           }
         }
       end
@@ -132,7 +172,7 @@ RSpec.describe Stannum::Constraints::Types::Tuple do
           type: described_class::NEGATED_TYPE,
           data: {
             missing: %i[],
-            methods: %i[[] each size]
+            methods: expected_methods
           }
         }
       end

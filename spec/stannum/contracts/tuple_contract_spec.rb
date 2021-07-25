@@ -407,7 +407,7 @@ RSpec.describe Stannum::Contracts::TupleContract do
         an_instance_of(Stannum::Contracts::Definition).and(
           satisfy do |definition|
             expect(definition.constraint)
-              .to be_a Stannum::Constraints::Types::Tuple
+              .to be_a Stannum::Constraints::Signatures::Tuple
             expect(definition.sanity?).to be true
           end
         ),
@@ -440,7 +440,7 @@ RSpec.describe Stannum::Contracts::TupleContract do
           an_instance_of(Stannum::Contracts::Definition).and(
             satisfy do |definition|
               expect(definition.constraint)
-                .to be_a Stannum::Constraints::Types::Tuple
+                .to be_a Stannum::Constraints::Signatures::Tuple
               expect(definition.sanity?).to be true
             end
           )
@@ -472,7 +472,7 @@ RSpec.describe Stannum::Contracts::TupleContract do
             an_instance_of(Stannum::Contracts::Definition).and(
               satisfy do |definition|
                 expect(definition.constraint)
-                  .to be_a Stannum::Constraints::Types::Tuple
+                  .to be_a Stannum::Constraints::Signatures::Tuple
                 expect(definition.sanity?).to be true
               end
             )
@@ -504,7 +504,7 @@ RSpec.describe Stannum::Contracts::TupleContract do
             an_instance_of(Stannum::Contracts::Definition).and(
               satisfy do |definition|
                 expect(definition.constraint)
-                  .to be_a Stannum::Constraints::Types::Tuple
+                  .to be_a Stannum::Constraints::Signatures::Tuple
                 expect(definition.sanity?).to be true
               end
             )
@@ -530,7 +530,7 @@ RSpec.describe Stannum::Contracts::TupleContract do
         an_instance_of(Stannum::Contracts::Definition).and(
           satisfy do |definition|
             expect(definition.constraint)
-              .to be_a Stannum::Constraints::Types::Tuple
+              .to be_a Stannum::Constraints::Signatures::Tuple
             expect(definition.sanity?).to be true
           end
         ),
@@ -565,7 +565,7 @@ RSpec.describe Stannum::Contracts::TupleContract do
           an_instance_of(Stannum::Contracts::Definition).and(
             satisfy do |definition|
               expect(definition.constraint)
-                .to be_a Stannum::Constraints::Types::Tuple
+                .to be_a Stannum::Constraints::Signatures::Tuple
               expect(definition.sanity?).to be true
             end
           )
@@ -602,7 +602,7 @@ RSpec.describe Stannum::Contracts::TupleContract do
             an_instance_of(Stannum::Contracts::Definition).and(
               satisfy do |definition|
                 expect(definition.constraint)
-                  .to be_a Stannum::Constraints::Types::Tuple
+                  .to be_a Stannum::Constraints::Signatures::Tuple
                 expect(definition.sanity?).to be true
               end
             )
@@ -639,7 +639,7 @@ RSpec.describe Stannum::Contracts::TupleContract do
             an_instance_of(Stannum::Contracts::Definition).and(
               satisfy do |definition|
                 expect(definition.constraint)
-                  .to be_a Stannum::Constraints::Types::Tuple
+                  .to be_a Stannum::Constraints::Signatures::Tuple
                 expect(definition.sanity?).to be true
               end
             )

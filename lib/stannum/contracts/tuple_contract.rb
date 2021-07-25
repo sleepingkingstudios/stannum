@@ -199,7 +199,7 @@ module Stannum::Contracts
     end
 
     def add_type_constraint
-      add_constraint Stannum::Constraints::Types::Tuple.new, sanity: true
+      add_constraint Stannum::Constraints::Signatures::Tuple.new, sanity: true
     end
 
     def define_constraints(&block)

@@ -716,7 +716,7 @@ RSpec.describe Stannum::Contracts::HashContract do
           an_instance_of(Stannum::Contracts::Definition).and(
             satisfy do |definition|
               expect(definition.constraint)
-                .to be_a Stannum::Constraints::Types::Map
+                .to be_a Stannum::Constraints::Signatures::Map
               expect(definition.sanity?).to be true
             end
           ),
@@ -757,7 +757,7 @@ RSpec.describe Stannum::Contracts::HashContract do
           an_instance_of(Stannum::Contracts::Definition).and(
             satisfy do |definition|
               expect(definition.constraint)
-                .to be_a Stannum::Constraints::Types::Map
+                .to be_a Stannum::Constraints::Signatures::Map
               expect(definition.sanity?).to be true
             end
           ),
@@ -920,7 +920,7 @@ RSpec.describe Stannum::Contracts::HashContract do
           an_instance_of(Stannum::Contracts::Definition).and(
             satisfy do |definition|
               expect(definition.constraint)
-                .to be_a Stannum::Constraints::Types::Map
+                .to be_a Stannum::Constraints::Signatures::Map
               expect(definition.sanity?).to be true
             end
           ),
@@ -971,7 +971,7 @@ RSpec.describe Stannum::Contracts::HashContract do
           an_instance_of(Stannum::Contracts::Definition).and(
             satisfy do |definition|
               expect(definition.constraint)
-                .to be_a Stannum::Constraints::Types::Map
+                .to be_a Stannum::Constraints::Signatures::Map
               expect(definition.sanity?).to be true
             end
           ),

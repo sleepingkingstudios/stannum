@@ -408,7 +408,7 @@ RSpec.describe Spec::AuthorizationParameters do
             data:    { methods: %i[[] each size], missing: [] },
             message: nil,
             path:    %i[arguments],
-            type:    Stannum::Constraints::Methods::NEGATED_TYPE
+            type:    Stannum::Constraints::Signature::NEGATED_TYPE
           },
           {
             data:    {},
@@ -479,7 +479,7 @@ RSpec.describe Spec::AuthorizationParameters do
             data:    { methods: %i[[] each size], missing: [] },
             message: nil,
             path:    %i[arguments],
-            type:    Stannum::Constraints::Methods::NEGATED_TYPE
+            type:    Stannum::Constraints::Signature::NEGATED_TYPE
           },
           {
             data:    {},
