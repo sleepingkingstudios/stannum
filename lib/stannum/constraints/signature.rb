@@ -11,7 +11,7 @@ module Stannum::Constraints
   #   constraint.matches?(Object.new) #=> false
   #   constraint.matches?([])         #=> false
   #   constraint.matches?({})         #=> true
-  class Methods < Stannum::Constraints::Base
+  class Signature < Stannum::Constraints::Base
     # The :type of the error generated for a matching object.
     NEGATED_TYPE = 'stannum.constraints.has_methods'
 

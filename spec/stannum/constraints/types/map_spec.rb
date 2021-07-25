@@ -15,13 +15,13 @@ RSpec.describe Stannum::Constraints::Types::Map do
   describe '::NEGATED_TYPE' do
     include_examples 'should define frozen constant',
       :NEGATED_TYPE,
-      Stannum::Constraints::Methods::NEGATED_TYPE
+      Stannum::Constraints::Signature::NEGATED_TYPE
   end
 
   describe '::TYPE' do
     include_examples 'should define frozen constant',
       :TYPE,
-      Stannum::Constraints::Methods::TYPE
+      Stannum::Constraints::Signature::TYPE
   end
 
   describe '.new' do
@@ -144,7 +144,7 @@ RSpec.describe Stannum::Constraints::Types::Map do
   describe '#negated_type' do
     include_examples 'should define reader',
       :negated_type,
-      Stannum::Constraints::Methods::NEGATED_TYPE
+      Stannum::Constraints::Signature::NEGATED_TYPE
   end
 
   describe '#options' do
@@ -156,6 +156,6 @@ RSpec.describe Stannum::Constraints::Types::Map do
   describe '#type' do
     include_examples 'should define reader',
       :type,
-      Stannum::Constraints::Methods::TYPE
+      Stannum::Constraints::Signature::TYPE
   end
 end

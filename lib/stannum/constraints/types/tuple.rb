@@ -4,7 +4,7 @@ require 'stannum/constraints/types'
 
 module Stannum::Constraints::Types
   # Constraint for matching tuple-like objects.
-  class Tuple < Stannum::Constraints::Methods
+  class Tuple < Stannum::Constraints::Signature
     EXPECTED_METHODS = %i[[] each size].freeze
     private_constant :EXPECTED_METHODS
 

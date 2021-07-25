@@ -241,7 +241,7 @@ RSpec.describe Spec::RecipeParameters do
             data:    { methods: %i[[] each size], missing: [] },
             message: nil,
             path:    %i[arguments],
-            type:    Stannum::Constraints::Methods::NEGATED_TYPE
+            type:    Stannum::Constraints::Signature::NEGATED_TYPE
           },
           {
             data:    { allow_empty: true, required: true, type: Array },
@@ -309,7 +309,7 @@ RSpec.describe Spec::RecipeParameters do
             data:    { methods: %i[[] each size], missing: [] },
             message: nil,
             path:    %i[arguments],
-            type:    Stannum::Constraints::Methods::NEGATED_TYPE
+            type:    Stannum::Constraints::Signature::NEGATED_TYPE
           },
           {
             data:    { allow_empty: true, required: true, type: Array },
@@ -375,7 +375,7 @@ RSpec.describe Spec::RecipeParameters do
             data:    { methods: %i[[] each size], missing: [] },
             message: nil,
             path:    %i[arguments],
-            type:    Stannum::Constraints::Methods::NEGATED_TYPE
+            type:    Stannum::Constraints::Signature::NEGATED_TYPE
           },
           {
             data:    { allow_empty: true, required: true, type: Array },
@@ -451,7 +451,7 @@ RSpec.describe Spec::RecipeParameters do
             data:    { methods: %i[[] each size], missing: [] },
             message: nil,
             path:    %i[arguments],
-            type:    Stannum::Constraints::Methods::NEGATED_TYPE
+            type:    Stannum::Constraints::Signature::NEGATED_TYPE
           },
           {
             data:    { allow_empty: true, required: true, type: Array },
@@ -517,7 +517,7 @@ RSpec.describe Spec::RecipeParameters do
             data:    { methods: %i[[] each size], missing: [] },
             message: nil,
             path:    %i[arguments],
-            type:    Stannum::Constraints::Methods::NEGATED_TYPE
+            type:    Stannum::Constraints::Signature::NEGATED_TYPE
           },
           {
             data:    { allow_empty: true, required: true, type: Array },
@@ -576,7 +576,7 @@ RSpec.describe Spec::RecipeParameters do
             data:    { methods: %i[[] each size], missing: [] },
             message: nil,
             path:    %i[arguments],
-            type:    Stannum::Constraints::Methods::NEGATED_TYPE
+            type:    Stannum::Constraints::Signature::NEGATED_TYPE
           },
           {
             data:    { allow_empty: true, required: true, type: Array },
