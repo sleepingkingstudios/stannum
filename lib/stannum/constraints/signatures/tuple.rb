@@ -1,8 +1,8 @@
 # frozen_string_literal: true
 
-require 'stannum/constraints/types'
+require 'stannum/constraints/signatures'
 
-module Stannum::Constraints::Types
+module Stannum::Constraints::Signatures
   # Constraint for matching tuple-like objects.
   class Tuple < Stannum::Constraints::Signature
     EXPECTED_METHODS = %i[[] each size].freeze

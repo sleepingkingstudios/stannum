@@ -224,7 +224,7 @@ module Stannum::Contracts
 
     def add_type_constraint
       if options[:allow_hash_like]
-        add_constraint Stannum::Constraints::Types::Map.new, sanity: true
+        add_constraint Stannum::Constraints::Signatures::Map.new, sanity: true
       else
         add_constraint Stannum::Constraints::Types::Hash.new, sanity: true
       end

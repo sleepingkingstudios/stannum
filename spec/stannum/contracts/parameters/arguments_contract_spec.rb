@@ -504,7 +504,7 @@ RSpec.describe Stannum::Contracts::Parameters::ArgumentsContract do
     let(:builtin_definitions) do
       [
         be_a_constraint_definition(
-          constraint: be_a_constraint(Stannum::Constraints::Types::Tuple),
+          constraint: be_a_constraint(Stannum::Constraints::Signatures::Tuple),
           contract:   contract,
           options:    { property: nil, sanity: true }
         ),
@@ -593,7 +593,7 @@ RSpec.describe Stannum::Contracts::Parameters::ArgumentsContract do
     let(:builtin_definitions) do
       [
         be_a_constraint_definition(
-          constraint: be_a_constraint(Stannum::Constraints::Types::Tuple),
+          constraint: be_a_constraint(Stannum::Constraints::Signatures::Tuple),
           contract:   contract,
           options:    { property: nil, sanity: true }
         ),

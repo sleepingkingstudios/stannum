@@ -1,8 +1,8 @@
 # frozen_string_literal: true
 
-require 'stannum/constraints/types'
+require 'stannum/constraints/signatures'
 
-module Stannum::Constraints::Types
+module Stannum::Constraints::Signatures
   # Constraint for matching map-like objects.
   class Map < Stannum::Constraints::Signature
     EXPECTED_METHODS = %i[[] each keys].freeze

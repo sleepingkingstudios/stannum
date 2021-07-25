@@ -1,16 +1,16 @@
 # frozen_string_literal: true
 
-require 'stannum/constraints/types/map'
+require 'stannum/constraints/signatures/tuple'
 
 require 'support/examples/constraint_examples'
 
-RSpec.describe Stannum::Constraints::Types::Map do
+RSpec.describe Stannum::Constraints::Signatures::Tuple do
   include Spec::Support::Examples::ConstraintExamples
 
   subject(:constraint) { described_class.new(**constructor_options) }
 
   let(:constructor_options) { {} }
-  let(:expected_options)    { { expected_methods: %i[[] each keys] } }
+  let(:expected_options)    { { expected_methods: %i[[] each size] } }
 
   describe '::NEGATED_TYPE' do
     include_examples 'should define frozen constant',
@@ -41,8 +41,8 @@ RSpec.describe Stannum::Constraints::Types::Map do
         {
           type: described_class::TYPE,
           data: {
-            missing: %i[[] each keys],
-            methods: %i[[] each keys]
+            missing: %i[[] each size],
+            methods: %i[[] each size]
           }
         }
       end
@@ -56,8 +56,8 @@ RSpec.describe Stannum::Constraints::Types::Map do
         {
           type: described_class::TYPE,
           data: {
-            missing: %i[[] each keys],
-            methods: %i[[] each keys]
+            missing: %i[[] each size],
+            methods: %i[[] each size]
           }
         }
       end
@@ -66,18 +66,18 @@ RSpec.describe Stannum::Constraints::Types::Map do
     end
 
     describe 'with an object that responds to some of the methods' do
-      let(:actual) { Spec::Locked.new }
+      let(:actual) { Spec::Uncountable.new }
       let(:expected_errors) do
         {
           type: described_class::TYPE,
           data: {
-            missing: %i[each keys],
-            methods: %i[[] each keys]
+            missing: %i[each size],
+            methods: %i[[] each size]
           }
         }
       end
 
-      example_class 'Spec::Locked' do |klass|
+      example_class 'Spec::Uncountable' do |klass|
         klass.define_method(:[]) { nil }
       end
 
@@ -85,7 +85,7 @@ RSpec.describe Stannum::Constraints::Types::Map do
     end
 
     describe 'with an object that responds to all of the methods' do
-      let(:actual) { {} }
+      let(:actual) { [] }
 
       include_examples 'should match the constraint'
     end
@@ -107,18 +107,18 @@ RSpec.describe Stannum::Constraints::Types::Map do
     end
 
     describe 'with an object that responds to some of the methods' do
-      let(:actual) { Spec::Locked.new }
+      let(:actual) { Spec::Uncountable.new }
       let(:expected_errors) do
         {
           type: described_class::NEGATED_TYPE,
           data: {
-            missing: %i[each keys],
-            methods: %i[[] each keys]
+            missing: %i[each size],
+            methods: %i[[] each size]
           }
         }
       end
 
-      example_class 'Spec::Locked' do |klass|
+      example_class 'Spec::Uncountable' do |klass|
         klass.define_method(:[]) { nil }
       end
 
@@ -126,36 +126,18 @@ RSpec.describe Stannum::Constraints::Types::Map do
     end
 
     describe 'with an object that responds to all of the methods' do
-      let(:actual) { {} }
+      let(:actual) { [] }
       let(:expected_errors) do
         {
           type: described_class::NEGATED_TYPE,
           data: {
             missing: %i[],
-            methods: %i[[] each keys]
+            methods: %i[[] each size]
           }
         }
       end
 
       include_examples 'should not match the constraint'
     end
-  end
-
-  describe '#negated_type' do
-    include_examples 'should define reader',
-      :negated_type,
-      Stannum::Constraints::Signature::NEGATED_TYPE
-  end
-
-  describe '#options' do
-    let(:expected) { { expected_methods: %i[[] each keys] } }
-
-    include_examples 'should have reader', :options, -> { be == expected }
-  end
-
-  describe '#type' do
-    include_examples 'should define reader',
-      :type,
-      Stannum::Constraints::Signature::TYPE
   end
 end
