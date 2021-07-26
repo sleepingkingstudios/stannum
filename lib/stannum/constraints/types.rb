@@ -7,6 +7,7 @@ module Stannum::Constraints
   module Types
     autoload :ArrayType,      'stannum/constraints/types/array_type'
     autoload :BigDecimalType, 'stannum/constraints/types/big_decimal_type'
+    autoload :FloatType,      'stannum/constraints/types/float_type'
     autoload :HashType,       'stannum/constraints/types/hash_type'
     autoload :HashWithIndifferentKeys,
       'stannum/constraints/types/hash_with_indifferent_keys'
