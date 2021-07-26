@@ -683,7 +683,7 @@ RSpec.describe Stannum::Contracts::ParametersContract do
     wrap_context 'when the contract has a block constraint' do
       let(:block_definition) do
         be_a_constraint_definition(
-          constraint: be_a_constraint(Stannum::Constraints::Types::Proc),
+          constraint: be_a_constraint(Stannum::Constraints::Types::ProcType),
           contract:   contract,
           options:    {
             property:      :block,
@@ -761,7 +761,7 @@ RSpec.describe Stannum::Contracts::ParametersContract do
     wrap_context 'when the contract has a block constraint' do
       let(:block_definition) do
         be_a_constraint_definition(
-          constraint: be_a_constraint(Stannum::Constraints::Types::Proc),
+          constraint: be_a_constraint(Stannum::Constraints::Types::ProcType),
           contract:   contract,
           options:    {
             property:      :block,
@@ -878,7 +878,7 @@ RSpec.describe Stannum::Contracts::ParametersContract do
         definition = contract.each_constraint.to_a.last
 
         expect(definition.constraint)
-          .to be_a_constraint(Stannum::Constraints::Types::Nil)
+          .to be_a_constraint(Stannum::Constraints::Types::NilType)
         expect(definition.property).to be :block
         expect(definition.options[:property_type]).to be :key
       end
@@ -896,7 +896,7 @@ RSpec.describe Stannum::Contracts::ParametersContract do
         definition = contract.each_constraint.to_a.last
 
         expect(definition.constraint)
-          .to be_a_constraint(Stannum::Constraints::Types::Proc)
+          .to be_a_constraint(Stannum::Constraints::Types::ProcType)
           .with_options(expected_type: Proc, required: true)
         expect(definition.property).to be :block
         expect(definition.options[:property_type]).to be :key

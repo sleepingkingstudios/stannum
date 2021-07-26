@@ -104,10 +104,10 @@ RSpec.describe Stannum::Contracts::Parameters::ArgumentsContract do
 
   shared_context 'when the contract has a variadic arguments constraint' do
     let(:receiver) do
-      Stannum::Constraints::Types::Array.new(item_type: String)
+      Stannum::Constraints::Types::ArrayType.new(item_type: String)
     end
     let(:receiver_definition) do
-      be_a_constraint(Stannum::Constraints::Types::Array).and(
+      be_a_constraint(Stannum::Constraints::Types::ArrayType).and(
         satisfy do |constraint|
           constraint.item_type.is_a?(Stannum::Constraints::Type) &&
             constraint.item_type.expected_type == String
@@ -1049,7 +1049,7 @@ RSpec.describe Stannum::Contracts::Parameters::ArgumentsContract do
       it 'should update the variadic constraint', :aggregate_failures do
         contract.set_variadic_item_constraint(type)
 
-        expect(receiver).to be_a Stannum::Constraints::Types::Array
+        expect(receiver).to be_a Stannum::Constraints::Types::ArrayType
         expect(receiver.item_type).to be_a Stannum::Constraints::Type
         expect(receiver.item_type.expected_type).to be type
       end
@@ -1058,7 +1058,7 @@ RSpec.describe Stannum::Contracts::Parameters::ArgumentsContract do
         it 'should update the variadic constraint', :aggregate_failures do
           contract.set_variadic_item_constraint(type, as: :splatted)
 
-          expect(receiver).to be_a Stannum::Constraints::Types::Array
+          expect(receiver).to be_a Stannum::Constraints::Types::ArrayType
           expect(receiver.item_type).to be_a Stannum::Constraints::Type
           expect(receiver.item_type.expected_type).to be type
         end
@@ -1077,7 +1077,7 @@ RSpec.describe Stannum::Contracts::Parameters::ArgumentsContract do
       it 'should update the variadic constraint', :aggregate_failures do
         contract.set_variadic_item_constraint(constraint)
 
-        expect(receiver).to be_a Stannum::Constraints::Types::Array
+        expect(receiver).to be_a Stannum::Constraints::Types::ArrayType
         expect(receiver.item_type).to be_a Stannum::Constraint
         expect(receiver.item_type.options).to be == constraint.options
       end
@@ -1086,7 +1086,7 @@ RSpec.describe Stannum::Contracts::Parameters::ArgumentsContract do
         it 'should update the variadic constraint', :aggregate_failures do
           contract.set_variadic_item_constraint(constraint, as: :splatted)
 
-          expect(receiver).to be_a Stannum::Constraints::Types::Array
+          expect(receiver).to be_a Stannum::Constraints::Types::ArrayType
           expect(receiver.item_type).to be_a Stannum::Constraint
           expect(receiver.item_type.options).to be == constraint.options
         end

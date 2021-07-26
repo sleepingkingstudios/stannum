@@ -1,10 +1,10 @@
 # frozen_string_literal: true
 
-require 'stannum/constraints/types/hash'
+require 'stannum/constraints/types/hash_type'
 
 require 'support/examples/constraint_examples'
 
-RSpec.describe Stannum::Constraints::Types::Hash do
+RSpec.describe Stannum::Constraints::Types::HashType do
   include Spec::Support::Examples::ConstraintExamples
 
   subject(:constraint) { described_class.new(**constructor_options) }

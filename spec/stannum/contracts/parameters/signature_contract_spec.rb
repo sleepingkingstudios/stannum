@@ -62,7 +62,7 @@ RSpec.describe Stannum::Contracts::Parameters::SignatureContract do
         an_instance_of(Stannum::Contracts::Definition).and(
           satisfy do |definition|
             expect(definition.constraint)
-              .to be_a Stannum::Constraints::Types::Array
+              .to be_a Stannum::Constraints::Types::ArrayType
             expect(definition.constraint.optional?).to be false
             expect(definition.property).to be :arguments
             expect(definition.sanity?).to be false
@@ -71,9 +71,9 @@ RSpec.describe Stannum::Contracts::Parameters::SignatureContract do
         an_instance_of(Stannum::Contracts::Definition).and(
           satisfy do |definition|
             expect(definition.constraint)
-              .to be_a Stannum::Constraints::Types::Hash
+              .to be_a Stannum::Constraints::Types::HashType
             expect(definition.constraint.key_type)
-              .to be_a Stannum::Constraints::Types::Symbol
+              .to be_a Stannum::Constraints::Types::SymbolType
             expect(definition.constraint.optional?).to be false
             expect(definition.property).to be :keywords
             expect(definition.sanity?).to be false
@@ -82,7 +82,7 @@ RSpec.describe Stannum::Contracts::Parameters::SignatureContract do
         an_instance_of(Stannum::Contracts::Definition).and(
           satisfy do |definition|
             expect(definition.constraint)
-              .to be_a Stannum::Constraints::Types::Proc
+              .to be_a Stannum::Constraints::Types::ProcType
             expect(definition.constraint.optional?).to be true
             expect(definition.property).to be :block
             expect(definition.sanity?).to be false
@@ -134,7 +134,7 @@ RSpec.describe Stannum::Contracts::Parameters::SignatureContract do
         an_instance_of(Stannum::Contracts::Definition).and(
           satisfy do |definition|
             expect(definition.constraint)
-              .to be_a Stannum::Constraints::Types::Array
+              .to be_a Stannum::Constraints::Types::ArrayType
             expect(definition.constraint.optional?).to be false
             expect(definition.property).to be :arguments
             expect(definition.sanity?).to be false
@@ -143,9 +143,9 @@ RSpec.describe Stannum::Contracts::Parameters::SignatureContract do
         an_instance_of(Stannum::Contracts::Definition).and(
           satisfy do |definition|
             expect(definition.constraint)
-              .to be_a Stannum::Constraints::Types::Hash
+              .to be_a Stannum::Constraints::Types::HashType
             expect(definition.constraint.key_type)
-              .to be_a Stannum::Constraints::Types::Symbol
+              .to be_a Stannum::Constraints::Types::SymbolType
             expect(definition.constraint.optional?).to be false
             expect(definition.property).to be :keywords
             expect(definition.sanity?).to be false
@@ -154,7 +154,7 @@ RSpec.describe Stannum::Contracts::Parameters::SignatureContract do
         an_instance_of(Stannum::Contracts::Definition).and(
           satisfy do |definition|
             expect(definition.constraint)
-              .to be_a Stannum::Constraints::Types::Proc
+              .to be_a Stannum::Constraints::Types::ProcType
             expect(definition.constraint.optional?).to be true
             expect(definition.property).to be :block
             expect(definition.sanity?).to be false

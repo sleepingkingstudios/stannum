@@ -25,13 +25,13 @@ RSpec.describe Stannum::Constraints::Types::HashWithIndifferentKeys do
   describe '::INVALID_KEY_TYPE' do
     include_examples 'should define frozen constant',
       :INVALID_KEY_TYPE,
-      Stannum::Constraints::Types::Hash::INVALID_KEY_TYPE
+      Stannum::Constraints::Types::HashType::INVALID_KEY_TYPE
   end
 
   describe '::INVALID_VALUE_TYPE' do
     include_examples 'should define frozen constant',
       :INVALID_VALUE_TYPE,
-      Stannum::Constraints::Types::Hash::INVALID_VALUE_TYPE
+      Stannum::Constraints::Types::HashType::INVALID_VALUE_TYPE
   end
 
   describe '::NEGATED_TYPE' do

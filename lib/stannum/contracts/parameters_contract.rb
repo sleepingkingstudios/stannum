@@ -509,9 +509,9 @@ module Stannum::Contracts
     def build_block_constraint(value)
       Stannum::Support::Coercion.presence_constraint(value) \
       do |present, **options|
-        next Stannum::Constraints::Types::Proc.new(**options) if present
+        next Stannum::Constraints::Types::ProcType.new(**options) if present
 
-        Stannum::Constraints::Types::Nil.new(**options)
+        Stannum::Constraints::Types::NilType.new(**options)
       end
     end
 
