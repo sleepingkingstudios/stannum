@@ -7,7 +7,7 @@ module Stannum::Constraints::Types
   # An Array type constraint asserts that the object is an Array.
   #
   # @example Using an Array type constraint
-  #   constraint = Stannum::Constraints::Types::Array.new
+  #   constraint = Stannum::Constraints::Types::ArrayType.new
   #
   #   constraint.matches?(nil)        # => false
   #   constraint.matches?(Object.new) # => false
@@ -15,7 +15,7 @@ module Stannum::Constraints::Types
   #   constraint.matches?([1, 2, 3])  # => true
   #
   # @example Using an Array type constraint with an item constraint
-  #   constraint = Stannum::Constraints::Types::Array.new(item_type: String)
+  #   constraint = Stannum::Constraints::Types::ArrayType.new(item_type: String)
   #
   #   constraint.matches?(nil)               # => false
   #   constraint.matches?(Object.new)        # => false
@@ -24,14 +24,14 @@ module Stannum::Constraints::Types
   #   constraint.matches?(%w[one two three]) # => true
   #
   # @example Using an Array type constraint with a presence constraint
-  #   constraint = Stannum::Constraints::Types::Array.new(allow_empty: false)
+  #   constraint = Stannum::Constraints::Types::ArrayType.new(allow_empty: false)
   #
   #   constraint.matches?(nil)               # => false
   #   constraint.matches?(Object.new)        # => false
   #   constraint.matches?([])                # => false
   #   constraint.matches?([1, 2, 3])         # => true
   #   constraint.matches?(%w[one two three]) # => true
-  class Array < Stannum::Constraints::Type
+  class ArrayType < Stannum::Constraints::Type
     # The :type of the error generated for an array with invalid items.
     INVALID_ITEM_TYPE = 'stannum.constraints.types.array.invalid_item'
 
@@ -62,7 +62,7 @@ module Stannum::Constraints::Types
     # @return [true, false] true if the object is not an Array instance,
     #   otherwise false.
     #
-    # @see Stannum::Constraints::Types::Array#matches?
+    # @see Stannum::Constraints::Types::ArrayType#matches?
     def does_not_match?(actual)
       !matches_type?(actual)
     end
@@ -82,7 +82,7 @@ module Stannum::Constraints::Types
     # @return [true, false] true if the object is an Array instance with
     #   matching items, otherwise false.
     #
-    # @see Stannum::Constraints::Types::Array#does_not_match?
+    # @see Stannum::Constraints::Types::ArrayType#does_not_match?
     def matches?(actual)
       return false unless super
 

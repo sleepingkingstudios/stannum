@@ -1,11 +1,14 @@
 # Stannum Development
 
-## Version 0.1
+## Documentation
 
-- Remove Struct::Attributes::Contract
-  - To test if an attributes hash is valid, call new(attributes: attributes) and pass into Contract.
-- What happens to a frozen constraint? A frozen contract?
-  - Should freezing a contract freeze its constraints? #deep_freeze ?
+- Should provide a one-line short description.
+- Should provide a one+ paragraph short description.
+- Should document what errors look like in various circumstances.
+- Should provide examples of passing and failing objects.
+- Should document the methods.
+
+## Version 0.1
 
 ### Constraints
 
@@ -15,18 +18,6 @@
 - Types::BooleanType
 - Types::FloatType
 - Types::IntegerType
-
-### Contracts
-
-- Refactor #include to #concat (avoids collision when implementing DSL).
-
-### Documentation
-
-- Should provide a one-line short description.
-- Should provide a one+ paragraph short description.
-- Should document what errors look like in various circumstances.
-- Should provide examples of passing and failing objects.
-- Should document the methods.
 
 ### Refactoring
 
@@ -48,6 +39,9 @@
 - Refactor `#errors_for` to always check `#matches`.
 
 ## Future Versions
+
+- What happens to a frozen constraint? A frozen contract?
+  - Should freezing a contract freeze its constraints? #deep_freeze ?
 
 ### Constraints
 
@@ -71,14 +65,13 @@
 
 - .instance method (caches instance by params (if any))
   - a large application does not need 50 Type::String objects
-- Types::Boolean
-- Types::Array
+- Types::ArrayType
   - add support for allowing/disallowing empty arrays (default to allowed)
-- Types::Hash
+- Types::HashType
   - add support for allowing/disallowing empty hashes (default to allowed)
-- Types::String
+- Types::StringType
   - add support for allowing/disallowing empty strings (default to allowed)
-- Types::Symbol
+- Types::SymbolType
   - add support for allowing/disallowing empty symbols (default to allowed)
 - Types::Union
   - redefine IndifferentKey as subclass ?

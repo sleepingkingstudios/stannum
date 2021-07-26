@@ -1,10 +1,10 @@
 # frozen_string_literal: true
 
-require 'stannum/constraints/types/array'
+require 'stannum/constraints/types/array_type'
 
 require 'support/examples/constraint_examples'
 
-RSpec.describe Stannum::Constraints::Types::Array do
+RSpec.describe Stannum::Constraints::Types::ArrayType do
   include Spec::Support::Examples::ConstraintExamples
 
   subject(:constraint) { described_class.new(**constructor_options) }

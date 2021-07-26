@@ -14,7 +14,7 @@ RSpec.describe Stannum::Constraints::Types::HashWithSymbolKeys do
     {
       allow_empty:   true,
       expected_type: Hash,
-      key_type:      be_a_constraint(Stannum::Constraints::Types::Symbol),
+      key_type:      be_a_constraint(Stannum::Constraints::Types::SymbolType),
       required:      true,
       value_type:    nil
     }
@@ -23,13 +23,13 @@ RSpec.describe Stannum::Constraints::Types::HashWithSymbolKeys do
   describe '::INVALID_KEY_TYPE' do
     include_examples 'should define frozen constant',
       :INVALID_KEY_TYPE,
-      Stannum::Constraints::Types::Hash::INVALID_KEY_TYPE
+      Stannum::Constraints::Types::HashType::INVALID_KEY_TYPE
   end
 
   describe '::INVALID_VALUE_TYPE' do
     include_examples 'should define frozen constant',
       :INVALID_VALUE_TYPE,
-      Stannum::Constraints::Types::Hash::INVALID_VALUE_TYPE
+      Stannum::Constraints::Types::HashType::INVALID_VALUE_TYPE
   end
 
   describe '::NEGATED_TYPE' do
@@ -92,7 +92,7 @@ RSpec.describe Stannum::Constraints::Types::HashWithSymbolKeys do
   describe '#key_type' do
     include_examples 'should have reader',
       :key_type,
-      -> { be_a_constraint(Stannum::Constraints::Types::Symbol) }
+      -> { be_a_constraint(Stannum::Constraints::Types::SymbolType) }
   end
 
   describe '#match' do
@@ -348,7 +348,7 @@ RSpec.describe Stannum::Constraints::Types::HashWithSymbolKeys do
       {
         allow_empty:   true,
         expected_type: Hash,
-        key_type:      be_a_constraint(Stannum::Constraints::Types::Symbol),
+        key_type:      be_a_constraint(Stannum::Constraints::Types::SymbolType),
         required:      true,
         value_type:    nil
       }.merge(constructor_options)

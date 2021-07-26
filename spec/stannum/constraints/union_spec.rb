@@ -13,8 +13,8 @@ RSpec.describe Stannum::Constraints::Union do
 
   let(:expected_constraints) do
     [
-      Stannum::Constraints::Types::String.new,
-      Stannum::Constraints::Types::Symbol.new
+      Stannum::Constraints::Types::StringType.new,
+      Stannum::Constraints::Types::SymbolType.new
     ]
   end
   let(:constructor_options) { {} }

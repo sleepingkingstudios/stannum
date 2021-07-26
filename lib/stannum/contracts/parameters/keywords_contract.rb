@@ -103,8 +103,8 @@ module Stannum::Contracts::Parameters
     # @see #set_variadic_constraint
     def set_variadic_value_constraint(value_type, as: nil)
       type       = coerce_value_type(value_type)
-      constraint = Stannum::Constraints::Types::Hash.new(
-        key_type:   Stannum::Constraints::Types::Symbol.new,
+      constraint = Stannum::Constraints::Types::HashType.new(
+        key_type:   Stannum::Constraints::Types::SymbolType.new,
         value_type: type
       )
 

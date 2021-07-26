@@ -113,10 +113,10 @@ RSpec.describe Stannum::Contracts::Parameters::KeywordsContract do
 
   shared_context 'when the contract has a variadic keywords constraint' do
     let(:receiver) do
-      Stannum::Constraints::Types::Hash.new(value_type: String)
+      Stannum::Constraints::Types::HashType.new(value_type: String)
     end
     let(:receiver_definition) do
-      be_a_constraint(Stannum::Constraints::Types::Hash).and(
+      be_a_constraint(Stannum::Constraints::Types::HashType).and(
         satisfy do |constraint|
           constraint.value_type.is_a?(Stannum::Constraints::Type) &&
             constraint.value_type.expected_type == String
@@ -434,7 +434,7 @@ RSpec.describe Stannum::Contracts::Parameters::KeywordsContract do
     let(:builtin_definitions) do
       [
         be_a_constraint_definition(
-          constraint: be_a_constraint(Stannum::Constraints::Types::Hash)
+          constraint: be_a_constraint(Stannum::Constraints::Types::HashType)
                       .with_options(
                         allow_empty:   true,
                         expected_type: Hash,
@@ -1029,8 +1029,9 @@ RSpec.describe Stannum::Contracts::Parameters::KeywordsContract do
       it 'should update the variadic constraint', :aggregate_failures do
         contract.set_variadic_value_constraint(type)
 
-        expect(receiver).to be_a Stannum::Constraints::Types::Hash
-        expect(receiver.key_type).to be_a Stannum::Constraints::Types::Symbol
+        expect(receiver).to be_a Stannum::Constraints::Types::HashType
+        expect(receiver.key_type)
+          .to be_a Stannum::Constraints::Types::SymbolType
         expect(receiver.value_type).to be_a Stannum::Constraints::Type
         expect(receiver.value_type.expected_type).to be type
       end
@@ -1039,8 +1040,9 @@ RSpec.describe Stannum::Contracts::Parameters::KeywordsContract do
         it 'should update the variadic constraint', :aggregate_failures do
           contract.set_variadic_value_constraint(type)
 
-          expect(receiver).to be_a Stannum::Constraints::Types::Hash
-          expect(receiver.key_type).to be_a Stannum::Constraints::Types::Symbol
+          expect(receiver).to be_a Stannum::Constraints::Types::HashType
+          expect(receiver.key_type)
+            .to be_a Stannum::Constraints::Types::SymbolType
           expect(receiver.value_type).to be_a Stannum::Constraints::Type
           expect(receiver.value_type.expected_type).to be type
         end
@@ -1059,8 +1061,9 @@ RSpec.describe Stannum::Contracts::Parameters::KeywordsContract do
       it 'should update the variadic constraint', :aggregate_failures do
         contract.set_variadic_value_constraint(constraint)
 
-        expect(receiver).to be_a Stannum::Constraints::Types::Hash
-        expect(receiver.key_type).to be_a Stannum::Constraints::Types::Symbol
+        expect(receiver).to be_a Stannum::Constraints::Types::HashType
+        expect(receiver.key_type)
+          .to be_a Stannum::Constraints::Types::SymbolType
         expect(receiver.value_type).to be_a Stannum::Constraint
         expect(receiver.value_type.options).to be == constraint.options
       end
@@ -1069,8 +1072,9 @@ RSpec.describe Stannum::Contracts::Parameters::KeywordsContract do
         it 'should update the variadic constraint', :aggregate_failures do
           contract.set_variadic_value_constraint(constraint, as: :kwargs)
 
-          expect(receiver).to be_a Stannum::Constraints::Types::Hash
-          expect(receiver.key_type).to be_a Stannum::Constraints::Types::Symbol
+          expect(receiver).to be_a Stannum::Constraints::Types::HashType
+          expect(receiver.key_type)
+            .to be_a Stannum::Constraints::Types::SymbolType
           expect(receiver.value_type).to be_a Stannum::Constraint
           expect(receiver.value_type.options).to be == constraint.options
         end

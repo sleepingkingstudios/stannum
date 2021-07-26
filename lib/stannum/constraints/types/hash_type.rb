@@ -7,7 +7,7 @@ module Stannum::Constraints::Types
   # A Hash type constraint asserts that the object is a Hash.
   #
   # @example Using a Hash type constraint
-  #   constraint = Stannum::Constraints::Types::Hash.new
+  #   constraint = Stannum::Constraints::Types::HashType.new
   #
   #   constraint.matches?(nil)              # => false
   #   constraint.matches?(Object.new)       # => false
@@ -15,7 +15,7 @@ module Stannum::Constraints::Types
   #   constraint.matches?({ key: 'value' }) # => true
   #
   # @example Using a Hash type constraint with a key constraint
-  #   constraint = Stannum::Constraints::Types::Hash.new(key_type: String)
+  #   constraint = Stannum::Constraints::Types::HashType.new(key_type: String)
   #
   #   constraint.matches?(nil)                  # => false
   #   constraint.matches?(Object.new)           # => false
@@ -24,7 +24,7 @@ module Stannum::Constraints::Types
   #   constraint.matches?({ 'key' => 'value' }) # => true
   #
   # @example Using a Hash type constraint with a value constraint
-  #   constraint = Stannum::Constraints::Types::Hash.new(value_type: String)
+  #   constraint = Stannum::Constraints::Types::HashType.new(value_type: String)
   #
   #   constraint.matches?(nil)              # => false
   #   constraint.matches?(Object.new)       # => false
@@ -33,14 +33,14 @@ module Stannum::Constraints::Types
   #   constraint.matches?({ key: 'value' }) # => true
   #
   # @example Using a Hash type constraint with a presence constraint
-  #   constraint = Stannum::Constraints::Types::Hash.new(allow_empty: false)
+  #   constraint = Stannum::Constraints::Types::HashType.new(allow_empty: false)
   #
   #   constraint.matches?(nil)              # => false
   #   constraint.matches?(Object.new)       # => false
   #   constraint.matches?({})               # => false
   #   constraint.matches?({ key: :value })  # => true
   #   constraint.matches?({ key: 'value' }) # => true
-  class Hash < Stannum::Constraints::Type
+  class HashType < Stannum::Constraints::Type
     # The :type of the error generated for a hash with invalid keys.
     INVALID_KEY_TYPE = 'stannum.constraints.types.hash.invalid_key'
 
@@ -78,7 +78,7 @@ module Stannum::Constraints::Types
     # @return [true, false] true if the object is not a Hash instance, otherwise
     #   false.
     #
-    # @see Stannum::Constraints::Types::Hash#matches?
+    # @see Stannum::Constraints::Types::HashType#matches?
     def does_not_match?(actual)
       !matches_type?(actual)
     end
@@ -100,7 +100,7 @@ module Stannum::Constraints::Types
     # @return [true, false] true if the object is a Hash instance with matching
     #   keys and values, otherwise false.
     #
-    # @see Stannum::Constraints::Types::Hash#does_not_match?
+    # @see Stannum::Constraints::Types::HashType#does_not_match?
     def matches?(actual)
       return false unless super
 

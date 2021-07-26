@@ -17,13 +17,13 @@ module Stannum::Contracts::Parameters
       super
 
       add_key_constraint :arguments,
-        Stannum::Constraints::Types::Array.new
+        Stannum::Constraints::Types::ArrayType.new
       add_key_constraint :keywords,
-        Stannum::Constraints::Types::Hash.new(
-          key_type: Stannum::Constraints::Types::Symbol.new
+        Stannum::Constraints::Types::HashType.new(
+          key_type: Stannum::Constraints::Types::SymbolType.new
         )
       add_key_constraint :block,
-        Stannum::Constraints::Types::Proc.new(optional: true)
+        Stannum::Constraints::Types::ProcType.new(optional: true)
     end
   end
 end

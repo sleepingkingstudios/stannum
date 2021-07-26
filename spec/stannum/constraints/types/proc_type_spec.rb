@@ -1,16 +1,16 @@
 # frozen_string_literal: true
 
-require 'stannum/constraints/types/nil'
+require 'stannum/constraints/types/proc_type'
 
 require 'support/examples/constraint_examples'
 
-RSpec.describe Stannum::Constraints::Types::Nil do
+RSpec.describe Stannum::Constraints::Types::ProcType do
   include Spec::Support::Examples::ConstraintExamples
 
   subject(:constraint) { described_class.new(**constructor_options) }
 
   let(:constructor_options) { {} }
-  let(:expected_options)    { { expected_type: NilClass, required: true } }
+  let(:expected_options)    { { expected_type: Proc, required: true } }
 
   describe '::NEGATED_TYPE' do
     include_examples 'should define frozen constant',
@@ -38,50 +38,32 @@ RSpec.describe Stannum::Constraints::Types::Nil do
   include_examples 'should implement the Constraint methods'
 
   describe '#expected_type' do
-    include_examples 'should have reader', :expected_type, NilClass
+    include_examples 'should have reader', :expected_type, Proc
   end
 
   describe '#match' do
     let(:match_method) { :match }
     let(:expected_errors) do
       {
-        data: { required: constraint.required?, type: NilClass },
+        data: { required: constraint.required?, type: Proc },
         type: constraint.type
       }
     end
+    let(:matching) { -> {} }
 
-    describe 'with nil' do
-      let(:actual) { nil }
-
-      include_examples 'should match the constraint'
-    end
-
-    describe 'with an object' do
-      let(:actual) { Object.new.freeze }
-
-      include_examples 'should not match the constraint'
-    end
+    include_examples 'should match the type constraint'
   end
 
   describe '#negated_match' do
     let(:match_method) { :negated_match }
     let(:expected_errors) do
       {
-        data: { required: constraint.required?, type: NilClass },
+        data: { required: constraint.required?, type: Proc },
         type: constraint.negated_type
       }
     end
+    let(:matching) { -> {} }
 
-    describe 'with nil' do
-      let(:actual) { nil }
-
-      include_examples 'should not match the constraint'
-    end
-
-    describe 'with an object' do
-      let(:actual) { Object.new.freeze }
-
-      include_examples 'should match the constraint'
-    end
+    include_examples 'should match the negated type constraint'
   end
 end

@@ -4,7 +4,7 @@ require 'stannum/constraints/types'
 
 module Stannum::Constraints::Types
   # A Nil type constraint asserts that the object is nil.
-  class Nil < Stannum::Constraints::Type
+  class NilType < Stannum::Constraints::Type
     # @param options [Hash<Symbol, Object>] Configuration options for the
     #   constraint. Defaults to an empty Hash.
     def initialize(**options)

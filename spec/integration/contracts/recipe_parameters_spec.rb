@@ -85,7 +85,7 @@ RSpec.describe Spec::RecipeParameters do
             data:    { value: { 'flour' => '500 grams' } },
             message: nil,
             path:    [:arguments, :tools, 1],
-            type:    Stannum::Constraints::Types::Array::INVALID_ITEM_TYPE
+            type:    Stannum::Constraints::Types::ArrayType::INVALID_ITEM_TYPE
           }
         ]
       end
@@ -121,13 +121,13 @@ RSpec.describe Spec::RecipeParameters do
             data:    { value: true },
             message: nil,
             path:    %i[keywords ingredients poison],
-            type:    Stannum::Constraints::Types::Hash::INVALID_VALUE_TYPE
+            type:    Stannum::Constraints::Types::HashType::INVALID_VALUE_TYPE
           },
           {
             data:    { value: %w[many tiny shards] },
             message: nil,
             path:    %i[keywords ingredients glass],
-            type:    Stannum::Constraints::Types::Hash::INVALID_VALUE_TYPE
+            type:    Stannum::Constraints::Types::HashType::INVALID_VALUE_TYPE
           }
         ]
       end
