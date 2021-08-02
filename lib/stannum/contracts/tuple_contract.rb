@@ -27,7 +27,7 @@ module Stannum::Contracts
   #   errors.to_a
   #   #=> [
   #     {
-  #       type:    'stannum.constraints.methods',
+  #       type:    'stannum.constraints.does_not_have_methods',
   #       data:    { methods: [:[], :each, :size], missing: [:[], :each, :size] },
   #       message: nil,
   #       path:    []
