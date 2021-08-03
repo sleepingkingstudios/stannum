@@ -13,14 +13,10 @@ RSpec.describe Stannum::Contracts::Parameters::SignatureContract do
 
   let(:constructor_options) { {} }
   let(:expected_options) do
-    type_constraint =
-      be_a_constraint(Stannum::Constraints::Type)
-      .with_options(expected_type: Symbol, required: true)
-
     {
       allow_extra_keys: false,
-      allow_hash_like:  false,
-      key_type:         type_constraint
+      key_type:         Symbol,
+      value_type:       nil
     }
   end
 
@@ -189,18 +185,11 @@ RSpec.describe Stannum::Contracts::Parameters::SignatureContract do
     let(:expected) do
       {
         allow_extra_keys: false,
-        allow_hash_like:  false
+        key_type:         Symbol,
+        value_type:       nil
       }
     end
 
-    it 'should return the options' do
-      expect(contract.options).to match expected.merge(
-        key_type: an_instance_of(Stannum::Constraints::Type)
-      )
-    end
-
-    it 'should return the key type' do
-      expect(contract.options[:key_type].expected_type).to be Symbol
-    end
+    it { expect(contract.options).to be == expected }
   end
 end

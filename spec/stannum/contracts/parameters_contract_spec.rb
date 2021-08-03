@@ -95,8 +95,8 @@ RSpec.describe Stannum::Contracts::ParametersContract do
   let(:expected_options) do
     {
       allow_extra_keys: false,
-      allow_hash_like:  false,
-      key_type:         nil
+      key_type:         nil,
+      value_type:       nil
     }
   end
 

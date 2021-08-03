@@ -136,10 +136,10 @@ RSpec.describe Stannum::Contracts::Parameters::KeywordsContract do
   let(:expected_options) do
     {
       allow_extra_keys: false,
-      allow_hash_like:  false,
       key_type:         an_instance_of(
         Stannum::Constraints::Hashes::IndifferentKey
-      )
+      ),
+      value_type:       nil
     }
   end
 
@@ -438,7 +438,9 @@ RSpec.describe Stannum::Contracts::Parameters::KeywordsContract do
                       .with_options(
                         allow_empty:   true,
                         expected_type: Hash,
-                        key_type:      nil,
+                        key_type:      be_a_constraint(
+                          Stannum::Constraints::Hashes::IndifferentKey
+                        ),
                         required:      true,
                         value_type:    nil
                       ),
@@ -541,7 +543,9 @@ RSpec.describe Stannum::Contracts::Parameters::KeywordsContract do
                       .with_options(
                         allow_empty:   true,
                         expected_type: Hash,
-                        key_type:      nil,
+                        key_type:      be_a_constraint(
+                          Stannum::Constraints::Hashes::IndifferentKey
+                        ),
                         required:      true,
                         value_type:    nil
                       ),
