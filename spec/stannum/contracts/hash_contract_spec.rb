@@ -351,6 +351,7 @@ RSpec.describe Stannum::Contracts::HashContract do
             expect(definition.constraint)
               .to be_a Stannum::Constraints::Hashes::ExtraKeys
             expect(definition.constraint.expected_keys).to be == expected_keys
+            expect(definition.concatenatable?).to be false
             expect(definition.sanity?).to be false
           end
         )

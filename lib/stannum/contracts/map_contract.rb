@@ -178,7 +178,10 @@ module Stannum::Contracts
 
       keys = -> { expected_keys }
 
-      add_constraint Stannum::Constraints::Hashes::ExtraKeys.new(keys)
+      add_constraint(
+        Stannum::Constraints::Hashes::ExtraKeys.new(keys),
+        concatenatable: false
+      )
     end
 
     def add_type_constraint

@@ -5,7 +5,7 @@ require 'stannum/rspec/match_errors'
 require 'support/contracts/signed_response_contract'
 
 # @note Integration spec for Stannum::Contracts::HashContract.
-RSpec.xdescribe Spec::SignedResponseContract do
+RSpec.describe Spec::SignedResponseContract do
   include Stannum::RSpec::Matchers
 
   subject(:contract) { described_class.new }
