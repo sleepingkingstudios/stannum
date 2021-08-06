@@ -255,7 +255,7 @@ module Stannum
       end
 
       def initialize_contract(struct_class)
-        contract = Stannum::Contracts::PropertyContract.new
+        contract = Stannum::Contract.new
 
         struct_class.const_set(:Contract, contract)
 

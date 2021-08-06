@@ -297,6 +297,117 @@ RSpec.describe Stannum::Contract do
     end
   end
 
+  describe '#add_property_constraint' do
+    it 'should define the method' do
+      expect(contract)
+        .to respond_to(:add_property_constraint)
+        .with(2).arguments
+        .and_keywords(:sanity)
+        .and_any_keywords
+    end
+
+    describe 'with an invalid property name' do
+      let(:constraint) { Stannum::Constraint.new }
+      let(:property)   { Object.new.freeze }
+      let(:error_message) do
+        "invalid property name #{property.inspect}"
+      end
+
+      it 'should raise an error' do
+        expect do
+          contract.add_property_constraint(property, constraint)
+        end
+          .to raise_error ArgumentError, error_message
+      end
+    end
+
+    describe 'with a property constraint' do
+      let(:constraint) { Stannum::Constraint.new }
+      let(:property)   { :attribute_name }
+      let(:definition) { contract.each_constraint.to_a.last }
+
+      it 'should return the contract' do
+        expect(contract.add_property_constraint(property, constraint))
+          .to be contract
+      end
+
+      it 'should add the constraint to the contract' do
+        expect { contract.add_property_constraint(property, constraint) }
+          .to change { contract.each_constraint.count }
+          .by(1)
+      end
+
+      it 'should store the contract and property' do
+        contract.add_property_constraint(property, constraint)
+
+        expect(definition).to be_a_constraint_definition(
+          constraint: constraint,
+          contract:   contract,
+          options:    { property: property, sanity: false }
+        )
+      end
+    end
+
+    describe 'with a property constraint with options' do
+      let(:constraint) { Stannum::Constraint.new }
+      let(:property)   { :attribute_name }
+      let(:options)    { { key: 'value' } }
+      let(:definition) { contract.each_constraint.to_a.last }
+
+      it 'should return the contract' do
+        expect(
+          contract.add_property_constraint(property, constraint, **options)
+        )
+          .to be contract
+      end
+
+      it 'should add the constraint to the contract' do
+        expect do
+          contract.add_property_constraint(property, constraint, **options)
+        end
+          .to change { contract.each_constraint.count }
+          .by(1)
+      end
+
+      it 'should store the contract and property' do
+        contract.add_property_constraint(property, constraint, **options)
+
+        expect(definition).to be_a_constraint_definition(
+          constraint: constraint,
+          contract:   contract,
+          options:    options.merge(property: property, sanity: false)
+        )
+      end
+    end
+
+    describe 'with a nested property constraint' do
+      let(:constraint) { Stannum::Constraint.new }
+      let(:property)   { %i[path to attribute] }
+      let(:definition) { contract.each_constraint.to_a.last }
+
+      it 'should return the contract' do
+        expect(contract.add_property_constraint(property, constraint))
+          .to be contract
+      end
+
+      it 'should add the constraint to the contract' do
+        expect { contract.add_property_constraint(property, constraint) }
+          .to change { contract.each_constraint.count }
+          .by(1)
+      end
+
+      it 'should store the contract and property' do
+        contract.add_property_constraint(property, constraint)
+
+        expect(definition).to be_a_constraint_definition(
+          constraint: constraint,
+          contract:   contract,
+          options:    { property: property, sanity: false }
+        )
+      end
+    end
+  end
+
   describe '#each_constraint' do
     it { expect(contract).to respond_to(:each_constraint).with(0).arguments }
 

@@ -186,7 +186,7 @@ module Stannum::Contracts
     # constructor for ParametersContract.
     #
     # @api private
-    class Builder < Stannum::Contracts::PropertyContract::Builder
+    class Builder < Stannum::Contract::Builder
       # Adds an argument constraint to the contract.
       #
       # If the index is specified, then the constraint will be added for the

@@ -3,7 +3,7 @@
 require 'stannum'
 
 module Spec
-  class ManufacturerContract < Stannum::Contracts::PropertyContract
+  class ManufacturerContract < Stannum::Contract
     NEGATED_TYPE = 'spec.contracts.a_manufacturer'
 
     TYPE = 'spec.contracts.not_a_manufacturer'
