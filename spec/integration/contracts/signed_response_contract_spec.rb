@@ -1,9 +1,13 @@
 # frozen_string_literal: true
 
+require 'stannum/rspec/match_errors'
+
 require 'support/contracts/signed_response_contract'
 
 # @note Integration spec for Stannum::Contracts::HashContract.
 RSpec.describe Spec::SignedResponseContract do
+  include Stannum::RSpec::Matchers
+
   subject(:contract) { described_class.new }
 
   describe '.new' do
@@ -153,7 +157,7 @@ RSpec.describe Spec::SignedResponseContract do
         ]
       end
 
-      it { expect(errors).to be == expected_errors }
+      it { expect(errors).to match_errors expected_errors }
 
       it { expect(status).to be false }
     end

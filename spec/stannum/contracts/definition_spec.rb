@@ -52,26 +52,44 @@ RSpec.describe Stannum::Contracts::Definition do
     end
   end
 
+  describe '#concatenatable?' do
+    include_examples 'should define predicate',
+      :concatenatable?,
+      true
+
+    context 'when options: concatenatable is false' do
+      let(:options) { super().merge(concatenatable: false) }
+
+      it { expect(definition.concatenatable?).to be false }
+    end
+
+    context 'when options: concatenatable is true' do
+      let(:options) { super().merge(concatenatable: true) }
+
+      it { expect(definition.concatenatable?).to be true }
+    end
+  end
+
   describe '#constraint' do
-    include_examples 'should have property',
+    include_examples 'should define property',
       :constraint,
       -> { attributes[:constraint] }
   end
 
   describe '#contract' do
-    include_examples 'should have property',
+    include_examples 'should define property',
       :contract,
       -> { attributes[:contract] }
   end
 
   describe '#options' do
-    include_examples 'should have property',
+    include_examples 'should define property',
       :options,
       -> { attributes[:options] }
   end
 
   describe '#property' do
-    include_examples 'should have reader', :property, nil
+    include_examples 'should define reader', :property, nil
 
     context 'when property is a Array' do
       let(:property) { %i[factory gadget name] }
@@ -89,7 +107,7 @@ RSpec.describe Stannum::Contracts::Definition do
   end
 
   describe '#property_name' do
-    include_examples 'should have reader', :property_name, nil
+    include_examples 'should define reader', :property_name, nil
 
     context 'when property is a Array' do
       let(:property) { %i[factory gadget name] }

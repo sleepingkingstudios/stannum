@@ -117,6 +117,11 @@ RSpec.describe Stannum::Contracts::Base do
           **definition.fetch(:options, {})
         )
       end
+
+      parent_contract.add_constraint(
+        Stannum::Constraints::Base.new,
+        concatenatable: false
+      )
     end
   end
 

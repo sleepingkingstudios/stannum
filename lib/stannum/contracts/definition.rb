@@ -44,6 +44,14 @@ module Stannum::Contracts
         other.options == options
     end
 
+    # Indicates whether the defined constraint is inherited via concatenation.
+    #
+    # @return [Boolean] true if options[:concatenatable] is set to a truthy
+    #   value; otherwise false.
+    def concatenatable?
+      !!options.fetch(:concatenatable, true)
+    end
+
     # @return [nil, String, Symbol, Array<String, Symbol>] the property scope of
     #   the constraint.
     def property

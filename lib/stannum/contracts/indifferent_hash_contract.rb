@@ -1,5 +1,6 @@
 # frozen_string_literal: true
 
+require 'stannum/constraints/hashes/indifferent_key'
 require 'stannum/contracts'
 
 module Stannum::Contracts
@@ -39,20 +40,21 @@ module Stannum::Contracts
   class IndifferentHashContract < HashContract
     # @param allow_extra_keys [true, false] If true, the contract will match
     #   hashes with keys that are not constrained by the contract.
-    # @param allow_hash_like [true, false] If true, the contract will match
-    #   hash-like objects that respond to the #[], #each, and #keys methods.
+    # @param value_type [Stannum::Constraints::Base, Class, nil] If set, then
+    #   the constraint will check the types of each value in the Hash against
+    #   the expected type and will fail if any values do not match.
     # @param options [Hash<Symbol, Object>] Configuration options for the
     #   contract. Defaults to an empty Hash.
     def initialize(
       allow_extra_keys: false,
-      allow_hash_like:  false,
+      value_type:       nil,
       **options,
       &block
     )
       super(
         allow_extra_keys: allow_extra_keys,
-        allow_hash_like:  allow_hash_like,
         key_type:         Stannum::Constraints::Hashes::IndifferentKey.new,
+        value_type:       value_type,
         **options,
         &block
       )

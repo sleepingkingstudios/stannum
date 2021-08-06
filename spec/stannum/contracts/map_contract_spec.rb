@@ -1,12 +1,12 @@
 # frozen_string_literal: true
 
-require 'stannum/contracts/hash_contract'
+require 'stannum/contracts/map_contract'
 
 require 'support/examples/constraint_examples'
 require 'support/examples/contract_builder_examples'
 require 'support/examples/contract_examples'
 
-RSpec.describe Stannum::Contracts::HashContract do
+RSpec.describe Stannum::Contracts::MapContract do
   include Spec::Support::Examples::ConstraintExamples
   include Spec::Support::Examples::ContractExamples
 
@@ -60,13 +60,7 @@ RSpec.describe Stannum::Contracts::HashContract do
 
   let(:constructor_block)   { -> {} }
   let(:constructor_options) { {} }
-  let(:expected_options) do
-    {
-      allow_extra_keys: false,
-      key_type:         nil,
-      value_type:       nil
-    }
-  end
+  let(:expected_options)    { { allow_extra_keys: false } }
 
   describe '::Builder' do
     include Spec::Support::Examples::ContractBuilderExamples
@@ -75,7 +69,7 @@ RSpec.describe Stannum::Contracts::HashContract do
 
     let(:described_class) { super()::Builder }
     let(:contract) do
-      Stannum::Contracts::HashContract.new # rubocop:disable RSpec/DescribedClass
+      Stannum::Contracts::MapContract.new # rubocop:disable RSpec/DescribedClass
     end
 
     describe '.new' do
@@ -119,7 +113,7 @@ RSpec.describe Stannum::Contracts::HashContract do
       expect(described_class)
         .to be_constructible
         .with(0).arguments
-        .and_keywords(:allow_extra_keys, :key_type, :value_type)
+        .and_keywords(:allow_extra_keys)
         .and_any_keywords
         .and_a_block
     end
@@ -339,10 +333,7 @@ RSpec.describe Stannum::Contracts::HashContract do
         an_instance_of(Stannum::Contracts::Definition).and(
           satisfy do |definition|
             expect(definition.constraint)
-              .to be_a Stannum::Constraints::Type
-            expect(definition.constraint.expected_type).to be Hash
-            expect(definition.constraint.key_type).to be nil
-            expect(definition.constraint.value_type).to be nil
+              .to be_a Stannum::Constraints::Signatures::Map
             expect(definition.sanity?).to be true
           end
         ),
@@ -388,10 +379,7 @@ RSpec.describe Stannum::Contracts::HashContract do
           an_instance_of(Stannum::Contracts::Definition).and(
             satisfy do |definition|
               expect(definition.constraint)
-                .to be_a Stannum::Constraints::Type
-              expect(definition.constraint.expected_type).to be Hash
-              expect(definition.constraint.key_type).to be nil
-              expect(definition.constraint.value_type).to be nil
+                .to be_a Stannum::Constraints::Signatures::Map
               expect(definition.sanity?).to be true
             end
           )
@@ -416,100 +404,6 @@ RSpec.describe Stannum::Contracts::HashContract do
         end
       end
     end
-
-    context 'when initialized with key_type: value' do
-      let(:constructor_options) { super().merge(key_type: String) }
-      let(:builtin_definitions) do
-        [
-          an_instance_of(Stannum::Contracts::Definition).and(
-            satisfy do |definition|
-              expect(definition.constraint)
-                .to be_a Stannum::Constraints::Type
-              expect(definition.constraint.expected_type).to be Hash
-              expect(definition.constraint.key_type)
-                .to be_a Stannum::Constraints::Type
-              expect(definition.constraint.key_type.expected_type)
-                .to be String
-              expect(definition.constraint.value_type).to be nil
-              expect(definition.sanity?).to be true
-            end
-          ),
-          an_instance_of(Stannum::Contracts::Definition).and(
-            satisfy do |definition|
-              expect(definition.constraint)
-                .to be_a Stannum::Constraints::Hashes::ExtraKeys
-              expect(definition.constraint.expected_keys).to be == expected_keys
-              expect(definition.sanity?).to be false
-            end
-          )
-        ]
-      end
-
-      it { expect(contract.each_constraint.count).to be 2 }
-
-      it 'should yield each definition' do
-        expect { |block| contract.each_constraint(&block) }
-          .to yield_successive_args(*expected)
-      end
-
-      wrap_context 'when the contract has many key constraints' do
-        let(:expected) { builtin_definitions + definitions }
-
-        it { expect(contract.each_constraint.count).to be 2 + constraints.size }
-
-        it 'should yield each definition' do
-          expect { |block| contract.each_constraint(&block) }
-            .to yield_successive_args(*expected)
-        end
-      end
-    end
-
-    context 'when initialized with value_type: value' do
-      let(:constructor_options) { super().merge(value_type: String) }
-      let(:builtin_definitions) do
-        [
-          an_instance_of(Stannum::Contracts::Definition).and(
-            satisfy do |definition|
-              expect(definition.constraint)
-                .to be_a Stannum::Constraints::Type
-              expect(definition.constraint.expected_type).to be Hash
-              expect(definition.constraint.key_type).to be nil
-              expect(definition.constraint.value_type)
-                .to be_a Stannum::Constraints::Type
-              expect(definition.constraint.value_type.expected_type)
-                .to be String
-              expect(definition.sanity?).to be true
-            end
-          ),
-          an_instance_of(Stannum::Contracts::Definition).and(
-            satisfy do |definition|
-              expect(definition.constraint)
-                .to be_a Stannum::Constraints::Hashes::ExtraKeys
-              expect(definition.constraint.expected_keys).to be == expected_keys
-              expect(definition.sanity?).to be false
-            end
-          )
-        ]
-      end
-
-      it { expect(contract.each_constraint.count).to be 2 }
-
-      it 'should yield each definition' do
-        expect { |block| contract.each_constraint(&block) }
-          .to yield_successive_args(*expected)
-      end
-
-      wrap_context 'when the contract has many key constraints' do
-        let(:expected) { builtin_definitions + definitions }
-
-        it { expect(contract.each_constraint.count).to be 2 + constraints.size }
-
-        it 'should yield each definition' do
-          expect { |block| contract.each_constraint(&block) }
-            .to yield_successive_args(*expected)
-        end
-      end
-    end
   end
 
   describe '#each_pair' do
@@ -526,8 +420,7 @@ RSpec.describe Stannum::Contracts::HashContract do
         an_instance_of(Stannum::Contracts::Definition).and(
           satisfy do |definition|
             expect(definition.constraint)
-              .to be_a Stannum::Constraints::Type
-            expect(definition.constraint.expected_type).to be Hash
+              .to be_a Stannum::Constraints::Signatures::Map
             expect(definition.sanity?).to be true
           end
         ),
@@ -584,8 +477,7 @@ RSpec.describe Stannum::Contracts::HashContract do
           an_instance_of(Stannum::Contracts::Definition).and(
             satisfy do |definition|
               expect(definition.constraint)
-                .to be_a Stannum::Constraints::Type
-              expect(definition.constraint.expected_type).to be Hash
+                .to be_a Stannum::Constraints::Signatures::Map
               expect(definition.sanity?).to be true
             end
           )
@@ -619,136 +511,6 @@ RSpec.describe Stannum::Contracts::HashContract do
             .to yield_successive_args(*expected)
         end
       end
-    end
-
-    context 'when initialized with key_type: value' do
-      let(:constructor_options) { super().merge(key_type: String) }
-      let(:builtin_definitions) do
-        [
-          an_instance_of(Stannum::Contracts::Definition).and(
-            satisfy do |definition|
-              expect(definition.constraint)
-                .to be_a Stannum::Constraints::Type
-              expect(definition.constraint.expected_type).to be Hash
-              expect(definition.constraint.key_type)
-                .to be_a Stannum::Constraints::Type
-              expect(definition.constraint.key_type.expected_type)
-                .to be String
-              expect(definition.constraint.value_type).to be nil
-              expect(definition.sanity?).to be true
-            end
-          ),
-          an_instance_of(Stannum::Contracts::Definition).and(
-            satisfy do |definition|
-              expect(definition.constraint)
-                .to be_a Stannum::Constraints::Hashes::ExtraKeys
-              expect(definition.constraint.expected_keys).to be == expected_keys
-              expect(definition.sanity?).to be false
-            end
-          )
-        ]
-      end
-
-      it { expect(contract.each_pair(actual).count).to be 2 }
-
-      it 'should yield each definition and the mapped property' do
-        expect { |block| contract.each_pair(actual, &block) }
-          .to yield_successive_args(*expected)
-      end
-
-      wrap_context 'when the contract has many key constraints' do
-        let(:values) do
-          definitions.map do |definition|
-            contract.send(:map_value, actual, **definition.options)
-          end
-        end
-        let(:expected) do
-          builtin_definitions.zip(Array.new(builtin_definitions.size, actual)) +
-            definitions.zip(values)
-        end
-
-        it 'should have the expected size' do
-          expect(contract.each_pair(actual).count).to be(2 + constraints.size)
-        end
-
-        it 'should yield each definition' do
-          expect { |block| contract.each_pair(actual, &block) }
-            .to yield_successive_args(*expected)
-        end
-      end
-    end
-
-    context 'when initialized with value_type: value' do
-      let(:constructor_options) { super().merge(value_type: String) }
-      let(:builtin_definitions) do
-        [
-          an_instance_of(Stannum::Contracts::Definition).and(
-            satisfy do |definition|
-              expect(definition.constraint)
-                .to be_a Stannum::Constraints::Type
-              expect(definition.constraint.expected_type).to be Hash
-              expect(definition.constraint.key_type).to be nil
-              expect(definition.constraint.value_type)
-                .to be_a Stannum::Constraints::Type
-              expect(definition.constraint.value_type.expected_type)
-                .to be String
-              expect(definition.sanity?).to be true
-            end
-          ),
-          an_instance_of(Stannum::Contracts::Definition).and(
-            satisfy do |definition|
-              expect(definition.constraint)
-                .to be_a Stannum::Constraints::Hashes::ExtraKeys
-              expect(definition.constraint.expected_keys).to be == expected_keys
-              expect(definition.sanity?).to be false
-            end
-          )
-        ]
-      end
-
-      it { expect(contract.each_pair(actual).count).to be 2 }
-
-      it 'should yield each definition and the mapped property' do
-        expect { |block| contract.each_pair(actual, &block) }
-          .to yield_successive_args(*expected)
-      end
-
-      wrap_context 'when the contract has many key constraints' do
-        let(:values) do
-          definitions.map do |definition|
-            contract.send(:map_value, actual, **definition.options)
-          end
-        end
-        let(:expected) do
-          builtin_definitions.zip(Array.new(builtin_definitions.size, actual)) +
-            definitions.zip(values)
-        end
-
-        it 'should have the expected size' do
-          expect(contract.each_pair(actual).count).to be(2 + constraints.size)
-        end
-
-        it 'should yield each definition' do
-          expect { |block| contract.each_pair(actual, &block) }
-            .to yield_successive_args(*expected)
-        end
-      end
-    end
-  end
-
-  describe '#key_type' do
-    include_examples 'should have reader', :key_type, nil
-
-    context 'when initialized with key_type: nil' do
-      let(:constructor_options) { super().merge(key_type: nil) }
-
-      it { expect(contract.key_type).to be nil }
-    end
-
-    context 'when initialized with key_type: value' do
-      let(:constructor_options) { super().merge(key_type: String) }
-
-      it { expect(contract.key_type).to be String }
     end
   end
 
@@ -801,13 +563,7 @@ RSpec.describe Stannum::Contracts::HashContract do
   end
 
   describe '#options' do
-    let(:expected) do
-      {
-        allow_extra_keys: false,
-        key_type:         nil,
-        value_type:       nil
-      }
-    end
+    let(:expected) { { allow_extra_keys: false } }
 
     include_examples 'should have reader', :options, -> { be == expected }
 
@@ -816,36 +572,6 @@ RSpec.describe Stannum::Contracts::HashContract do
       let(:expected)            { super().merge(allow_extra_keys: true) }
 
       it { expect(contract.options).to be == expected }
-    end
-
-    context 'when initialized with key_type: value' do
-      let(:constructor_options) { super().merge(key_type: String) }
-      let(:expected)            { super().merge(key_type: String) }
-
-      it { expect(contract.options).to be == expected }
-    end
-
-    context 'when initialized with value_type: value' do
-      let(:constructor_options) { super().merge(value_type: String) }
-      let(:expected)            { super().merge(value_type: String) }
-
-      it { expect(contract.options).to be == expected }
-    end
-  end
-
-  describe '#value_type' do
-    include_examples 'should have reader', :value_type, nil
-
-    context 'when initialized with value_type: nil' do
-      let(:constructor_options) { super().merge(value_type: nil) }
-
-      it { expect(contract.value_type).to be nil }
-    end
-
-    context 'when initialized with value_type: value' do
-      let(:constructor_options) { super().merge(value_type: String) }
-
-      it { expect(contract.value_type).to be String }
     end
   end
 

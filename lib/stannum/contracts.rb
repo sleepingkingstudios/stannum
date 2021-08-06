@@ -5,6 +5,7 @@ require 'stannum'
 module Stannum
   # Namespace for pre-defined contracts.
   module Contracts
+    autoload :ArrayContract,      'stannum/contracts/array_contract'
     autoload :Base,               'stannum/contracts/base'
     autoload :Builder,            'stannum/contracts/builder'
     autoload :Definition,         'stannum/contracts/definition'

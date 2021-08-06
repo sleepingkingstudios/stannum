@@ -495,7 +495,9 @@ module Stannum::Contracts
       return enum_for(:each_unscoped_constraint) unless block_given?
 
       each_concatenated_contract do |contract|
-        contract.each_constraint { |definition| yield definition }
+        contract.each_constraint do |definition|
+          yield definition if definition.concatenatable?
+        end
       end
 
       @constraints.each { |definition| yield definition }

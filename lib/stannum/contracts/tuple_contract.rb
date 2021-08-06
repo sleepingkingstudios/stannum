@@ -21,20 +21,20 @@ module Stannum::Contracts
   #     item third_base_constraint
   #   end
   #
-  # With A Non-Tuple Object
+  # @example With A Non-Tuple Object
   #   tuple_contract.matches?(nil) #=> false
   #   errors = tuple_contract.errors_for(nil)
   #   errors.to_a
   #   #=> [
   #     {
-  #       type:    'stannum.constraints.methods',
+  #       type:    'stannum.constraints.does_not_have_methods',
   #       data:    { methods: [:[], :each, :size], missing: [:[], :each, :size] },
   #       message: nil,
   #       path:    []
   #     }
   #   ]
   #
-  # With An Object With Missing Items
+  # @example With An Object With Missing Items
   #   tuple_contract.matches?(['Who']) #=> false
   #   errors = tuple_contract.errors_for(['Who'])
   #   errors.to_a
@@ -43,7 +43,7 @@ module Stannum::Contracts
   #     { type: 'stannum.constraints.invalid', data: {}, path: [2], message: nil }
   #   ]
   #
-  # With An Object With Incorrect Items
+  # @example With An Object With Incorrect Items
   #   tuple_contract.matches?(['What', 'What', "I Don't Know"]) #=> false
   #   errors = tuple_contract.errors_for(['What', 'What', "I Don't Know"])
   #   errors.to_a
@@ -51,12 +51,12 @@ module Stannum::Contracts
   #     { type: 'stannum.constraints.invalid', data: {}, path: [0], message: nil }
   #   ]
   #
-  # With An Object With Valid Items
+  # @example With An Object With Valid Items
   #   tuple_contract.matches?(['Who', 'What', "I Don't Know"]) #=> true
   #   errors = tuple_contract.errors_for(['What', 'What', "I Don't Know"])
   #   errors.to_a #=> []
   #
-  # With An Object With Extra Items
+  # @example With An Object With Extra Items
   #   tuple_contract.matches?(['Who', 'What', "I Don't Know", 'Tomorrow', 'Today']) #=> false
   #   errors = tuple_contract.errors_for(['Who', 'What', "I Don't Know", 'Tomorrow', 'Today'])
   #   errors.to_a

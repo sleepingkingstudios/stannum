@@ -1,12 +1,13 @@
 # frozen_string_literal: true
 
+require 'stannum/contracts/indifferent_hash_contract'
 require 'stannum/contracts/parameters'
 
 module Stannum::Contracts::Parameters
   # @api private
   #
   # A KeywordsContract constrains the keywords given for a method.
-  class KeywordsContract < Stannum::Contracts::HashContract
+  class KeywordsContract < Stannum::Contracts::IndifferentHashContract
     # The :type of the error generated for extra keywords.
     EXTRA_KEYWORDS_TYPE = 'stannum.constraints.parameters.extra_keywords'
 
@@ -18,8 +19,6 @@ module Stannum::Contracts::Parameters
     def initialize(**options)
       super(
         allow_extra_keys: false,
-        allow_hash_like:  false,
-        key_type:         Stannum::Constraints::Hashes::IndifferentKey.new,
         **options
       )
     end

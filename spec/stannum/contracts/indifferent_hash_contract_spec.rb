@@ -18,10 +18,10 @@ RSpec.describe Stannum::Contracts::IndifferentHashContract do
   let(:expected_options) do
     {
       allow_extra_keys: false,
-      allow_hash_like:  false,
       key_type:         be_a_constraint(
         Stannum::Constraints::Hashes::IndifferentKey
-      )
+      ),
+      value_type:       nil
     }
   end
 
@@ -62,114 +62,10 @@ RSpec.describe Stannum::Contracts::IndifferentHashContract do
 
   include_examples 'should implement the Contract methods'
 
-  describe '#add_constraint' do
-    describe 'with an invalid key' do
-      let(:constraint)    { Stannum::Constraint.new }
-      let(:error_message) { 'invalid property name nil' }
-
-      it 'should raise an error' do
-        expect do
-          contract.add_constraint(
-            constraint,
-            property:      nil,
-            property_type: :key
-          )
-        end
-          .to raise_error ArgumentError, error_message
-      end
-    end
-
-    describe 'with a string key constraint' do
-      let(:constraint) { Stannum::Constraint.new }
-      let(:definition) { contract.each_constraint.to_a.last }
-
-      it 'should return the contract' do
-        expect(
-          contract.add_constraint(
-            constraint,
-            property:      'name',
-            property_type: :key
-          )
-        )
-          .to be contract
-      end
-
-      it 'should add the constraint to the contract' do
-        expect do
-          contract.add_constraint(
-            constraint,
-            property:      'name',
-            property_type: :key
-          )
-        end
-          .to change { contract.each_constraint.count }
-          .by(1)
-      end
-
-      it 'should store the contract' do # rubocop:disable RSpec/ExampleLength
-        contract.add_constraint(
-          constraint,
-          property:      'name',
-          property_type: :key
-        )
-
-        expect(definition).to be_a_constraint_definition(
-          constraint: constraint,
-          contract:   contract,
-          options:    {
-            property:      'name',
-            property_type: :key,
-            sanity:        false
-          }
-        )
-      end
-    end
-
-    describe 'with a symbol key constraint' do
-      let(:constraint) { Stannum::Constraint.new }
-      let(:definition) { contract.each_constraint.to_a.last }
-
-      it 'should return the contract' do
-        expect(
-          contract.add_constraint(
-            constraint,
-            property:      :name,
-            property_type: :key
-          )
-        )
-          .to be contract
-      end
-
-      it 'should add the constraint to the contract' do
-        expect do
-          contract.add_constraint(
-            constraint,
-            property:      :name,
-            property_type: :key
-          )
-        end
-          .to change { contract.each_constraint.count }
-          .by(1)
-      end
-
-      it 'should store the contract' do # rubocop:disable RSpec/ExampleLength
-        contract.add_constraint(
-          constraint,
-          property:      :name,
-          property_type: :key
-        )
-
-        expect(definition).to be_a_constraint_definition(
-          constraint: constraint,
-          contract:   contract,
-          options:    {
-            property:      :name,
-            property_type: :key,
-            sanity:        false
-          }
-        )
-      end
-    end
+  describe '#key_type' do
+    include_examples 'should define reader',
+      :key_type,
+      -> { be_a_constraint(Stannum::Constraints::Hashes::IndifferentKey) }
   end
 
   describe '#map_value' do
@@ -250,10 +146,10 @@ RSpec.describe Stannum::Contracts::IndifferentHashContract do
     let(:expected) do
       {
         allow_extra_keys: false,
-        allow_hash_like:  false,
         key_type:         an_instance_of(
           Stannum::Constraints::Hashes::IndifferentKey
-        )
+        ),
+        value_type:       nil
       }
     end
 
@@ -266,9 +162,9 @@ RSpec.describe Stannum::Contracts::IndifferentHashContract do
       it { expect(contract.options).to deep_match expected }
     end
 
-    context 'when initialized with allow_hash_like: true' do
-      let(:constructor_options) { super().merge(allow_hash_like: true) }
-      let(:expected)            { super().merge(allow_hash_like: true) }
+    context 'when initialized with value_type: value' do
+      let(:constructor_options) { super().merge(value_type: String) }
+      let(:expected)            { super().merge(value_type: String) }
 
       it { expect(contract.options).to deep_match expected }
     end
