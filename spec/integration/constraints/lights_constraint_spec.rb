@@ -1,9 +1,13 @@
 # frozen_string_literal: true
 
+require 'stannum/rspec/match_errors'
+
 require 'support/constraints/lights_constraint'
 
 # @note Integration spec for Stannum::Constraints::Delegator.
 RSpec.describe Spec::LightsConstraint do
+  include Stannum::RSpec::Matchers
+
   subject(:constraint) { described_class.new(count) }
 
   let(:count) { 4 }
@@ -103,7 +107,7 @@ RSpec.describe Spec::LightsConstraint do
     describe 'with a matching value' do
       let(:actual) { 4 }
 
-      it { expect(errors).to be nil }
+      it { expect(errors).to match_errors(Stannum::Errors.new) }
 
       it { expect(status).to be true }
     end
@@ -172,7 +176,7 @@ RSpec.describe Spec::LightsConstraint do
     describe 'with nil' do
       let(:actual) { nil }
 
-      it { expect(errors).to be nil }
+      it { expect(errors).to match_errors(Stannum::Errors.new) }
 
       it { expect(status).to be true }
     end
@@ -180,7 +184,7 @@ RSpec.describe Spec::LightsConstraint do
     describe 'with a non-matching value' do
       let(:actual) { 5 }
 
-      it { expect(errors).to be nil }
+      it { expect(errors).to match_errors(Stannum::Errors.new) }
 
       it { expect(status).to be true }
     end

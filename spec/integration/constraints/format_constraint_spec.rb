@@ -1,9 +1,13 @@
 # frozen_string_literal: true
 
+require 'stannum/rspec/match_errors'
+
 require 'support/constraints/format_constraint'
 
 # @note Integration spec for Stannum::Constraint.
 RSpec.describe Spec::FormatConstraint do
+  include Stannum::RSpec::Matchers
+
   subject(:constraint) { described_class.new(format) }
 
   let(:format) { /a/ }
@@ -135,7 +139,7 @@ RSpec.describe Spec::FormatConstraint do
     describe 'with a matching string' do
       let(:actual) { 'bar' }
 
-      it { expect(errors).to be nil }
+      it { expect(errors).to match_errors(Stannum::Errors.new) }
 
       it { expect(status).to be true }
     end
@@ -224,7 +228,7 @@ RSpec.describe Spec::FormatConstraint do
     describe 'with nil' do
       let(:actual) { nil }
 
-      it { expect(errors).to be nil }
+      it { expect(errors).to match_errors(Stannum::Errors.new) }
 
       it { expect(status).to be true }
     end
@@ -232,7 +236,7 @@ RSpec.describe Spec::FormatConstraint do
     describe 'with an Object' do
       let(:actual) { Object.new.freeze }
 
-      it { expect(errors).to be nil }
+      it { expect(errors).to match_errors(Stannum::Errors.new) }
 
       it { expect(status).to be true }
     end
@@ -240,7 +244,7 @@ RSpec.describe Spec::FormatConstraint do
     describe 'with an a non-matching string' do
       let(:actual) { 'foo' }
 
-      it { expect(errors).to be nil }
+      it { expect(errors).to match_errors(Stannum::Errors.new) }
 
       it { expect(status).to be true }
     end
