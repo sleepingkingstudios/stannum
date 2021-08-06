@@ -255,7 +255,6 @@ module Spec::Support::Examples
               end
             end
 
-            # rubocop:disable RSpec/RepeatedDescription
             if negated
               it 'should match the first passing sanity constraint',
                 :aggregate_failures \
@@ -267,7 +266,7 @@ module Spec::Support::Examples
                   .with(sanity_values.first)
               end
 
-              it 'should not match the remaining sanity constraints',
+              it 'should not match the remaining sanity constraints', # rubocop:disable RSpec/RepeatedDescription
                 :aggregate_failures \
               do
                 contract.send(match_method, actual)
@@ -289,7 +288,7 @@ module Spec::Support::Examples
                 end
               end
 
-              it 'should not match the remaining sanity constraints',
+              it 'should not match the remaining sanity constraints', # rubocop:disable RSpec/RepeatedDescription
                 :aggregate_failures \
               do
                 contract.send(match_method, actual)
@@ -299,7 +298,6 @@ module Spec::Support::Examples
                 end
               end
             end
-            # rubocop:enable RSpec/RepeatedDescription
 
             it 'should not match the constraints', :aggregate_failures do
               contract.send(match_method, actual)
@@ -710,7 +708,6 @@ module Spec::Support::Examples
               end
             end
 
-            # rubocop:disable RSpec/RepeatedDescription
             if negated
               it 'should update the first sanity constraint errors' do
                 contract.send(match_method, actual)
@@ -723,7 +720,7 @@ module Spec::Support::Examples
                   )
               end
 
-              it 'should not update the remaining sanity constraint errors',
+              it 'should not update the remaining sanity constraint errors', # rubocop:disable RSpec/RepeatedDescription
                 :aggregate_failures \
               do
                 contract.send(match_method, actual)
@@ -751,7 +748,7 @@ module Spec::Support::Examples
                   )
               end
 
-              it 'should not update the remaining sanity constraint errors',
+              it 'should not update the remaining sanity constraint errors', # rubocop:disable RSpec/RepeatedDescription
                 :aggregate_failures \
               do
                 contract.send(match_method, actual)
@@ -761,7 +758,6 @@ module Spec::Support::Examples
                 end
               end
             end
-            # rubocop:enable RSpec/RepeatedDescription
 
             it 'should not update the constraint errors', :aggregate_failures do
               contract.send(match_method, actual)
@@ -808,7 +804,6 @@ module Spec::Support::Examples
             end
 
             if negated
-              # rubocop:disable RSpec/ExampleLength
               it 'should update the sanity constraint errors',
                 :aggregate_failures \
               do
@@ -823,7 +818,6 @@ module Spec::Support::Examples
                     )
                 end
               end
-              # rubocop:enable RSpec/ExampleLength
             else
               it 'should not update the sanity constraint errors',
                 :aggregate_failures \

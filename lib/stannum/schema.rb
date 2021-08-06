@@ -13,6 +13,8 @@ module Stannum
     include Enumerable
 
     def initialize
+      super
+
       @attributes = {}
     end
 

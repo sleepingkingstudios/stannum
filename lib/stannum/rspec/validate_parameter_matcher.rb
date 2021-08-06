@@ -2,7 +2,7 @@
 
 begin
   require 'rspec/sleeping_king_studios/matchers/core/deep_matcher'
-rescue NameError # rubocop:disable Lint/HandleExceptions
+rescue NameError
   # Optional dependency.
 end
 
@@ -166,7 +166,7 @@ module Stannum::RSpec
     #
     # @return [true, false] true if the object validates the parameter,
     #   otherwise false.
-    def matches?(actual) # rubocop:disable Metrics/AbcSize, Metrics/CyclomaticComplexity, Metrics/MethodLength, Metrics/PerceivedComplexity
+    def matches?(actual) # rubocop:disable Metrics/CyclomaticComplexity, Metrics/MethodLength, Metrics/PerceivedComplexity
       @actual         = actual
       @failure_reason = nil
 
@@ -266,10 +266,11 @@ module Stannum::RSpec
 
       mock_validation_handler do
         actual.send(method_name, *arguments, **keywords, &block)
-      rescue InvalidParameterHandledError # rubocop:disable Lint/HandleExceptions
+      rescue InvalidParameterHandledError
         # Do nothing.
       end
-    rescue ArgumentError # rubocop:disable Lint/HandleExceptions
+    rescue ArgumentError
+      # Do nothing.
     end
 
     def disallow_fluent_options! # rubocop:disable Metrics/MethodLength

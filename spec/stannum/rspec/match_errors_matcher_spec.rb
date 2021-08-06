@@ -44,7 +44,7 @@ RSpec.describe Stannum::RSpec::MatchErrorsMatcher do
       let(:actual) { nil }
       let(:failure_message) do
         'expected the errors not to match the expected errors, but the object' \
-        ' is not an array or Errors object'
+          ' is not an array or Errors object'
       end
 
       it { expect(matcher.does_not_match? actual).to be false }
@@ -56,7 +56,7 @@ RSpec.describe Stannum::RSpec::MatchErrorsMatcher do
       let(:actual) { Object.new.freeze }
       let(:failure_message) do
         'expected the errors not to match the expected errors, but the object' \
-        ' is not an array or Errors object'
+          ' is not an array or Errors object'
       end
 
       it { expect(matcher.does_not_match? actual).to be false }
@@ -123,7 +123,7 @@ RSpec.describe Stannum::RSpec::MatchErrorsMatcher do
         let(:actual) { nil }
         let(:failure_message) do
           'expected the errors not to match the expected errors, but the' \
-          ' object is not an array or Errors object'
+            ' object is not an array or Errors object'
         end
 
         it { expect(matcher.does_not_match? actual).to be false }
@@ -135,7 +135,7 @@ RSpec.describe Stannum::RSpec::MatchErrorsMatcher do
         let(:actual) { Object.new.freeze }
         let(:failure_message) do
           'expected the errors not to match the expected errors, but the' \
-          ' object is not an array or Errors object'
+            ' object is not an array or Errors object'
         end
 
         it { expect(matcher.does_not_match? actual).to be false }
@@ -308,7 +308,7 @@ RSpec.describe Stannum::RSpec::MatchErrorsMatcher do
       let(:actual) { nil }
       let(:failure_message) do
         'expected the errors to match the expected errors, but the object is' \
-        ' not an array or Errors object'
+          ' not an array or Errors object'
       end
 
       it { expect(matcher.matches? actual).to be false }
@@ -320,7 +320,7 @@ RSpec.describe Stannum::RSpec::MatchErrorsMatcher do
       let(:actual) { Object.new.freeze }
       let(:failure_message) do
         'expected the errors to match the expected errors, but the object is' \
-        ' not an array or Errors object'
+          ' not an array or Errors object'
       end
 
       it { expect(matcher.matches? actual).to be false }
@@ -387,7 +387,7 @@ RSpec.describe Stannum::RSpec::MatchErrorsMatcher do
         let(:actual) { nil }
         let(:failure_message) do
           'expected the errors to match the expected errors, but the object' \
-          ' is not an array or Errors object'
+            ' is not an array or Errors object'
         end
 
         it { expect(matcher.matches? actual).to be false }
@@ -399,7 +399,7 @@ RSpec.describe Stannum::RSpec::MatchErrorsMatcher do
         let(:actual) { Object.new.freeze }
         let(:failure_message) do
           'expected the errors to match the expected errors, but the object' \
-          ' is not an array or Errors object'
+            ' is not an array or Errors object'
         end
 
         it { expect(matcher.matches? actual).to be false }

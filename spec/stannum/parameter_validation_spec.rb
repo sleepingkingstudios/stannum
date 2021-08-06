@@ -10,7 +10,7 @@ RSpec.describe Stannum::ParameterValidation do
       inner_method(*arguments, **keywords)
     end
 
-    klass.define_method(:inner_method) { |*_, **_| }
+    klass.define_method(:inner_method) { |*_, **_| nil }
   end
 
   describe '::MethodValidations' do
@@ -238,7 +238,7 @@ RSpec.describe Stannum::ParameterValidation do
 
         begin
           instance.send(method_name, *arguments, **keywords, &block)
-        rescue ArgumentError # rubocop:disable Lint/HandleExceptions
+        rescue ArgumentError
           # Do nothing.
         end
 
@@ -350,7 +350,7 @@ RSpec.describe Stannum::ParameterValidation do
 
             begin
               instance.send(method_name, *arguments, **keywords, &block)
-            rescue ArgumentError # rubocop:disable Lint/HandleExceptions
+            rescue ArgumentError
               # Do nothing.
             end
 
@@ -461,7 +461,7 @@ RSpec.describe Stannum::ParameterValidation do
 
             begin
               instance.send(method_name, *arguments, **keywords, &block)
-            rescue ArgumentError # rubocop:disable Lint/HandleExceptions
+            rescue ArgumentError
               # Do nothing.
             end
 
@@ -544,7 +544,7 @@ RSpec.describe Stannum::ParameterValidation do
 
       context 'with a validation on both the parent class and the subclass' do
         it 'should add a parameters contract to ::MethodValidations' do
-          Spec::ExampleClass.validate_parameters(method_name) {}
+          Spec::ExampleClass.validate_parameters(method_name) { nil }
           Spec::ExampleSubclass.validate_parameters(method_name, &validations)
 
           expect(
@@ -573,7 +573,7 @@ RSpec.describe Stannum::ParameterValidation do
 
             begin
               instance.send(method_name, *arguments, **keywords, &block)
-            rescue ArgumentError # rubocop:disable Lint/HandleExceptions
+            rescue ArgumentError
               # Do nothing.
             end
 

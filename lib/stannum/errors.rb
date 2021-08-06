@@ -416,7 +416,7 @@ module Stannum
       child = self.class.new
 
       each do |error|
-        child
+        child # rubocop:disable Style/SingleArgumentDig
           .dig(error.fetch(:path, []))
           .add(
             error.fetch(:type),
@@ -492,7 +492,7 @@ module Stannum
 
     # @return [String] a human-readable representation of the object.
     def inspect
-      oid = super[2...-1].split(' ').first.split(':').last
+      oid = super[2...-1].split.first.split(':').last
 
       "#<#{self.class.name}:#{oid} @summary=%{#{summary}}>"
     end
@@ -592,13 +592,13 @@ module Stannum
 
     protected
 
-    def each_error
+    def each_error(&block)
       return enum_for(:each_error) unless block_given?
 
-      @errors.each { |item| yield item }
+      @errors.each(&block)
 
       @children.each_value do |child|
-        child.each_error { |item| yield item }
+        child.each_error(&block)
       end
     end
 
@@ -653,7 +653,7 @@ module Stannum
       values = ['an instance of Stannum::Errors', 'an array of error hashes']
       values << 'nil' if allow_nil
 
-      'value must be ' +
+      'value must be ' + # rubocop:disable Style/StringConcatenation
         tools.array_tools.humanize_list(values, last_separator: ' or ')
     end
 
@@ -673,7 +673,7 @@ module Stannum
         data = err.fetch(:data, {})
         path = err.fetch(:path, [])
 
-        child.dig(path).add(err[:type], message: err[:message], **data)
+        child.dig(path).add(err[:type], message: err[:message], **data) # rubocop:disable Style/SingleArgumentDig
       end
 
       child

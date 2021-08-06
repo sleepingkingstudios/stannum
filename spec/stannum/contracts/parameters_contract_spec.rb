@@ -199,7 +199,7 @@ RSpec.describe Stannum::Contracts::ParametersContract do
         let(:implementation) { -> {} }
         let(:error_message) do
           'expected either a block or a constraint instance, but received' \
-          " both a block and #{constraint.inspect}"
+            " both a block and #{constraint.inspect}"
         end
 
         it 'should raise an error' do
@@ -393,7 +393,7 @@ RSpec.describe Stannum::Contracts::ParametersContract do
         let(:implementation) { -> {} }
         let(:error_message) do
           'expected either a block or a constraint instance, but received' \
-          " both a block and #{constraint.inspect}"
+            " both a block and #{constraint.inspect}"
         end
 
         it 'should raise an error' do

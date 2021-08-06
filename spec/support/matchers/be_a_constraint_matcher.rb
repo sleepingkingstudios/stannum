@@ -44,10 +44,10 @@ module Spec::Support::Matchers
 
     # @return [String] The message displayed when the expectation does not match
     #   the actual object.
-    def failure_message # rubocop:disable Metrics/AbcSize
+    def failure_message
       message = "expected #{actual.inspect} to #{constraint_description}"
 
-      return message + ', but is not a constraint' unless constraint?
+      return "#{message}, but is not a constraint" unless constraint?
 
       if matches_constraint?
         message += ", but the options do not match:\n"
@@ -121,7 +121,7 @@ module Spec::Support::Matchers
         .map { |option, value| "#{option}: #{value.inspect}" }
         .join(', ')
 
-      ' with options ' + formatted_options
+      " with options #{formatted_options}"
     end
 
     def options_match?
