@@ -5,7 +5,7 @@ require 'support/structs/factory'
 require 'support/structs/gadget'
 require 'support/structs/manufacturer'
 
-# @note Integration spec for Stannum::Contracts::PropertyContract.
+# @note Integration spec for Stannum::Contract.
 RSpec.describe Spec::ManufacturerContract do
   subject(:contract) { described_class.new }
 

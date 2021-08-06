@@ -182,8 +182,7 @@ RSpec.describe Stannum::Struct do
     it { expect(described_class).to define_constant(:Contract) }
 
     it 'should be a contract instance' do
-      expect(described_class::Contract)
-        .to be_a(Stannum::Contracts::PropertyContract)
+      expect(described_class::Contract).to be_a(Stannum::Contract)
     end
 
     it { expect(constraints.size).to be 0 }

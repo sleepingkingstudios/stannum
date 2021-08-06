@@ -87,7 +87,7 @@ RSpec.describe Spec::Gizmo do
   describe '.contract' do
     let(:contract) { described_class.contract }
 
-    it { expect(contract).to be_a Stannum::Contracts::PropertyContract }
+    it { expect(contract).to be_a Stannum::Contract }
 
     describe 'with an empty struct' do
       let(:expected_errors) do

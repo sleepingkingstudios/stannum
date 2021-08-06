@@ -65,14 +65,14 @@ module Stannum::Contracts
   #   response = Response.new(true, {}, 'abc')
   #   hash_contract.matches?(response)        #=> true
   #   hash_contract.errors_for(response).to_a #=> []
-  class MapContract < Stannum::Contracts::PropertyContract
+  class MapContract < Stannum::Contract
     # Builder class for defining item constraints for a Contract.
     #
     # This class should not be invoked directly. Instead, pass a block to the
     # constructor for HashContract.
     #
     # @api private
-    class Builder < Stannum::Contracts::PropertyContract::Builder
+    class Builder < Stannum::Contract::Builder
       # Defines a key constraint on the contract.
       #
       # @overload key(key, constraint, **options)
@@ -130,7 +130,7 @@ module Stannum::Contracts
     #
     # @return [self] the contract.
     #
-    # @see Stannum::Contracts::PropertyContract#add_constraint.
+    # @see Stannum::Contract#add_constraint.
     def add_key_constraint(key, constraint, sanity: false, **options)
       add_constraint(
         constraint,

@@ -64,14 +64,14 @@ module Stannum::Contracts
   #     { type: 'stannum.constraints.tuples.extra_items', data: {}, path: [3], message: nil },
   #     { type: 'stannum.constraints.tuples.extra_items', data: {}, path: [4], message: nil }
   #   ]
-  class TupleContract < Stannum::Contracts::PropertyContract
+  class TupleContract < Stannum::Contract
     # Builder class for defining item constraints for a TupleContract.
     #
     # This class should not be invoked directly. Instead, pass a block to the
     # constructor for TupleContract.
     #
     # @api private
-    class Builder < Stannum::Contracts::PropertyContract::Builder
+    class Builder < Stannum::Contract::Builder
       # @param contract [Stannum::Contract] The contract to which constraints
       #   are added.
       def initialize(contract)
@@ -136,7 +136,7 @@ module Stannum::Contracts
     #
     # @return [self] the contract.
     #
-    # @see Stannum::Contracts::PropertyContract#add_constraint.
+    # @see Stannum::Contract#add_constraint.
     def add_index_constraint(index, constraint, sanity: false, **options)
       add_constraint(
         constraint,
