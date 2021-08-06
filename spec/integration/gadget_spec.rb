@@ -24,13 +24,13 @@ RSpec.describe Spec::Gadget do
 
   describe '.attributes' do
     it 'should define the class method' do
-      expect(described_class.attributes).to be_a Stannum::Structs::Attributes
+      expect(described_class.attributes).to be_a Stannum::Schema
     end
 
     describe '.[]' do
       it 'should return the attribute' do
         expect(described_class.attributes[:name])
-          .to be_a(Stannum::Structs::Attribute)
+          .to be_a(Stannum::Attribute)
           .and(
             have_attributes(
               name:    'name',
@@ -61,7 +61,7 @@ RSpec.describe Spec::Gadget do
             options: { default: 0, required: true }
           }
         ].map do |attributes|
-          an_instance_of(Stannum::Structs::Attribute).and(
+          an_instance_of(Stannum::Attribute).and(
             have_attributes(attributes)
           )
         end

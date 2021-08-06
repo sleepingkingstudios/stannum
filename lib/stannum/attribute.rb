@@ -1,9 +1,9 @@
 # frozen_string_literal: true
 
-require 'stannum/structs'
+require 'stannum'
 require 'stannum/support/optional'
 
-module Stannum::Structs
+module Stannum
   # Data object representing an attribute on a struct.
   class Attribute
     include Stannum::Support::Optional

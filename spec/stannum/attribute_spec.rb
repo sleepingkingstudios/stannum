@@ -1,10 +1,10 @@
 # frozen_string_literal: true
 
-require 'stannum/structs/attribute'
+require 'stannum/attribute'
 
 require 'support/examples/optional_examples'
 
-RSpec.describe Stannum::Structs::Attribute do
+RSpec.describe Stannum::Attribute do
   include Spec::Support::Examples::OptionalExamples
 
   shared_context 'with default: value' do
