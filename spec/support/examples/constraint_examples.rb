@@ -148,6 +148,30 @@ module Spec::Support::Examples
         end
       end
 
+      describe '#match' do
+        it 'should return an array with two items' do
+          expect(subject.match(nil))
+            .to be_a(Array)
+            .and(have_attributes(size: 2))
+        end
+
+        it { expect(subject.match(nil).first).to be_boolean }
+
+        it { expect(subject.match(nil).last).to be_a(Stannum::Errors) }
+      end
+
+      describe '#negated_match' do
+        it 'should return an array with two items' do
+          expect(subject.negated_match(nil))
+            .to be_a(Array)
+            .and(have_attributes(size: 2))
+        end
+
+        it { expect(subject.negated_match(nil).first).to be_boolean }
+
+        it { expect(subject.negated_match(nil).last).to be_a(Stannum::Errors) }
+      end
+
       describe '#negated_type' do
         it { expect(subject.type).to be == described_class::TYPE }
 
@@ -223,7 +247,7 @@ module Spec::Support::Examples
 
       it { expect(actual_status).to be true }
 
-      it { expect(actual_errors).to be nil }
+      it { expect(actual_errors).to match_errors(Stannum::Errors.new) }
     end
 
     shared_examples 'should not match the constraint' do |messages: false|

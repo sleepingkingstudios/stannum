@@ -8,36 +8,6 @@
 - Should provide examples of passing and failing objects.
 - Should document the methods.
 
-## Version 0.1
-
-### Constraints
-
-#### Type Constraints
-
-- Types::BigDecimalType
-- Types::BooleanType
-- Types::FloatType
-- Types::IntegerType
-
-### Refactoring
-
-- Refactor Type constraints to include Type suffix ?
-  - e.g. Array => ArrayType (avoid collision with core class!)
-- Harmonize HashContract, TupleContract.
-  - define MapContract, TupleContract
-    - uses Signature sanity constraint
-    - defines a #type_constraint inner reader
-  - define HashContract < MapContract, ArrayContract < TupleContract
-    - uses Type sanity constraint
-    - overrides #type_constraint inner reader
-- Refactor Stannum::Structs::Attribute to Stannum::Attribute.
-- Refactor Stannum::Structs::Attributes to Stannum::Schema.
-
-### Standardization
-
-- Always return a `Stannum::Errors` from `match`.
-- Refactor `#errors_for` to always check `#matches`.
-
 ## Future Versions
 
 - What happens to a frozen constraint? A frozen contract?

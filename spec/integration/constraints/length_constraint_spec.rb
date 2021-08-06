@@ -1,9 +1,13 @@
 # frozen_string_literal: true
 
+require 'stannum/rspec/match_errors'
+
 require 'support/constraints/length_constraint'
 
 # @note Integration spec for Stannum::Constraints::Base.
 RSpec.describe Spec::LengthConstraint do
+  include Stannum::RSpec::Matchers
+
   subject(:constraint) { described_class.new(length) }
 
   let(:length) { 0 }
@@ -145,7 +149,7 @@ RSpec.describe Spec::LengthConstraint do
     describe 'with an Array with matching length' do
       let(:actual) { [] }
 
-      it { expect(errors).to be nil }
+      it { expect(errors).to match_errors(Stannum::Errors.new) }
 
       it { expect(status).to be true }
     end
@@ -161,7 +165,7 @@ RSpec.describe Spec::LengthConstraint do
     describe 'with a String with matching length' do
       let(:actual) { '' }
 
-      it { expect(errors).to be nil }
+      it { expect(errors).to match_errors(Stannum::Errors.new) }
 
       it { expect(status).to be true }
     end
@@ -274,7 +278,7 @@ RSpec.describe Spec::LengthConstraint do
     describe 'with nil' do
       let(:actual) { nil }
 
-      it { expect(errors).to be nil }
+      it { expect(errors).to match_errors(Stannum::Errors.new) }
 
       it { expect(status).to be true }
     end
@@ -282,7 +286,7 @@ RSpec.describe Spec::LengthConstraint do
     describe 'with an Object' do
       let(:actual) { Object.new.freeze }
 
-      it { expect(errors).to be nil }
+      it { expect(errors).to match_errors(Stannum::Errors.new) }
 
       it { expect(status).to be true }
     end
@@ -290,7 +294,7 @@ RSpec.describe Spec::LengthConstraint do
     describe 'with an Array with non-matching length' do
       let(:actual) { %w[ichi ni san] }
 
-      it { expect(errors).to be nil }
+      it { expect(errors).to match_errors(Stannum::Errors.new) }
 
       it { expect(status).to be true }
     end
@@ -306,7 +310,7 @@ RSpec.describe Spec::LengthConstraint do
     describe 'with a String with non-matching length' do
       let(:actual) { 'foo' }
 
-      it { expect(errors).to be nil }
+      it { expect(errors).to match_errors(Stannum::Errors.new) }
 
       it { expect(status).to be true }
     end

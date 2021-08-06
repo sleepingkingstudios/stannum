@@ -142,7 +142,9 @@ module Stannum::Constraints
     # @see #errors_for
     # @see #matches?
     def match(actual)
-      matches?(actual) ? true : [false, errors_for(actual)]
+      return [true, Stannum::Errors.new] if matches?(actual)
+
+      [false, errors_for(actual)]
     end
 
     # @overload matches?(actual)
@@ -231,7 +233,9 @@ module Stannum::Constraints
     # @see #match
     # @see #negated_errors_for
     def negated_match(actual)
-      does_not_match?(actual) ? true : [false, negated_errors_for(actual)]
+      return [true, Stannum::Errors.new] if does_not_match?(actual)
+
+      [false, negated_errors_for(actual)]
     end
 
     # @return [String, nil] The default error message generated for a matching
