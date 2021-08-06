@@ -88,7 +88,7 @@ RSpec.describe Stannum::Struct do
 
     it { expect(described_class).to define_constant(:Attributes) }
 
-    it { expect(attributes).to be_a Stannum::Structs::Attributes }
+    it { expect(attributes).to be_a Stannum::Schema }
 
     it { expect(described_class.ancestors).to include attributes }
 
@@ -103,7 +103,7 @@ RSpec.describe Stannum::Struct do
 
       it { expect(described_class).to define_constant(:Attributes) }
 
-      it { expect(attributes).to be_a Stannum::Structs::Attributes }
+      it { expect(attributes).to be_a Stannum::Schema }
 
       it { expect(attributes).not_to be described_class.superclass::Attributes }
 

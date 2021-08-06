@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-require 'stannum/structs/attributes'
+require 'stannum/schema'
 
 module Stannum::Structs
   # Decorator that adds ::Attributes and ::Contract constants to a struct class.
@@ -25,7 +25,7 @@ module Stannum::Structs
     private
 
     def initialize_attributes(struct_class)
-      attributes = Stannum::Structs::Attributes.new
+      attributes = Stannum::Schema.new
 
       struct_class.const_set(:Attributes, attributes)
 

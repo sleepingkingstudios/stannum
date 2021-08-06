@@ -24,7 +24,7 @@ RSpec.describe Spec::Gadget do
 
   describe '.attributes' do
     it 'should define the class method' do
-      expect(described_class.attributes).to be_a Stannum::Structs::Attributes
+      expect(described_class.attributes).to be_a Stannum::Schema
     end
 
     describe '.[]' do

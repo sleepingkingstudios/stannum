@@ -62,7 +62,7 @@ RSpec.describe Stannum::Structs::Factory do
 
         expect(Spec::CustomStruct)
           .to define_constant(:Attributes)
-          .with_value(an_instance_of Stannum::Structs::Attributes)
+          .with_value(an_instance_of Stannum::Schema)
       end
 
       it 'should include ::Attributes' do
@@ -92,7 +92,7 @@ RSpec.describe Stannum::Structs::Factory do
 
         expect(Spec::CustomStruct)
           .to define_constant(:Attributes)
-          .with_value(an_instance_of Stannum::Structs::Attributes)
+          .with_value(an_instance_of Stannum::Schema)
 
         expect(Spec::CustomStruct::Attributes)
           .not_to be Spec::AncestorStruct::Attributes

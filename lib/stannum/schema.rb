@@ -4,11 +4,11 @@ require 'forwardable'
 
 require 'stannum/attribute'
 
-module Stannum::Structs
+module Stannum
   # Abstract class for defining attribute methods for a struct.
   #
   # @see Stannum::Attribute.
-  class Attributes < Module
+  class Schema < Module
     extend  Forwardable
     include Enumerable
 
@@ -101,7 +101,7 @@ module Stannum::Structs
     def attributes
       ancestors
         .reverse_each
-        .select { |mod| mod.is_a?(Stannum::Structs::Attributes) }
+        .select { |mod| mod.is_a?(Stannum::Schema) }
         .map(&:own_attributes)
         .reduce(&:merge)
     end

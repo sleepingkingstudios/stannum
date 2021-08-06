@@ -2,9 +2,9 @@
 
 require 'bigdecimal'
 
-require 'stannum/structs/attributes'
+require 'stannum/schema'
 
-RSpec.describe Stannum::Structs::Attributes do
+RSpec.describe Stannum::Schema do
   shared_context 'when there are many defined attributes' do
     let(:defined_attributes) do
       [

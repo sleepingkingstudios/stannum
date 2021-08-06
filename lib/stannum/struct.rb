@@ -2,8 +2,8 @@
 
 require 'sleeping_king_studios/tools/toolbox/mixin'
 
-require 'stannum/structs/attributes'
 require 'stannum/structs/factory'
+require 'stannum/schema'
 
 module Stannum
   # Abstract class for defining objects with structured attributes.
@@ -123,8 +123,7 @@ module Stannum
       end
       # rubocop:enable Metrics/MethodLength
 
-      # @return [Stannum::Structs::Attributes] The Attributes object for the
-      #   Struct.
+      # @return [Stannum::Schema] The Schema object for the Struct.
       def attributes
         self::Attributes
       end
