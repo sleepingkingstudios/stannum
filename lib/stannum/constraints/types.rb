@@ -20,5 +20,6 @@ module Stannum::Constraints
     autoload :ProcType,       'stannum/constraints/types/proc_type'
     autoload :StringType,     'stannum/constraints/types/string_type'
     autoload :SymbolType,     'stannum/constraints/types/symbol_type'
+    autoload :TimeType,       'stannum/constraints/types/time_type'
   end
 end
