@@ -2,7 +2,6 @@
 
 require 'sleeping_king_studios/tools/toolbox/mixin'
 
-require 'stannum/structs/factory'
 require 'stannum/schema'
 
 module Stannum
@@ -75,7 +74,7 @@ module Stannum
   #     name:        'Diode',
   #     description: 'A low budget Diode',
   #   ) #=> true
-  module Struct
+  module Struct # rubocop:disable Metrics/ModuleLength
     extend SleepingKingStudios::Tools::Toolbox::Mixin
 
     # Class methods to extend the class when including Stannum::Struct.
@@ -196,9 +195,7 @@ module Stannum
       def inherited(other)
         super
 
-        return unless other.is_a?(Class)
-
-        Stannum::Structs::Factory.instance.call(other)
+        Struct.build(other) if other.is_a?(Class)
       end
 
       def resolve_constraint(attr_name, constraint)
@@ -229,15 +226,46 @@ module Stannum
     end
 
     class << self
-      # @api private
-      #
-      # Hook to execute when Stannum::Struct is included in a Class or Module.
+      # @private
+      def build(struct_class)
+        return if struct_class?(struct_class)
+
+        initialize_attributes(struct_class)
+        initialize_contract(struct_class)
+      end
+
+      private
+
       def included(other)
         super
 
-        return unless other.is_a?(Class)
+        Struct.build(other) if other.is_a?(Class)
+      end
 
-        Stannum::Structs::Factory.instance.call(other)
+      def initialize_attributes(struct_class)
+        attributes = Stannum::Schema.new
+
+        struct_class.const_set(:Attributes, attributes)
+
+        if struct_class?(struct_class.superclass)
+          attributes.include(struct_class.superclass::Attributes)
+        end
+
+        struct_class.include(attributes)
+      end
+
+      def initialize_contract(struct_class)
+        contract = Stannum::Contracts::PropertyContract.new
+
+        struct_class.const_set(:Contract, contract)
+
+        return unless struct_class?(struct_class.superclass)
+
+        contract.include(struct_class.superclass::Contract)
+      end
+
+      def struct_class?(struct_class)
+        struct_class.const_defined?(:Attributes, false)
       end
     end
 
