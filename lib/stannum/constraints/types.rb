@@ -6,6 +6,7 @@ module Stannum::Constraints
   # Namespace for type constraints.
   module Types
     autoload :ArrayType,      'stannum/constraints/types/array_type'
+    autoload :DateType,       'stannum/constraints/types/date_type'
     autoload :BigDecimalType, 'stannum/constraints/types/big_decimal_type'
     autoload :FloatType,      'stannum/constraints/types/float_type'
     autoload :HashType,       'stannum/constraints/types/hash_type'
