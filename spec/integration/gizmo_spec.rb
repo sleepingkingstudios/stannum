@@ -31,7 +31,7 @@ RSpec.describe Spec::Gizmo do
     describe '.[]' do
       it 'should return the attribute' do
         expect(described_class.attributes[:name])
-          .to be_a(Stannum::Structs::Attribute)
+          .to be_a(Stannum::Attribute)
           .and(
             have_attributes(
               name:    'name',
@@ -67,7 +67,7 @@ RSpec.describe Spec::Gizmo do
             options: { required: true }
           }
         ].map do |attributes|
-          an_instance_of(Stannum::Structs::Attribute).and(
+          an_instance_of(Stannum::Attribute).and(
             have_attributes(attributes)
           )
         end

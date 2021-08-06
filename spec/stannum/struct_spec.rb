@@ -707,7 +707,7 @@ RSpec.describe Stannum::Struct do
   describe '.attribute' do
     shared_examples 'should define the attribute' do
       let(:expected) do
-        an_instance_of(Stannum::Structs::Attribute)
+        an_instance_of(Stannum::Attribute)
           .and(
             have_attributes(
               name:    attr_name.to_s,

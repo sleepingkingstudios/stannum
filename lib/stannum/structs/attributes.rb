@@ -2,12 +2,12 @@
 
 require 'forwardable'
 
-require 'stannum/structs/attribute'
+require 'stannum/attribute'
 
 module Stannum::Structs
   # Abstract class for defining attribute methods for a struct.
   #
-  # @see Stannum::Structs::Attribute.
+  # @see Stannum::Attribute.
   class Attributes < Module
     extend  Forwardable
     include Enumerable
@@ -20,7 +20,7 @@ module Stannum::Structs
     #   Iterates through the the attributes by name and attribute object.
     #
     #   @yieldparam name [String] The name of the attribute.
-    #   @yieldparam attribute [Stannum::Structs::Attribute] The attribute object.
+    #   @yieldparam attribute [Stannum::Attribute] The attribute object.
 
     # @!method each_key
     #   Iterates through the the attributes by name.
@@ -30,8 +30,7 @@ module Stannum::Structs
     # @!method each_value
     #   Iterates through the the attributes by attribute object.
     #
-    #   @yieldparam attribute [Stannum::Structs::Attribute] The attribute
-    #     object.
+    #   @yieldparam attribute [Stannum::Attribute] The attribute object.
 
     def_delegators :attributes,
       :each,
@@ -42,7 +41,7 @@ module Stannum::Structs
     #
     # @param key [String, Symbol] The name of the requested attribute.
     #
-    # @return [Stannum::Structs::Attribute] The attribute object.
+    # @return [Stannum::Attribute] The attribute object.
     #
     # @raise ArgumentError if the key is invalid.
     # @raise KeyError if the attribute is not defined.
@@ -63,7 +62,7 @@ module Stannum::Structs
     #
     # @see Stannum::Struct
     def define_attribute(name:, options:, type:)
-      attribute = Stannum::Structs::Attribute.new(
+      attribute = Stannum::Attribute.new(
         name:    name,
         options: options,
         type:    type

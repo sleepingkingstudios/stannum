@@ -324,7 +324,7 @@ RSpec.describe Stannum::Structs::Attributes do
 
       describe 'with a valid String' do
         def be_the_expected_attribute
-          an_instance_of(Stannum::Structs::Attribute)
+          an_instance_of(Stannum::Attribute)
             .and(
               have_attributes(
                 name:    'name',
@@ -339,7 +339,7 @@ RSpec.describe Stannum::Structs::Attributes do
 
       describe 'with a valid Symbol' do
         def be_the_expected_attribute
-          an_instance_of(Stannum::Structs::Attribute)
+          an_instance_of(Stannum::Attribute)
             .and(
               have_attributes(
                 name:    'name',
@@ -356,7 +356,7 @@ RSpec.describe Stannum::Structs::Attributes do
     wrap_context 'when parent attributes are included' do
       describe 'with a valid String' do
         def be_the_expected_attribute
-          an_instance_of(Stannum::Structs::Attribute)
+          an_instance_of(Stannum::Attribute)
             .and(
               have_attributes(
                 name:    'size',
@@ -371,7 +371,7 @@ RSpec.describe Stannum::Structs::Attributes do
 
       describe 'with a valid Symbol' do
         def be_the_expected_attribute
-          an_instance_of(Stannum::Structs::Attribute)
+          an_instance_of(Stannum::Attribute)
             .and(
               have_attributes(
                 name:    'size',
@@ -388,7 +388,7 @@ RSpec.describe Stannum::Structs::Attributes do
     wrap_context 'when grandparent attributes are included' do
       describe 'with a valid String' do
         def be_the_expected_attribute
-          an_instance_of(Stannum::Structs::Attribute)
+          an_instance_of(Stannum::Attribute)
             .and(
               have_attributes(
                 name:    'price',
@@ -403,7 +403,7 @@ RSpec.describe Stannum::Structs::Attributes do
 
       describe 'with a valid Symbol' do
         def be_the_expected_attribute
-          an_instance_of(Stannum::Structs::Attribute)
+          an_instance_of(Stannum::Attribute)
             .and(
               have_attributes(
                 name:    'price',
@@ -433,7 +433,7 @@ RSpec.describe Stannum::Structs::Attributes do
         .and_keywords(:name, :options, :type)
     end
 
-    it { expect(attribute).to be_a Stannum::Structs::Attribute }
+    it { expect(attribute).to be_a Stannum::Attribute }
 
     it { expect(attribute.name).to be == name.to_s }
 
@@ -496,7 +496,7 @@ RSpec.describe Stannum::Structs::Attributes do
       end
       let(:expected_values) do
         expected_attributes.map do |attribute|
-          an_instance_of(Stannum::Structs::Attribute)
+          an_instance_of(Stannum::Attribute)
             .and(have_attributes(**attribute))
         end
       end
@@ -522,7 +522,7 @@ RSpec.describe Stannum::Structs::Attributes do
       end
       let(:expected_values) do
         expected_attributes.map do |attribute|
-          an_instance_of(Stannum::Structs::Attribute)
+          an_instance_of(Stannum::Attribute)
             .and(have_attributes(**attribute))
         end
       end
@@ -552,7 +552,7 @@ RSpec.describe Stannum::Structs::Attributes do
       end
       let(:expected_values) do
         expected_attributes.map do |attribute|
-          an_instance_of(Stannum::Structs::Attribute)
+          an_instance_of(Stannum::Attribute)
             .and(have_attributes(**attribute))
         end
       end
@@ -643,7 +643,7 @@ RSpec.describe Stannum::Structs::Attributes do
       end
       let(:expected_values) do
         expected_attributes.map do |attribute|
-          an_instance_of(Stannum::Structs::Attribute)
+          an_instance_of(Stannum::Attribute)
             .and(have_attributes(**attribute))
         end
       end
@@ -666,7 +666,7 @@ RSpec.describe Stannum::Structs::Attributes do
       end
       let(:expected_values) do
         expected_attributes.map do |attribute|
-          an_instance_of(Stannum::Structs::Attribute)
+          an_instance_of(Stannum::Attribute)
             .and(have_attributes(**attribute))
         end
       end
@@ -693,7 +693,7 @@ RSpec.describe Stannum::Structs::Attributes do
       end
       let(:expected_values) do
         expected_attributes.map do |attribute|
-          an_instance_of(Stannum::Structs::Attribute)
+          an_instance_of(Stannum::Attribute)
             .and(have_attributes(**attribute))
         end
       end
