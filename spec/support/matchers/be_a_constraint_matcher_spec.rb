@@ -58,8 +58,8 @@ RSpec.describe Spec::Support::Matchers::BeAConstraintMatcher do
 
       wrap_context 'when there are expected options' do
         let(:expected) do
-          super() +
-            ' with options language: "Ada", log_level: "panic", strict: true'
+          %(#{super()} with options language: "Ada", log_level: "panic") \
+            ', strict: true'
         end
 
         it { expect(matcher.description).to be == expected }
@@ -73,8 +73,8 @@ RSpec.describe Spec::Support::Matchers::BeAConstraintMatcher do
 
       wrap_context 'when there are expected options' do
         let(:expected) do
-          super() +
-            ' with options language: "Ada", log_level: "panic", strict: true'
+          %(#{super()} with options language: "Ada", log_level: "panic") \
+            ', strict: true'
         end
 
         it { expect(matcher.description).to be == expected }
@@ -84,8 +84,8 @@ RSpec.describe Spec::Support::Matchers::BeAConstraintMatcher do
 
     wrap_context 'when there are expected options' do
       let(:expected) do
-        super() +
-          ' with options language: "Ada", log_level: "panic", strict: true'
+        %(#{super()} with options language: "Ada", log_level: "panic") \
+          ', strict: true'
       end
 
       it { expect(matcher.description).to be == expected }
@@ -240,7 +240,7 @@ RSpec.describe Spec::Support::Matchers::BeAConstraintMatcher do
     describe 'with nil' do
       let(:actual) { nil }
       let(:failure_message) do
-        super() + ', but is not a constraint'
+        "#{super()}, but is not a constraint"
       end
 
       include_examples 'should fail with a positive expectation'
@@ -249,7 +249,7 @@ RSpec.describe Spec::Support::Matchers::BeAConstraintMatcher do
     describe 'with an Object' do
       let(:actual) { Object.new.freeze }
       let(:failure_message) do
-        super() + ', but is not a constraint'
+        "#{super()}, but is not a constraint"
       end
 
       include_examples 'should fail with a positive expectation'
@@ -277,7 +277,7 @@ RSpec.describe Spec::Support::Matchers::BeAConstraintMatcher do
       do
         let(:actual) { Stannum::Constraint.new }
         let(:failure_message) do
-          super() + ", but is not an instance of #{expected_constraint}"
+          "#{super()}, but is not an instance of #{expected_constraint}"
         end
 
         include_examples 'should fail with a positive expectation'
@@ -303,8 +303,7 @@ RSpec.describe Spec::Support::Matchers::BeAConstraintMatcher do
             .tap { |matcher| matcher.matches?(actual.options) }
         end
         let(:failure_message) do
-          super() +
-            ", but the options do not match:\n" +
+          "#{super()}, but the options do not match:\n" +
             tools.str.indent(diff_matcher.failure_message, 2)
         end
 
@@ -372,8 +371,7 @@ RSpec.describe Spec::Support::Matchers::BeAConstraintMatcher do
             .tap { |matcher| matcher.matches?(actual.options) }
         end
         let(:failure_message) do
-          super() +
-            ", but the options do not match:\n" +
+          "#{super()}, but the options do not match:\n" +
             tools.str.indent(diff_matcher.failure_message, 2)
         end
 
@@ -414,8 +412,7 @@ RSpec.describe Spec::Support::Matchers::BeAConstraintMatcher do
           .tap { |matcher| matcher.matches?(actual.options) }
       end
       let(:failure_message) do
-        super() +
-          ", but the options do not match:\n" +
+        "#{super()}, but the options do not match:\n" +
           tools.str.indent(diff_matcher.failure_message, 2)
       end
 

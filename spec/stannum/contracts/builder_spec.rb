@@ -161,7 +161,7 @@ RSpec.describe Stannum::Contracts::Builder do
       let(:constraint) { Stannum::Constraint.new }
       let(:error_message) do
         'expected either a block or a constraint instance, but received' \
-        " both a block and #{constraint.inspect}"
+          " both a block and #{constraint.inspect}"
       end
 
       it 'should raise an exception' do

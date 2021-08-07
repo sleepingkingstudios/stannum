@@ -794,7 +794,7 @@ RSpec.describe Stannum::Struct do
   end
 
   describe '.constraint' do
-    let(:constraint) { Stannum::Constraint.new {} }
+    let(:constraint) { Stannum::Constraint.new { nil } }
 
     def constraints
       described_class::Contract.send(:each_constraint).to_a
@@ -852,7 +852,7 @@ RSpec.describe Stannum::Struct do
 
     describe 'with a block' do
       it 'should add the constraint to the contract' do
-        expect { described_class.constraint {} }
+        expect { described_class.constraint { nil } }
           .to change { constraints.size } # rubocop:disable RSpec/ExpectChange
           .by(1)
       end
@@ -873,7 +873,7 @@ RSpec.describe Stannum::Struct do
       let(:value) { 'Self-sealing Stem Bolt' }
 
       it 'should add the constraint to the contract' do
-        expect { described_class.constraint('name') {} }
+        expect { described_class.constraint('name') { nil } }
           .to change { constraints.size } # rubocop:disable RSpec/ExpectChange
           .by(1)
       end
@@ -894,7 +894,7 @@ RSpec.describe Stannum::Struct do
       let(:value) { 'Self-sealing Stem Bolt' }
 
       it 'should add the constraint to the contract' do
-        expect { described_class.constraint(:name) {} }
+        expect { described_class.constraint(:name) { nil } }
           .to change { constraints.size } # rubocop:disable RSpec/ExpectChange
           .by(1)
       end
@@ -953,7 +953,7 @@ RSpec.describe Stannum::Struct do
     wrap_context 'when the struct defines constraints' do
       describe 'with a block' do
         it 'should add the constraint to the contract' do
-          expect { described_class.constraint {} }
+          expect { described_class.constraint { nil } }
             .to change { constraints.size } # rubocop:disable RSpec/ExpectChange
             .by(1)
         end
@@ -974,7 +974,7 @@ RSpec.describe Stannum::Struct do
         let(:value) { 'Self-sealing Stem Bolt' }
 
         it 'should add the constraint to the contract' do
-          expect { described_class.constraint('name') {} }
+          expect { described_class.constraint('name') { nil } }
             .to change { constraints.size } # rubocop:disable RSpec/ExpectChange
             .by(1)
         end
@@ -995,7 +995,7 @@ RSpec.describe Stannum::Struct do
         let(:value) { 'Self-sealing Stem Bolt' }
 
         it 'should add the constraint to the contract' do
-          expect { described_class.constraint(:name) {} }
+          expect { described_class.constraint(:name) { nil } }
             .to change { constraints.size } # rubocop:disable RSpec/ExpectChange
             .by(1)
         end
@@ -2855,8 +2855,8 @@ RSpec.describe Stannum::Struct do
     wrap_context 'when the struct has attribute values' do
       let(:expected) do
         "#<#{described_class.name} name: #{attributes['name'].inspect}," \
-        " description: #{attributes['description'].inspect}," \
-        " quantity: #{attributes['quantity'].inspect}>"
+          " description: #{attributes['description'].inspect}," \
+          " quantity: #{attributes['quantity'].inspect}>"
       end
 
       it { expect(struct.inspect).to be == expected }

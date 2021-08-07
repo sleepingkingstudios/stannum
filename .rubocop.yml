@@ -1,9 +1,9 @@
 require:
   - rubocop-rspec
-  - ./spec/support/rubocop_patch
 
 AllCops:
   TargetRubyVersion: 2.5
+  NewCops: enable
   Include:
     - 'lib/**/*.rb'
     - 'spec/**/*.rb'
@@ -11,15 +11,47 @@ AllCops:
     - 'tmp/**/*'
     - 'vendor/**/*'
 
-Layout/AlignArguments:
+RSpec:
+  Language:
+    ExampleGroups:
+      Regular:
+        - context
+        - describe
+        - wrap_context
+      Skipped:
+        - xcontext
+        - xdescribe
+        - xwrap_context
+      Focused:
+        - fcontext
+        - fdescribe
+        - fwrap_context
+    Includes:
+      Examples:
+        - finclude_contract
+        - finclude_examples
+        - fwrap_examples
+        - include_contract
+        - include_examples
+        - wrap_examples
+        - xinclude_contract
+        - xinclude_examples
+        - xwrap_examples
+
+Layout/ArgumentAlignment:
   EnforcedStyle: with_fixed_indentation
   IndentationWidth: ~
 
-Layout/AlignHash:
+Layout/HashAlignment:
   EnforcedColonStyle: table
   EnforcedHashRocketStyle: table
 
-Layout/AlignParameters:
+Layout/LineLength:
+  IgnoredPatterns:
+    - '\A\s*#'
+  Max: 80
+
+Layout/ParameterAlignment:
   EnforcedStyle: with_fixed_indentation
   IndentationWidth: ~
 
@@ -28,15 +60,11 @@ Metrics/BlockLength:
     - 'spec/**/*_examples.rb'
     - 'spec/**/*_spec.rb'
 
-Metrics/LineLength:
-  IgnoredPatterns:
-    - '\A\s*#'
-
 Metrics/ModuleLength:
   Exclude:
     - 'spec/**/*_examples.rb'
 
-Naming/UncommunicativeMethodParamName:
+Naming/MethodParameterName:
   AllowedNames:
     - 'as'
 
@@ -56,8 +84,17 @@ RSpec/FilePath:
 RSpec/HookArgument:
   EnforcedStyle: example
 
+RSpec/LeadingSubject:
+  Enabled: false
+
+RSpec/MultipleMemoizedHelpers:
+  Enabled: false
+
 RSpec/NestedGroups:
   Max: 5
+
+Style/AccessorGrouping:
+  EnforcedStyle: separated
 
 Style/ClassAndModuleChildren:
   # Checks the style of children definitions at classes and modules.

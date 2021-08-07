@@ -246,7 +246,7 @@ module Stannum::Contracts
         yield definition if definition.sanity?
       end
 
-      each_unscoped_constraint do |definition|
+      each_unscoped_constraint do |definition| # rubocop:disable Style/CombinableLoops
         yield definition unless definition.sanity?
       end
     end
@@ -491,7 +491,7 @@ module Stannum::Contracts
       self
     end
 
-    def each_unscoped_constraint
+    def each_unscoped_constraint(&block)
       return enum_for(:each_unscoped_constraint) unless block_given?
 
       each_concatenated_contract do |contract|
@@ -500,7 +500,7 @@ module Stannum::Contracts
         end
       end
 
-      @constraints.each { |definition| yield definition }
+      @constraints.each(&block)
     end
 
     def match_constraint(definition, value)
@@ -525,10 +525,10 @@ module Stannum::Contracts
       self.class::Builder.new(self).instance_exec(&block) if block_given?
     end
 
-    def each_concatenated_contract
+    def each_concatenated_contract(&block)
       return enum_for(:each_concatenated_contract) unless block_given?
 
-      @concatenated.each { |contract| yield contract }
+      @concatenated.each(&block)
     end
 
     def equal_definitions?(other) # rubocop:disable Metrics/AbcSize, Metrics/CyclomaticComplexity, Metrics/MethodLength, Metrics/PerceivedComplexity

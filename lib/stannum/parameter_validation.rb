@@ -79,6 +79,8 @@ module Stannum
     # Base class for modules that handle tracking validated methods.
     class MethodValidations < Module
       def initialize
+        super
+
         @contracts = {}
       end
 
@@ -195,7 +197,7 @@ module Stannum
       keywords:  {}
     )
       match, errors = contract.match(
-        { # rubocop:disable Style/BracesAroundHashParameters
+        {
           arguments: arguments,
           keywords:  keywords,
           block:     block

@@ -117,7 +117,7 @@ RSpec.describe Stannum::RSpec::ValidateParameterMatcher do
     example_class 'Spec::ExampleCommand' do |klass|
       klass.include Stannum::ParameterValidation
 
-      klass.define_method(:call) {}
+      klass.define_method(:call) { nil }
     end
 
     it 'should define the class method' do
@@ -133,7 +133,7 @@ RSpec.describe Stannum::RSpec::ValidateParameterMatcher do
       before(:example) do
         Spec::ExampleCommand.define_method(:call, &implementation)
 
-        Spec::ExampleCommand.validate_parameters(:call) {}
+        Spec::ExampleCommand.validate_parameters(:call) { nil }
       end
 
       it 'should return the superclass method parameters' do
@@ -204,13 +204,13 @@ RSpec.describe Stannum::RSpec::ValidateParameterMatcher do
     let(:parameter_type) { 'parameter' }
     let(:failure_message) do
       "expected ##{method_name} not to validate the #{parameter_name.inspect}" \
-      " #{parameter_type}"
+        " #{parameter_type}"
     end
 
     example_class 'Spec::ExampleCommand' do |klass|
       klass.include Stannum::ParameterValidation
 
-      klass.define_method(:call) {}
+      klass.define_method(:call) { nil }
     end
 
     it { expect(matcher).to respond_to(:does_not_match?).with(1).argument }
@@ -244,9 +244,9 @@ RSpec.describe Stannum::RSpec::ValidateParameterMatcher do
       end
 
       before(:example) do
-        Spec::ExampleCommand.define_method(:call) {}
+        Spec::ExampleCommand.define_method(:call) { nil }
 
-        Spec::ExampleCommand.validate_parameters(method_name) {}
+        Spec::ExampleCommand.validate_parameters(method_name) { nil }
       end
 
       it { expect(matcher.does_not_match?(actual)).to be false }
@@ -639,8 +639,7 @@ RSpec.describe Stannum::RSpec::ValidateParameterMatcher do
 
               matcher.matches?(actual_constraint.errors_for(actual).to_a)
 
-              super() +
-                ", but the errors do not match:\n\n" +
+              "#{super()}, but the errors do not match:\n\n" +
                 matcher.failure_message
             end
 
@@ -676,8 +675,7 @@ RSpec.describe Stannum::RSpec::ValidateParameterMatcher do
 
               matcher.matches?(actual_constraint.errors_for(actual).to_a)
 
-              super() +
-                ", but the errors do not match:\n\n" +
+              "#{super()}, but the errors do not match:\n\n" +
                 matcher.failure_message
             end
 
@@ -736,8 +734,7 @@ RSpec.describe Stannum::RSpec::ValidateParameterMatcher do
 
               matcher.matches?(actual_constraint.errors_for(actual).to_a)
 
-              super() +
-                ", but the errors do not match:\n\n" +
+              "#{super()}, but the errors do not match:\n\n" +
                 matcher.failure_message
             end
 
@@ -781,8 +778,7 @@ RSpec.describe Stannum::RSpec::ValidateParameterMatcher do
 
               matcher.matches?(actual_constraint.errors_for(actual).to_a)
 
-              super() +
-                ", but the errors do not match:\n\n" +
+              "#{super()}, but the errors do not match:\n\n" +
                 matcher.failure_message
             end
 
@@ -840,8 +836,7 @@ RSpec.describe Stannum::RSpec::ValidateParameterMatcher do
 
               matcher.matches?(actual_constraint.errors_for(actual).to_a)
 
-              super() +
-                ", but the errors do not match:\n\n" +
+              "#{super()}, but the errors do not match:\n\n" +
                 matcher.failure_message
             end
 
@@ -888,8 +883,7 @@ RSpec.describe Stannum::RSpec::ValidateParameterMatcher do
 
               matcher.matches?(actual_constraint.errors_for(actual).to_a)
 
-              super() +
-                ", but the errors do not match:\n\n" +
+              "#{super()}, but the errors do not match:\n\n" +
                 matcher.failure_message
             end
 
@@ -920,13 +914,13 @@ RSpec.describe Stannum::RSpec::ValidateParameterMatcher do
     end
     let(:failure_message) do
       "expected ##{method_name} to validate the #{parameter_name.inspect}" \
-      " #{parameter_type}"
+        " #{parameter_type}"
     end
 
     example_class 'Spec::ExampleCommand' do |klass|
       klass.include Stannum::ParameterValidation
 
-      klass.define_method(:call) {}
+      klass.define_method(:call) { nil }
     end
 
     example_class 'Spec::ExampleUser'
@@ -936,7 +930,7 @@ RSpec.describe Stannum::RSpec::ValidateParameterMatcher do
     describe 'with an object that does not support parameter validation' do
       let(:actual) { Object.new }
       let(:failure_message) do
-        super() + ', but the object does not implement parameter validation'
+        "#{super()}, but the object does not implement parameter validation"
       end
 
       it { expect(matcher.matches?(actual)).to be false }
@@ -957,8 +951,8 @@ RSpec.describe Stannum::RSpec::ValidateParameterMatcher do
 
     describe 'with an object that does not validate the method' do
       let(:failure_message) do
-        super() +
-          ", but the object does not validate the parameters of ##{method_name}"
+        "#{super()}, but the object does not validate the parameters of" \
+          " ##{method_name}"
       end
 
       it { expect(matcher.matches?(actual)).to be false }
@@ -974,9 +968,9 @@ RSpec.describe Stannum::RSpec::ValidateParameterMatcher do
       end
 
       before(:example) do
-        Spec::ExampleCommand.define_method(:call) {}
+        Spec::ExampleCommand.define_method(:call) { nil }
 
-        Spec::ExampleCommand.validate_parameters(method_name) {}
+        Spec::ExampleCommand.validate_parameters(method_name) { nil }
       end
 
       it { expect(matcher.matches?(actual)).to be false }
@@ -1327,8 +1321,7 @@ RSpec.describe Stannum::RSpec::ValidateParameterMatcher do
 
             matcher.matches?(actual_constraint.errors_for(actual).to_a)
 
-            super() +
-              ", but the errors do not match:\n\n" +
+            "#{super()}, but the errors do not match:\n\n" +
               matcher.failure_message
           end
 

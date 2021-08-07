@@ -95,7 +95,7 @@ RSpec.describe Stannum::Errors do
 
     before(:example) do
       raw_nested_errors.each do |error|
-        errors
+        errors # rubocop:disable Style/SingleArgumentDig
           .dig(error.fetch(:path, []))
           .add(
             error.fetch(:type),
@@ -173,7 +173,7 @@ RSpec.describe Stannum::Errors do
     let(:other_errors) do
       described_class.new.tap do |other|
         raw_other_errors.each do |error|
-          other
+          other # rubocop:disable Style/SingleArgumentDig
             .dig(error.fetch(:path, []))
             .add(
               error.fetch(:type),
@@ -601,7 +601,7 @@ RSpec.describe Stannum::Errors do
       end
       let(:error_message) do
         'value must be an instance of Stannum::Errors, an array of error' \
-        ' hashes, or nil'
+          ' hashes, or nil'
       end
 
       before(:example) { cached } # Warm object cache.
@@ -871,7 +871,8 @@ RSpec.describe Stannum::Errors do
 
     def rescue_exception
       yield
-    rescue StandardError # rubocop:disable Lint/HandleExceptions
+    rescue StandardError
+      # Do nothing.
     end
 
     describe 'with nil' do
@@ -1100,6 +1101,7 @@ RSpec.describe Stannum::Errors do
     end
   end
 
+  # rubocop:disable Style/SingleArgumentDig
   describe '#dig' do
     let(:error_message) { 'key must be an Integer, a String or a Symbol' }
 
@@ -1566,6 +1568,7 @@ RSpec.describe Stannum::Errors do
       end
     end
   end
+  # rubocop:enable Style/SingleArgumentDig
 
   describe '#dup' do
     it { expect(errors).to respond_to(:dup).with(0).arguments }
@@ -1811,7 +1814,7 @@ RSpec.describe Stannum::Errors do
   describe '#inspect' do
     let(:expected) do
       str = Object.instance_method(:inspect).bind(errors).call
-      oid = str[2...-1].split(' ').first.split(':').last
+      oid = str[2...-1].split.first.split(':').last
 
       "#<Stannum::Errors:#{oid} @summary=%{#{errors.summary}}>"
     end
@@ -1927,7 +1930,7 @@ RSpec.describe Stannum::Errors do
 
     let(:error_message) do
       'value must be an instance of Stannum::Errors or an array of error' \
-      ' hashes'
+        ' hashes'
     end
     let(:expected_other_errors) { [] }
 
@@ -1992,7 +1995,7 @@ RSpec.describe Stannum::Errors do
     wrap_context 'when the errors has many root errors' do
       let(:expected) do
         'no message defined for "blank", no message defined for "invalid",' \
-        ' is upside down'
+          ' is upside down'
       end
 
       it { expect(errors.summary).to be == expected }
@@ -2001,8 +2004,8 @@ RSpec.describe Stannum::Errors do
     wrap_context 'when the errors has many child errors' do
       let(:expected) do
         'spells: no message defined for "mana_exhausted", spells: no message' \
-        ' defined for "missing_component", spells: can\'t cast spells of that' \
-        ' element'
+          ' defined for "missing_component", spells: can\'t cast spells of' \
+          ' that element'
       end
 
       it { expect(errors.summary).to be == expected }
@@ -2011,8 +2014,8 @@ RSpec.describe Stannum::Errors do
     wrap_context 'when the errors has many deeply nested errors' do
       let(:expected) do
         'guilds[0]: is not recruiting, guilds[1].members: no message defined' \
-        ' for "empty", guilds[2].members[0]: no message defined for' \
-        ' "late_paying_dues"'
+          ' for "empty", guilds[2].members[0]: no message defined for' \
+          ' "late_paying_dues"'
       end
 
       it { expect(errors.summary).to be == expected }
@@ -2021,11 +2024,11 @@ RSpec.describe Stannum::Errors do
     wrap_context 'when the errors has many errors at different paths' do
       let(:expected) do
         'no message defined for "blank", no message defined for "invalid", is' \
-        ' upside down, spells: no message defined for "mana_exhausted",' \
-        ' spells: no message defined for "missing_component", spells: can\'t' \
-        ' cast spells of that element, guilds[0]: is not recruiting,' \
-        ' guilds[1].members: no message defined for "empty",' \
-        ' guilds[2].members[0]: no message defined for "late_paying_dues"'
+          ' upside down, spells: no message defined for "mana_exhausted",' \
+          ' spells: no message defined for "missing_component", spells:' \
+          ' can\'t cast spells of that element, guilds[0]: is not recruiting,' \
+          ' guilds[1].members: no message defined for "empty",' \
+          ' guilds[2].members[0]: no message defined for "late_paying_dues"'
       end
 
       it { expect(errors.summary).to be == expected }
@@ -2034,7 +2037,7 @@ RSpec.describe Stannum::Errors do
     wrap_context 'when the errors has many indexed errors' do
       let(:expected) do
         '0: no message defined for "target_invincible", 1: no message defined' \
-        ' for "target_immune", 2: target was able to evade your fireball'
+          ' for "target_immune", 2: target was able to evade your fireball'
       end
 
       it { expect(errors.summary).to be == expected }
@@ -2153,7 +2156,7 @@ RSpec.describe Stannum::Errors do
 
     let(:error_message) do
       'value must be an instance of Stannum::Errors or an array of error' \
-      ' hashes'
+        ' hashes'
     end
     let(:expected_other_errors) { [] }
 

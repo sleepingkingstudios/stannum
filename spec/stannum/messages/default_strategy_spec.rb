@@ -25,8 +25,8 @@ RSpec.describe Stannum::Messages::DefaultStrategy do
             greeting: lambda do |_key, options|
               if options[:name] == 'starfighter'
                 'Greetings, %{name}! You have been recruited by the Star' \
-                ' League to defend the frontier against Xur and the Ko-Dan' \
-                ' armada!'
+                  ' League to defend the frontier against Xur and the Ko-Dan' \
+                  ' armada!'
               else
                 'Greetings, %{name}!'
               end
@@ -122,7 +122,7 @@ RSpec.describe Stannum::Messages::DefaultStrategy do
       describe 'with name: starfighter' do
         let(:expected) do
           'Greetings, starfighter! You have been recruited by the Star League' \
-          ' to defend the frontier against Xur and the Ko-Dan armada!'
+            ' to defend the frontier against Xur and the Ko-Dan armada!'
         end
         let(:options) { { name: 'starfighter' } }
 
@@ -301,7 +301,7 @@ RSpec.describe Stannum::Messages::DefaultStrategy do
       end
       let(:error_message) do
         "unable to load configuration file #{filename} with extension" \
-        " #{File.extname(filename)}"
+          " #{File.extname(filename)}"
       end
 
       it 'should raise an error' do

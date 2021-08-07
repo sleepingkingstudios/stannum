@@ -81,7 +81,7 @@ module Stannum::Constraints::Hashes
     def each_extra_key(actual)
       expected = expected_keys
 
-      actual.keys.each do |key|
+      actual.each_key do |key|
         next if expected.include?(key)
 
         yield key, actual[key]

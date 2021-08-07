@@ -28,6 +28,8 @@ module Stannum::Constraints
     # @param receiver [Stannum::Constraints::Base] The constraint that methods
     #   will be delegated to.
     def initialize(receiver)
+      super()
+
       self.receiver = receiver
     end
 
