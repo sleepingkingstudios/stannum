@@ -15,8 +15,10 @@ module Stannum::RSpec
     include RSpec::Mocks::ExampleMethods
 
     class InvalidParameterHandledError < StandardError; end
+    private_constant :InvalidParameterHandledError
 
     class << self
+      # @private
       def add_parameter_mapping(map:, match:)
         raise ArgumentError, 'map must be a Proc'   unless map.is_a?(Proc)
         raise ArgumentError, 'match must be a Proc' unless match.is_a?(Proc)
@@ -24,6 +26,7 @@ module Stannum::RSpec
         parameter_mappings << { match: match, map: map }
       end
 
+      # @private
       def map_parameters(actual:, method_name:)
         parameter_mappings.each do |keywords|
           match = keywords.fetch(:match)
