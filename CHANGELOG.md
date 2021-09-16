@@ -11,3 +11,7 @@ Defined `Stannum::Constraint`.
 ### Contracts
 
 Defined `Stannum::Contract`.
+
+### Errors
+
+Defined `Stannum::Errors`.
