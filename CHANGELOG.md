@@ -7,3 +7,7 @@ Initial version.
 ### Constraints
 
 Defined `Stannum::Constraint`.
+
+### Contracts
+
+Defined `Stannum::Contract`.
