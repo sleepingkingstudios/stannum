@@ -15,3 +15,7 @@ Defined `Stannum::Contract`.
 ### Errors
 
 Defined `Stannum::Errors`.
+
+### Structs
+
+Defined `Stannum::Struct`.

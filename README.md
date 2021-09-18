@@ -694,7 +694,162 @@ Stannum uses the strategy pattern to determine how error messages are generated.
 
 ### Structs
 
-@todo
+While constraints and contracts are used to validate data, structs are used to define and structure that data. Each `Stannum::Struct` contains a specific set of attributes, and each attribute has a type definition that is a `Class` or `Module` or the name of a Class or Module.
+
+Structs are defined by creating a new class and including `Stannum::Struct`:
+
+```ruby
+class Gadget
+  attribute :name,        String
+  attribute :description, String,  optional: true
+  attribute :quantity,    Integer, default:  0
+end
+
+gadget = Gadget.new(name: 'Self-Sealing Stem Bolt')
+gadget.name
+#=> 'Self-Sealing Stem Bolt'
+gadget.description
+#=> nil
+gadget.attributes
+#=> {
+#     name:        'Self-Sealing Stem Bolt',
+#     description: nil,
+#     quantity:    0
+#   }
+
+gadget.quantity = 10
+gadget.quantity
+#=> 10
+
+gadget[:description] = 'No one is sure what a self-sealing stem bolt is.'
+gadget[:description]
+#=> 'No one is sure what a self-sealing stem bolt is.'
+```
+
+Our `Gadget` class has three attributes: `#name`, `#description`, and `#quantity`, which we are defining using the `.attribute` class method.
+
+We can initialize a gadget with values by passing the desired attributes to `.new`. We can read or write the attributes using either dot `.` notation or `#[]` notation. Finally, we can access all of a struct's attributes and values using the `#attributes` method.
+
+`Stannum::Struct` defines a number of helper methods for interacting with a struct's attributes:
+
+- `#[](attribute)`: Returns the value of the given attribute.
+- `#[]=(attribute, value)`: Writes the given value to the given attribute.
+- `#assign_attributes(values)`: Updates the struct's attributes using the given values. If an attribute is not given, that value is unchanged.
+- `#attributes`: Returns a hash containing the attribute keys and values.
+- `#attributes=(values)`: Sets the struct's attributes to the given values. If an attribute is not given, that attribute is set to `nil`.
+
+For all of the above methods, if a given attribute is invalid or the attribute is not defined on the struct, an `ArgumentError` will be raised.
+
+#### Attributes
+
+A struct's attributes are defined using the `.attribute` class method, and can be accessed and enumerated using the `.attributes` class method on the struct class or via the `::Attributes` constant. Internally, each attribute is represented by a `Stannum::Attribute` instance, which stores the attribute's `:name`, `:type`, and `:attributes`.
+
+```ruby
+Gadget::Attributes
+#=> an instance of Stannum::Schema
+Gadget.attributes
+#=> an instance of Stannum::Schema
+Gadget.attributes.count
+#=> 3
+Gadget.attributes.keys
+#=> [:name, :description, :quantity]
+Gadget.attributes[:name]
+#=> an instance of Stannum::Attribute
+Gadget.attributes[:quantity].options
+#=> { default: 0, required: true }
+```
+
+##### Default Values
+
+Structs can define default values for attributes by passing a `:default` value to the `.attribute` call.
+
+```ruby
+class LightsCounter
+  include Stannum::Struct
+
+  attribute :count, Integer, default: 4
+end
+
+LightsCounter.new.count
+#=> 4
+```
+
+##### Optional Attributes
+
+Struct classes can also mark attributes as `optional`. When a struct is validated (see [Validation](#structs-validation), below), optional attributes will pass with a value of `nil`.
+
+```ruby
+class WhereWeAreGoing
+  include Stannum::Struct
+
+  attribute :roads, Object, optional: true
+end
+```
+
+`Stannum` supports both `:optional` and `:required` as keys. Passing either `optional: true` or `required: false` will mark the attribute as optional. Attributes are required by default.
+
+<a id="structs-validation"></a>
+
+#### Validation
+
+Each `Stannum::Struct` automatically generates a contract that can be used to validate instances of the struct class. The contract can be accessed using the `.contract` class method or via the `::Contract` constant.
+
+```ruby
+class Gadget
+  attribute :name,        String
+  attribute :description, String,  optional: true
+  attribute :quantity,    Integer, default:  0
+end
+
+Gadget::Contract
+#=> an instance of Stannum::Contract
+Gadget.contract
+#=> an instance of Stannum::Contract
+
+gadget = Gadget.new
+Gadget.contract.matches?(gadget)
+#=> false
+Gadget.contract.errors_for(gadget)
+#=> [
+#     {
+#       data:    { type: String },
+#       message: nil,
+#       path:    [:name],
+#       type:    'stannum.constraints.is_not_type'
+#     }
+#   ]
+
+gadget = Gadget.new(name: 'Self-Sealing Stem Bolt')
+Gadget.contract.matches?(gadget)
+#=> true
+```
+
+You can also define additional constraints using the `.constraint` class method.
+
+```ruby
+class Gadget
+  constraint :name, Stannum::Constraints::Presence.new
+
+  constraint :quantity do |qty|
+    qty >= 0
+  end
+end
+
+gadget = Gadget.new(name: '')
+Gadget.contract.matches?(gadget)
+#=> false
+Gadget.contract.errors_for(gadget)
+#=> [
+#     {
+#       data:    {},
+#       message: nil,
+#       path:    [:name],
+#       type:    'stannum.constraints.absent'
+#     }
+#   ]
+```
+
+The `.constraint` class method takes either an instance of `Stannum::Constraint` or a block. If given an attribute name, the constraint will be matched against the value of that attribute; otherwise, the constraint will be matched against the object itself.
 
 <a id="builtin-constraints"></a>
 
