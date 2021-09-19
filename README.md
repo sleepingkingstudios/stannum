@@ -408,6 +408,8 @@ gadget_contract.errors_for(nil).map { |err| [err.path, err.type] }
 
 Likewise, when performing a negated match, the sanity constraints will be evaluated first, and the remaining constraints will be evaluated only if all of the sanity constraints match.
 
+<a id="array-contracts"></a>
+
 #### Array Contracts
 
 By default, a `Stannum::Contract` accesses an object's properties as method calls, using the `.` dot notation. When validating `Array`s and `Hash`es, this approach is less useful. Therefore, Stannum provides special contracts for operating on data structures.
@@ -460,7 +462,9 @@ contract.matches?(['Who', 'What', "I Don't Know", 'Tomorrow'])
 #=> true
 ```
 
-An `ArrayContract` will first validate that the object is an instance of `Array`. For validating Array-like objects that access indexed data using the `#[]` method, you can instead use a `Stannum::Contracts::TupleConstraint`.
+An `ArrayContract` will first validate that the object is an instance of `Array`. For validating Array-like objects that access indexed data using the `#[]` method, you can instead use a `Stannum::Contracts::TupleContract`.
+
+<a id="hash-contracts"></a>
 
 #### Hash Contracts
 
@@ -516,7 +520,7 @@ contract.matches?(response)
 #=> true
 ```
 
-A `HashContract` will first validate that the object is an instance of `Hash`. For validating Hash-like objects that access key-value data using the `#[]` method, you can instead use a `Stannum::Contracts::MapConstraint`.
+A `HashContract` will first validate that the object is an instance of `Hash`. For validating Hash-like objects that access key-value data using the `#[]` method, you can instead use a `Stannum::Contracts::MapContract`.
 
 #### Contract Subclasses
 
@@ -855,10 +859,396 @@ The `.constraint` class method takes either an instance of `Stannum::Constraint`
 
 ### Built-In Constraints
 
-@todo
+Stannum defines a set of built-in constraints that can be used in any project.
+
+**Absence Constraint**
+
+The inverse of a [Presence constraint](#builtin-constraints-presence). Matches `nil`, and objects that both respond to `#empty?` and for whom `#empty?` returns true, such as empty `String`s, `Array`s and `Hash`es.
+
+```ruby
+constraint = Stannum::Constraints::Absence.new
+
+constraint.matches?(nil)
+#=> true
+constraint.matches?('')
+#=> true
+constraint.matches?('Greetings, programs!')
+#=> false
+constraint.matches?(Object.new)
+#=> false
+```
+
+**Anything Constraint**
+
+Matches any object, even `nil`.
+
+```ruby
+constraint = Stannum::Constraints::Anything.new
+
+constraint.matches?(nil)
+#=> true
+constraint.matches?(Object.new)
+#=> true
+constraint.matches?('Hello, world')
+#=> true
+```
+
+**Boolean Constraint**
+
+Matches `true` and `false`.
+
+```ruby
+constraint = Stannum::Constraints::Boolean.new
+
+constraint.matches?(nil)
+#=> false
+constraint.matches?(Object.new)
+#=> false
+constraint.matches?(false)
+#=> true
+constraint.matches?(true)
+#=> true
+```
+
+**Enum Constraint**
+
+Matches any the specified values.
+
+```ruby
+constraint = Stannum::Constraints::Enum.new('red', 'blue', 'green')
+
+constraint.matches?(nil)
+#=> false
+constraint.matches?('purple')
+#=> false
+constraint.matches?('red')
+#=> true
+constraint.matches?('green')
+#=> true
+```
+
+**Identity Constraint**
+
+Matches the given object.
+
+```ruby
+value      = 'Greetings, starfighter!'
+constraint = Stannum::Constraints::Identity.new(value)
+
+constraint.matches?(nil)
+#=> false
+constraint.matches?(value.dup)
+#=> false
+constraint.matches?(value)
+#=> true
+```
+
+**Nothing Constraint**
+
+Does not match any objects.
+
+```ruby
+constraint = Stannum::Constraints::Nothing.new
+
+constraint.matches?(nil)
+#=> false
+constraint.matches?(Object.new)
+#=> false
+constraint.matches?('Hello, world')
+#=> false
+```
+
+<a id="builtin-constraints-presence"></a>
+
+**Presence Constraint**
+
+Matches objects that are not `nil`, and that either do not respond to `#empty?` or for whom `#empty?` returns false.
+
+```ruby
+constraint = Stannum::Constraints::Presence.new
+
+constraint.matches?(nil)
+#=> false
+constraint.matches?('')
+#=> false
+constraint.matches?('Greetings, programs!')
+#=> true
+constraint.matches?(Object.new)
+#=> true
+```
+
+**Signature Constraint**
+
+Matches if the object responds to all of the specified methods.
+
+```ruby
+constraint = Stannum::Constraints::Signature.new(:[], :keys)
+
+constraint.matches?(nil)
+#=> false
+constraint.matches?([])
+#=> false
+constraint.matches?({})
+#=> true
+```
+
+<a id="builtin-constraints-type"></a>
+
+**Type Constraint**
+
+Matches if the specified type is an ancestor of the object.
+
+```ruby
+constraint = Stannum::Constraints::Type.new(StandardError)
+
+constraint.matches?(nil)
+#=> false
+constraint.matches?(Object.new)
+#=> false
+constraint.matches?(StandardError.new)
+#=> true
+constraint.matches?(ArgumentError.new)
+#=> true
+```
+
+Type constraints can be `optional` by passing either `optional: true` or `required: false` to the constructor. An optional type constraint will also accept `nil` as a value.
+
+```ruby
+constraint = Stannum::Constraints::Type.new(String, optional: true)
+
+constraint.matches?(nil)
+#=> true
+constraint.matches?(Object.new)
+#=> false
+constraint.matches?('a String')
+#=> true
+```
+
+**Union Constraint**
+
+Matches if the object matches any of the given constraints.
+
+```ruby
+constraint = Stannum::Constraints::Union.new(
+  Stannum::Constraints::Type.new(String),
+  Stannum::Constraints::Type.new(Symbol)
+)
+
+constraint.matches?(nil)
+#=> false
+constraint.matches?(Object.new)
+#=> false
+constraint.matches?('a String')
+#=> true
+constraint.matches?(:a_symbol)
+#=> true
+```
+
+#### Type Constraints
+
+Stannum also defines a set of built-in type constraints. Unless otherwise noted, these are identical to a [Type Constraint](#builtin-constraints-type) with the given Class.
+
+```ruby
+constraint = Stannum::Constraints::Types::StringType.new
+
+constraint.matches?(nil)
+#=> false
+constraint.matches?(Object.new)
+#=> false
+constraint.matches?('a String')
+#=> true
+```
+
+The following type constraints are defined:
+
+- **ArrayType**
+- **BigDecimalType**
+- **DateTimeType**
+- **DateType**
+- **FloatType**
+- **HashType**
+- **IntegerType**
+- **NilType**
+- **ProcType**
+- **StringType**
+- **SymbolType**
+- **TimeType**
+
+In addition, the following type constraints have additional options or behavior.
+
+**ArrayType Constraint**
+
+You can specify an `item_type` for an `ArrayType` constraint. An object will only match if the object is an `Array` and all of the array's items are of the specified type or match the given constraint.
+
+```ruby
+constraint = Stannum::Constraints::Types::ArrayType.new(item_type: String)
+
+constraint.matches?(nil)
+#=> false
+constraint.matches?([])
+#=> true
+constraint.matches?([1, 2, 3])
+#=> false
+constraint.matches?(['uno', 'dos', 'tres'])
+#=> true
+```
+
+**HashType Constraint**
+
+You can specify a `key_type` and/or a `value_type` for a `HashType` constraint. An object will only match if the object is a `Hash`, all of the hash's keys and/or values are of the specified type or match the given constraint.
+
+```ruby
+constraint = Stannum::Constraints::Types::HashType.new(key_type: String, value_type: Integer)
+
+constraint.matches?(nil)
+#=> false
+constraint.matches?({})
+#=> true
+constraint.matches?({ ichi: 1 })
+#=> false
+constraint.matches?({ 'ichi' => 'one' })
+#=> false
+constraint.matches?({ 'ichi' => 1 })
+```
+
+There are predefined constraints for matching `Hash`es with common key types:
+
+- **HashWithIndifferentKeys:** Matches keys that are either `String`s or `Symbol`s and not empty.
+- **HashWithStringKeys:** Matches keys that are `String`s.
+- **HashWithSymbolKeys:** Matches keys that are `Symbol`s.
+
+<a id="signature-constraints"></a>
+
+#### Signature Constraints
+
+Stannum provides a small number of built-in signature constraints.
+
+```ruby
+constraint = Stannum::Constraints::Signatures::Map.new
+
+constraint.matches?(nil)
+#=> false
+constraint.matches?([])
+#=> false
+constraint.matches?({})
+#=> true
+```
+
+- **Map:** Matches objects that behave like a `Hash`. Specifically, objects responding to `#[]`, `#each`, and `#keys`.
+- **Tuple:** Matches objects that behave like an `Array`. Specifically, objects responding to `#[]`, `#each`, and `#size`.
 
 <a id="builtin-contracts"></a>
 
 ### Built-In Contracts
 
-@todo
+Stannum defines some pre-defined contracts.
+
+**Array Contract**
+
+Matches an instance of `Array` and defines the `.item` class method to add constraints on the array items. See also [Array Contracts](#array-contracts), above.
+
+```ruby
+class BaseballContract < Stannum::Contracts::ArrayContract
+  def initialize
+    super do
+      item { |actual| actual == 'Who' }
+      item { |actual| actual == 'What' }
+      item { |actual| actual == "I Don't Know" }
+    end
+  end
+end
+```
+
+**Hash Contract**
+
+Matches an instance of `Hash` and defines the `.key` class method to add constraints on the hash keys and values. See also [Hash Contracts](#hash-contracts), above.
+
+```ruby
+class ResponseContract < Stannum::Contracts::HashContract
+  def initialize
+    super do
+      key :status, Stannum::Constraints::Types::IntegerType.new
+
+      key :json,
+        Stannum::Contracts::HashContract.new(allow_extra_keys: true) do
+          key :ok, Stannum::Constraints::Boolean.new
+        end
+
+      key :signature, Stannum::Constraints::Presence.new
+    end
+  end
+end
+```
+
+Stannum also defines an `IndifferentHashContract` class, which will match against both string and symbol keys.
+
+**Map Contract**
+
+As a `HashContract`, but matches against any object which uses the `#[]` operator to access key-value data. See [Map Constraint](signature-constraints), above.
+
+**Parameters Contract**
+
+Matches the parameters of a method call.
+
+```ruby
+class AuthorizationParameters < Stannum::Contracts::ParametersContract
+  def initialize
+    super do
+      argument :action, Symbol
+
+      argument :record_class, Class, default: true
+
+      keyword :role, String, default: true
+
+      keyword :user, Stannum::Constraints::Type.new(User)
+    end
+  end
+end
+
+contract   = AuthorizationParameters.new
+parameters = {
+  arguments: [:create, Article],
+  keywords:  {},
+  block:     nil
+}
+contract.matches?(parameters)
+#=> false
+errors = contract.errors_for(parameters)
+errors[:arguments].empty?
+#=> true
+errors[:keywords].empty?
+#=> false
+```
+
+Each `ParametersContract` defines `.argument`, `.keyword`, and `.block` class methods to define the expected method parameters.
+
+- The `.argument` class method defines an expected argument. Like the `.item` class method in an `ArrayContract` (see [Array Contracts](#array-contracts), above), each call to `.argument` will reference the next positional argument.
+- The `.keyword` class method defines an expected keyword.
+- The `.block` class method can accept either a constraint, or `true` or `false`. If given a constraint, the block passed to the method will be matched against the constraint. If given `true`, then the contract will match against any block and will fail if the method is not called with a block; likewise, if given `false`, the contract will match if no block is given and fail if the method is called with a block.
+
+Because of Ruby's semantics around arguments and keywords with default values, the `:default` keyword has a special meaning for parameters contracts. If `.argument` or `.keyword` is called with the `:default` keyword, it indicates that that parameter has a default value in the method definition. If that argument or keyword is *omitted*, the parameters will still match the contract. However, an explicit value of `nil` will still fail unless `nil` is a valid value for the relevant constraint.
+
+`ParametersContract` also has support for variadic arguments and keywords.
+
+```ruby
+class RecipeParameters < Stannum::Contracts::ParametersContract
+  def initialize
+    super do
+      arguments :tools,       String
+      keywords  :ingredients, Stannum::Contracts::TupleContract.new do
+        item Stannum::Constraints::Type.new(String),
+          property_name: :amount
+        item Stannum::Constraints::Type.new(String, optional: true),
+          property_name: :unit
+      end
+      block     true
+    end
+  end
+end
+```
+
+The `.arguments` class method creates a constraint that matches against any arguments without an explicit `.argument` expectation. Likewise, the `.keywords` class method creates a constraint that matches against any keywords without an explicit `.keyword` expectation. The contract will automatically convert a Class into the corresponding Type constraint (see [Type Constraint](#builtin-constraints-type), above).
+
+**Tuple Contract**
+
+As an `ArrayContract`, but matches against any object which uses the `#[]` operator to access indexed data. See [Tuple Constraint](signature-constraints), above.
