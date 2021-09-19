@@ -8,6 +8,7 @@ module Stannum::Support
   # @api private
   module Optional
     class << self
+      # @private
       def resolve(
         optional:            nil,
         required:            nil,

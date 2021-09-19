@@ -6,7 +6,7 @@ module Stannum::Constraints
   # Constraint for matching objects by the methods they respond to.
   #
   # @example
-  #   constraint = Stannum::Constraints::Method.new(:[], :keys)
+  #   constraint = Stannum::Constraints::Signature.new(:[], :keys)
   #
   #   constraint.matches?(Object.new) #=> false
   #   constraint.matches?([])         #=> false

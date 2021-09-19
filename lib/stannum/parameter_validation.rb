@@ -84,6 +84,7 @@ module Stannum
         @contracts = {}
       end
 
+      # @private
       def add_contract(method_name, contract)
         @contracts[method_name] = contract
       end
@@ -98,7 +99,7 @@ module Stannum
           .reduce(:merge)
       end
 
-      # @api private
+      # @private
       def own_contracts
         @contracts
       end
@@ -155,7 +156,7 @@ module Stannum
     end
 
     class << self
-      # @api private
+      # @private
       def add_method_validations(other)
         other.extend(ClassMethods)
 
