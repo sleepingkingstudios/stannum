@@ -11,7 +11,7 @@ module Spec
         key :signature, Stannum::Constraints::Presence.new
       end
 
-      include ResponseContract.new
+      concat ResponseContract.new
     end
   end
 end
