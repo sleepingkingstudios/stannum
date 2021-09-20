@@ -74,7 +74,7 @@ RSpec.describe Stannum::Contracts::Base do
     end
   end
 
-  shared_context 'when the contract includes other contracts' do
+  shared_context 'when the contract concatenates other contracts' do
     let(:grandparent_contract) { described_class.new }
     let(:parent_contract)      { described_class.new }
     let(:constraints) do
@@ -107,9 +107,9 @@ RSpec.describe Stannum::Contracts::Base do
     end
 
     before(:example) do
-      parent_contract.include(grandparent_contract)
+      parent_contract.concat(grandparent_contract)
 
-      contract.include(parent_contract)
+      contract.concat(parent_contract)
 
       constraints.each do |definition|
         definition[:contract].add_constraint(
@@ -126,7 +126,7 @@ RSpec.describe Stannum::Contracts::Base do
   end
 
   shared_context 'when the contract has sanity constraints' do
-    include_context 'when the contract includes other contracts'
+    include_context 'when the contract concatenates other contracts'
 
     let(:constraints) do
       [
@@ -657,6 +657,107 @@ RSpec.describe Stannum::Contracts::Base do
     end
   end
 
+  describe '#concat' do
+    let(:error_message) { 'must be an instance of Stannum::Contract' }
+
+    it { expect(contract).to respond_to(:concat).with(1).argument }
+
+    describe 'with nil' do
+      it 'should raise an error' do
+        expect { contract.concat nil }
+          .to raise_error ArgumentError, error_message
+      end
+    end
+
+    describe 'with an object' do
+      it 'should raise an error' do
+        expect { contract.concat Object.new.freeze }
+          .to raise_error ArgumentError, error_message
+      end
+    end
+
+    describe 'with a constraint' do
+      it 'should raise an error' do
+        expect { contract.concat Stannum::Constraints::Base.new }
+          .to raise_error ArgumentError, error_message
+      end
+    end
+
+    describe 'with an empty contract' do
+      let(:other) { described_class.new }
+
+      it 'should return the contract' do
+        expect(contract.concat other).to be contract
+      end
+
+      it 'should not change the constraints' do
+        expect { contract.concat other }
+          .not_to(change { contract.each_constraint.to_a })
+      end
+
+      context 'when a constraint is added to the other contract' do
+        let(:constraint) { Stannum::Constraints::Base.new }
+        let(:expected) do
+          Stannum::Contracts::Definition.new(
+            constraint: constraint,
+            contract:   other,
+            options:    { sanity: false }
+          )
+        end
+
+        it 'should add the constraint to the contract' do
+          contract.concat other
+
+          expect { other.add_constraint(constraint) }
+            .to change { contract.each_constraint.to_a }
+            .to include(expected)
+        end
+      end
+    end
+
+    describe 'with a contract with constraints' do
+      let(:constraint) { Stannum::Constraints::Base.new }
+      let(:other)      { described_class.new }
+      let(:expected) do
+        Stannum::Contracts::Definition.new(
+          constraint: constraint,
+          contract:   other,
+          options:    { sanity: false }
+        )
+      end
+
+      before(:example) { other.add_constraint(constraint) }
+
+      it 'should add the constraints to the contract' do
+        expect { contract.concat other }
+          .to change { contract.each_constraint.to_a }
+          .to include(expected)
+      end
+    end
+
+    wrap_context 'when the contract has many constraints' do
+      describe 'with a contract with constraints' do
+        let(:constraint) { Stannum::Constraints::Base.new }
+        let(:other)      { described_class.new }
+        let(:expected) do
+          Stannum::Contracts::Definition.new(
+            constraint: constraint,
+            contract:   other,
+            options:    { sanity: false }
+          )
+        end
+
+        before(:example) { other.add_constraint(constraint) }
+
+        it 'should add the constraints to the contract' do
+          expect { contract.concat other }
+            .to change { contract.each_constraint.to_a }
+            .to include(expected)
+        end
+      end
+    end
+  end
+
   describe '#each_constraint' do
     it { expect(contract).to respond_to(:each_constraint).with(0).arguments }
 
@@ -691,7 +792,7 @@ RSpec.describe Stannum::Contracts::Base do
       end
     end
 
-    wrap_context 'when the contract includes other contracts' do
+    wrap_context 'when the contract concatenates other contracts' do
       let(:expected) { definitions }
 
       it { expect(contract.each_constraint.count).to be constraints.size }
@@ -751,7 +852,7 @@ RSpec.describe Stannum::Contracts::Base do
       end
     end
 
-    wrap_context 'when the contract includes other contracts' do
+    wrap_context 'when the contract concatenates other contracts' do
       let(:expected) { definitions.zip(Array.new(constraints.size, actual)) }
 
       it { expect(contract.each_constraint.count).to be constraints.size }
@@ -773,107 +874,6 @@ RSpec.describe Stannum::Contracts::Base do
       it 'should yield each definition and the object' do
         expect { |block| contract.each_pair(actual, &block) }
           .to yield_successive_args(*expected)
-      end
-    end
-  end
-
-  describe '#include' do
-    let(:error_message) { 'must be an instance of Stannum::Contract' }
-
-    it { expect(contract).to respond_to(:include).with(1).argument }
-
-    describe 'with nil' do
-      it 'should raise an error' do
-        expect { contract.include nil }
-          .to raise_error ArgumentError, error_message
-      end
-    end
-
-    describe 'with an object' do
-      it 'should raise an error' do
-        expect { contract.include Object.new.freeze }
-          .to raise_error ArgumentError, error_message
-      end
-    end
-
-    describe 'with a constraint' do
-      it 'should raise an error' do
-        expect { contract.include Stannum::Constraints::Base.new }
-          .to raise_error ArgumentError, error_message
-      end
-    end
-
-    describe 'with an empty contract' do
-      let(:other) { described_class.new }
-
-      it 'should return the contract' do
-        expect(contract.include other).to be contract
-      end
-
-      it 'should not change the constraints' do
-        expect { contract.include other }
-          .not_to(change { contract.each_constraint.to_a })
-      end
-
-      context 'when a constraint is added to the other contract' do
-        let(:constraint) { Stannum::Constraints::Base.new }
-        let(:expected) do
-          Stannum::Contracts::Definition.new(
-            constraint: constraint,
-            contract:   other,
-            options:    { sanity: false }
-          )
-        end
-
-        it 'should add the constraint to the contract' do
-          contract.include other
-
-          expect { other.add_constraint(constraint) }
-            .to change { contract.each_constraint.to_a }
-            .to include(expected)
-        end
-      end
-    end
-
-    describe 'with a contract with constraints' do
-      let(:constraint) { Stannum::Constraints::Base.new }
-      let(:other)      { described_class.new }
-      let(:expected) do
-        Stannum::Contracts::Definition.new(
-          constraint: constraint,
-          contract:   other,
-          options:    { sanity: false }
-        )
-      end
-
-      before(:example) { other.add_constraint(constraint) }
-
-      it 'should add the constraints to the contract' do
-        expect { contract.include other }
-          .to change { contract.each_constraint.to_a }
-          .to include(expected)
-      end
-    end
-
-    wrap_context 'when the contract has many constraints' do
-      describe 'with a contract with constraints' do
-        let(:constraint) { Stannum::Constraints::Base.new }
-        let(:other)      { described_class.new }
-        let(:expected) do
-          Stannum::Contracts::Definition.new(
-            constraint: constraint,
-            contract:   other,
-            options:    { sanity: false }
-          )
-        end
-
-        before(:example) { other.add_constraint(constraint) }
-
-        it 'should add the constraints to the contract' do
-          expect { contract.include other }
-            .to change { contract.each_constraint.to_a }
-            .to include(expected)
-        end
       end
     end
   end

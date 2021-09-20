@@ -861,7 +861,7 @@ module Spec::Support::Examples
           contract = Stannum::Contracts::Base.new
           contract.add_constraint(Stannum::Constraints::Base.new)
 
-          expect { copy.include(contract) }
+          expect { copy.concat(contract) }
             .not_to(change { subject.send(:concatenated) })
         end
       end
@@ -943,7 +943,7 @@ module Spec::Support::Examples
           contract = Stannum::Contracts::Base.new
           contract.add_constraint(Stannum::Constraints::Base.new)
 
-          expect { copy.include(contract) }
+          expect { copy.concat(contract) }
             .not_to(change { subject.send(:concatenated) })
         end
       end
@@ -1433,7 +1433,7 @@ module Spec::Support::Examples
           contract = Stannum::Contracts::Base.new
           contract.add_constraint(Stannum::Constraints::Base.new)
 
-          expect { copy.include(contract) }
+          expect { copy.concat(contract) }
             .not_to(change { subject.send(:concatenated) })
         end
       end

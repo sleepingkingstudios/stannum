@@ -408,6 +408,40 @@ gadget_contract.errors_for(nil).map { |err| [err.path, err.type] }
 
 Likewise, when performing a negated match, the sanity constraints will be evaluated first, and the remaining constraints will be evaluated only if all of the sanity constraints match.
 
+#### Combining Contracts
+
+Stannum provides two mechanisms for composing contracts together. Each contract is a constraint, and so can be added to another contract (with or without a property or scope). This allows you to create and reuse validation logic simply by adding a contract as a constraint:
+
+```ruby
+named_contract = Stannum::Contract.new do
+  property :name, Stannum::Constraints::Presence.new
+end
+
+widget_contract = Stannum::Contract.new do
+  constraint(Stannum::Constraints::Type.new(Widget))
+
+  constraint(named_contract)
+end
+
+widget = Widget.new
+widget_contract.matches?(Widget.new)
+#=> false
+widget_contract.matches?(Widget.new(name: 'Whirlygig'))
+#=> true
+```
+
+The second mechanism is contract *concatenation*. Under the hood, concatenation directly pulls in the constraints from a concatenated contract, rather than evaluating that contract on its own. This can be likened to inheriting methods from a superclass or an included Module.
+
+```ruby
+gadget_contract = Stannum::Contract.new do
+  constraint(Stannum::Constraints::Type.new(Gadget))
+
+  concat(named_contract)
+end
+```
+
+Using concatenation, you have finer control over the constraints that are added to the contract. Specifically, when defining a contract you can mark certain constraints as excluded from concatenation by adding the `concatenatable: false` keyword to `#add_constraint`. As an example, this can be useful if you want to inherit constraints about the properties of an object, but not potentially conflicting constraints about the object's type.
+
 <a id="array-contracts"></a>
 
 #### Array Contracts

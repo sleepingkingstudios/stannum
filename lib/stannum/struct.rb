@@ -261,7 +261,7 @@ module Stannum
 
         return unless struct_class?(struct_class.superclass)
 
-        contract.include(struct_class.superclass::Contract)
+        contract.concat(struct_class.superclass::Contract)
       end
 
       def struct_class?(struct_class)

@@ -189,6 +189,58 @@ module Stannum::Contracts
       self
     end
 
+    # Concatenate the constraints from the given other contract.
+    #
+    # Merges the constraints from the concatenated contract into the original.
+    # This is a dynamic process - if constraints are added to the concatenated
+    # contract at a later point, they will also be added to the original. This
+    # is also recursive - concatenating a contract will also merge the
+    # constraints from any contracts that were themselves concatenated in the
+    # concatenated contract.
+    #
+    # There are two approaches for adding one contract to another. The first and
+    # simplest is to take advantage of the fact that each contract is, itself, a
+    # constraint. Adding the new contract to the original via #add_constraint
+    # works in most cases - the new contract will be called during #matches? and
+    # when generating errors. However, functionality that inspects the
+    # constraints directly (such as the :allow_extra_keys functionality in
+    # HashContract) will fail.
+    #
+    # Concatenating a contract in another is a much closer relationship. Each
+    # time the constraints on the original contract are enumerated, it will also
+    # yield the constraints from the concatenated contract (and from any
+    # contracts that are concatenated in that contract, recursively).
+    #
+    # To sum up, use #add_constraint when you want to constrain a property of
+    # the actual object with a contract. Use #concat when you want to add more
+    # constraints about the object itself.
+    #
+    # @example Concatenating A Contract
+    #   concatenated_contract = Stannum::Contract.new
+    #     .add_constraint(Stannum::Constraint.new { |int| int < 10 })
+    #
+    #   original_contract = Stannum::Contract.new
+    #     .add_constraint(Stannum::Constraint.new { |int| int >= 0 })
+    #     .concat(concatenated_contract)
+    #
+    #   original_contract.matches?(-1) #=> a failing result
+    #   original_contract.matches?(0)  #=> a passing result
+    #   original_contract.matches?(5)  #=> a passing result
+    #   original_contract.matches?(10) #=> a failing result
+    #
+    # @param other [Stannum::Contract] the other contract.
+    #
+    # @return [Stannum::Contract] the original contract.
+    #
+    # @see #add_constraint
+    def concat(other)
+      validate_contract(other)
+
+      @concatenated << other
+
+      self
+    end
+
     # Checks that none of the added constraints match the object.
     #
     # If the contract defines sanity constraints, the sanity constraints will be
@@ -288,58 +340,6 @@ module Stannum::Contracts
 
         yield definition, value
       end
-    end
-
-    # Include the constraints from the given other contract.
-    #
-    # Merges the constraints from the concatenated contract into the original.
-    # This is a dynamic process - if constraints are added to the concatenated
-    # contract at a later point, they will also be added to the original. This
-    # is also recursive - concatenating a contract will also merge the
-    # constraints from any contracts that were themselves concatenated in the
-    # concatenated contract.
-    #
-    # There are two approaches for adding one contract to another. The first and
-    # simplest is to take advantage of the fact that each contract is, itself, a
-    # constraint. Adding the new contract to the original via #add_constraint
-    # works in most cases - the new contract will be called during #matches? and
-    # when generating errors. However, functionality that inspects the
-    # constraints directly (such as the :allow_extra_keys functionality in
-    # HashContract) will fail.
-    #
-    # Concatenating a contract in another is a much closer relationship. Each
-    # time the constraints on the original contract are enumerated, it will also
-    # yield the constraints from the concatenated contract (and from any
-    # contracts that are concatenated in that contract, recursively).
-    #
-    # To sum up, use #add_constraint when you want to constrain a property of
-    # the actual object with a contract. Use #concat when you want to add more
-    # constraints about the object itself.
-    #
-    # @example Concatenating A Contract
-    #   concatenated_contract = Stannum::Contract.new
-    #     .add_constraint(Stannum::Constraint.new { |int| int < 10 })
-    #
-    #   original_contract = Stannum::Contract.new
-    #     .add_constraint(Stannum::Constraint.new { |int| int >= 0 })
-    #     .concat(concatenated_contract)
-    #
-    #   original_contract.matches?(-1) #=> a failing result
-    #   original_contract.matches?(0)  #=> a passing result
-    #   original_contract.matches?(5)  #=> a passing result
-    #   original_contract.matches?(10) #=> a failing result
-    #
-    # @param other [Stannum::Contract] the other contract.
-    #
-    # @return [Stannum::Contract] the original contract.
-    #
-    # @see #add_constraint
-    def include(other)
-      validate_contract(other)
-
-      @concatenated << other
-
-      self
     end
 
     # Matches and generates errors for each constraint.
