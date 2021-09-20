@@ -11,6 +11,7 @@ module Stannum
     autoload :Boolean,    'stannum/constraints/boolean'
     autoload :Delegator,  'stannum/constraints/delegator'
     autoload :Enum,       'stannum/constraints/enum'
+    autoload :Equality,   'stannum/constraints/equality'
     autoload :Hashes,     'stannum/constraints/hashes'
     autoload :Identity,   'stannum/constraints/identity'
     autoload :Nothing,    'stannum/constraints/nothing'

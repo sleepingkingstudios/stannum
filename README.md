@@ -961,6 +961,22 @@ constraint.matches?('green')
 #=> true
 ```
 
+**Equality Constraint**
+
+Matches any object equal to the given object.
+
+```ruby
+value      = 'Greetings, programs!'
+constraint = Stannum::Constraints::Equality.new(value)
+
+constraint.matches?(nil)
+#=> false
+constraint.matches?(value.dup)
+#=> true
+constraint.matches?(value)
+#=> true
+```
+
 **Identity Constraint**
 
 Matches the given object.
