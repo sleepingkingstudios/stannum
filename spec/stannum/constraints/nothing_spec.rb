@@ -35,6 +35,9 @@ RSpec.describe Stannum::Constraints::Nothing do
     let(:expected_errors) do
       { type: described_class::TYPE }
     end
+    let(:expected_messages) do
+      expected_errors.merge(message: 'is a value')
+    end
 
     describe 'with nil' do
       let(:actual) { nil }

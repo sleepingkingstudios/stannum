@@ -250,7 +250,7 @@ module Spec::Support::Examples
       it { expect(actual_errors).to match_errors(Stannum::Errors.new) }
     end
 
-    shared_examples 'should not match the constraint' do |messages: false|
+    shared_examples 'should not match the constraint' do
       let(:actual_status) do
         status, _ = subject.send(match_method, actual)
 
@@ -302,7 +302,7 @@ module Spec::Support::Examples
 
       it { expect(actual_errors).to match_errors wrapped_errors }
 
-      if messages
+      if instance_methods.include?(:expected_messages)
         it 'should generate the error messages' do
           expect(actual_errors.with_messages).to match_errors wrapped_messages
         end

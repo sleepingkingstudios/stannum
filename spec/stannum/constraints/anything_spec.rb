@@ -117,6 +117,9 @@ RSpec.describe Stannum::Constraints::Anything do
     let(:expected_errors) do
       { type: described_class::NEGATED_TYPE }
     end
+    let(:expected_messages) do
+      expected_errors.merge(message: 'is a value')
+    end
 
     describe 'with nil' do
       let(:actual) { nil }

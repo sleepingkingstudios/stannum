@@ -42,6 +42,9 @@ RSpec.describe Stannum::Constraints::Boolean do
   describe '#match' do
     let(:match_method)    { :match }
     let(:expected_errors) { { type: constraint.type } }
+    let(:expected_messages) do
+      expected_errors.merge(message: 'is not true or false')
+    end
 
     describe 'with nil' do
       let(:actual) { nil }
@@ -71,6 +74,9 @@ RSpec.describe Stannum::Constraints::Boolean do
   describe '#negated_match' do
     let(:match_method)    { :negated_match }
     let(:expected_errors) { { type: constraint.negated_type } }
+    let(:expected_messages) do
+      expected_errors.merge(message: 'is true or false')
+    end
 
     describe 'with nil' do
       let(:actual) { nil }

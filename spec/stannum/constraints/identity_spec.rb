@@ -49,6 +49,9 @@ RSpec.describe Stannum::Constraints::Identity do
   describe '#match' do
     let(:match_method)    { :match }
     let(:expected_errors) { { type: constraint.type } }
+    let(:expected_messages) do
+      expected_errors.merge(message: 'is not the expected value')
+    end
 
     describe 'with a non-matching object' do
       let(:actual) { :a_symbol }
@@ -72,6 +75,9 @@ RSpec.describe Stannum::Constraints::Identity do
   describe '#negated_match' do
     let(:match_method)    { :negated_match }
     let(:expected_errors) { { type: constraint.negated_type } }
+    let(:expected_messages) do
+      expected_errors.merge(message: 'is the expected value')
+    end
 
     describe 'with a non-matching object' do
       let(:actual) { :a_symbol }

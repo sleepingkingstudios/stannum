@@ -68,6 +68,9 @@ RSpec.describe Stannum::Constraints::Union do
         type: constraint.type
       }
     end
+    let(:expected_messages) do
+      expected_errors.merge(message: 'does not match any of the constraints')
+    end
 
     context 'when the object does not match any of the constraints' do
       let(:actual) { nil }
@@ -97,6 +100,9 @@ RSpec.describe Stannum::Constraints::Union do
         data: { constraints: expected_values },
         type: constraint.negated_type
       }
+    end
+    let(:expected_messages) do
+      expected_errors.merge(message: 'matches one of the constraints')
     end
 
     context 'when the object does not match any of the constraints' do
