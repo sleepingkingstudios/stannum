@@ -50,6 +50,9 @@ RSpec.describe Stannum::Constraints::Types::DateTimeType do
       }
     end
     let(:matching) { DateTime.new }
+    let(:expected_messages) do
+      expected_errors.merge(message: 'is not a DateTime')
+    end
 
     include_examples 'should match the type constraint'
   end
@@ -63,6 +66,9 @@ RSpec.describe Stannum::Constraints::Types::DateTimeType do
       }
     end
     let(:matching) { DateTime.new }
+    let(:expected_messages) do
+      expected_errors.merge(message: 'is a DateTime')
+    end
 
     include_examples 'should match the negated type constraint'
   end

@@ -41,12 +41,6 @@ module Stannum::Constraints::Types
   #   constraint.matches?({ key: :value })  # => true
   #   constraint.matches?({ key: 'value' }) # => true
   class HashType < Stannum::Constraints::Type
-    # The :type of the error generated for a hash with invalid keys.
-    INVALID_KEY_TYPE = 'stannum.constraints.types.hash.invalid_key'
-
-    # The :type of the error generated for a hash with invalid values.
-    INVALID_VALUE_TYPE = 'stannum.constraints.types.hash.invalid_value'
-
     # @param allow_empty [true, false] If false, then the constraint will not
     #   match against a Hash with no keys.
     # @param key_type [Stannum::Constraints::Base, Class, nil] If set, then the
@@ -122,12 +116,6 @@ module Stannum::Constraints::Types
 
     private
 
-    def add_invalid_key_errors(actual:, errors:)
-      non_matching_values(actual).each do |key, value|
-        errors[key].add(INVALID_VALUE_TYPE, value: value)
-      end
-    end
-
     def add_presence_error(errors)
       errors.add(
         Stannum::Constraints::Presence::TYPE,
@@ -164,10 +152,14 @@ module Stannum::Constraints::Types
     end
 
     def non_matching_keys(actual)
+      return [] unless key_type && actual.is_a?(Hash)
+
       actual.each_key.reject { |key| key_type.matches?(key) }
     end
 
     def non_matching_values(actual)
+      return [] unless value_type && actual.is_a?(Hash)
+
       actual.each.reject { |_, value| value_type.matches?(value) }
     end
 
@@ -180,15 +172,31 @@ module Stannum::Constraints::Types
 
       return add_presence_error(errors) unless presence_matches?(actual)
 
-      unless key_type_matches?(actual)
-        errors.add(INVALID_KEY_TYPE, keys: non_matching_keys(actual))
-      end
+      update_key_errors_for(actual: actual, errors: errors)
 
-      unless value_type_matches?(actual)
-        add_invalid_key_errors(actual: actual, errors: errors)
-      end
+      update_value_errors_for(actual: actual, errors: errors)
 
       errors
+    end
+
+    def update_key_errors_for(actual:, errors:)
+      non_matching_keys(actual).each do |key|
+        key_type.send(
+          :update_errors_for,
+          actual: key,
+          errors: errors[:keys][key]
+        )
+      end
+    end
+
+    def update_value_errors_for(actual:, errors:)
+      non_matching_values(actual).each do |key, value|
+        value_type.send(
+          :update_errors_for,
+          actual: value,
+          errors: errors[key]
+        )
+      end
     end
 
     def value_type_matches?(actual)

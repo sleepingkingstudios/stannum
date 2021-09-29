@@ -62,7 +62,7 @@ module Stannum::Constraints::Hashes
     # @return [true, false] true if the object responds to #[] and #keys and the
     #   object does not have any key that is not in expected_keys.
     def matches?(actual)
-      return false unless hash?(actual)
+      return false unless actual.respond_to?(:keys)
 
       Set.new(actual.keys) <= expected_keys
     end
@@ -70,12 +70,10 @@ module Stannum::Constraints::Hashes
 
     private
 
-    def add_invalid_hash_error(errors)
-      errors.add(
-        Stannum::Constraints::Type::TYPE,
-        methods: %i[[] keys],
-        missing: %i[[] keys]
-      )
+    def add_invalid_hash_error(actual:, errors:)
+      Stannum::Constraints::Signature
+        .new(:keys)
+        .send(:update_errors_for, actual: actual, errors: errors)
     end
 
     def each_extra_key(actual)
@@ -93,19 +91,15 @@ module Stannum::Constraints::Hashes
     end
 
     def update_errors_for(actual:, errors:)
-      return add_invalid_hash_error(errors) unless hash?(actual)
+      unless actual.respond_to?(:keys)
+        return add_invalid_hash_error(actual: actual, errors: errors)
+      end
 
       each_extra_key(actual) do |key, value|
         errors[key].add(type, value: value)
       end
 
       errors
-    end
-
-    def update_negated_errors_for(actual:, errors:)
-      return add_invalid_hash_error(errors) unless hash?(actual)
-
-      super
     end
 
     def valid_key?(key)

@@ -8,6 +8,12 @@
         anything: 'is a value',
         does_not_have_methods: 'does not respond to the methods',
         has_methods: 'responds to the methods',
+        hashes: {
+          extra_keys: 'has extra keys',
+          is_not_string_or_symbol: 'is not a String or a Symbol',
+          is_string_or_symbol: 'is a String or a Symbol',
+          no_extra_keys: 'does not have extra keys'
+        },
         invalid: 'is invalid',
         is_boolean: 'is true or false',
         is_in_list: 'is in the list',
@@ -21,6 +27,13 @@
         is_not_value: 'is not the expected value',
         is_type: ->(_type, data) { "is a #{data[:type]}" },
         is_value: 'is the expected value',
+        tuples: {
+          extra_items: 'has extra items'
+        },
+        types: {
+          is_nil: 'is nil',
+          is_not_nil: 'is not nil'
+        },
         present: 'is not nil or empty',
         valid: 'is valid'
       }

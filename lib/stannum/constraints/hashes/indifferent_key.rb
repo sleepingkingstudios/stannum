@@ -52,12 +52,7 @@ module Stannum::Constraints::Hashes
     end
     alias match? matches?
 
-    private
-
-    def indifferent_key_type?(actual)
-      actual.is_a?(String) || actual.is_a?(Symbol)
-    end
-
+    # @protected
     def update_errors_for(actual:, errors:)
       return errors.add(Stannum::Constraints::Presence::TYPE) if actual.nil?
 
@@ -66,6 +61,12 @@ module Stannum::Constraints::Hashes
       return unless actual.empty?
 
       errors.add(Stannum::Constraints::Presence::TYPE)
+    end
+
+    private
+
+    def indifferent_key_type?(actual)
+      actual.is_a?(String) || actual.is_a?(Symbol)
     end
   end
 end

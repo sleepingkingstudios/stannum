@@ -1,9 +1,13 @@
 # frozen_string_literal: true
 
+require 'stannum/rspec/match_errors'
+
 require 'support/contracts/recipe_parameters'
 
 # @note Integration spec for Stannum::Contracts::ParametersContract.
 RSpec.describe Spec::RecipeParameters do
+  include Stannum::RSpec::Matchers
+
   subject(:contract) { described_class.new }
 
   describe '.new' do
@@ -82,15 +86,15 @@ RSpec.describe Spec::RecipeParameters do
       let(:expected_errors) do
         [
           {
-            data:    { value: { 'flour' => '500 grams' } },
+            data:    { type: String, required: true },
             message: nil,
             path:    [:arguments, :tools, 1],
-            type:    Stannum::Constraints::Types::ArrayType::INVALID_ITEM_TYPE
+            type:    Stannum::Constraints::Type::TYPE
           }
         ]
       end
 
-      it { expect(errors).to be == expected_errors }
+      it { expect(errors).to match_errors expected_errors }
 
       it { expect(status).to be false }
     end
@@ -118,21 +122,21 @@ RSpec.describe Spec::RecipeParameters do
       let(:expected_errors) do
         [
           {
-            data:    { value: true },
+            data:    { methods: %i[[] each size], missing: %i[[] each size] },
             message: nil,
             path:    %i[keywords ingredients poison],
-            type:    Stannum::Constraints::Types::HashType::INVALID_VALUE_TYPE
+            type:    Stannum::Constraints::Signature::TYPE
           },
           {
-            data:    { value: %w[many tiny shards] },
+            data:    { value: 'shards' },
             message: nil,
-            path:    %i[keywords ingredients glass],
-            type:    Stannum::Constraints::Types::HashType::INVALID_VALUE_TYPE
+            path:    [:keywords, :ingredients, :glass, 2],
+            type:    Stannum::Constraints::Tuples::ExtraItems::TYPE
           }
         ]
       end
 
-      it { expect(errors).to be == expected_errors }
+      it { expect(errors).to match_errors expected_errors }
 
       it { expect(status).to be false }
     end

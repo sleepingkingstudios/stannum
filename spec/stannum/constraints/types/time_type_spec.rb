@@ -50,6 +50,9 @@ RSpec.describe Stannum::Constraints::Types::TimeType do
       }
     end
     let(:matching) { Time.new }
+    let(:expected_messages) do
+      expected_errors.merge(message: 'is not a Time')
+    end
 
     include_examples 'should match the type constraint'
   end
@@ -63,6 +66,9 @@ RSpec.describe Stannum::Constraints::Types::TimeType do
       }
     end
     let(:matching) { Time.new }
+    let(:expected_messages) do
+      expected_errors.merge(message: 'is a Time')
+    end
 
     include_examples 'should match the negated type constraint'
   end

@@ -54,12 +54,10 @@ module Stannum::Constraints::Tuples
 
     private
 
-    def add_invalid_tuple_error(errors)
-      errors.add(
-        Stannum::Constraints::Type::TYPE,
-        methods: %i[size],
-        missing: %i[size]
-      )
+    def add_invalid_tuple_error(actual:, errors:)
+      Stannum::Constraints::Signature
+        .new(:size)
+        .send(:update_errors_for, actual: actual, errors: errors)
     end
 
     def each_extra_item(actual, &block)
@@ -69,19 +67,15 @@ module Stannum::Constraints::Tuples
     end
 
     def update_errors_for(actual:, errors:)
-      return add_invalid_tuple_error(errors) unless actual.respond_to?(:size)
+      unless actual.respond_to?(:size)
+        return add_invalid_tuple_error(actual: actual, errors: errors)
+      end
 
       each_extra_item(actual) do |item, index|
         errors[index].add(type, value: item)
       end
 
       errors
-    end
-
-    def update_negated_errors_for(actual:, errors:)
-      return add_invalid_tuple_error(errors) unless actual.respond_to?(:size)
-
-      super
     end
   end
 end

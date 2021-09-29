@@ -1143,6 +1143,19 @@ constraint.matches?(['uno', 'dos', 'tres'])
 #=> true
 ```
 
+You can also specify whether the constraint allows an empty Array by setting the `allow_empty: false` keyword in the constructor. If `false`, the constraint will only match arrays with one or more items. The default value is `true`.
+
+```ruby
+constraint = Stannum::Constraints::Types::ArrayType.new(allow_empty: false)
+
+constraint.matches?(nil)
+#=> false
+constraint.matches?([])
+#=> false
+constraint.matches?([1, 2, 3])
+#=> true
+```
+
 **HashType Constraint**
 
 You can specify a `key_type` and/or a `value_type` for a `HashType` constraint. An object will only match if the object is a `Hash`, all of the hash's keys and/or values are of the specified type or match the given constraint.
@@ -1159,6 +1172,19 @@ constraint.matches?({ ichi: 1 })
 constraint.matches?({ 'ichi' => 'one' })
 #=> false
 constraint.matches?({ 'ichi' => 1 })
+```
+
+You can also specify whether the constraint allows an empty Hash by setting the `allow_empty: false` keyword in the constructor. If `false`, the constraint will only match hashes with one or more keys. The default value is `true`.
+
+```ruby
+constraint = Stannum::Constraints::Types::HashType.new(allow_empty: false
+
+constraint.matches?(nil)
+#=> false
+constraint.matches?({})
+#=> false
+constraint.matches?({ ichi: 1 })
+#=> true
 ```
 
 There are predefined constraints for matching `Hash`es with common key types:

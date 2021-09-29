@@ -89,12 +89,15 @@ RSpec.describe Stannum::Constraints::Hashes::ExtraKeys do
       let(:actual) { nil }
       let(:expected_errors) do
         {
-          type: Stannum::Constraints::Type::TYPE,
+          type: Stannum::Constraints::Signature::TYPE,
           data: {
-            missing: %i[[] keys],
-            methods: %i[[] keys]
+            missing: %i[keys],
+            methods: %i[keys]
           }
         }
+      end
+      let(:expected_messages) do
+        expected_errors.merge(message: 'does not respond to the methods')
       end
 
       include_examples 'should not match the constraint'
@@ -104,12 +107,15 @@ RSpec.describe Stannum::Constraints::Hashes::ExtraKeys do
       let(:actual) { Object.new.freeze }
       let(:expected_errors) do
         {
-          type: Stannum::Constraints::Type::TYPE,
+          type: Stannum::Constraints::Signature::TYPE,
           data: {
-            missing: %i[[] keys],
-            methods: %i[[] keys]
+            missing: %i[keys],
+            methods: %i[keys]
           }
         }
+      end
+      let(:expected_messages) do
+        expected_errors.merge(message: 'does not respond to the methods')
       end
 
       include_examples 'should not match the constraint'
@@ -140,6 +146,11 @@ RSpec.describe Stannum::Constraints::Hashes::ExtraKeys do
             }
           ]
         end
+        let(:expected_messages) do
+          expected_errors.map do |err|
+            err.merge(message: 'has extra keys')
+          end
+        end
 
         include_examples 'should not match the constraint'
       end
@@ -160,6 +171,11 @@ RSpec.describe Stannum::Constraints::Hashes::ExtraKeys do
               type: described_class::TYPE
             }
           ]
+        end
+        let(:expected_messages) do
+          expected_errors.map do |err|
+            err.merge(message: 'has extra keys')
+          end
         end
 
         include_examples 'should not match the constraint'
@@ -194,6 +210,11 @@ RSpec.describe Stannum::Constraints::Hashes::ExtraKeys do
               type: described_class::TYPE
             }
           ]
+        end
+        let(:expected_messages) do
+          expected_errors.map do |err|
+            err.merge(message: 'has extra keys')
+          end
         end
 
         include_examples 'should not match the constraint'
@@ -229,6 +250,11 @@ RSpec.describe Stannum::Constraints::Hashes::ExtraKeys do
             }
           ]
         end
+        let(:expected_messages) do
+          expected_errors.map do |err|
+            err.merge(message: 'has extra keys')
+          end
+        end
 
         include_examples 'should not match the constraint'
       end
@@ -249,6 +275,11 @@ RSpec.describe Stannum::Constraints::Hashes::ExtraKeys do
               type: described_class::TYPE
             }
           ]
+        end
+        let(:expected_messages) do
+          expected_errors.map do |err|
+            err.merge(message: 'has extra keys')
+          end
         end
 
         include_examples 'should not match the constraint'
@@ -284,6 +315,11 @@ RSpec.describe Stannum::Constraints::Hashes::ExtraKeys do
             }
           ]
         end
+        let(:expected_messages) do
+          expected_errors.map do |err|
+            err.merge(message: 'has extra keys')
+          end
+        end
 
         include_examples 'should not match the constraint'
       end
@@ -292,40 +328,25 @@ RSpec.describe Stannum::Constraints::Hashes::ExtraKeys do
 
   describe '#negated_match' do
     let(:match_method) { :negated_match }
+    let(:expected_errors) { { type: described_class::NEGATED_TYPE } }
+    let(:expected_messages) do
+      expected_errors.merge(message: 'does not have extra keys')
+    end
 
     describe 'with nil' do
       let(:actual) { nil }
-      let(:expected_errors) do
-        {
-          type: Stannum::Constraints::Type::TYPE,
-          data: {
-            missing: %i[[] keys],
-            methods: %i[[] keys]
-          }
-        }
-      end
 
       include_examples 'should not match the constraint'
     end
 
     describe 'with an Object' do
       let(:actual) { Object.new.freeze }
-      let(:expected_errors) do
-        {
-          type: Stannum::Constraints::Type::TYPE,
-          data: {
-            missing: %i[[] keys],
-            methods: %i[[] keys]
-          }
-        }
-      end
 
       include_examples 'should not match the constraint'
     end
 
     context 'when initialized with an array' do
-      let(:expected_keys)   { %i[foo bar baz] }
-      let(:expected_errors) { { type: described_class::NEGATED_TYPE } }
+      let(:expected_keys) { %i[foo bar baz] }
 
       describe 'with an empty hash' do
         let(:actual) { {} }

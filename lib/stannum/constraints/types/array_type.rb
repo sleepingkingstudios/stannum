@@ -32,9 +32,6 @@ module Stannum::Constraints::Types
   #   constraint.matches?([1, 2, 3])         # => true
   #   constraint.matches?(%w[one two three]) # => true
   class ArrayType < Stannum::Constraints::Type
-    # The :type of the error generated for an array with invalid items.
-    INVALID_ITEM_TYPE = 'stannum.constraints.types.array.invalid_item'
-
     # @param allow_empty [true, false] If false, then the constraint will not
     #   match against an Array with no items.
     # @param item_type [Stannum::Constraints::Base, Class, nil] If set, then
@@ -138,7 +135,7 @@ module Stannum::Constraints::Types
 
       unless item_type_matches?(actual)
         non_matching_items(actual).each do |item, index|
-          errors[index].add(INVALID_ITEM_TYPE, value: item)
+          item_type.update_errors_for(actual: item, errors: errors[index])
         end
       end
 
