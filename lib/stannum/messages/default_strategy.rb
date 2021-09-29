@@ -108,12 +108,12 @@ module Stannum::Messages
     end
 
     def read_ruby_file(filename)
-      eval(IO.read(filename), binding, filename) # rubocop:disable Security/Eval
+      eval(File.read(filename), binding, filename) # rubocop:disable Security/Eval
     end
 
     def read_yaml_file(filename)
       tools.hash_tools.convert_keys_to_symbols(
-        YAML.safe_load(IO.read(filename))
+        YAML.safe_load(File.read(filename))
       )
     end
 
