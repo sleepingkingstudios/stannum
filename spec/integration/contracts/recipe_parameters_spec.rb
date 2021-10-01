@@ -1,9 +1,13 @@
 # frozen_string_literal: true
 
+require 'stannum/rspec/match_errors'
+
 require 'support/contracts/recipe_parameters'
 
 # @note Integration spec for Stannum::Contracts::ParametersContract.
 RSpec.describe Spec::RecipeParameters do
+  include Stannum::RSpec::Matchers
+
   subject(:contract) { described_class.new }
 
   describe '.new' do
@@ -12,7 +16,7 @@ RSpec.describe Spec::RecipeParameters do
 
   describe '#match' do
     let(:status) { Array(contract.match(actual))[0] }
-    let(:errors) { Array(contract.match(actual))[1] }
+    let(:errors) { Array(contract.match(actual))[1].with_messages }
     let(:actual) do
       {
         arguments: ['Cutting Board', 'Spatula', 'Stand Mixer'],
@@ -31,14 +35,14 @@ RSpec.describe Spec::RecipeParameters do
         [
           {
             data:    { allow_empty: true, required: true, type: Hash },
-            message: nil,
+            message: 'is not a Hash',
             path:    [],
             type:    Stannum::Constraints::Type::TYPE
           }
         ]
       end
 
-      it { expect(errors).to be == expected_errors }
+      it { expect(errors).to match_errors(expected_errors) }
 
       it { expect(status).to be false }
     end
@@ -49,20 +53,20 @@ RSpec.describe Spec::RecipeParameters do
         [
           {
             data:    { allow_empty: true, required: true, type: Array },
-            message: nil,
+            message: 'is not a Array',
             path:    %i[arguments],
             type:    Stannum::Constraints::Type::TYPE
           },
           {
             data:    { allow_empty: true, required: true, type: Hash },
-            message: nil,
+            message: 'is not a Hash',
             path:    %i[keywords],
             type:    Stannum::Constraints::Type::TYPE
           }
         ]
       end
 
-      it { expect(errors).to be == expected_errors }
+      it { expect(errors).to match_errors(expected_errors) }
 
       it { expect(status).to be false }
     end
@@ -82,15 +86,15 @@ RSpec.describe Spec::RecipeParameters do
       let(:expected_errors) do
         [
           {
-            data:    { value: { 'flour' => '500 grams' } },
-            message: nil,
+            data:    { type: String, required: true },
+            message: 'is not a String',
             path:    [:arguments, :tools, 1],
-            type:    Stannum::Constraints::Types::ArrayType::INVALID_ITEM_TYPE
+            type:    Stannum::Constraints::Type::TYPE
           }
         ]
       end
 
-      it { expect(errors).to be == expected_errors }
+      it { expect(errors).to match_errors expected_errors }
 
       it { expect(status).to be false }
     end
@@ -118,21 +122,21 @@ RSpec.describe Spec::RecipeParameters do
       let(:expected_errors) do
         [
           {
-            data:    { value: true },
-            message: nil,
+            data:    { methods: %i[[] each size], missing: %i[[] each size] },
+            message: 'does not respond to the methods',
             path:    %i[keywords ingredients poison],
-            type:    Stannum::Constraints::Types::HashType::INVALID_VALUE_TYPE
+            type:    Stannum::Constraints::Signature::TYPE
           },
           {
-            data:    { value: %w[many tiny shards] },
-            message: nil,
-            path:    %i[keywords ingredients glass],
-            type:    Stannum::Constraints::Types::HashType::INVALID_VALUE_TYPE
+            data:    { value: 'shards' },
+            message: 'has extra items',
+            path:    [:keywords, :ingredients, :glass, 2],
+            type:    Stannum::Constraints::Tuples::ExtraItems::TYPE
           }
         ]
       end
 
-      it { expect(errors).to be == expected_errors }
+      it { expect(errors).to match_errors expected_errors }
 
       it { expect(status).to be false }
     end
@@ -143,14 +147,14 @@ RSpec.describe Spec::RecipeParameters do
         [
           {
             data:    { required: true, type: Proc },
-            message: nil,
+            message: 'is not a Proc',
             path:    %i[block],
             type:    Stannum::Constraints::Type::TYPE
           }
         ]
       end
 
-      it { expect(errors).to be == expected_errors }
+      it { expect(errors).to match_errors(expected_errors) }
 
       it { expect(status).to be false }
     end
@@ -164,7 +168,7 @@ RSpec.describe Spec::RecipeParameters do
 
   describe '#negated_match' do
     let(:status) { Array(contract.negated_match(actual))[0] }
-    let(:errors) { Array(contract.negated_match(actual))[1] }
+    let(:errors) { Array(contract.negated_match(actual))[1].with_messages }
     let(:actual) do
       {
         arguments: ['Cutting Board', 'Spatula', 'Stand Mixer'],
@@ -191,26 +195,26 @@ RSpec.describe Spec::RecipeParameters do
         [
           {
             data:    { allow_empty: true, required: true, type: Hash },
-            message: nil,
+            message: 'is a Hash',
             path:    %i[],
             type:    Stannum::Constraints::Type::NEGATED_TYPE
           },
           {
             data:    {},
-            message: nil,
+            message: 'does not have extra keys',
             path:    %i[],
             type:    Stannum::Constraints::Hashes::ExtraKeys::NEGATED_TYPE
           },
           {
             data:    { required: false, type: Proc },
-            message: nil,
+            message: 'is a Proc',
             path:    %i[block],
             type:    Stannum::Constraints::Type::NEGATED_TYPE
           }
         ]
       end
 
-      it { expect(errors).to be == expected_errors }
+      it { expect(errors).to match_errors(expected_errors) }
 
       it { expect(status).to be false }
     end
@@ -221,62 +225,62 @@ RSpec.describe Spec::RecipeParameters do
         [
           {
             data:    { allow_empty: true, required: true, type: Hash },
-            message: nil,
+            message: 'is a Hash',
             path:    %i[],
             type:    Stannum::Constraints::Type::NEGATED_TYPE
           },
           {
             data:    {},
-            message: nil,
+            message: 'does not have extra keys',
             path:    %i[],
             type:    Stannum::Constraints::Hashes::ExtraKeys::NEGATED_TYPE
           },
           {
             data:    { allow_empty: true, required: true, type: Array },
-            message: nil,
+            message: 'is a Array',
             path:    %i[arguments],
             type:    Stannum::Constraints::Type::NEGATED_TYPE
           },
           {
             data:    { methods: %i[[] each size], missing: [] },
-            message: nil,
+            message: 'responds to the methods',
             path:    %i[arguments],
             type:    Stannum::Constraints::Signature::NEGATED_TYPE
           },
           {
             data:    { allow_empty: true, required: true, type: Array },
-            message: nil,
+            message: 'is a Array',
             path:    %i[arguments tools],
             type:    Stannum::Constraints::Type::NEGATED_TYPE
           },
           {
             data:    { allow_empty: true, required: true, type: Hash },
-            message: nil,
+            message: 'is a Hash',
             path:    %i[keywords],
             type:    Stannum::Constraints::Type::NEGATED_TYPE
           },
           {
             data:    { allow_empty: true, required: true, type: Hash },
-            message: nil,
+            message: 'is a Hash',
             path:    %i[keywords ingredients],
             type:    Stannum::Constraints::Type::NEGATED_TYPE
           },
           {
             data:    { required: false, type: Proc },
-            message: nil,
+            message: 'is a Proc',
             path:    %i[block],
             type:    Stannum::Constraints::Type::NEGATED_TYPE
           },
           {
             data:    { required: true, type: Proc },
-            message: nil,
+            message: 'is a Proc',
             path:    %i[block],
             type:    Stannum::Constraints::Type::NEGATED_TYPE
           }
         ]
       end
 
-      it { expect(errors).to be == expected_errors }
+      it { expect(errors).to match_errors(expected_errors) }
 
       it { expect(status).to be false }
     end
@@ -289,62 +293,62 @@ RSpec.describe Spec::RecipeParameters do
         [
           {
             data:    { allow_empty: true, required: true, type: Hash },
-            message: nil,
+            message: 'is a Hash',
             path:    %i[],
             type:    Stannum::Constraints::Type::NEGATED_TYPE
           },
           {
             data:    {},
-            message: nil,
+            message: 'does not have extra keys',
             path:    %i[],
             type:    Stannum::Constraints::Hashes::ExtraKeys::NEGATED_TYPE
           },
           {
             data:    { allow_empty: true, required: true, type: Array },
-            message: nil,
+            message: 'is a Array',
             path:    %i[arguments],
             type:    Stannum::Constraints::Type::NEGATED_TYPE
           },
           {
             data:    { methods: %i[[] each size], missing: [] },
-            message: nil,
+            message: 'responds to the methods',
             path:    %i[arguments],
             type:    Stannum::Constraints::Signature::NEGATED_TYPE
           },
           {
             data:    { allow_empty: true, required: true, type: Array },
-            message: nil,
+            message: 'is a Array',
             path:    %i[arguments tools],
             type:    Stannum::Constraints::Type::NEGATED_TYPE
           },
           {
             data:    { allow_empty: true, required: true, type: Hash },
-            message: nil,
+            message: 'is a Hash',
             path:    %i[keywords],
             type:    Stannum::Constraints::Type::NEGATED_TYPE
           },
           {
             data:    { allow_empty: true, required: true, type: Hash },
-            message: nil,
+            message: 'is a Hash',
             path:    %i[keywords ingredients],
             type:    Stannum::Constraints::Type::NEGATED_TYPE
           },
           {
             data:    { required: false, type: Proc },
-            message: nil,
+            message: 'is a Proc',
             path:    %i[block],
             type:    Stannum::Constraints::Type::NEGATED_TYPE
           },
           {
             data:    { required: true, type: Proc },
-            message: nil,
+            message: 'is a Proc',
             path:    %i[block],
             type:    Stannum::Constraints::Type::NEGATED_TYPE
           }
         ]
       end
 
-      it { expect(errors).to be == expected_errors }
+      it { expect(errors).to match_errors(expected_errors) }
 
       it { expect(status).to be false }
     end
@@ -355,62 +359,62 @@ RSpec.describe Spec::RecipeParameters do
         [
           {
             data:    { allow_empty: true, required: true, type: Hash },
-            message: nil,
+            message: 'is a Hash',
             path:    %i[],
             type:    Stannum::Constraints::Type::NEGATED_TYPE
           },
           {
             data:    {},
-            message: nil,
+            message: 'does not have extra keys',
             path:    %i[],
             type:    Stannum::Constraints::Hashes::ExtraKeys::NEGATED_TYPE
           },
           {
             data:    { allow_empty: true, required: true, type: Array },
-            message: nil,
+            message: 'is a Array',
             path:    %i[arguments],
             type:    Stannum::Constraints::Type::NEGATED_TYPE
           },
           {
             data:    { methods: %i[[] each size], missing: [] },
-            message: nil,
+            message: 'responds to the methods',
             path:    %i[arguments],
             type:    Stannum::Constraints::Signature::NEGATED_TYPE
           },
           {
             data:    { allow_empty: true, required: true, type: Array },
-            message: nil,
+            message: 'is a Array',
             path:    %i[arguments tools],
             type:    Stannum::Constraints::Type::NEGATED_TYPE
           },
           {
             data:    { allow_empty: true, required: true, type: Hash },
-            message: nil,
+            message: 'is a Hash',
             path:    %i[keywords],
             type:    Stannum::Constraints::Type::NEGATED_TYPE
           },
           {
             data:    { allow_empty: true, required: true, type: Hash },
-            message: nil,
+            message: 'is a Hash',
             path:    %i[keywords ingredients],
             type:    Stannum::Constraints::Type::NEGATED_TYPE
           },
           {
             data:    { required: false, type: Proc },
-            message: nil,
+            message: 'is a Proc',
             path:    %i[block],
             type:    Stannum::Constraints::Type::NEGATED_TYPE
           },
           {
             data:    { required: true, type: Proc },
-            message: nil,
+            message: 'is a Proc',
             path:    %i[block],
             type:    Stannum::Constraints::Type::NEGATED_TYPE
           }
         ]
       end
 
-      it { expect(errors).to be == expected_errors }
+      it { expect(errors).to match_errors(expected_errors) }
 
       it { expect(status).to be false }
     end
@@ -431,62 +435,62 @@ RSpec.describe Spec::RecipeParameters do
         [
           {
             data:    { allow_empty: true, required: true, type: Hash },
-            message: nil,
+            message: 'is a Hash',
             path:    %i[],
             type:    Stannum::Constraints::Type::NEGATED_TYPE
           },
           {
             data:    {},
-            message: nil,
+            message: 'does not have extra keys',
             path:    %i[],
             type:    Stannum::Constraints::Hashes::ExtraKeys::NEGATED_TYPE
           },
           {
             data:    { allow_empty: true, required: true, type: Array },
-            message: nil,
+            message: 'is a Array',
             path:    %i[arguments],
             type:    Stannum::Constraints::Type::NEGATED_TYPE
           },
           {
             data:    { methods: %i[[] each size], missing: [] },
-            message: nil,
+            message: 'responds to the methods',
             path:    %i[arguments],
             type:    Stannum::Constraints::Signature::NEGATED_TYPE
           },
           {
             data:    { allow_empty: true, required: true, type: Array },
-            message: nil,
+            message: 'is a Array',
             path:    %i[arguments tools],
             type:    Stannum::Constraints::Type::NEGATED_TYPE
           },
           {
             data:    { allow_empty: true, required: true, type: Hash },
-            message: nil,
+            message: 'is a Hash',
             path:    %i[keywords],
             type:    Stannum::Constraints::Type::NEGATED_TYPE
           },
           {
             data:    { allow_empty: true, required: true, type: Hash },
-            message: nil,
+            message: 'is a Hash',
             path:    %i[keywords ingredients],
             type:    Stannum::Constraints::Type::NEGATED_TYPE
           },
           {
             data:    { required: false, type: Proc },
-            message: nil,
+            message: 'is a Proc',
             path:    %i[block],
             type:    Stannum::Constraints::Type::NEGATED_TYPE
           },
           {
             data:    { required: true, type: Proc },
-            message: nil,
+            message: 'is a Proc',
             path:    %i[block],
             type:    Stannum::Constraints::Type::NEGATED_TYPE
           }
         ]
       end
 
-      it { expect(errors).to be == expected_errors }
+      it { expect(errors).to match_errors(expected_errors) }
 
       it { expect(status).to be false }
     end
@@ -497,56 +501,56 @@ RSpec.describe Spec::RecipeParameters do
         [
           {
             data:    { allow_empty: true, required: true, type: Hash },
-            message: nil,
+            message: 'is a Hash',
             path:    %i[],
             type:    Stannum::Constraints::Type::NEGATED_TYPE
           },
           {
             data:    {},
-            message: nil,
+            message: 'does not have extra keys',
             path:    %i[],
             type:    Stannum::Constraints::Hashes::ExtraKeys::NEGATED_TYPE
           },
           {
             data:    { allow_empty: true, required: true, type: Array },
-            message: nil,
+            message: 'is a Array',
             path:    %i[arguments],
             type:    Stannum::Constraints::Type::NEGATED_TYPE
           },
           {
             data:    { methods: %i[[] each size], missing: [] },
-            message: nil,
+            message: 'responds to the methods',
             path:    %i[arguments],
             type:    Stannum::Constraints::Signature::NEGATED_TYPE
           },
           {
             data:    { allow_empty: true, required: true, type: Array },
-            message: nil,
+            message: 'is a Array',
             path:    %i[arguments tools],
             type:    Stannum::Constraints::Type::NEGATED_TYPE
           },
           {
             data:    { allow_empty: true, required: true, type: Hash },
-            message: nil,
+            message: 'is a Hash',
             path:    %i[keywords],
             type:    Stannum::Constraints::Type::NEGATED_TYPE
           },
           {
             data:    { allow_empty: true, required: true, type: Hash },
-            message: nil,
+            message: 'is a Hash',
             path:    %i[keywords ingredients],
             type:    Stannum::Constraints::Type::NEGATED_TYPE
           },
           {
             data:    { required: false, type: Proc },
-            message: nil,
+            message: 'is a Proc',
             path:    %i[block],
             type:    Stannum::Constraints::Type::NEGATED_TYPE
           }
         ]
       end
 
-      it { expect(errors).to be == expected_errors }
+      it { expect(errors).to match_errors(expected_errors) }
 
       it { expect(status).to be false }
     end
@@ -556,62 +560,62 @@ RSpec.describe Spec::RecipeParameters do
         [
           {
             data:    { allow_empty: true, required: true, type: Hash },
-            message: nil,
+            message: 'is a Hash',
             path:    %i[],
             type:    Stannum::Constraints::Type::NEGATED_TYPE
           },
           {
             data:    {},
-            message: nil,
+            message: 'does not have extra keys',
             path:    %i[],
             type:    Stannum::Constraints::Hashes::ExtraKeys::NEGATED_TYPE
           },
           {
             data:    { allow_empty: true, required: true, type: Array },
-            message: nil,
+            message: 'is a Array',
             path:    %i[arguments],
             type:    Stannum::Constraints::Type::NEGATED_TYPE
           },
           {
             data:    { methods: %i[[] each size], missing: [] },
-            message: nil,
+            message: 'responds to the methods',
             path:    %i[arguments],
             type:    Stannum::Constraints::Signature::NEGATED_TYPE
           },
           {
             data:    { allow_empty: true, required: true, type: Array },
-            message: nil,
+            message: 'is a Array',
             path:    %i[arguments tools],
             type:    Stannum::Constraints::Type::NEGATED_TYPE
           },
           {
             data:    { allow_empty: true, required: true, type: Hash },
-            message: nil,
+            message: 'is a Hash',
             path:    %i[keywords],
             type:    Stannum::Constraints::Type::NEGATED_TYPE
           },
           {
             data:    { allow_empty: true, required: true, type: Hash },
-            message: nil,
+            message: 'is a Hash',
             path:    %i[keywords ingredients],
             type:    Stannum::Constraints::Type::NEGATED_TYPE
           },
           {
             data:    { required: false, type: Proc },
-            message: nil,
+            message: 'is a Proc',
             path:    %i[block],
             type:    Stannum::Constraints::Type::NEGATED_TYPE
           },
           {
             data:    { required: true, type: Proc },
-            message: nil,
+            message: 'is a Proc',
             path:    %i[block],
             type:    Stannum::Constraints::Type::NEGATED_TYPE
           }
         ]
       end
 
-      it { expect(errors).to be == expected_errors }
+      it { expect(errors).to match_errors(expected_errors) }
 
       it { expect(status).to be false }
     end

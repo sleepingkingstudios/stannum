@@ -1,5 +1,7 @@
 # frozen_string_literal: true
 
+require 'stannum/rspec/match_errors'
+
 require 'support/contracts/manufacturer_contract'
 require 'support/structs/factory'
 require 'support/structs/gadget'
@@ -7,6 +9,8 @@ require 'support/structs/manufacturer'
 
 # @note Integration spec for Stannum::Contract.
 RSpec.describe Spec::ManufacturerContract do
+  include Stannum::RSpec::Matchers
+
   subject(:contract) { described_class.new }
 
   describe '.new' do
@@ -50,7 +54,7 @@ RSpec.describe Spec::ManufacturerContract do
   end
 
   describe '#errors_for' do
-    let(:errors) { contract.errors_for(actual) }
+    let(:errors) { contract.errors_for(actual).with_messages }
 
     describe 'with an object that does not match any constraints' do
       let(:actual) { nil }
@@ -58,14 +62,14 @@ RSpec.describe Spec::ManufacturerContract do
         [
           {
             data:    {},
-            message: nil,
+            message: 'is not a manufacturer',
             path:    [],
             type:    described_class::TYPE
           }
         ]
       end
 
-      it { expect(errors).to be == expected_errors }
+      it { expect(errors).to match_errors(expected_errors) }
     end
 
     describe 'with an object that matches the sanity constraints' do
@@ -74,20 +78,20 @@ RSpec.describe Spec::ManufacturerContract do
         [
           {
             data:    {},
-            message: nil,
+            message: 'is nil or empty',
             path:    %i[registered_name],
             type:    Stannum::Constraints::Presence::TYPE
           },
           {
             data:    {},
-            message: nil,
+            message: 'is nil or empty',
             path:    %i[factory gadget name],
             type:    Stannum::Constraints::Presence::TYPE
           }
         ]
       end
 
-      it { expect(errors).to be == expected_errors }
+      it { expect(errors).to match_errors(expected_errors) }
     end
 
     describe 'with an object that matches some of the constraints' do
@@ -101,14 +105,14 @@ RSpec.describe Spec::ManufacturerContract do
         [
           {
             data:    {},
-            message: nil,
+            message: 'is nil or empty',
             path:    %i[factory gadget name],
             type:    Stannum::Constraints::Presence::TYPE
           }
         ]
       end
 
-      it { expect(errors).to be == expected_errors }
+      it { expect(errors).to match_errors(expected_errors) }
     end
 
     describe 'with an object that matches all of the constraints' do
@@ -129,7 +133,7 @@ RSpec.describe Spec::ManufacturerContract do
 
   describe '#match' do
     let(:status) { Array(contract.match(actual))[0] }
-    let(:errors) { Array(contract.match(actual))[1] }
+    let(:errors) { Array(contract.match(actual))[1].with_messages }
 
     describe 'with an object that does not match any constraints' do
       let(:actual) { nil }
@@ -137,14 +141,14 @@ RSpec.describe Spec::ManufacturerContract do
         [
           {
             data:    {},
-            message: nil,
+            message: 'is not a manufacturer',
             path:    [],
             type:    described_class::TYPE
           }
         ]
       end
 
-      it { expect(errors).to be == expected_errors }
+      it { expect(errors).to match_errors(expected_errors) }
 
       it { expect(status).to be false }
     end
@@ -155,20 +159,20 @@ RSpec.describe Spec::ManufacturerContract do
         [
           {
             data:    {},
-            message: nil,
+            message: 'is nil or empty',
             path:    %i[registered_name],
             type:    Stannum::Constraints::Presence::TYPE
           },
           {
             data:    {},
-            message: nil,
+            message: 'is nil or empty',
             path:    %i[factory gadget name],
             type:    Stannum::Constraints::Presence::TYPE
           }
         ]
       end
 
-      it { expect(errors).to be == expected_errors }
+      it { expect(errors).to match_errors(expected_errors) }
 
       it { expect(status).to be false }
     end
@@ -184,14 +188,14 @@ RSpec.describe Spec::ManufacturerContract do
         [
           {
             data:    {},
-            message: nil,
+            message: 'is nil or empty',
             path:    %i[factory gadget name],
             type:    Stannum::Constraints::Presence::TYPE
           }
         ]
       end
 
-      it { expect(errors).to be == expected_errors }
+      it { expect(errors).to match_errors(expected_errors) }
 
       it { expect(status).to be false }
     end
@@ -251,7 +255,7 @@ RSpec.describe Spec::ManufacturerContract do
   end
 
   describe '#negated_errors_for' do
-    let(:errors) { contract.negated_errors_for(actual) }
+    let(:errors) { contract.negated_errors_for(actual).with_messages }
 
     describe 'with an object that does not match any constraints' do
       let(:actual) { nil }
@@ -270,20 +274,20 @@ RSpec.describe Spec::ManufacturerContract do
         [
           {
             data:    {},
-            message: nil,
+            message: 'is a manufacturer',
             path:    [],
             type:    described_class::NEGATED_TYPE
           },
           {
             data:    {},
-            message: nil,
+            message: 'is not nil or empty',
             path:    %i[registered_name],
             type:    Stannum::Constraints::Presence::NEGATED_TYPE
           }
         ]
       end
 
-      it { expect(errors).to be == expected_errors }
+      it { expect(errors).to match_errors(expected_errors) }
     end
 
     describe 'with an object that matches all of the constraints' do
@@ -301,32 +305,32 @@ RSpec.describe Spec::ManufacturerContract do
         [
           {
             data:    {},
-            message: nil,
+            message: 'is a manufacturer',
             path:    [],
             type:    described_class::NEGATED_TYPE
           },
           {
             data:    {},
-            message: nil,
+            message: 'is not nil or empty',
             path:    %i[registered_name],
             type:    Stannum::Constraints::Presence::NEGATED_TYPE
           },
           {
             data:    {},
-            message: nil,
+            message: 'is not nil or empty',
             path:    %i[factory gadget name],
             type:    Stannum::Constraints::Presence::NEGATED_TYPE
           }
         ]
       end
 
-      it { expect(errors).to be == expected_errors }
+      it { expect(errors).to match_errors(expected_errors) }
     end
   end
 
   describe '#negated_match' do
     let(:status) { Array(contract.negated_match(actual))[0] }
-    let(:errors) { Array(contract.negated_match(actual))[1] }
+    let(:errors) { Array(contract.negated_match(actual))[1].with_messages }
 
     describe 'with an object that does not match any constraints' do
       let(:actual) { nil }
@@ -347,20 +351,20 @@ RSpec.describe Spec::ManufacturerContract do
         [
           {
             data:    {},
-            message: nil,
+            message: 'is a manufacturer',
             path:    [],
             type:    described_class::NEGATED_TYPE
           },
           {
             data:    {},
-            message: nil,
+            message: 'is not nil or empty',
             path:    %i[registered_name],
             type:    Stannum::Constraints::Presence::NEGATED_TYPE
           }
         ]
       end
 
-      it { expect(errors).to be == expected_errors }
+      it { expect(errors).to match_errors(expected_errors) }
 
       it { expect(status).to be false }
     end
@@ -380,26 +384,26 @@ RSpec.describe Spec::ManufacturerContract do
         [
           {
             data:    {},
-            message: nil,
+            message: 'is a manufacturer',
             path:    [],
             type:    described_class::NEGATED_TYPE
           },
           {
             data:    {},
-            message: nil,
+            message: 'is not nil or empty',
             path:    %i[registered_name],
             type:    Stannum::Constraints::Presence::NEGATED_TYPE
           },
           {
             data:    {},
-            message: nil,
+            message: 'is not nil or empty',
             path:    %i[factory gadget name],
             type:    Stannum::Constraints::Presence::NEGATED_TYPE
           }
         ]
       end
 
-      it { expect(errors).to be == expected_errors }
+      it { expect(errors).to match_errors(expected_errors) }
 
       it { expect(status).to be false }
     end

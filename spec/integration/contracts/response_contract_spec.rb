@@ -1,9 +1,13 @@
 # frozen_string_literal: true
 
+require 'stannum/rspec/match_errors'
+
 require 'support/contracts/response_contract'
 
 # @note Integration spec for Stannum::Contracts::HashContract.
 RSpec.describe Spec::ResponseContract do
+  include Stannum::RSpec::Matchers
+
   subject(:contract) { described_class.new }
 
   describe '.new' do
@@ -12,7 +16,7 @@ RSpec.describe Spec::ResponseContract do
 
   describe '#match' do
     let(:status) { Array(contract.match(actual))[0] }
-    let(:errors) { Array(contract.match(actual))[1] }
+    let(:errors) { Array(contract.match(actual))[1].with_messages }
 
     describe 'with a non-hash object' do
       let(:actual) { nil }
@@ -20,14 +24,14 @@ RSpec.describe Spec::ResponseContract do
         [
           {
             data:    { allow_empty: true, required: true, type: Hash },
-            message: nil,
+            message: 'is not a Hash',
             path:    [],
             type:    Stannum::Constraints::Type::TYPE
           }
         ]
       end
 
-      it { expect(errors).to be == expected_errors }
+      it { expect(errors).to match_errors(expected_errors) }
 
       it { expect(status).to be false }
     end
@@ -38,20 +42,20 @@ RSpec.describe Spec::ResponseContract do
         [
           {
             data:    { required: true, type: Integer },
-            message: nil,
+            message: 'is not a Integer',
             path:    %i[status],
             type:    Stannum::Constraints::Type::TYPE
           },
           {
             data:    { allow_empty: true, required: true, type: Hash },
-            message: nil,
+            message: 'is not a Hash',
             path:    %i[json],
             type:    Stannum::Constraints::Type::TYPE
           }
         ]
       end
 
-      it { expect(errors).to be == expected_errors }
+      it { expect(errors).to match_errors(expected_errors) }
 
       it { expect(status).to be false }
     end
@@ -62,20 +66,20 @@ RSpec.describe Spec::ResponseContract do
         [
           {
             data:    { required: true, type: Integer },
-            message: nil,
+            message: 'is not a Integer',
             path:    %i[status],
             type:    Stannum::Constraints::Type::TYPE
           },
           {
             data:    {},
-            message: nil,
+            message: 'is not true or false',
             path:    %i[json ok],
             type:    'spec.is_not_boolean'
           }
         ]
       end
 
-      it { expect(errors).to be == expected_errors }
+      it { expect(errors).to match_errors(expected_errors) }
 
       it { expect(status).to be false }
     end
@@ -86,26 +90,26 @@ RSpec.describe Spec::ResponseContract do
         [
           {
             data:    { value: actual[:error] },
-            message: nil,
+            message: 'has extra keys',
             path:    %i[error],
             type:    Stannum::Constraints::Hashes::ExtraKeys::TYPE
           },
           {
             data:    { required: true, type: Integer },
-            message: nil,
+            message: 'is not a Integer',
             path:    %i[status],
             type:    Stannum::Constraints::Type::TYPE
           },
           {
             data:    {},
-            message: nil,
+            message: 'is not true or false',
             path:    %i[json ok],
             type:    'spec.is_not_boolean'
           }
         ]
       end
 
-      it { expect(errors).to be == expected_errors }
+      it { expect(errors).to match_errors(expected_errors) }
 
       it { expect(status).to be false }
     end
@@ -121,20 +125,20 @@ RSpec.describe Spec::ResponseContract do
         [
           {
             data:    { required: true, type: Integer },
-            message: nil,
+            message: 'is not a Integer',
             path:    %i[status],
             type:    Stannum::Constraints::Type::TYPE
           },
           {
             data:    {},
-            message: nil,
+            message: 'is not true or false',
             path:    %i[json ok],
             type:    'spec.is_not_boolean'
           }
         ]
       end
 
-      it { expect(errors).to be == expected_errors }
+      it { expect(errors).to match_errors(expected_errors) }
 
       it { expect(status).to be false }
     end
@@ -164,14 +168,14 @@ RSpec.describe Spec::ResponseContract do
         [
           {
             data:    { value: actual[:error] },
-            message: nil,
+            message: 'has extra keys',
             path:    %i[error],
             type:    Stannum::Constraints::Hashes::ExtraKeys::TYPE
           }
         ]
       end
 
-      it { expect(errors).to be == expected_errors }
+      it { expect(errors).to match_errors(expected_errors) }
 
       it { expect(status).to be false }
     end
@@ -179,7 +183,7 @@ RSpec.describe Spec::ResponseContract do
 
   describe '#negated_match' do
     let(:status) { Array(contract.negated_match(actual))[0] }
-    let(:errors) { Array(contract.negated_match(actual))[1] }
+    let(:errors) { Array(contract.negated_match(actual))[1].with_messages }
 
     describe 'with a non-hash object' do
       let(:actual) { nil }
@@ -195,20 +199,20 @@ RSpec.describe Spec::ResponseContract do
         [
           {
             data:    { allow_empty: true, required: true, type: Hash },
-            message: nil,
+            message: 'is a Hash',
             path:    %i[],
             type:    Stannum::Constraints::Type::NEGATED_TYPE
           },
           {
             data:    {},
-            message: nil,
+            message: 'does not have extra keys',
             path:    %i[],
             type:    Stannum::Constraints::Hashes::ExtraKeys::NEGATED_TYPE
           }
         ]
       end
 
-      it { expect(errors).to be == expected_errors }
+      it { expect(errors).to match_errors(expected_errors) }
 
       it { expect(status).to be false }
     end
@@ -219,26 +223,26 @@ RSpec.describe Spec::ResponseContract do
         [
           {
             data:    { allow_empty: true, required: true, type: Hash },
-            message: nil,
+            message: 'is a Hash',
             path:    %i[],
             type:    Stannum::Constraints::Type::NEGATED_TYPE
           },
           {
             data:    {},
-            message: nil,
+            message: 'does not have extra keys',
             path:    %i[],
             type:    Stannum::Constraints::Hashes::ExtraKeys::NEGATED_TYPE
           },
           {
             data:    { allow_empty: true, required: true, type: Hash },
-            message: nil,
+            message: 'is a Hash',
             path:    %i[json],
             type:    Stannum::Constraints::Type::NEGATED_TYPE
           }
         ]
       end
 
-      it { expect(errors).to be == expected_errors }
+      it { expect(errors).to match_errors(expected_errors) }
 
       it { expect(status).to be false }
     end
@@ -249,20 +253,20 @@ RSpec.describe Spec::ResponseContract do
         [
           {
             data:    { allow_empty: true, required: true, type: Hash },
-            message: nil,
+            message: 'is a Hash',
             path:    %i[],
             type:    Stannum::Constraints::Type::NEGATED_TYPE
           },
           {
             data:    { allow_empty: true, required: true, type: Hash },
-            message: nil,
+            message: 'is a Hash',
             path:    %i[json],
             type:    Stannum::Constraints::Type::NEGATED_TYPE
           }
         ]
       end
 
-      it { expect(errors).to be == expected_errors }
+      it { expect(errors).to match_errors(expected_errors) }
 
       it { expect(status).to be false }
     end
@@ -278,26 +282,26 @@ RSpec.describe Spec::ResponseContract do
         [
           {
             data:    { allow_empty: true, required: true, type: Hash },
-            message: nil,
+            message: 'is a Hash',
             path:    %i[],
             type:    Stannum::Constraints::Type::NEGATED_TYPE
           },
           {
             data:    {},
-            message: nil,
+            message: 'does not have extra keys',
             path:    %i[],
             type:    Stannum::Constraints::Hashes::ExtraKeys::NEGATED_TYPE
           },
           {
             data:    { allow_empty: true, required: true, type: Hash },
-            message: nil,
+            message: 'is a Hash',
             path:    %i[json],
             type:    Stannum::Constraints::Type::NEGATED_TYPE
           }
         ]
       end
 
-      it { expect(errors).to be == expected_errors }
+      it { expect(errors).to match_errors(expected_errors) }
 
       it { expect(status).to be false }
     end
@@ -313,38 +317,38 @@ RSpec.describe Spec::ResponseContract do
         [
           {
             data:    { allow_empty: true, required: true, type: Hash },
-            message: nil,
+            message: 'is a Hash',
             path:    %i[],
             type:    Stannum::Constraints::Type::NEGATED_TYPE
           },
           {
             data:    {},
-            message: nil,
+            message: 'does not have extra keys',
             path:    %i[],
             type:    Stannum::Constraints::Hashes::ExtraKeys::NEGATED_TYPE
           },
           {
             data:    { required: true, type: Integer },
-            message: nil,
+            message: 'is a Integer',
             path:    %i[status],
             type:    Stannum::Constraints::Type::NEGATED_TYPE
           },
           {
             data:    { allow_empty: true, required: true, type: Hash },
-            message: nil,
+            message: 'is a Hash',
             path:    %i[json],
             type:    Stannum::Constraints::Type::NEGATED_TYPE
           },
           {
             data:    {},
-            message: nil,
+            message: 'is true or false',
             path:    %i[json ok],
             type:    'spec.is_boolean'
           }
         ]
       end
 
-      it { expect(errors).to be == expected_errors }
+      it { expect(errors).to match_errors(expected_errors) }
 
       it { expect(status).to be false }
     end
@@ -361,32 +365,32 @@ RSpec.describe Spec::ResponseContract do
         [
           {
             data:    { allow_empty: true, required: true, type: Hash },
-            message: nil,
+            message: 'is a Hash',
             path:    %i[],
             type:    Stannum::Constraints::Type::NEGATED_TYPE
           },
           {
             data:    { required: true, type: Integer },
-            message: nil,
+            message: 'is a Integer',
             path:    %i[status],
             type:    Stannum::Constraints::Type::NEGATED_TYPE
           },
           {
             data:    { allow_empty: true, required: true, type: Hash },
-            message: nil,
+            message: 'is a Hash',
             path:    %i[json],
             type:    Stannum::Constraints::Type::NEGATED_TYPE
           },
           {
             data:    {},
-            message: nil,
+            message: 'is true or false',
             path:    %i[json ok],
             type:    'spec.is_boolean'
           }
         ]
       end
 
-      it { expect(errors).to be == expected_errors }
+      it { expect(errors).to match_errors(expected_errors) }
 
       it { expect(status).to be false }
     end

@@ -15,13 +15,13 @@ RSpec.describe Stannum::Constraints::Types::NilType do
   describe '::NEGATED_TYPE' do
     include_examples 'should define frozen constant',
       :NEGATED_TYPE,
-      Stannum::Constraints::Type::NEGATED_TYPE
+      'stannum.constraints.types.is_nil'
   end
 
   describe '::TYPE' do
     include_examples 'should define frozen constant',
       :TYPE,
-      Stannum::Constraints::Type::TYPE
+      'stannum.constraints.types.is_not_nil'
   end
 
   describe '.new' do
@@ -49,6 +49,9 @@ RSpec.describe Stannum::Constraints::Types::NilType do
         type: constraint.type
       }
     end
+    let(:expected_messages) do
+      expected_errors.merge(message: 'is not nil')
+    end
 
     describe 'with nil' do
       let(:actual) { nil }
@@ -70,6 +73,9 @@ RSpec.describe Stannum::Constraints::Types::NilType do
         data: { required: constraint.required?, type: NilClass },
         type: constraint.negated_type
       }
+    end
+    let(:expected_messages) do
+      expected_errors.merge(message: 'is nil')
     end
 
     describe 'with nil' do

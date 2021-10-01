@@ -55,6 +55,9 @@ RSpec.describe Stannum::Constraints::Enum do
         type: constraint.type
       }
     end
+    let(:expected_messages) do
+      expected_errors.merge(message: 'is not in the list')
+    end
 
     context 'when the object is not an expected value' do
       let(:actual) { 'Ed Dillinger' }
@@ -76,6 +79,9 @@ RSpec.describe Stannum::Constraints::Enum do
         data: { values: expected_values },
         type: constraint.negated_type
       }
+    end
+    let(:expected_messages) do
+      expected_errors.merge(message: 'is in the list')
     end
 
     context 'when the object is not an expected value' do

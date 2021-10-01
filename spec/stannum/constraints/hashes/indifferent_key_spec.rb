@@ -39,11 +39,17 @@ RSpec.describe Stannum::Constraints::Hashes::IndifferentKey do
 
   describe '#match' do
     let(:match_method) { :match }
+    let(:expected_messages) do
+      expected_errors.merge(message: 'is not a String or a Symbol')
+    end
 
     describe 'with nil' do
       let(:actual) { nil }
       let(:expected_errors) do
         { type: Stannum::Constraints::Presence::TYPE }
+      end
+      let(:expected_messages) do
+        expected_errors.merge(message: 'is nil or empty')
       end
 
       include_examples 'should not match the constraint'
@@ -63,6 +69,9 @@ RSpec.describe Stannum::Constraints::Hashes::IndifferentKey do
       let(:expected_errors) do
         { type: Stannum::Constraints::Presence::TYPE }
       end
+      let(:expected_messages) do
+        expected_errors.merge(message: 'is nil or empty')
+      end
 
       include_examples 'should not match the constraint'
     end
@@ -77,6 +86,9 @@ RSpec.describe Stannum::Constraints::Hashes::IndifferentKey do
       let(:actual) { :'' }
       let(:expected_errors) do
         { type: Stannum::Constraints::Presence::TYPE }
+      end
+      let(:expected_messages) do
+        expected_errors.merge(message: 'is nil or empty')
       end
 
       include_examples 'should not match the constraint'
@@ -93,6 +105,9 @@ RSpec.describe Stannum::Constraints::Hashes::IndifferentKey do
     let(:match_method) { :negated_match }
     let(:expected_errors) do
       { type: described_class::NEGATED_TYPE }
+    end
+    let(:expected_messages) do
+      expected_errors.merge(message: 'is a String or a Symbol')
     end
 
     describe 'with nil' do

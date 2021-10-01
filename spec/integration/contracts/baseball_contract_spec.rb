@@ -1,9 +1,13 @@
 # frozen_string_literal: true
 
+require 'stannum/rspec/match_errors'
+
 require 'support/contracts/baseball_contract'
 
 # @note Integration spec for Stannum::Contracts::TupleContract.
 RSpec.describe Spec::BaseballContract do
+  include Stannum::RSpec::Matchers
+
   subject(:contract) { described_class.new }
 
   describe '.new' do
@@ -12,7 +16,7 @@ RSpec.describe Spec::BaseballContract do
 
   describe '#match' do
     let(:status) { Array(contract.match(actual))[0] }
-    let(:errors) { Array(contract.match(actual))[1] }
+    let(:errors) { Array(contract.match(actual))[1].with_messages }
 
     describe 'with a non-tuple object' do
       let(:actual) { nil }
@@ -23,14 +27,14 @@ RSpec.describe Spec::BaseballContract do
               missing: %i[[] each size],
               methods: %i[[] each size]
             },
-            message: nil,
+            message: 'does not respond to the methods',
             path:    [],
             type:    Stannum::Constraints::Signatures::Tuple::TYPE
           }
         ]
       end
 
-      it { expect(errors).to be == expected_errors }
+      it { expect(errors).to match_errors(expected_errors) }
 
       it { expect(status).to be false }
     end
@@ -41,26 +45,26 @@ RSpec.describe Spec::BaseballContract do
         [
           {
             data:    {},
-            message: nil,
+            message: 'is invalid',
             path:    [0],
             type:    Stannum::Constraints::Base::TYPE
           },
           {
             data:    {},
-            message: nil,
+            message: 'is invalid',
             path:    [1],
             type:    Stannum::Constraints::Base::TYPE
           },
           {
             data:    {},
-            message: nil,
+            message: 'is invalid',
             path:    [2],
             type:    Stannum::Constraints::Base::TYPE
           }
         ]
       end
 
-      it { expect(errors).to be == expected_errors }
+      it { expect(errors).to match_errors(expected_errors) }
 
       it { expect(status).to be false }
     end
@@ -71,20 +75,20 @@ RSpec.describe Spec::BaseballContract do
         [
           {
             data:    {},
-            message: nil,
+            message: 'is invalid',
             path:    [1],
             type:    Stannum::Constraints::Base::TYPE
           },
           {
             data:    {},
-            message: nil,
+            message: 'is invalid',
             path:    [2],
             type:    Stannum::Constraints::Base::TYPE
           }
         ]
       end
 
-      it { expect(errors).to be == expected_errors }
+      it { expect(errors).to match_errors(expected_errors) }
 
       it { expect(status).to be false }
     end
@@ -95,26 +99,26 @@ RSpec.describe Spec::BaseballContract do
         [
           {
             data:    {},
-            message: nil,
+            message: 'is invalid',
             path:    [0],
             type:    Stannum::Constraints::Base::TYPE
           },
           {
             data:    {},
-            message: nil,
+            message: 'is invalid',
             path:    [1],
             type:    Stannum::Constraints::Base::TYPE
           },
           {
             data:    {},
-            message: nil,
+            message: 'is invalid',
             path:    [2],
             type:    Stannum::Constraints::Base::TYPE
           }
         ]
       end
 
-      it { expect(errors).to be == expected_errors }
+      it { expect(errors).to match_errors(expected_errors) }
 
       it { expect(status).to be false }
     end
@@ -125,14 +129,14 @@ RSpec.describe Spec::BaseballContract do
         [
           {
             data:    {},
-            message: nil,
+            message: 'is invalid',
             path:    [1],
             type:    Stannum::Constraints::Base::TYPE
           }
         ]
       end
 
-      it { expect(errors).to be == expected_errors }
+      it { expect(errors).to match_errors(expected_errors) }
 
       it { expect(status).to be false }
     end
@@ -151,20 +155,20 @@ RSpec.describe Spec::BaseballContract do
         [
           {
             data:    { value: 'Tomorrow' },
-            message: nil,
+            message: 'has extra items',
             path:    [3],
             type:    Stannum::Constraints::Tuples::ExtraItems::TYPE
           },
           {
             data:    { value: 'Today' },
-            message: nil,
+            message: 'has extra items',
             path:    [4],
             type:    Stannum::Constraints::Tuples::ExtraItems::TYPE
           }
         ]
       end
 
-      it { expect(errors).to be == expected_errors }
+      it { expect(errors).to match_errors(expected_errors) }
 
       it { expect(status).to be false }
     end
@@ -172,7 +176,7 @@ RSpec.describe Spec::BaseballContract do
 
   describe '#negated_match' do
     let(:status) { Array(contract.negated_match(actual))[0] }
-    let(:errors) { Array(contract.negated_match(actual))[1] }
+    let(:errors) { Array(contract.negated_match(actual))[1].with_messages }
 
     describe 'with a non-tuple object' do
       let(:actual) { nil }
@@ -191,20 +195,20 @@ RSpec.describe Spec::BaseballContract do
               methods: %i[[] each size],
               missing: []
             },
-            message: nil,
+            message: 'responds to the methods',
             path:    [],
             type:    Stannum::Constraints::Signatures::Tuple::NEGATED_TYPE
           },
           {
             data:    {},
-            message: nil,
+            message: 'does not have extra items',
             path:    [],
             type:    Stannum::Constraints::Tuples::ExtraItems::NEGATED_TYPE
           }
         ]
       end
 
-      it { expect(errors).to be == expected_errors }
+      it { expect(errors).to match_errors(expected_errors) }
 
       it { expect(status).to be false }
     end
@@ -218,26 +222,26 @@ RSpec.describe Spec::BaseballContract do
               methods: %i[[] each size],
               missing: []
             },
-            message: nil,
+            message: 'responds to the methods',
             path:    [],
             type:    Stannum::Constraints::Signatures::Tuple::NEGATED_TYPE
           },
           {
             data:    {},
-            message: nil,
+            message: 'does not have extra items',
             path:    [],
             type:    Stannum::Constraints::Tuples::ExtraItems::NEGATED_TYPE
           },
           {
             data:    {},
-            message: nil,
+            message: 'is valid',
             path:    [0],
             type:    Stannum::Constraints::Base::NEGATED_TYPE
           }
         ]
       end
 
-      it { expect(errors).to be == expected_errors }
+      it { expect(errors).to match_errors(expected_errors) }
 
       it { expect(status).to be false }
     end
@@ -251,20 +255,20 @@ RSpec.describe Spec::BaseballContract do
               methods: %i[[] each size],
               missing: []
             },
-            message: nil,
+            message: 'responds to the methods',
             path:    [],
             type:    Stannum::Constraints::Signatures::Tuple::NEGATED_TYPE
           },
           {
             data:    {},
-            message: nil,
+            message: 'does not have extra items',
             path:    [],
             type:    Stannum::Constraints::Tuples::ExtraItems::NEGATED_TYPE
           }
         ]
       end
 
-      it { expect(errors).to be == expected_errors }
+      it { expect(errors).to match_errors(expected_errors) }
 
       it { expect(status).to be false }
     end
@@ -278,32 +282,32 @@ RSpec.describe Spec::BaseballContract do
               methods: %i[[] each size],
               missing: []
             },
-            message: nil,
+            message: 'responds to the methods',
             path:    [],
             type:    Stannum::Constraints::Signatures::Tuple::NEGATED_TYPE
           },
           {
             data:    {},
-            message: nil,
+            message: 'does not have extra items',
             path:    [],
             type:    Stannum::Constraints::Tuples::ExtraItems::NEGATED_TYPE
           },
           {
             data:    {},
-            message: nil,
+            message: 'is valid',
             path:    [0],
             type:    Stannum::Constraints::Base::NEGATED_TYPE
           },
           {
             data:    {},
-            message: nil,
+            message: 'is valid',
             path:    [2],
             type:    Stannum::Constraints::Base::NEGATED_TYPE
           }
         ]
       end
 
-      it { expect(errors).to be == expected_errors }
+      it { expect(errors).to match_errors(expected_errors) }
 
       it { expect(status).to be false }
     end
@@ -317,38 +321,38 @@ RSpec.describe Spec::BaseballContract do
               methods: %i[[] each size],
               missing: []
             },
-            message: nil,
+            message: 'responds to the methods',
             path:    [],
             type:    Stannum::Constraints::Signatures::Tuple::NEGATED_TYPE
           },
           {
             data:    {},
-            message: nil,
+            message: 'does not have extra items',
             path:    [],
             type:    Stannum::Constraints::Tuples::ExtraItems::NEGATED_TYPE
           },
           {
             data:    {},
-            message: nil,
+            message: 'is valid',
             path:    [0],
             type:    Stannum::Constraints::Base::NEGATED_TYPE
           },
           {
             data:    {},
-            message: nil,
+            message: 'is valid',
             path:    [1],
             type:    Stannum::Constraints::Base::NEGATED_TYPE
           },
           {
             data:    {},
-            message: nil,
+            message: 'is valid',
             path:    [2],
             type:    Stannum::Constraints::Base::NEGATED_TYPE
           }
         ]
       end
 
-      it { expect(errors).to be == expected_errors }
+      it { expect(errors).to match_errors(expected_errors) }
 
       it { expect(status).to be false }
     end
@@ -362,32 +366,32 @@ RSpec.describe Spec::BaseballContract do
               methods: %i[[] each size],
               missing: []
             },
-            message: nil,
+            message: 'responds to the methods',
             path:    [],
             type:    Stannum::Constraints::Signatures::Tuple::NEGATED_TYPE
           },
           {
             data:    {},
-            message: nil,
+            message: 'is valid',
             path:    [0],
             type:    Stannum::Constraints::Base::NEGATED_TYPE
           },
           {
             data:    {},
-            message: nil,
+            message: 'is valid',
             path:    [1],
             type:    Stannum::Constraints::Base::NEGATED_TYPE
           },
           {
             data:    {},
-            message: nil,
+            message: 'is valid',
             path:    [2],
             type:    Stannum::Constraints::Base::NEGATED_TYPE
           }
         ]
       end
 
-      it { expect(errors).to be == expected_errors }
+      it { expect(errors).to match_errors(expected_errors) }
 
       it { expect(status).to be false }
     end

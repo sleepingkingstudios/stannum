@@ -16,7 +16,7 @@ RSpec.describe Spec::AuthorizationParameters do
 
   describe '#match' do
     let(:status) { Array(contract.match(actual))[0] }
-    let(:errors) { Array(contract.match(actual))[1] }
+    let(:errors) { Array(contract.match(actual))[1].with_messages }
     let(:actual) do
       {
         arguments: %i[access],
@@ -30,7 +30,7 @@ RSpec.describe Spec::AuthorizationParameters do
         [
           {
             data:    { allow_empty: true, required: true, type: Hash },
-            message: nil,
+            message: 'is not a Hash',
             path:    [],
             type:    Stannum::Constraints::Type::TYPE
           }
@@ -48,13 +48,13 @@ RSpec.describe Spec::AuthorizationParameters do
         [
           {
             data:    { allow_empty: true, required: true, type: Array },
-            message: nil,
+            message: 'is not a Array',
             path:    %i[arguments],
             type:    Stannum::Constraints::Type::TYPE
           },
           {
             data:    { allow_empty: true, required: true, type: Hash },
-            message: nil,
+            message: 'is not a Hash',
             path:    %i[keywords],
             type:    Stannum::Constraints::Type::TYPE
           }
@@ -72,13 +72,13 @@ RSpec.describe Spec::AuthorizationParameters do
         [
           {
             data:    { required: true, type: Symbol },
-            message: nil,
+            message: 'is not a Symbol',
             path:    %i[arguments action],
             type:    Stannum::Constraints::Type::TYPE
           },
           {
             data:    { required: true, type: Spec::User },
-            message: nil,
+            message: 'is not a Spec::User',
             path:    %i[keywords user],
             type:    Stannum::Constraints::Type::TYPE
           }
@@ -96,7 +96,7 @@ RSpec.describe Spec::AuthorizationParameters do
         [
           {
             data:    { required: true, type: Symbol },
-            message: nil,
+            message: 'is not a Symbol',
             path:    %i[arguments action],
             type:    Stannum::Constraints::Type::TYPE
           }
@@ -114,13 +114,13 @@ RSpec.describe Spec::AuthorizationParameters do
         [
           {
             data:    { required: true, type: Symbol },
-            message: nil,
+            message: 'is not a Symbol',
             path:    %i[arguments action],
             type:    Stannum::Constraints::Type::TYPE
           },
           {
             data:    { required: true, type: Class },
-            message: nil,
+            message: 'is not a Class',
             path:    %i[arguments record_class],
             type:    Stannum::Constraints::Type::TYPE
           }
@@ -146,7 +146,7 @@ RSpec.describe Spec::AuthorizationParameters do
         [
           {
             data:    { required: true, type: Class },
-            message: nil,
+            message: 'is not a Class',
             path:    %i[arguments record_class],
             type:    Stannum::Constraints::Type::TYPE
           }
@@ -179,13 +179,13 @@ RSpec.describe Spec::AuthorizationParameters do
         [
           {
             data:    { value: 'dry-run' },
-            message: nil,
+            message: 'has extra arguments',
             path:    [:arguments, 2],
             type:    error_type
           },
           {
             data:    { value: 'verbose' },
-            message: nil,
+            message: 'has extra arguments',
             path:    [:arguments, 3],
             type:    error_type
           }
@@ -203,7 +203,7 @@ RSpec.describe Spec::AuthorizationParameters do
         [
           {
             data:    { required: true, type: Spec::User },
-            message: nil,
+            message: 'is not a Spec::User',
             path:    %i[keywords user],
             type:    Stannum::Constraints::Type::TYPE
           }
@@ -223,13 +223,13 @@ RSpec.describe Spec::AuthorizationParameters do
         [
           {
             data:    { required: true, type: String },
-            message: nil,
+            message: 'is not a String',
             path:    %i[keywords role],
             type:    Stannum::Constraints::Type::TYPE
           },
           {
             data:    { required: true, type: Spec::User },
-            message: nil,
+            message: 'is not a Spec::User',
             path:    %i[keywords user],
             type:    Stannum::Constraints::Type::TYPE
           }
@@ -264,7 +264,7 @@ RSpec.describe Spec::AuthorizationParameters do
         [
           {
             data:    { required: true, type: String },
-            message: nil,
+            message: 'is not a String',
             path:    %i[keywords role],
             type:    Stannum::Constraints::Type::TYPE
           }
@@ -309,13 +309,13 @@ RSpec.describe Spec::AuthorizationParameters do
         [
           {
             data:    { value: '12345' },
-            message: nil,
+            message: 'has extra keywords',
             path:    %i[keywords secret],
             type:    error_type
           },
           {
             data:    { value: 'bGV0bWVpbg==' },
-            message: nil,
+            message: 'has extra keywords',
             path:    %i[keywords token],
             type:    error_type
           }
@@ -336,7 +336,7 @@ RSpec.describe Spec::AuthorizationParameters do
 
   describe '#negated_match' do
     let(:status) { Array(contract.negated_match(actual))[0] }
-    let(:errors) { Array(contract.negated_match(actual))[1] }
+    let(:errors) { Array(contract.negated_match(actual))[1].with_messages }
     let(:actual) do
       {
         arguments: %i[access],
@@ -358,19 +358,19 @@ RSpec.describe Spec::AuthorizationParameters do
         [
           {
             data:    { allow_empty: true, required: true, type: Hash },
-            message: nil,
+            message: 'is a Hash',
             path:    [],
             type:    Stannum::Constraints::Type::NEGATED_TYPE
           },
           {
             data:    {},
-            message: nil,
+            message: 'does not have extra keys',
             path:    [],
             type:    Stannum::Constraints::Hashes::ExtraKeys::NEGATED_TYPE
           },
           {
             data:    { required: false, type: Proc },
-            message: nil,
+            message: 'is a Proc',
             path:    %i[block],
             type:    Stannum::Constraints::Type::NEGATED_TYPE
           }
@@ -388,61 +388,61 @@ RSpec.describe Spec::AuthorizationParameters do
         [
           {
             data:    { allow_empty: true, required: true, type: Hash },
-            message: nil,
+            message: 'is a Hash',
             path:    [],
             type:    Stannum::Constraints::Type::NEGATED_TYPE
           },
           {
             data:    {},
-            message: nil,
+            message: 'does not have extra keys',
             path:    [],
             type:    Stannum::Constraints::Hashes::ExtraKeys::NEGATED_TYPE
           },
           {
             data:    { allow_empty: true, required: true, type: Array },
-            message: nil,
+            message: 'is a Array',
             path:    %i[arguments],
             type:    Stannum::Constraints::Type::NEGATED_TYPE
           },
           {
             data:    { methods: %i[[] each size], missing: [] },
-            message: nil,
+            message: 'responds to the methods',
             path:    %i[arguments],
             type:    Stannum::Constraints::Signature::NEGATED_TYPE
           },
           {
             data:    {},
-            message: nil,
+            message: 'does not have extra items',
             path:    %i[arguments],
             type:    Stannum::Constraints::Tuples::ExtraItems::NEGATED_TYPE
           },
           {
             data:    { required: true, type: Class },
-            message: nil,
+            message: 'is a Class',
             path:    %i[arguments record_class],
             type:    Stannum::Constraints::Type::NEGATED_TYPE
           },
           {
             data:    { allow_empty: true, required: true, type: Hash },
-            message: nil,
+            message: 'is a Hash',
             path:    %i[keywords],
             type:    Stannum::Constraints::Type::NEGATED_TYPE
           },
           {
             data:    {},
-            message: nil,
+            message: 'does not have extra keys',
             path:    %i[keywords],
             type:    Stannum::Constraints::Hashes::ExtraKeys::NEGATED_TYPE
           },
           {
             data:    { required: true, type: String },
-            message: nil,
+            message: 'is a String',
             path:    %i[keywords role],
             type:    Stannum::Constraints::Type::NEGATED_TYPE
           },
           {
             data:    { required: false, type: Proc },
-            message: nil,
+            message: 'is a Proc',
             path:    %i[block],
             type:    Stannum::Constraints::Type::NEGATED_TYPE
           }
@@ -459,73 +459,73 @@ RSpec.describe Spec::AuthorizationParameters do
         [
           {
             data:    { allow_empty: true, required: true, type: Hash },
-            message: nil,
+            message: 'is a Hash',
             path:    [],
             type:    Stannum::Constraints::Type::NEGATED_TYPE
           },
           {
             data:    {},
-            message: nil,
+            message: 'does not have extra keys',
             path:    [],
             type:    Stannum::Constraints::Hashes::ExtraKeys::NEGATED_TYPE
           },
           {
             data:    { allow_empty: true, required: true, type: Array },
-            message: nil,
+            message: 'is a Array',
             path:    %i[arguments],
             type:    Stannum::Constraints::Type::NEGATED_TYPE
           },
           {
             data:    { methods: %i[[] each size], missing: [] },
-            message: nil,
+            message: 'responds to the methods',
             path:    %i[arguments],
             type:    Stannum::Constraints::Signature::NEGATED_TYPE
           },
           {
             data:    {},
-            message: nil,
+            message: 'does not have extra items',
             path:    %i[arguments],
             type:    Stannum::Constraints::Tuples::ExtraItems::NEGATED_TYPE
           },
           {
             data:    { required: true, type: Symbol },
-            message: nil,
+            message: 'is a Symbol',
             path:    %i[arguments action],
             type:    Stannum::Constraints::Type::NEGATED_TYPE
           },
           {
             data:    { required: true, type: Class },
-            message: nil,
+            message: 'is a Class',
             path:    %i[arguments record_class],
             type:    Stannum::Constraints::Type::NEGATED_TYPE
           },
           {
             data:    { allow_empty: true, required: true, type: Hash },
-            message: nil,
+            message: 'is a Hash',
             path:    %i[keywords],
             type:    Stannum::Constraints::Type::NEGATED_TYPE
           },
           {
             data:    {},
-            message: nil,
+            message: 'does not have extra keys',
             path:    %i[keywords],
             type:    Stannum::Constraints::Hashes::ExtraKeys::NEGATED_TYPE
           },
           {
             data:    { required: true, type: String },
-            message: nil,
+            message: 'is a String',
             path:    %i[keywords role],
             type:    Stannum::Constraints::Type::NEGATED_TYPE
           },
           {
             data:    { required: true, type: Spec::User },
-            message: nil,
+            message: 'is a Spec::User',
             path:    %i[keywords user],
             type:    Stannum::Constraints::Type::NEGATED_TYPE
           },
           {
             data:    { required: false, type: Proc },
-            message: nil,
+            message: 'is a Proc',
             path:    %i[block],
             type:    Stannum::Constraints::Type::NEGATED_TYPE
           }

@@ -34,6 +34,9 @@ RSpec.describe Stannum::Constraints::Absence do
   describe '#match' do
     let(:match_method)    { :match }
     let(:expected_errors) { { type: constraint.type } }
+    let(:expected_messages) do
+      expected_errors.merge(message: 'is not nil or empty')
+    end
 
     describe 'with nil' do
       let(:actual) { nil }
@@ -117,6 +120,9 @@ RSpec.describe Stannum::Constraints::Absence do
   describe '#negated_match' do
     let(:match_method)    { :negated_match }
     let(:expected_errors) { { type: constraint.negated_type } }
+    let(:expected_messages) do
+      expected_errors.merge(message: 'is nil or empty')
+    end
 
     describe 'with nil' do
       let(:actual) { nil }

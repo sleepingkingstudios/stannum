@@ -1,10 +1,33 @@
 # frozen_string_literal: true
 
+require 'stannum/rspec/match_errors'
+
 require 'support/contracts/uuid_contract'
 
 # @note Integration spec for Stannum::Contracts::Base.
 RSpec.describe Spec::UuidContract do
+  include Stannum::RSpec::Matchers
+
   subject(:contract) { described_class.new }
+
+  let(:strategy) do
+    default_strategy = Stannum::Messages::DefaultStrategy.new
+
+    lambda do |error_type, **options|
+      case error_type
+      when Spec::FormatConstraint::NEGATED_TYPE
+        'matches the format'
+      when Spec::FormatConstraint::TYPE
+        'does not match the format'
+      when Spec::LengthConstraint::NEGATED_TYPE
+        'is the right length'
+      when Spec::LengthConstraint::TYPE
+        'is the wrong length'
+      else
+        default_strategy.call(error_type, **options)
+      end
+    end
+  end
 
   describe '.new' do
     it { expect(described_class).to be_constructible.with(0).arguments }
@@ -33,7 +56,9 @@ RSpec.describe Spec::UuidContract do
   end
 
   describe '#errors_for' do
-    let(:errors) { contract.errors_for(actual) }
+    let(:errors) do
+      contract.errors_for(actual).with_messages(strategy: strategy)
+    end
 
     describe 'with an object that does not match any constraints' do
       let(:actual) { nil }
@@ -41,14 +66,14 @@ RSpec.describe Spec::UuidContract do
         [
           {
             data:    { required: true, type: String },
-            message: nil,
+            message: 'is not a String',
             path:    [],
             type:    Stannum::Constraints::Type::TYPE
           }
         ]
       end
 
-      it { expect(errors).to be == expected_errors }
+      it { expect(errors).to match_errors(expected_errors) }
     end
 
     describe 'with an object that matches the sanity constraints' do
@@ -57,20 +82,20 @@ RSpec.describe Spec::UuidContract do
         [
           {
             data:    {},
-            message: nil,
+            message: 'is the wrong length',
             path:    [],
             type:    Spec::LengthConstraint::TYPE
           },
           {
             data:    {},
-            message: nil,
+            message: 'does not match the format',
             path:    [],
             type:    Spec::FormatConstraint::TYPE
           }
         ]
       end
 
-      it { expect(errors).to be == expected_errors }
+      it { expect(errors).to match_errors(expected_errors) }
     end
 
     describe 'with an object that matches some of the constraints' do
@@ -79,14 +104,14 @@ RSpec.describe Spec::UuidContract do
         [
           {
             data:    {},
-            message: nil,
+            message: 'is the wrong length',
             path:    [],
             type:    Spec::LengthConstraint::TYPE
           }
         ]
       end
 
-      it { expect(errors).to be == expected_errors }
+      it { expect(errors).to match_errors(expected_errors) }
     end
 
     describe 'with an object that matches all of the constraints' do
@@ -98,7 +123,9 @@ RSpec.describe Spec::UuidContract do
 
   describe '#match' do
     let(:status) { Array(contract.match(actual))[0] }
-    let(:errors) { Array(contract.match(actual))[1] }
+    let(:errors) do
+      Array(contract.match(actual))[1].with_messages(strategy: strategy)
+    end
 
     describe 'with an object that does not match any constraints' do
       let(:actual) { nil }
@@ -106,14 +133,14 @@ RSpec.describe Spec::UuidContract do
         [
           {
             data:    { required: true, type: String },
-            message: nil,
+            message: 'is not a String',
             path:    [],
             type:    Stannum::Constraints::Type::TYPE
           }
         ]
       end
 
-      it { expect(errors).to be == expected_errors }
+      it { expect(errors).to match_errors(expected_errors) }
 
       it { expect(status).to be false }
     end
@@ -124,20 +151,20 @@ RSpec.describe Spec::UuidContract do
         [
           {
             data:    {},
-            message: nil,
+            message: 'is the wrong length',
             path:    [],
             type:    Spec::LengthConstraint::TYPE
           },
           {
             data:    {},
-            message: nil,
+            message: 'does not match the format',
             path:    [],
             type:    Spec::FormatConstraint::TYPE
           }
         ]
       end
 
-      it { expect(errors).to be == expected_errors }
+      it { expect(errors).to match_errors(expected_errors) }
 
       it { expect(status).to be false }
     end
@@ -148,14 +175,14 @@ RSpec.describe Spec::UuidContract do
         [
           {
             data:    {},
-            message: nil,
+            message: 'is the wrong length',
             path:    [],
             type:    Spec::LengthConstraint::TYPE
           }
         ]
       end
 
-      it { expect(errors).to be == expected_errors }
+      it { expect(errors).to match_errors(expected_errors) }
 
       it { expect(status).to be false }
     end
@@ -192,7 +219,9 @@ RSpec.describe Spec::UuidContract do
   end
 
   describe '#negated_errors_for' do
-    let(:errors) { contract.negated_errors_for(actual) }
+    let(:errors) do
+      contract.negated_errors_for(actual).with_messages(strategy: strategy)
+    end
 
     describe 'with an object that does not match any constraints' do
       let(:actual) { nil }
@@ -206,20 +235,20 @@ RSpec.describe Spec::UuidContract do
         [
           {
             data:    { required: true, type: String },
-            message: nil,
+            message: 'is a String',
             path:    [],
             type:    Stannum::Constraints::Type::NEGATED_TYPE
           },
           {
             data:    {},
-            message: nil,
+            message: 'matches the format',
             path:    [],
             type:    Spec::FormatConstraint::NEGATED_TYPE
           }
         ]
       end
 
-      it { expect(errors).to be == expected_errors }
+      it { expect(errors).to match_errors(expected_errors) }
     end
 
     describe 'with an object that matches all of the constraints' do
@@ -228,32 +257,34 @@ RSpec.describe Spec::UuidContract do
         [
           {
             data:    { required: true, type: String },
-            message: nil,
+            message: 'is a String',
             path:    [],
             type:    Stannum::Constraints::Type::NEGATED_TYPE
           },
           {
             data:    {},
-            message: nil,
+            message: 'is the right length',
             path:    [],
             type:    Spec::LengthConstraint::NEGATED_TYPE
           },
           {
             data:    {},
-            message: nil,
+            message: 'matches the format',
             path:    [],
             type:    Spec::FormatConstraint::NEGATED_TYPE
           }
         ]
       end
 
-      it { expect(errors).to be == expected_errors }
+      it { expect(errors).to match_errors(expected_errors) }
     end
   end
 
   describe '#negated_match' do
     let(:status) { Array(contract.negated_match(actual))[0] }
-    let(:errors) { Array(contract.negated_match(actual))[1] }
+    let(:errors) do
+      Array(contract.negated_match(actual))[1].with_messages(strategy: strategy)
+    end
 
     describe 'with an object that does not match any constraints' do
       let(:actual) { nil }
@@ -269,20 +300,20 @@ RSpec.describe Spec::UuidContract do
         [
           {
             data:    { required: true, type: String },
-            message: nil,
+            message: 'is a String',
             path:    [],
             type:    Stannum::Constraints::Type::NEGATED_TYPE
           },
           {
             data:    {},
-            message: nil,
+            message: 'matches the format',
             path:    [],
             type:    Spec::FormatConstraint::NEGATED_TYPE
           }
         ]
       end
 
-      it { expect(errors).to be == expected_errors }
+      it { expect(errors).to match_errors(expected_errors) }
 
       it { expect(status).to be false }
     end
@@ -293,26 +324,26 @@ RSpec.describe Spec::UuidContract do
         [
           {
             data:    { required: true, type: String },
-            message: nil,
+            message: 'is a String',
             path:    [],
             type:    Stannum::Constraints::Type::NEGATED_TYPE
           },
           {
             data:    {},
-            message: nil,
+            message: 'is the right length',
             path:    [],
             type:    Spec::LengthConstraint::NEGATED_TYPE
           },
           {
             data:    {},
-            message: nil,
+            message: 'matches the format',
             path:    [],
             type:    Spec::FormatConstraint::NEGATED_TYPE
           }
         ]
       end
 
-      it { expect(errors).to be == expected_errors }
+      it { expect(errors).to match_errors(expected_errors) }
 
       it { expect(status).to be false }
     end

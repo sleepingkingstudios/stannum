@@ -67,12 +67,15 @@ RSpec.describe Stannum::Constraints::Tuples::ExtraItems do
       let(:actual) { nil }
       let(:expected_errors) do
         {
-          type: Stannum::Constraints::Type::TYPE,
+          type: Stannum::Constraints::Signature::TYPE,
           data: {
             missing: %i[size],
             methods: %i[size]
           }
         }
+      end
+      let(:expected_messages) do
+        expected_errors.merge(message: 'does not respond to the methods')
       end
 
       include_examples 'should not match the constraint'
@@ -82,12 +85,15 @@ RSpec.describe Stannum::Constraints::Tuples::ExtraItems do
       let(:actual) { Object.new.freeze }
       let(:expected_errors) do
         {
-          type: Stannum::Constraints::Type::TYPE,
+          type: Stannum::Constraints::Signature::TYPE,
           data: {
             missing: %i[size],
             methods: %i[size]
           }
         }
+      end
+      let(:expected_messages) do
+        expected_errors.merge(message: 'does not respond to the methods')
       end
 
       include_examples 'should not match the constraint'
@@ -129,6 +135,11 @@ RSpec.describe Stannum::Constraints::Tuples::ExtraItems do
               type: described_class::TYPE
             }
           ]
+        end
+        let(:expected_messages) do
+          expected_errors.map do |err|
+            err.merge(message: 'has extra items')
+          end
         end
 
         include_examples 'should not match the constraint'
@@ -175,6 +186,11 @@ RSpec.describe Stannum::Constraints::Tuples::ExtraItems do
               type: described_class::TYPE
             }
           ]
+        end
+        let(:expected_messages) do
+          expected_errors.map do |err|
+            err.merge(message: 'has extra items')
+          end
         end
 
         include_examples 'should not match the constraint'
@@ -183,46 +199,26 @@ RSpec.describe Stannum::Constraints::Tuples::ExtraItems do
   end
 
   describe '#negated_match' do
-    let(:match_method) { :negated_match }
+    let(:match_method)    { :negated_match }
+    let(:expected_errors) { { type: described_class::NEGATED_TYPE } }
+    let(:expected_messages) do
+      expected_errors.merge(message: 'does not have extra items')
+    end
 
     describe 'with nil' do
       let(:actual) { nil }
-      let(:expected_errors) do
-        {
-          type: Stannum::Constraints::Type::TYPE,
-          data: {
-            missing: %i[size],
-            methods: %i[size]
-          }
-        }
-      end
 
       include_examples 'should not match the constraint'
     end
 
     describe 'with an Object' do
       let(:actual) { Object.new.freeze }
-      let(:expected_errors) do
-        {
-          type: Stannum::Constraints::Type::TYPE,
-          data: {
-            missing: %i[size],
-            methods: %i[size]
-          }
-        }
-      end
 
       include_examples 'should not match the constraint'
     end
 
     context 'when initialized with an integer' do
       let(:expected_count) { 3 }
-      let(:expected_errors) do
-        {
-          data: {},
-          type: described_class::NEGATED_TYPE
-        }
-      end
 
       describe 'with an empty tuple' do
         let(:actual) { [] }
@@ -254,12 +250,6 @@ RSpec.describe Stannum::Constraints::Tuples::ExtraItems do
         count = 3
 
         -> { count }
-      end
-      let(:expected_errors) do
-        {
-          data: {},
-          type: described_class::NEGATED_TYPE
-        }
       end
 
       describe 'with an empty tuple' do

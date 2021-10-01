@@ -34,6 +34,9 @@ RSpec.describe Stannum::Constraints::Signatures::Map do
 
   describe '#match' do
     let(:match_method) { :match }
+    let(:expected_messages) do
+      expected_errors.merge(message: 'does not respond to the methods')
+    end
 
     describe 'with nil' do
       let(:actual) { nil }
@@ -93,6 +96,9 @@ RSpec.describe Stannum::Constraints::Signatures::Map do
 
   describe '#negated_match' do
     let(:match_method) { :negated_match }
+    let(:expected_messages) do
+      expected_errors.merge(message: 'responds to the methods')
+    end
 
     describe 'with nil' do
       let(:actual) { nil }

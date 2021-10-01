@@ -19,12 +19,6 @@ RSpec.describe Stannum::Constraints::Types::ArrayType do
     }
   end
 
-  describe '::INVALID_ITEM_TYPE' do
-    include_examples 'should define frozen constant',
-      :INVALID_ITEM_TYPE,
-      'stannum.constraints.types.array.invalid_item'
-  end
-
   describe '::NEGATED_TYPE' do
     include_examples 'should define frozen constant',
       :NEGATED_TYPE,
@@ -123,6 +117,9 @@ RSpec.describe Stannum::Constraints::Types::ArrayType do
       }
     end
     let(:matching) { [] }
+    let(:expected_messages) do
+      expected_errors.merge(message: 'is not a Array')
+    end
 
     include_examples 'should match the type constraint'
 
@@ -140,6 +137,9 @@ RSpec.describe Stannum::Constraints::Types::ArrayType do
             },
             type: Stannum::Constraints::Presence::TYPE
           }
+        end
+        let(:expected_messages) do
+          expected_errors.merge(message: 'is nil or empty')
         end
 
         include_examples 'should not match the constraint'
@@ -167,21 +167,26 @@ RSpec.describe Stannum::Constraints::Types::ArrayType do
         let(:expected_errors) do
           [
             {
-              data: { value: actual[0] },
+              data: { type: String, required: true },
               path: [0],
-              type: described_class::INVALID_ITEM_TYPE
+              type: Stannum::Constraints::Type::TYPE
             },
             {
-              data: { value: actual[1] },
+              data: { type: String, required: true },
               path: [1],
-              type: described_class::INVALID_ITEM_TYPE
+              type: Stannum::Constraints::Type::TYPE
             },
             {
-              data: { value: actual[2] },
+              data: { type: String, required: true },
               path: [2],
-              type: described_class::INVALID_ITEM_TYPE
+              type: Stannum::Constraints::Type::TYPE
             }
           ]
+        end
+        let(:expected_messages) do
+          expected_errors.map do |err|
+            err.merge(message: 'is not a String')
+          end
         end
 
         include_examples 'should not match the constraint'
@@ -191,10 +196,13 @@ RSpec.describe Stannum::Constraints::Types::ArrayType do
         let(:actual) { ['one', 2, 'three'] }
         let(:expected_errors) do
           {
-            data: { value: actual[1] },
+            data: { type: String, required: true },
             path: [1],
-            type: described_class::INVALID_ITEM_TYPE
+            type: Stannum::Constraints::Type::TYPE
           }
+        end
+        let(:expected_messages) do
+          expected_errors.merge(message: 'is not a String')
         end
 
         include_examples 'should not match the constraint'
@@ -231,6 +239,9 @@ RSpec.describe Stannum::Constraints::Types::ArrayType do
       }
     end
     let(:matching) { [] }
+    let(:expected_messages) do
+      expected_errors.merge(message: 'is a Array')
+    end
 
     include_examples 'should match the negated type constraint'
 

@@ -20,18 +20,6 @@ RSpec.describe Stannum::Constraints::Types::HashType do
     }
   end
 
-  describe '::INVALID_KEY_TYPE' do
-    include_examples 'should define frozen constant',
-      :INVALID_KEY_TYPE,
-      'stannum.constraints.types.hash.invalid_key'
-  end
-
-  describe '::INVALID_VALUE_TYPE' do
-    include_examples 'should define frozen constant',
-      :INVALID_VALUE_TYPE,
-      'stannum.constraints.types.hash.invalid_value'
-  end
-
   describe '::NEGATED_TYPE' do
     include_examples 'should define frozen constant',
       :NEGATED_TYPE,
@@ -141,6 +129,9 @@ RSpec.describe Stannum::Constraints::Types::HashType do
       }
     end
     let(:matching) { {} }
+    let(:expected_messages) do
+      expected_errors.merge(message: 'is not a Hash')
+    end
 
     include_examples 'should match the type constraint'
 
@@ -155,6 +146,9 @@ RSpec.describe Stannum::Constraints::Types::HashType do
           },
           type: Stannum::Constraints::Presence::TYPE
         }
+      end
+      let(:expected_messages) do
+        expected_errors.merge(message: 'is nil or empty')
       end
 
       describe 'with an empty hash' do
@@ -183,10 +177,28 @@ RSpec.describe Stannum::Constraints::Types::HashType do
       describe 'with a hash with non-matching keys' do
         let(:actual) { { 'ichi' => 1, 'ni' => 2, 'san' => 3 } }
         let(:expected_errors) do
-          {
-            data: { keys: actual.keys },
-            type: described_class::INVALID_KEY_TYPE
-          }
+          [
+            {
+              data: { type: Symbol, required: true },
+              path: [:keys, 'ichi'],
+              type: Stannum::Constraints::Type::TYPE
+            },
+            {
+              data: { type: Symbol, required: true },
+              path: [:keys, 'ni'],
+              type: Stannum::Constraints::Type::TYPE
+            },
+            {
+              data: { type: Symbol, required: true },
+              path: [:keys, 'san'],
+              type: Stannum::Constraints::Type::TYPE
+            }
+          ]
+        end
+        let(:expected_messages) do
+          expected_errors.map do |err|
+            err.merge(message: 'is not a Symbol')
+          end
         end
 
         include_examples 'should not match the constraint'
@@ -195,10 +207,18 @@ RSpec.describe Stannum::Constraints::Types::HashType do
       describe 'with a hash with mixed matching and non-matching keys' do
         let(:actual) { { :ichi => 1, 'ni' => 2, :san => 3 } }
         let(:expected_errors) do
-          {
-            data: { keys: %w[ni] },
-            type: described_class::INVALID_KEY_TYPE
-          }
+          [
+            {
+              data: { type: Symbol, required: true },
+              path: [:keys, 'ni'],
+              type: Stannum::Constraints::Type::TYPE
+            }
+          ]
+        end
+        let(:expected_messages) do
+          expected_errors.map do |err|
+            err.merge(message: 'is not a Symbol')
+          end
         end
 
         include_examples 'should not match the constraint'
@@ -236,21 +256,26 @@ RSpec.describe Stannum::Constraints::Types::HashType do
         let(:expected_errors) do
           [
             {
-              data: { value: 1 },
+              data: { type: String, required: true },
               path: %i[ichi],
-              type: described_class::INVALID_VALUE_TYPE
+              type: Stannum::Constraints::Type::TYPE
             },
             {
-              data: { value: 2 },
+              data: { type: String, required: true },
               path: %i[ni],
-              type: described_class::INVALID_VALUE_TYPE
+              type: Stannum::Constraints::Type::TYPE
             },
             {
-              data: { value: 3 },
+              data: { type: String, required: true },
               path: %i[san],
-              type: described_class::INVALID_VALUE_TYPE
+              type: Stannum::Constraints::Type::TYPE
             }
           ]
+        end
+        let(:expected_messages) do
+          expected_errors.map do |err|
+            err.merge(message: 'is not a String')
+          end
         end
 
         include_examples 'should not match the constraint'
@@ -259,11 +284,18 @@ RSpec.describe Stannum::Constraints::Types::HashType do
       describe 'with a hash with mixed matching and non-matching values' do
         let(:actual) { { ichi: '1', ni: 2, san: '3' } }
         let(:expected_errors) do
-          {
-            data: { value: 2 },
-            path: %i[ni],
-            type: described_class::INVALID_VALUE_TYPE
-          }
+          [
+            {
+              data: { type: String, required: true },
+              path: %i[ni],
+              type: Stannum::Constraints::Type::TYPE
+            }
+          ]
+        end
+        let(:expected_messages) do
+          expected_errors.map do |err|
+            err.merge(message: 'is not a String')
+          end
         end
 
         include_examples 'should not match the constraint'
@@ -300,6 +332,9 @@ RSpec.describe Stannum::Constraints::Types::HashType do
       }
     end
     let(:matching) { {} }
+    let(:expected_messages) do
+      expected_errors.merge(message: 'is a Hash')
+    end
 
     include_examples 'should match the negated type constraint'
 

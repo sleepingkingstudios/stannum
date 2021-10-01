@@ -110,6 +110,9 @@ RSpec.describe Stannum::Constraints::Type do
         type: constraint.type
       }
     end
+    let(:expected_messages) do
+      expected_errors.merge(message: "is not a #{expected_type}")
+    end
 
     context 'when expected_type is a Class' do
       let(:expected_type) { StandardError }
@@ -155,6 +158,9 @@ RSpec.describe Stannum::Constraints::Type do
         data: { required: constraint.required?, type: expected_type },
         type: constraint.negated_type
       }
+    end
+    let(:expected_messages) do
+      expected_errors.merge(message: "is a #{expected_type}")
     end
 
     context 'when expected_type is a Class' do
