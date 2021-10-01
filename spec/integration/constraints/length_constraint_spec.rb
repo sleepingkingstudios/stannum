@@ -11,6 +11,20 @@ RSpec.describe Spec::LengthConstraint do
   subject(:constraint) { described_class.new(length) }
 
   let(:length) { 0 }
+  let(:strategy) do
+    lambda do |error_type, **_options|
+      case error_type
+      when described_class::NEGATED_TYPE
+        'is the right length'
+      when described_class::TYPE
+        'is the wrong length'
+      else
+        # :nocov:
+        "no message defined for #{error_type.inspect}"
+        # :nocov:
+      end
+    end
+  end
 
   describe '::NEGATED_TYPE' do
     include_examples 'should define constant',
@@ -55,12 +69,14 @@ RSpec.describe Spec::LengthConstraint do
   end
 
   describe '#errors_for' do
-    let(:errors) { constraint.errors_for(actual) }
+    let(:errors) do
+      constraint.errors_for(actual).with_messages(strategy: strategy)
+    end
     let(:expected_errors) do
       [
         {
           data:    {},
-          message: nil,
+          message: 'is the wrong length',
           path:    [],
           type:    constraint.type
         }
@@ -110,12 +126,14 @@ RSpec.describe Spec::LengthConstraint do
 
   describe '#match' do
     let(:status) { Array(constraint.match(actual))[0] }
-    let(:errors) { Array(constraint.match(actual))[1] }
+    let(:errors) do
+      Array(constraint.match(actual))[1].with_messages(strategy: strategy)
+    end
     let(:expected_errors) do
       [
         {
           data:    {},
-          message: nil,
+          message: 'is the wrong length',
           path:    [],
           type:    constraint.type
         }
@@ -212,12 +230,14 @@ RSpec.describe Spec::LengthConstraint do
   end
 
   describe '#negated_errors_for' do
-    let(:errors) { constraint.negated_errors_for(actual) }
+    let(:errors) do
+      constraint.negated_errors_for(actual).with_messages(strategy: strategy)
+    end
     let(:expected_errors) do
       [
         {
           data:    {},
-          message: nil,
+          message: 'is the right length',
           path:    [],
           type:    constraint.negated_type
         }
@@ -263,12 +283,15 @@ RSpec.describe Spec::LengthConstraint do
 
   describe '#negated_match' do
     let(:status) { Array(constraint.negated_match(actual))[0] }
-    let(:errors) { Array(constraint.negated_match(actual))[1] }
+    let(:errors) do
+      Array(constraint.negated_match(actual))[1]
+        .with_messages(strategy: strategy)
+    end
     let(:expected_errors) do
       [
         {
           data:    {},
-          message: nil,
+          message: 'is the right length',
           path:    [],
           type:    constraint.negated_type
         }

@@ -43,12 +43,12 @@ RSpec.describe Spec::LightsConstraint do
   end
 
   describe '#errors_for' do
-    let(:errors) { constraint.errors_for(actual) }
+    let(:errors) { constraint.errors_for(actual).with_messages }
     let(:expected_errors) do
       [
         {
           data:    {},
-          message: nil,
+          message: 'is not the expected value',
           path:    [],
           type:    constraint.type
         }
@@ -76,12 +76,12 @@ RSpec.describe Spec::LightsConstraint do
 
   describe '#match' do
     let(:status) { Array(constraint.match(actual))[0] }
-    let(:errors) { Array(constraint.match(actual))[1] }
+    let(:errors) { Array(constraint.match(actual))[1].with_messages }
     let(:expected_errors) do
       [
         {
           data:    {},
-          message: nil,
+          message: 'is not the expected value',
           path:    [],
           type:    constraint.type
         }
@@ -128,12 +128,12 @@ RSpec.describe Spec::LightsConstraint do
   end
 
   describe '#negated_errors_for' do
-    let(:errors) { constraint.negated_errors_for(actual) }
+    let(:errors) { constraint.negated_errors_for(actual).with_messages }
     let(:expected_errors) do
       [
         {
           data:    {},
-          message: nil,
+          message: 'is the expected value',
           path:    [],
           type:    constraint.negated_type
         }
@@ -161,12 +161,12 @@ RSpec.describe Spec::LightsConstraint do
 
   describe '#negated_match' do
     let(:status) { Array(constraint.negated_match(actual))[0] }
-    let(:errors) { Array(constraint.negated_match(actual))[1] }
+    let(:errors) { Array(constraint.negated_match(actual))[1].with_messages }
     let(:expected_errors) do
       [
         {
           data:    {},
-          message: nil,
+          message: 'is the expected value',
           path:    [],
           type:    constraint.negated_type
         }

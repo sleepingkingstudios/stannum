@@ -27,8 +27,13 @@
         is_not_value: 'is not the expected value',
         is_type: ->(_type, data) { "is a #{data[:type]}" },
         is_value: 'is the expected value',
+        parameters: {
+          extra_arguments: 'has extra arguments',
+          extra_keywords: 'has extra keywords'
+        },
         tuples: {
-          extra_items: 'has extra items'
+          extra_items: 'has extra items',
+          no_extra_items: 'does not have extra items'
         },
         types: {
           is_nil: 'is nil',

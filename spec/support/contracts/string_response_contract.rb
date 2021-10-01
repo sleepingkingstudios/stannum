@@ -11,10 +11,14 @@ module Spec
         key(
           'json',
           Stannum::Contracts::HashContract.new(allow_extra_keys: true) do
-            type         = 'spec.is_not_boolean'
-            negated_type = 'spec.is_boolean'
+            options = {
+              message:         'is not true or false',
+              negated_message: 'is true or false',
+              negated_type:    'spec.is_boolean',
+              type:            'spec.is_not_boolean'
+            }
 
-            key('ok', negated_type: negated_type, type: type) do |actual|
+            key('ok', **options) do |actual|
               actual == true || actual == false # rubocop:disable Style/MultipleComparison
             end
           end

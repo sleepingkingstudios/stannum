@@ -201,6 +201,9 @@ RSpec.describe Stannum::Constraints::Tuples::ExtraItems do
   describe '#negated_match' do
     let(:match_method)    { :negated_match }
     let(:expected_errors) { { type: described_class::NEGATED_TYPE } }
+    let(:expected_messages) do
+      expected_errors.merge(message: 'does not have extra items')
+    end
 
     describe 'with nil' do
       let(:actual) { nil }
