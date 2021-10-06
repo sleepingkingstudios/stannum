@@ -122,7 +122,10 @@ RSpec.describe Spec::RecipeParameters do
       let(:expected_errors) do
         [
           {
-            data:    { methods: %i[[] each size], missing: %i[[] each size] },
+            data:    {
+              methods: %i[[] each each_index],
+              missing: %i[[] each each_index]
+            },
             message: 'does not respond to the methods',
             path:    %i[keywords ingredients poison],
             type:    Stannum::Constraints::Signature::TYPE
@@ -242,7 +245,7 @@ RSpec.describe Spec::RecipeParameters do
             type:    Stannum::Constraints::Type::NEGATED_TYPE
           },
           {
-            data:    { methods: %i[[] each size], missing: [] },
+            data:    { methods: %i[[] each each_index], missing: [] },
             message: 'responds to the methods',
             path:    %i[arguments],
             type:    Stannum::Constraints::Signature::NEGATED_TYPE
@@ -310,7 +313,7 @@ RSpec.describe Spec::RecipeParameters do
             type:    Stannum::Constraints::Type::NEGATED_TYPE
           },
           {
-            data:    { methods: %i[[] each size], missing: [] },
+            data:    { methods: %i[[] each each_index], missing: [] },
             message: 'responds to the methods',
             path:    %i[arguments],
             type:    Stannum::Constraints::Signature::NEGATED_TYPE
@@ -376,7 +379,7 @@ RSpec.describe Spec::RecipeParameters do
             type:    Stannum::Constraints::Type::NEGATED_TYPE
           },
           {
-            data:    { methods: %i[[] each size], missing: [] },
+            data:    { methods: %i[[] each each_index], missing: [] },
             message: 'responds to the methods',
             path:    %i[arguments],
             type:    Stannum::Constraints::Signature::NEGATED_TYPE
@@ -452,7 +455,7 @@ RSpec.describe Spec::RecipeParameters do
             type:    Stannum::Constraints::Type::NEGATED_TYPE
           },
           {
-            data:    { methods: %i[[] each size], missing: [] },
+            data:    { methods: %i[[] each each_index], missing: [] },
             message: 'responds to the methods',
             path:    %i[arguments],
             type:    Stannum::Constraints::Signature::NEGATED_TYPE
@@ -518,7 +521,7 @@ RSpec.describe Spec::RecipeParameters do
             type:    Stannum::Constraints::Type::NEGATED_TYPE
           },
           {
-            data:    { methods: %i[[] each size], missing: [] },
+            data:    { methods: %i[[] each each_index], missing: [] },
             message: 'responds to the methods',
             path:    %i[arguments],
             type:    Stannum::Constraints::Signature::NEGATED_TYPE
@@ -577,7 +580,7 @@ RSpec.describe Spec::RecipeParameters do
             type:    Stannum::Constraints::Type::NEGATED_TYPE
           },
           {
-            data:    { methods: %i[[] each size], missing: [] },
+            data:    { methods: %i[[] each each_index], missing: [] },
             message: 'responds to the methods',
             path:    %i[arguments],
             type:    Stannum::Constraints::Signature::NEGATED_TYPE

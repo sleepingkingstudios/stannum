@@ -24,8 +24,8 @@ RSpec.describe Spec::BaseballContract do
         [
           {
             data:    {
-              missing: %i[[] each size],
-              methods: %i[[] each size]
+              missing: %i[[] each each_index],
+              methods: %i[[] each each_index]
             },
             message: 'does not respond to the methods',
             path:    [],
@@ -192,7 +192,7 @@ RSpec.describe Spec::BaseballContract do
         [
           {
             data:    {
-              methods: %i[[] each size],
+              methods: %i[[] each each_index],
               missing: []
             },
             message: 'responds to the methods',
@@ -219,7 +219,7 @@ RSpec.describe Spec::BaseballContract do
         [
           {
             data:    {
-              methods: %i[[] each size],
+              methods: %i[[] each each_index],
               missing: []
             },
             message: 'responds to the methods',
@@ -252,7 +252,7 @@ RSpec.describe Spec::BaseballContract do
         [
           {
             data:    {
-              methods: %i[[] each size],
+              methods: %i[[] each each_index],
               missing: []
             },
             message: 'responds to the methods',
@@ -279,7 +279,7 @@ RSpec.describe Spec::BaseballContract do
         [
           {
             data:    {
-              methods: %i[[] each size],
+              methods: %i[[] each each_index],
               missing: []
             },
             message: 'responds to the methods',
@@ -318,7 +318,7 @@ RSpec.describe Spec::BaseballContract do
         [
           {
             data:    {
-              methods: %i[[] each size],
+              methods: %i[[] each each_index],
               missing: []
             },
             message: 'responds to the methods',
@@ -363,7 +363,7 @@ RSpec.describe Spec::BaseballContract do
         [
           {
             data:    {
-              methods: %i[[] each size],
+              methods: %i[[] each each_index],
               missing: []
             },
             message: 'responds to the methods',

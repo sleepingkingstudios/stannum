@@ -5,7 +5,7 @@ require 'stannum/constraints/signatures'
 module Stannum::Constraints::Signatures
   # Constraint for matching tuple-like objects.
   class Tuple < Stannum::Constraints::Signature
-    EXPECTED_METHODS = %i[[] each size].freeze
+    EXPECTED_METHODS = %i[[] each each_index].freeze
     private_constant :EXPECTED_METHODS
 
     # @param options [Hash<Symbol, Object>] Configuration options for the
