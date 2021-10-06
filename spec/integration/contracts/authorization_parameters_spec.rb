@@ -405,7 +405,7 @@ RSpec.describe Spec::AuthorizationParameters do
             type:    Stannum::Constraints::Type::NEGATED_TYPE
           },
           {
-            data:    { methods: %i[[] each size], missing: [] },
+            data:    { methods: %i[[] each each_index], missing: [] },
             message: 'responds to the methods',
             path:    %i[arguments],
             type:    Stannum::Constraints::Signature::NEGATED_TYPE
@@ -476,7 +476,7 @@ RSpec.describe Spec::AuthorizationParameters do
             type:    Stannum::Constraints::Type::NEGATED_TYPE
           },
           {
-            data:    { methods: %i[[] each size], missing: [] },
+            data:    { methods: %i[[] each each_index], missing: [] },
             message: 'responds to the methods',
             path:    %i[arguments],
             type:    Stannum::Constraints::Signature::NEGATED_TYPE

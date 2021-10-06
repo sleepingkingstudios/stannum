@@ -10,7 +10,7 @@ RSpec.describe Stannum::Constraints::Signatures::Tuple do
   subject(:constraint) { described_class.new(**constructor_options) }
 
   let(:constructor_options) { {} }
-  let(:expected_options)    { { expected_methods: %i[[] each size] } }
+  let(:expected_options)    { { expected_methods: %i[[] each each_index] } }
 
   describe '::NEGATED_TYPE' do
     include_examples 'should define frozen constant',
@@ -44,8 +44,8 @@ RSpec.describe Stannum::Constraints::Signatures::Tuple do
         {
           type: described_class::TYPE,
           data: {
-            missing: %i[[] each size],
-            methods: %i[[] each size]
+            missing: %i[[] each each_index],
+            methods: %i[[] each each_index]
           }
         }
       end
@@ -59,8 +59,8 @@ RSpec.describe Stannum::Constraints::Signatures::Tuple do
         {
           type: described_class::TYPE,
           data: {
-            missing: %i[[] each size],
-            methods: %i[[] each size]
+            missing: %i[[] each each_index],
+            methods: %i[[] each each_index]
           }
         }
       end
@@ -74,8 +74,8 @@ RSpec.describe Stannum::Constraints::Signatures::Tuple do
         {
           type: described_class::TYPE,
           data: {
-            missing: %i[each size],
-            methods: %i[[] each size]
+            missing: %i[each each_index],
+            methods: %i[[] each each_index]
           }
         }
       end
@@ -118,8 +118,8 @@ RSpec.describe Stannum::Constraints::Signatures::Tuple do
         {
           type: described_class::NEGATED_TYPE,
           data: {
-            missing: %i[each size],
-            methods: %i[[] each size]
+            missing: %i[each each_index],
+            methods: %i[[] each each_index]
           }
         }
       end
@@ -138,7 +138,7 @@ RSpec.describe Stannum::Constraints::Signatures::Tuple do
           type: described_class::NEGATED_TYPE,
           data: {
             missing: %i[],
-            methods: %i[[] each size]
+            methods: %i[[] each each_index]
           }
         }
       end
