@@ -35,6 +35,21 @@ module Stannum::Constraints::Tuples
       actual.size > expected_count
     end
 
+    # (see Stannum::Constraints::Base#errors_for)
+    def errors_for(actual, errors: nil)
+      errors ||= Stannum::Errors.new
+
+      unless actual.respond_to?(:size)
+        return add_invalid_tuple_error(actual: actual, errors: errors)
+      end
+
+      each_extra_item(actual) do |item, index|
+        errors[index].add(type, value: item)
+      end
+
+      errors
+    end
+
     # @return [Integer] the number of expected items.
     def expected_count
       count = options[:expected_count]
@@ -57,25 +72,13 @@ module Stannum::Constraints::Tuples
     def add_invalid_tuple_error(actual:, errors:)
       Stannum::Constraints::Signature
         .new(:size)
-        .send(:update_errors_for, actual: actual, errors: errors)
+        .errors_for(actual, errors: errors)
     end
 
     def each_extra_item(actual, &block)
       return if matches?(actual)
 
       actual[expected_count..-1].each.with_index(expected_count, &block)
-    end
-
-    def update_errors_for(actual:, errors:)
-      unless actual.respond_to?(:size)
-        return add_invalid_tuple_error(actual: actual, errors: errors)
-      end
-
-      each_extra_item(actual) do |item, index|
-        errors[index].add(type, value: item)
-      end
-
-      errors
     end
   end
 end

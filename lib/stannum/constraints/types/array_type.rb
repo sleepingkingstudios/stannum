@@ -64,6 +64,23 @@ module Stannum::Constraints::Types
       !matches_type?(actual)
     end
 
+    # (see Stannum::Constraints::Base#errors_for)
+    def errors_for(actual, errors: nil)
+      return super unless actual.is_a?(expected_type)
+
+      errors ||= Stannum::Errors.new
+
+      return add_presence_error(errors) unless presence_matches?(actual)
+
+      unless item_type_matches?(actual)
+        non_matching_items(actual).each do |item, index|
+          item_type.errors_for(item, errors: errors[index])
+        end
+      end
+
+      errors
+    end
+
     # @return [Stannum::Constraints::Base, nil] the expected type for the items
     #   in the array.
     def item_type
@@ -126,20 +143,6 @@ module Stannum::Constraints::Types
 
     def presence_matches?(actual)
       allow_empty? || !actual.empty?
-    end
-
-    def update_errors_for(actual:, errors:)
-      return super unless actual.is_a?(expected_type)
-
-      return add_presence_error(errors) unless presence_matches?(actual)
-
-      unless item_type_matches?(actual)
-        non_matching_items(actual).each do |item, index|
-          item_type.update_errors_for(actual: item, errors: errors[index])
-        end
-      end
-
-      errors
     end
   end
 end

@@ -408,7 +408,7 @@ module Spec::Support::Examples
                 expect(definition.constraint)
                   .to have_received(update_errors_method)
                   .with(
-                    actual: values[index],
+                    values[index],
                     errors: errors[index]
                   )
               end
@@ -417,7 +417,7 @@ module Spec::Support::Examples
         end
 
         let(:update_errors_method) do
-          negated ? :update_negated_errors_for : :update_errors_for
+          negated ? :negated_errors_for : :errors_for
         end
         let(:matches_method) { negated ? :does_not_match? : :matches? }
 
@@ -458,7 +458,7 @@ module Spec::Support::Examples
                 expect(constraint)
                   .to have_received(update_errors_method)
                   .with(
-                    actual: values[index],
+                    values[index],
                     errors: an_instance_of(Stannum::Errors)
                   )
               end
@@ -516,7 +516,7 @@ module Spec::Support::Examples
                 expect(constraint)
                   .to have_received(update_errors_method)
                   .with(
-                    actual: values[index],
+                    values[index],
                     errors: an_instance_of(Stannum::Errors)
                   )
               end
@@ -542,7 +542,7 @@ module Spec::Support::Examples
                   expect(constraint)
                     .to have_received(update_errors_method)
                     .with(
-                      actual: values[index],
+                      values[index],
                       errors: an_instance_of(Stannum::Errors)
                     )
                 end
@@ -640,7 +640,7 @@ module Spec::Support::Examples
                 expect(sanity_constraints.first)
                   .to have_received(update_errors_method)
                   .with(
-                    actual: sanity_values[0],
+                    sanity_values[0],
                     errors: an_instance_of(Stannum::Errors)
                   )
               end
@@ -715,7 +715,7 @@ module Spec::Support::Examples
                 expect(sanity_constraints[0])
                   .to have_received(update_errors_method)
                   .with(
-                    actual: sanity_values[0],
+                    sanity_values[0],
                     errors: an_instance_of(Stannum::Errors)
                   )
               end
@@ -743,7 +743,7 @@ module Spec::Support::Examples
                 expect(sanity_constraints[1])
                   .to have_received(update_errors_method)
                   .with(
-                    actual: sanity_values[1],
+                    sanity_values[1],
                     errors: an_instance_of(Stannum::Errors)
                   )
               end
@@ -813,7 +813,7 @@ module Spec::Support::Examples
                   expect(constraint)
                     .to have_received(update_errors_method)
                     .with(
-                      actual: sanity_values[index],
+                      sanity_values[index],
                       errors: an_instance_of(Stannum::Errors)
                     )
                 end

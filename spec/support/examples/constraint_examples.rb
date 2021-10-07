@@ -19,30 +19,12 @@ module Spec::Support::Examples
       end
 
       describe '#errors_for' do
-        let(:actual) { Object.new.freeze }
-
-        it { expect(subject).to respond_to(:errors_for).with(1).argument }
-
-        # rubocop:disable Lint/RedundantCopDisableDirective
-        # rubocop:disable RSpec/ExampleLength
-        it 'should delegate to #update_errors_for', :aggregate_failures do
-          allow(subject) # rubocop:disable RSpec/SubjectStub
-            .to receive(:update_errors_for) do |keywords|
-              keywords.fetch(:errors).add('spec.example_error')
-            end
-
-          errors = subject.errors_for actual
-
-          expect(errors).to be_a Stannum::Errors
-          expect(errors)
-            .to include(be >= { type: 'spec.example_error' })
-
-          expect(subject) # rubocop:disable RSpec/SubjectStub
-            .to have_received(:update_errors_for)
-            .with(actual: actual, errors: an_instance_of(Stannum::Errors))
+        it 'should define the method' do
+          expect(subject)
+            .to respond_to(:errors_for)
+            .with(1).argument
+            .and_keywords(:errors)
         end
-        # rubocop:enable Lint/RedundantCopDisableDirective
-        # rubocop:enable RSpec/ExampleLength
       end
 
       describe '#match' do
@@ -63,31 +45,11 @@ module Spec::Support::Examples
         let(:actual) { Object.new.freeze }
 
         it 'should define the method' do
-          expect(subject).to respond_to(:negated_errors_for).with(1).argument
+          expect(subject)
+            .to respond_to(:negated_errors_for)
+            .with(1).argument
+            .and_keywords(:errors)
         end
-
-        # rubocop:disable Lint/RedundantCopDisableDirective
-        # rubocop:disable RSpec/ExampleLength
-        it 'should delegate to #update_negated_errors_for',
-          :aggregate_failures \
-        do
-          allow(subject) # rubocop:disable RSpec/SubjectStub
-            .to receive(:update_negated_errors_for) do |keywords|
-              keywords.fetch(:errors).add('spec.example_error')
-            end
-
-          errors = subject.negated_errors_for actual
-
-          expect(errors).to be_a Stannum::Errors
-          expect(errors)
-            .to include(be >= { type: 'spec.example_error' })
-
-          expect(subject) # rubocop:disable RSpec/SubjectStub
-            .to have_received(:update_negated_errors_for)
-            .with(actual: actual, errors: an_instance_of(Stannum::Errors))
-        end
-        # rubocop:enable Lint/RedundantCopDisableDirective
-        # rubocop:enable RSpec/ExampleLength
       end
 
       describe '#negated_match' do
@@ -148,6 +110,10 @@ module Spec::Support::Examples
         end
       end
 
+      describe '#errors_for' do
+        it { expect(subject.errors_for nil).to be_a Stannum::Errors }
+      end
+
       describe '#match' do
         it 'should return an array with two items' do
           expect(subject.match(nil))
@@ -158,6 +124,10 @@ module Spec::Support::Examples
         it { expect(subject.match(nil).first).to be_boolean }
 
         it { expect(subject.match(nil).last).to be_a(Stannum::Errors) }
+      end
+
+      describe '#negated_errors_for' do
+        it { expect(subject.negated_errors_for nil).to be_a Stannum::Errors }
       end
 
       describe '#negated_match' do

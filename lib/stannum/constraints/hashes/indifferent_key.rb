@@ -46,22 +46,24 @@ module Stannum::Constraints::Hashes
     # The :type of the error generated for a non-matching object.
     TYPE = 'stannum.constraints.hashes.is_not_string_or_symbol'
 
+    # (see Stannum::Constraints::Base#errors_for)
+    def errors_for(actual, errors: nil)
+      errors ||= Stannum::Errors.new
+
+      return errors.add(Stannum::Constraints::Presence::TYPE) if actual.nil?
+
+      return super unless indifferent_key_type?(actual)
+
+      return errors unless actual.empty?
+
+      errors.add(Stannum::Constraints::Presence::TYPE)
+    end
+
     # @return [true, false] true if the object is a non-empty String or Symbol.
     def matches?(actual)
       indifferent_key_type?(actual) && !actual.empty?
     end
     alias match? matches?
-
-    # @protected
-    def update_errors_for(actual:, errors:)
-      return errors.add(Stannum::Constraints::Presence::TYPE) if actual.nil?
-
-      return super unless indifferent_key_type?(actual)
-
-      return unless actual.empty?
-
-      errors.add(Stannum::Constraints::Presence::TYPE)
-    end
 
     private
 

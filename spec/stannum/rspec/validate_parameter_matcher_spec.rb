@@ -741,8 +741,9 @@ RSpec.describe Stannum::RSpec::ValidateParameterMatcher do
             example_class 'Spec::CustomConstraint', \
               Stannum::Constraints::Nothing \
               do |klass|
-                klass.define_method :update_errors_for do |actual:, errors:|
-                  errors.add(type, message: message, value: actual.class.name)
+                klass.define_method :errors_for do |actual, errors: nil|
+                  (errors || Stannum::Errors.new)
+                    .add(type, message: message, value: actual.class.name)
                 end
               end
 
@@ -843,8 +844,9 @@ RSpec.describe Stannum::RSpec::ValidateParameterMatcher do
             example_class 'Spec::CustomConstraint', \
               Stannum::Constraints::Nothing \
               do |klass|
-                klass.define_method :update_errors_for do |actual:, errors:|
-                  errors.add(type, message: message, value: actual.class.name)
+                klass.define_method :errors_for do |actual, errors: nil|
+                  (errors || Stannum::Errors.new)
+                    .add(type, message: message, value: actual.class.name)
                 end
               end
 

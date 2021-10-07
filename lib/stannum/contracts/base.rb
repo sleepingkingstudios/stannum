@@ -123,46 +123,6 @@ module Stannum::Contracts
       super && equal_definitions?(other)
     end
 
-    # @!method errors_for(actual)
-    #   Aggregates errors for each constraint that does not match the object.
-    #
-    #   For each defined constraint, the constraint is matched against the
-    #   mapped value for that constraint and the object. If the constraint does
-    #   not match the mapped value, the corresponding errors will be added to
-    #   the errors object.
-    #
-    #   If the contract defines sanity constraints, the sanity constraints will
-    #   be matched first. If any of the sanity constraints fail, #errors_for
-    #   will immediately return the errors for the failed constraint.
-    #
-    #   @param actual [Object] The object to match.
-    #
-    #   @return [Stannum::Errors] the generated errors object.
-    #
-    #   @see #each_pair
-    #   @see #match
-    #   @see #negated_errors_for
-
-    # @!method negated_errors_for(actual)
-    #   Aggregates errors for each constraint that matches the object.
-    #
-    #   For each defined constraint, the constraint is matched against the
-    #   mapped value for that constraint and the object. If the constraint
-    #   matches the mapped value, the corresponding errors will be added to
-    #   the errors object.
-    #
-    #   If the contract defines sanity constraints, the sanity constraints will
-    #   be matched first. If any of the sanity constraints fail, #errors_for
-    #   will immediately return any errors already added to the errors object.
-    #
-    #   @param actual [Object] The object to match.
-    #
-    #   @return [Stannum::Errors] the generated errors object.
-    #
-    #   @see #each_pair
-    #   @see #errors_for
-    #   @see #negated_match
-
     # Adds a constraint to the contract.
     #
     # When the contract is matched with an object, the constraint will be
@@ -342,6 +302,40 @@ module Stannum::Contracts
       end
     end
 
+    # Aggregates errors for each constraint that does not match the object.
+    #
+    # For each defined constraint, the constraint is matched against the mapped
+    # value for that constraint and the object. If the constraint does not match
+    # the mapped value, the corresponding errors will be added to the errors
+    # object.
+    #
+    # If the contract defines sanity constraints, the sanity constraints will be
+    # matched first. If any of the sanity constraints fail, #errors_for will
+    # immediately return the errors for the failed constraint.
+    #
+    # @param actual [Object] The object to match.
+    # @param errors [Stannum::Errors] The errors object to append errors to. If
+    #   an errors object is not given, a new errors object will be created.
+    #
+    # @return [Stannum::Errors] the given or generated errors object.
+    #
+    # @see #each_pair
+    # @see #match
+    # @see #negated_errors_for
+    def errors_for(actual, errors: nil)
+      errors ||= Stannum::Errors.new
+
+      each_pair(actual) do |definition, value|
+        next if match_constraint(definition, value)
+
+        definition.contract.add_errors_for(definition, value, errors)
+
+        return errors if definition.sanity?
+      end
+
+      errors
+    end
+
     # Matches and generates errors for each constraint.
     #
     # For each defined constraint, the constraint is matched against the
@@ -411,6 +405,41 @@ module Stannum::Contracts
     end
     alias match? matches?
 
+    # Aggregates errors for each constraint that matches the object.
+    #
+    # For each defined constraint, the constraint is matched against the mapped
+    # value for that constraint and the object. If the constraint matches the
+    # mapped value, the corresponding errors will be added to the errors object.
+    #
+    # If the contract defines sanity constraints, the sanity constraints will be
+    # matched first. If any of the sanity constraints fail, #errors_for will
+    # immediately return any errors already added to the errors object.
+    #
+    # @param actual [Object] The object to match.
+    # @param errors [Stannum::Errors] The errors object to append errors to. If
+    #   an errors object is not given, a new errors object will be created.
+    #
+    # @return [Stannum::Errors] the given or generated errors object.
+    #
+    # @see #each_pair
+    # @see #errors_for
+    # @see #negated_match
+    def negated_errors_for(actual, errors: nil)
+      errors ||= Stannum::Errors.new
+
+      each_pair(actual) do |definition, value|
+        if match_negated_constraint(definition, value)
+          next unless definition.sanity?
+
+          return errors
+        end
+
+        definition.contract.add_negated_errors_for(definition, value, errors)
+      end
+
+      errors
+    end
+
     # Matches and generates errors for each constraint.
     #
     # For each defined constraint, the constraint is matched against the
@@ -465,9 +494,8 @@ module Stannum::Contracts
     def add_errors_for(definition, value, errors)
       definition
         .constraint
-        .send(
-          :update_errors_for,
-          actual: value,
+        .errors_for(
+          value,
           errors: map_errors(errors, **definition.options)
         )
     end
@@ -475,9 +503,8 @@ module Stannum::Contracts
     def add_negated_errors_for(definition, value, errors)
       definition
         .constraint
-        .send(
-          :update_negated_errors_for,
-          actual: value,
+        .negated_errors_for(
+          value,
           errors: map_errors(errors, **definition.options)
         )
     end
@@ -549,32 +576,6 @@ module Stannum::Contracts
           return false
         end
       end
-    end
-
-    def update_errors_for(actual:, errors:)
-      each_pair(actual) do |definition, value|
-        next if match_constraint(definition, value)
-
-        definition.contract.add_errors_for(definition, value, errors)
-
-        return errors if definition.sanity?
-      end
-
-      errors
-    end
-
-    def update_negated_errors_for(actual:, errors:)
-      each_pair(actual) do |definition, value|
-        if match_negated_constraint(definition, value)
-          next unless definition.sanity?
-
-          return errors
-        end
-
-        definition.contract.add_negated_errors_for(definition, value, errors)
-      end
-
-      errors
     end
 
     def validate_constraint(constraint)

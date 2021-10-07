@@ -56,6 +56,11 @@ module Stannum::Constraints
       )
     end
 
+    # (see Stannum::Constraints::Base#errors_for)
+    def errors_for(actual, errors: nil) # rubocop:disable Lint/UnusedMethodArgument
+      (errors || Stannum::Errors.new).add(type, **error_properties)
+    end
+
     # @return [Class, Module, String] the type the object is expected to belong
     #   to.
     def expected_type
@@ -73,24 +78,17 @@ module Stannum::Constraints
     end
     alias match? matches?
 
+    # (see Stannum::Constraints::Base#negated_errors_for)
+    def negated_errors_for(actual, errors: nil) # rubocop:disable Lint/UnusedMethodArgument
+      (errors || Stannum::Errors.new).add(negated_type, **error_properties)
+    end
+
     # (see Stannum::Constraints::Base#with_options)
     def with_options(**options)
       options = options.merge(required_by_default: required?)
 
       super(**resolve_required_option(**options))
     end
-
-    protected
-
-    # rubocop:disable Lint/UnusedMethodArgument
-    def update_errors_for(actual:, errors:)
-      errors.add(type, **error_properties)
-    end
-
-    def update_negated_errors_for(actual:, errors:)
-      errors.add(negated_type, **error_properties)
-    end
-    # rubocop:enable Lint/UnusedMethodArgument
 
     private
 
