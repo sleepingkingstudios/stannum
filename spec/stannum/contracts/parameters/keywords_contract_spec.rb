@@ -188,13 +188,13 @@ RSpec.describe Stannum::Contracts::Parameters::KeywordsContract do
       end
 
       it 'should delegate to the constraint with value: nil' do
-        allow(constraint).to receive(:update_errors_for)
+        allow(constraint).to receive(:errors_for)
 
         contract.send(:add_errors_for, definition, value, errors)
 
         expect(constraint)
-          .to have_received(:update_errors_for)
-          .with(actual: nil, errors: errors)
+          .to have_received(:errors_for)
+          .with(nil, errors: errors)
       end
     end
   end
@@ -221,13 +221,13 @@ RSpec.describe Stannum::Contracts::Parameters::KeywordsContract do
       end
 
       it 'should delegate to the constraint with value: nil' do
-        allow(constraint).to receive(:update_negated_errors_for)
+        allow(constraint).to receive(:negated_errors_for)
 
         contract.send(:add_negated_errors_for, definition, value, errors)
 
         expect(constraint)
-          .to have_received(:update_negated_errors_for)
-          .with(actual: nil, errors: errors)
+          .to have_received(:negated_errors_for)
+          .with(nil, errors: errors)
       end
     end
   end

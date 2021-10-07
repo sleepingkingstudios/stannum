@@ -40,12 +40,32 @@ module Stannum::Constraints
       each_missing_method(actual).to_a == expected_methods
     end
 
+    # (see Stannum::Constraints::Base#errors_for)
+    def errors_for(actual, errors: nil)
+      (errors || Stannum::Errors.new)
+        .add(
+          type,
+          methods: expected_methods,
+          missing: each_missing_method(actual).to_a
+        )
+    end
+
     # @return [true, false] true if the object responds to all of the expected
     #   methods; otherwise false.
     def matches?(actual)
       each_missing_method(actual).none?
     end
     alias match? matches?
+
+    # (see Stannum::Constraints::Base#negated_errors_for)
+    def negated_errors_for(actual, errors: nil)
+      (errors || Stannum::Errors.new)
+        .add(
+          negated_type,
+          methods: expected_methods,
+          missing: each_missing_method(actual).to_a
+        )
+    end
 
     private
 
@@ -55,22 +75,6 @@ module Stannum::Constraints
       expected_methods.each do |method_name|
         yield method_name unless actual.respond_to?(method_name)
       end
-    end
-
-    def update_errors_for(actual:, errors:)
-      errors.add(
-        type,
-        methods: expected_methods,
-        missing: each_missing_method(actual).to_a
-      )
-    end
-
-    def update_negated_errors_for(actual:, errors:)
-      errors.add(
-        negated_type,
-        methods: expected_methods,
-        missing: each_missing_method(actual).to_a
-      )
     end
 
     def validate_expected_methods(expected_methods)

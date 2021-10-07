@@ -86,9 +86,11 @@ RSpec.describe Spec::BuildGadget do
     let(:keywords) { { attributes: {} } }
     let(:expected_errors) do
       contract.errors_for(
-        arguments: [],
-        keywords:  keywords,
-        block:     nil
+        {
+          arguments: [],
+          keywords:  keywords,
+          block:     nil
+        }
       )
     end
 

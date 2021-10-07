@@ -187,16 +187,15 @@ class EvenIntegerConstraint < Stannum::Constraint
   NEGATED_TYPE = 'examples.constraints.odd'
   TYPE         = 'examples.constraints.even'
 
-  def matches?(actual)
-    actual.is_a?(Integer) && actual.even?
-  end
-
-  protected
-
-  def update_errors_for(actual:, errors:)
+  def errors_for(actual, errors: nil)
     return super if actual.is_a?(Integer)
 
-    errors.add('examples.constraints.type', type: Integer)
+    (errors || Stannum::Errors.new)
+      .add('examples.constraints.type', type: Integer)
+  end
+
+  def matches?(actual)
+    actual.is_a?(Integer) && actual.even?
   end
 end
 ```
@@ -205,9 +204,7 @@ Let's take it from the top. We start by defining `::NEGATED_TYPE` and `::TYPE` c
 
 Second, we define our `#matches?` method. This method takes one parameter (the object being matched) and returns either `true` or `false`. Our other matching methods - `#does_not_match?`, `#match`, and `#negated_match` - will delegate to this implementation unless we specifically override them.
 
-Finally, we are defining the errors to be returned from our constraint using the `#update_errors_for` method. This method takes two keywords: `:actual`, which is the object being matched, and `:errors`, which is the `Stannum::Errors` object to which the errors for the constraint are added. If the object is an integer, then we fall back to the default behavior - `super` will add an error with a `#type` equal to the constraint's `#type` (or the `:type` passed into the constructor, if any). If the object is not an integer, then we instead display a custom error. In addition to the error `#type`, we are defining some error `#data`.
-
-*Important Note:* We are overriding the `#update_errors_for` method, rather than the `#errors_for` method directly. This is because a contract (see [Contracts](#contracts), below) that includes this constraint will hook into `#update_errors_for` on a failure - this avoids allocating unnecessary errors objects for each constraint. For the same reason, `#update_errors_for` must be either `protected` (recommended) or `public` - marking this method as `private` will break contracts that include this constraint.
+Finally, we are defining the errors to be returned from our constraint using the `#errors_for` method. This method takes one required argument `actual`, which is the object being matched. If the object is an integer, then we fall back to the default behavior: `super` will add an error with a `#type` equal to the constraint's `#type` (or the `:type` passed into the constructor, if any). If the object is not an integer, then we instead display a custom error. In addition to the error `#type`, we are defining some error `#data`. In addition, `#errors_for` can take an optional keyword `:errors`, which is either an instance of `Stannum::Errors` or `nil`. This allows the user to pass an existing errors object to `#errors_for`, which will add its own errors to the given errors object instead of creating a new one.
 
 ```ruby
 errors = constraint.errors_for(nil)
@@ -227,7 +224,7 @@ errors.first.data
 #=> {}
 ```
 
-We can likewise define the behavior of the constraint when negated. We've already set the `::NEGATED_TYPE` constant, but we can go further and override the `#does_not_match?` and/or `#update_negated_errors_for` methods as well for full control over the behavior when performing a negated match.
+We can likewise define the behavior of the constraint when negated. We've already set the `::NEGATED_TYPE` constant, but we can go further and override the `#does_not_match?` and/or `#negated_errors_for` methods as well for full control over the behavior when performing a negated match.
 
 <a id="contracts"></a>
 

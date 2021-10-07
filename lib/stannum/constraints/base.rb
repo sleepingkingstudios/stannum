@@ -95,6 +95,10 @@ module Stannum::Constraints
     # the expected properties or behavior. It may be the same for all objects,
     # or different based on the details of the object or the constraint.
     #
+    # @param actual [Object] The object to generate errors for.
+    # @param errors [Stannum::Errors] The errors object to append errors to. If
+    #   an errors object is not given, a new errors object will be created.
+    #
     # @example Generating errors for a non-matching object.
     #   constraint = CustomConstraint.new
     #   object     = NonMatchingObject.new
@@ -107,12 +111,12 @@ module Stannum::Constraints
     #   the constraint. Generating errors for a matching object can result in
     #   undefined behavior.
     #
-    # @return [Stannum::Errors] the generated errors object.
+    # @return [Stannum::Errors] the given or generated errors object.
     #
     # @see #matches?
     # @see #negated_errors_for
-    def errors_for(actual)
-      update_errors_for(actual: actual, errors: Stannum::Errors.new)
+    def errors_for(actual, errors: nil) # rubocop:disable Lint/UnusedMethodArgument
+      (errors || Stannum::Errors.new).add(type, message: message)
     end
 
     # Checks the given object against the constraint and returns errors, if any.
@@ -185,6 +189,10 @@ module Stannum::Constraints
     # be the same for all objects, or different based on the details of the
     # object or the constraint.
     #
+    # @param actual [Object] The object to generate errors for.
+    # @param errors [Stannum::Errors] The errors object to append errors to. If
+    #   an errors object is not given, a new errors object will be created.
+    #
     # @example Generating errors for a matching object.
     #   constraint = CustomConstraint.new
     #   object     = MatchingObject.new
@@ -197,12 +205,13 @@ module Stannum::Constraints
     #   constraint. Generating errors for a matching object can result in
     #   undefined behavior.
     #
-    # @return [Stannum::Errors] the generated errors object.
+    # @return [Stannum::Errors] the given or generated errors object.
     #
     # @see #does_not_match?
     # @see #errors_for
-    def negated_errors_for(actual)
-      update_negated_errors_for(actual: actual, errors: Stannum::Errors.new)
+    def negated_errors_for(actual, errors: nil) # rubocop:disable Lint/UnusedMethodArgument
+      (errors || Stannum::Errors.new)
+        .add(negated_type, message: negated_message)
     end
 
     # Checks the given object against the constraint and returns errors, if any.
@@ -272,15 +281,5 @@ module Stannum::Constraints
 
       self
     end
-
-    # rubocop:disable Lint/UnusedMethodArgument
-    def update_errors_for(actual:, errors:)
-      errors.add(type, message: message)
-    end
-
-    def update_negated_errors_for(actual:, errors:)
-      errors.add(negated_type, message: negated_message)
-    end
-    # rubocop:enable Lint/UnusedMethodArgument
   end
 end

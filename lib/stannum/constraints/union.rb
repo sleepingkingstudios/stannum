@@ -40,6 +40,11 @@ module Stannum::Constraints
     #   object.
     attr_reader :expected_constraints
 
+    # (see Stannum::Constraints::Base#errors_for)
+    def errors_for(actual, errors: nil) # rubocop:disable Lint/UnusedMethodArgument
+      (errors || Stannum::Errors.new).add(type, constraints: expected_values)
+    end
+
     # Checks that the object matches at least one of the given constraints.
     #
     # @return [true, false] false if the object matches a constraint, otherwise
@@ -51,17 +56,11 @@ module Stannum::Constraints
     end
     alias match? matches?
 
-    protected
-
-    # rubocop:disable Lint/UnusedMethodArgument
-    def update_errors_for(actual:, errors:)
-      errors.add(type, constraints: expected_values)
+    # (see Stannum::Constraints::Base#negated_errors_for)
+    def negated_errors_for(actual, errors: nil) # rubocop:disable Lint/UnusedMethodArgument
+      (errors || Stannum::Errors.new)
+        .add(negated_type, constraints: negated_values)
     end
-
-    def update_negated_errors_for(actual:, errors:)
-      errors.add(negated_type, constraints: negated_values)
-    end
-    # rubocop:enable Lint/UnusedMethodArgument
 
     private
 

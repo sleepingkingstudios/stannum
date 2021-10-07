@@ -31,9 +31,19 @@ module Stannum::Constraints
       @matching_values = Set.new(expected_values)
     end
 
+    # (see Stannum::Constraints::Base#errors_for)
+    def errors_for(actual, errors: nil) # rubocop:disable Lint/UnusedMethodArgument
+      (errors || Stannum::Errors.new).add(type, values: expected_values)
+    end
+
     # @return [Array] the possible values for the object.
     def expected_values
       options[:expected_values]
+    end
+
+    # (see Stannum::Constraints::Base#negated_errors_for)
+    def negated_errors_for(actual, errors: nil) # rubocop:disable Lint/UnusedMethodArgument
+      (errors || Stannum::Errors.new).add(negated_type, values: expected_values)
     end
 
     # Checks that the object is in the list of expected values.
@@ -46,18 +56,6 @@ module Stannum::Constraints
       @matching_values.include?(actual)
     end
     alias match? matches?
-
-    protected
-
-    # rubocop:disable Lint/UnusedMethodArgument
-    def update_errors_for(actual:, errors:)
-      errors.add(type, values: expected_values)
-    end
-
-    def update_negated_errors_for(actual:, errors:)
-      errors.add(negated_type, values: expected_values)
-    end
-    # rubocop:enable Lint/UnusedMethodArgument
 
     private
 

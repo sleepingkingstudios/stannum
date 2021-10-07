@@ -50,6 +50,21 @@ module Stannum::Constraints::Hashes
       !(Set.new(actual.keys) <= expected_keys) # rubocop:disable Style/InverseMethods
     end
 
+    # (see Stannum::Constraints::Base#errors_for)
+    def errors_for(actual, errors: nil)
+      errors ||= Stannum::Errors.new
+
+      unless actual.respond_to?(:keys)
+        return add_invalid_hash_error(actual: actual, errors: errors)
+      end
+
+      each_extra_key(actual) do |key, value|
+        errors[key].add(type, value: value)
+      end
+
+      errors
+    end
+
     # @return [Array] the expected keys.
     def expected_keys
       keys = options[:expected_keys]
@@ -73,7 +88,7 @@ module Stannum::Constraints::Hashes
     def add_invalid_hash_error(actual:, errors:)
       Stannum::Constraints::Signature
         .new(:keys)
-        .send(:update_errors_for, actual: actual, errors: errors)
+        .errors_for(actual, errors: errors)
     end
 
     def each_extra_key(actual)
@@ -88,18 +103,6 @@ module Stannum::Constraints::Hashes
 
     def hash?(actual)
       actual.respond_to?(:[]) && actual.respond_to?(:keys)
-    end
-
-    def update_errors_for(actual:, errors:)
-      unless actual.respond_to?(:keys)
-        return add_invalid_hash_error(actual: actual, errors: errors)
-      end
-
-      each_extra_key(actual) do |key, value|
-        errors[key].add(type, value: value)
-      end
-
-      errors
     end
 
     def valid_key?(key)

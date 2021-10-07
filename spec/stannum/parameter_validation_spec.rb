@@ -252,9 +252,11 @@ RSpec.describe Stannum::ParameterValidation do
           Stannum::Contracts::ParametersContract
             .new(&validations)
             .errors_for(
-              arguments: arguments,
-              keywords:  keywords,
-              block:     block
+              {
+                arguments: arguments,
+                keywords:  keywords,
+                block:     block
+              }
             )
         end
 
@@ -364,9 +366,11 @@ RSpec.describe Stannum::ParameterValidation do
               Stannum::Contracts::ParametersContract
                 .new(&validations)
                 .errors_for(
-                  arguments: arguments,
-                  keywords:  keywords,
-                  block:     block
+                  {
+                    arguments: arguments,
+                    keywords:  keywords,
+                    block:     block
+                  }
                 )
             end
 
@@ -475,9 +479,11 @@ RSpec.describe Stannum::ParameterValidation do
               Stannum::Contracts::ParametersContract
                 .new(&validations)
                 .errors_for(
-                  arguments: arguments,
-                  keywords:  keywords,
-                  block:     block
+                  {
+                    arguments: arguments,
+                    keywords:  keywords,
+                    block:     block
+                  }
                 )
             end
 
@@ -587,9 +593,11 @@ RSpec.describe Stannum::ParameterValidation do
               Stannum::Contracts::ParametersContract
                 .new(&validations)
                 .errors_for(
-                  arguments: arguments,
-                  keywords:  keywords,
-                  block:     block
+                  {
+                    arguments: arguments,
+                    keywords:  keywords,
+                    block:     block
+                  }
                 )
             end
 

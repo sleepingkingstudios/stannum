@@ -77,6 +77,21 @@ module Stannum::Constraints::Types
       !matches_type?(actual)
     end
 
+    # (see Stannum::Constraints::Base#errors_for)
+    def errors_for(actual, errors: nil)
+      return super unless actual.is_a?(expected_type)
+
+      errors ||= Stannum::Errors.new
+
+      return add_presence_error(errors) unless presence_matches?(actual)
+
+      update_key_errors_for(actual: actual, errors: errors)
+
+      update_value_errors_for(actual: actual, errors: errors)
+
+      errors
+    end
+
     # @return [Stannum::Constraints::Base, nil] the expected type for the keys
     #   in the hash.
     def key_type
@@ -167,35 +182,15 @@ module Stannum::Constraints::Types
       allow_empty? || !actual.empty?
     end
 
-    def update_errors_for(actual:, errors:)
-      return super unless actual.is_a?(expected_type)
-
-      return add_presence_error(errors) unless presence_matches?(actual)
-
-      update_key_errors_for(actual: actual, errors: errors)
-
-      update_value_errors_for(actual: actual, errors: errors)
-
-      errors
-    end
-
     def update_key_errors_for(actual:, errors:)
       non_matching_keys(actual).each do |key|
-        key_type.send(
-          :update_errors_for,
-          actual: key,
-          errors: errors[:keys][key]
-        )
+        key_type.errors_for(key, errors: errors[:keys][key])
       end
     end
 
     def update_value_errors_for(actual:, errors:)
       non_matching_values(actual).each do |key, value|
-        value_type.send(
-          :update_errors_for,
-          actual: value,
-          errors: errors[key]
-        )
+        value_type.errors_for(value, errors: errors[key])
       end
     end
 
