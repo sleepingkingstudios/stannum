@@ -219,6 +219,32 @@ RSpec.describe Stannum::Constraints::Hashes::ExtraKeys do
 
         include_examples 'should not match the constraint'
       end
+
+      describe 'with a hash with nil or object extra keys' do
+        let(:object) { Object.new.freeze }
+        let(:actual) { { nil => 'wibble', object => 'wobble' } }
+        let(:expected_errors) do
+          [
+            {
+              data: { value: 'wibble' },
+              path: %w[nil],
+              type: described_class::TYPE
+            },
+            {
+              data: { value: 'wobble' },
+              path: [object.inspect],
+              type: described_class::TYPE
+            }
+          ]
+        end
+        let(:expected_messages) do
+          expected_errors.map do |err|
+            err.merge(message: 'has extra keys')
+          end
+        end
+
+        include_examples 'should not match the constraint'
+      end
     end
 
     context 'when initialized with a proc' do
@@ -311,6 +337,32 @@ RSpec.describe Stannum::Constraints::Hashes::ExtraKeys do
             {
               data: { value: 'wobble' },
               path: %i[wobble],
+              type: described_class::TYPE
+            }
+          ]
+        end
+        let(:expected_messages) do
+          expected_errors.map do |err|
+            err.merge(message: 'has extra keys')
+          end
+        end
+
+        include_examples 'should not match the constraint'
+      end
+
+      describe 'with a hash with nil or object extra keys' do
+        let(:object) { Object.new.freeze }
+        let(:actual) { { nil => 'wibble', object => 'wobble' } }
+        let(:expected_errors) do
+          [
+            {
+              data: { value: 'wibble' },
+              path: %w[nil],
+              type: described_class::TYPE
+            },
+            {
+              data: { value: 'wobble' },
+              path: [object.inspect],
               type: described_class::TYPE
             }
           ]

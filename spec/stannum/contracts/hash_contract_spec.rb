@@ -754,26 +754,72 @@ RSpec.describe Stannum::Contracts::HashContract do
 
   describe '#map_errors' do
     let(:errors) { Stannum::Errors.new }
+    let(:mapped_errors) do
+      contract.send(
+        :map_errors,
+        errors,
+        property: key
+      )
+    end
 
     it { expect(contract.send :map_errors, errors).to be errors }
 
-    describe 'with property_type: :key' do
-      let(:key) { :name }
+    describe 'with key: nil' do
+      let(:key) { nil }
 
-      before(:example) do
-        errors[key].add('spec.keyed_error')
+      before(:example) { errors.add('spec.keyed_error') }
+
+      it { expect(mapped_errors).to be == errors }
+    end
+
+    describe 'with property_type: :key' do
+      let(:mapped_errors) do
+        contract.send(
+          :map_errors,
+          errors,
+          property:      key,
+          property_type: :key
+        )
       end
 
-      it 'should return the errors for the index' do
-        expect(
-          contract.send(
-            :map_errors,
-            errors,
-            property:      key,
-            property_type: :key
-          )
-        )
-          .to be == errors[key]
+      describe 'with key: nil' do
+        let(:key) { nil }
+
+        before(:example) { errors['nil'].add('spec.keyed_error') }
+
+        it { expect(mapped_errors).to be == errors['nil'] }
+      end
+
+      describe 'with key: an object' do
+        let(:key) { Object.new.freeze }
+
+        before(:example) { errors[key.inspect].add('spec.keyed_error') }
+
+        it { expect(mapped_errors).to be == errors[key.inspect] }
+      end
+
+      describe 'with key: an integer' do
+        let(:key) { 1 }
+
+        before(:example) { errors[key].add('spec.keyed_error') }
+
+        it { expect(mapped_errors).to be == errors[key] }
+      end
+
+      describe 'with key: a string' do
+        let(:key) { 'name' }
+
+        before(:example) { errors[key].add('spec.keyed_error') }
+
+        it { expect(mapped_errors).to be == errors[key] }
+      end
+
+      describe 'with key: a symbol' do
+        let(:key) { :name }
+
+        before(:example) { errors[key].add('spec.keyed_error') }
+
+        it { expect(mapped_errors).to be == errors[key] }
       end
     end
   end
