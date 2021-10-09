@@ -6,6 +6,23 @@ module Stannum::Support
   # Shared functionality for coercing values to and from constraints.
   module Coercion
     class << self
+      ERROR_KEY_TYPES = Set.new([Integer, String, Symbol]).freeze
+      private_constant :ERROR_KEY_TYPES
+
+      # Coerces an arbitrary object into a valid Stannum::Errors key.
+      #
+      # If the value is an Integer, a String, or a Symbol, returns the value.
+      # Otherwise, returns the result of calling #inspect on the value.
+      #
+      # @param value [Object] The value to coerce.
+      #
+      # @return [Integer, String, Symbol] the value or result of #inspect.
+      def error_key(value)
+        return value if ERROR_KEY_TYPES.include?(value.class)
+
+        value.inspect
+      end
+
       # Coerce a Boolean value to a Presence constraint.
       #
       # @param present [true, false, Stannum::Constraints::Base, nil] The

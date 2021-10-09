@@ -230,6 +230,32 @@ RSpec.describe Stannum::Constraints::Types::HashType do
         include_examples 'should match the constraint'
       end
 
+      describe 'with a hash with nil or object keys' do
+        let(:object) { Object.new.freeze }
+        let(:actual) { { nil => 'wibble', object => 'wobble' } }
+        let(:expected_errors) do
+          [
+            {
+              data: { type: Symbol, required: true },
+              path: [:keys, 'nil'],
+              type: Stannum::Constraints::Type::TYPE
+            },
+            {
+              data: { type: Symbol, required: true },
+              path: [:keys, object.inspect],
+              type: Stannum::Constraints::Type::TYPE
+            }
+          ]
+        end
+        let(:expected_messages) do
+          expected_errors.map do |err|
+            err.merge(message: 'is not a Symbol')
+          end
+        end
+
+        include_examples 'should not match the constraint'
+      end
+
       context 'when the constraint is optional' do
         let(:constructor_options) { super().merge(required: false) }
 
@@ -307,6 +333,32 @@ RSpec.describe Stannum::Constraints::Types::HashType do
         include_examples 'should match the constraint'
       end
 
+      describe 'with a hash with nil or object keys' do
+        let(:object) { Object.new.freeze }
+        let(:actual) { { nil => :wibble, object => :wobble } }
+        let(:expected_errors) do
+          [
+            {
+              data: { type: String, required: true },
+              path: %w[nil],
+              type: Stannum::Constraints::Type::TYPE
+            },
+            {
+              data: { type: String, required: true },
+              path: [object.inspect],
+              type: Stannum::Constraints::Type::TYPE
+            }
+          ]
+        end
+        let(:expected_messages) do
+          expected_errors.map do |err|
+            err.merge(message: 'is not a String')
+          end
+        end
+
+        include_examples 'should not match the constraint'
+      end
+
       context 'when the constraint is optional' do
         let(:constructor_options) { super().merge(required: false) }
 
@@ -376,6 +428,13 @@ RSpec.describe Stannum::Constraints::Types::HashType do
         include_examples 'should not match the constraint'
       end
 
+      describe 'with a hash with nil or object keys' do
+        let(:object) { Object.new.freeze }
+        let(:actual) { { nil => 'wibble', object => 'wobble' } }
+
+        include_examples 'should not match the constraint'
+      end
+
       context 'when the constraint is optional' do
         let(:constructor_options) { super().merge(required: false) }
 
@@ -405,6 +464,13 @@ RSpec.describe Stannum::Constraints::Types::HashType do
 
       describe 'with a hash with matching values' do
         let(:actual) { { ichi: '1', ni: '2', san: '3' } }
+
+        include_examples 'should not match the constraint'
+      end
+
+      describe 'with a hash with nil or object keys' do
+        let(:object) { Object.new.freeze }
+        let(:actual) { { nil => 'wibble', object => 'wobble' } }
 
         include_examples 'should not match the constraint'
       end

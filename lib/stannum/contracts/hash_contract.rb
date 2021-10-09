@@ -121,6 +121,20 @@ module Stannum::Contracts
       options[:value_type]
     end
 
+    protected
+
+    def map_errors(errors, **options)
+      return super unless options[:property_type] == :key
+
+      property_name = options.fetch(:property_name, options[:property])
+      property_name = property_name.nil? ? [nil] : Array(property_name)
+      property_name = property_name.map do |key|
+        Stannum::Support::Coercion.error_key(key)
+      end
+
+      errors.dig(*property_name)
+    end
+
     private
 
     def add_type_constraint

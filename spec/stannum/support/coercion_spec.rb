@@ -3,6 +3,36 @@
 require 'stannum/support/coercion'
 
 RSpec.describe Stannum::Support::Coercion do
+  describe '.error_key' do
+    it { expect(described_class).to respond_to(:error_key).with(1).argument }
+
+    describe 'with nil' do
+      it { expect(described_class.error_key nil).to be == 'nil' }
+    end
+
+    describe 'with an object' do
+      let(:value) { Object.new.freeze }
+
+      it { expect(described_class.error_key value).to be == value.inspect }
+    end
+
+    describe 'with an integer' do
+      it { expect(described_class.error_key 1).to be 1 }
+    end
+
+    describe 'with a string' do
+      let(:value) { 'string' }
+
+      it { expect(described_class.error_key value).to be value }
+    end
+
+    describe 'with a symbol' do
+      let(:value) { :symbol }
+
+      it { expect(described_class.error_key value).to be value }
+    end
+  end
+
   describe '.presence_constraint' do
     let(:error_message) { 'present must be true or false or a constraint' }
 

@@ -1,6 +1,7 @@
 # frozen_string_literal: true
 
 require 'stannum/constraints/hashes'
+require 'stannum/support/coercion'
 
 module Stannum::Constraints::Hashes
   # Constraint for validating the keys of a hash-like object.
@@ -59,6 +60,8 @@ module Stannum::Constraints::Hashes
       end
 
       each_extra_key(actual) do |key, value|
+        key = Stannum::Support::Coercion.error_key(key)
+
         errors[key].add(type, value: value)
       end
 

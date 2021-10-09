@@ -184,13 +184,17 @@ module Stannum::Constraints::Types
 
     def update_key_errors_for(actual:, errors:)
       non_matching_keys(actual).each do |key|
-        key_type.errors_for(key, errors: errors[:keys][key])
+        mapped_key = Stannum::Support::Coercion.error_key(key)
+
+        key_type.errors_for(key, errors: errors[:keys][mapped_key])
       end
     end
 
     def update_value_errors_for(actual:, errors:)
       non_matching_values(actual).each do |key, value|
-        value_type.errors_for(value, errors: errors[key])
+        mapped_key = Stannum::Support::Coercion.error_key(key)
+
+        value_type.errors_for(value, errors: errors[mapped_key])
       end
     end
 
