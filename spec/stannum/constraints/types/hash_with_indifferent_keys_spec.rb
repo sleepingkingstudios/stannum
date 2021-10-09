@@ -150,6 +150,37 @@ RSpec.describe Stannum::Constraints::Types::HashWithIndifferentKeys do
       include_examples 'should match the constraint'
     end
 
+    describe 'with a hash with nil or object keys' do
+      let(:object) { Object.new.freeze }
+      let(:actual) { { nil => 'wibble', object => 'wobble' } }
+      let(:expected_errors) do
+        [
+          {
+            data: {},
+            path: [:keys, 'nil'],
+            type: Stannum::Constraints::Presence::TYPE
+          },
+          {
+            data: {},
+            path: [:keys, object.inspect],
+            type: Stannum::Constraints::Hashes::IndifferentKey::TYPE
+          }
+        ]
+      end
+      let(:expected_messages) do
+        messages = [
+          'is nil or empty',
+          'is not a String or a Symbol'
+        ]
+
+        expected_errors.each.with_index.map do |err, index|
+          err.merge(message: messages[index])
+        end
+      end
+
+      include_examples 'should not match the constraint'
+    end
+
     context 'when allow_empty is false' do
       let(:constructor_options) { super().merge(allow_empty: false) }
       let(:expected_errors) do
