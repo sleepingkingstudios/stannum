@@ -74,6 +74,8 @@ module Stannum::Constraints
     #
     #   constraint.does_not_match?(object) #=> true
     #
+    # @param actual [Object] The object to match.
+    #
     # @return [true, false] false if the object matches the expected properties
     #   or behavior, otherwise true.
     #
@@ -143,6 +145,8 @@ module Stannum::Constraints
     #   errors.class #=> Stannum::Errors
     #   errors.to_a  #=> [{ type: 'some_error', message: 'some error message' }]
     #
+    # @param actual [Object] The object to match.
+    #
     # @see #errors_for
     # @see #matches?
     def match(actual)
@@ -166,6 +170,8 @@ module Stannum::Constraints
     #   object     = NonMatchingObject.new
     #
     #   constraint.matches?(object) #=> false
+    #
+    # @param actual [Object] The object to match.
     #
     # @return [true, false] true if the object matches the expected properties
     #   or behavior, otherwise false.
@@ -220,6 +226,8 @@ module Stannum::Constraints
     # behavior. If the object matches the constraint, #negated_match will return
     # false and the generated errors for that object. If the object does not
     # match the constraint, #negated_match will return true.
+    #
+    # @param actual [Object] The object to match.
     #
     # @example Checking a matching object.
     #   constraint = CustomConstraint.new

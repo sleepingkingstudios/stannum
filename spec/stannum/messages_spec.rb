@@ -12,7 +12,7 @@ RSpec.describe Stannum::Messages do
   end
 
   describe '.strategy' do
-    let(:filename) { File.join(described_class.locales_path, 'en.rb') }
+    let(:filename) { File.join(described_class.locales_path) }
 
     include_examples 'should define class reader',
       :strategy,
