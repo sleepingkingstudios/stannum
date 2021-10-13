@@ -21,10 +21,16 @@ module Stannum::Messages
     # @param configuration [Hash{Symbol, Object}] The configured messages.
     # @param load_paths [Array<String>] The directories from which to load
     #   configured error messages.
-    def initialize(configuration: nil, load_paths: nil)
+    # @param locale [String] The locale used to load and scope configured
+    #   messages.
+    def initialize(configuration: nil, load_paths: nil, locale: 'en')
       @load_paths    = Array(load_paths) unless load_paths.nil?
+      @locale        = locale
       @configuration = configuration
     end
+
+    # @return [String] The locale used to load and scope configured messages.
+    attr_reader :locale
 
     # @param error_type [String] The qualified path to the configured error
     #   message.
@@ -66,7 +72,7 @@ module Stannum::Messages
 
     def generate_message(error_type, options)
       path = error_type.to_s.split('.').map(&:intern)
-      path.unshift(:en)
+      path.unshift(locale.intern)
 
       message = configuration.dig(*path)
 
@@ -91,7 +97,7 @@ module Stannum::Messages
       Stannum::Messages::DefaultLoader
         .new(
           file_paths: load_paths,
-          locale:     'en'
+          locale:     locale
         )
         .call
     end

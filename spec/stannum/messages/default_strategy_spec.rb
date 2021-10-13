@@ -20,7 +20,7 @@ RSpec.describe Stannum::Messages::DefaultStrategy do
       expect(described_class)
         .to respond_to(:new)
         .with(0).arguments
-        .and_keywords(:configuration, :load_paths)
+        .and_keywords(:configuration, :load_paths, :locale)
     end
   end
 
@@ -151,6 +151,36 @@ RSpec.describe Stannum::Messages::DefaultStrategy do
         it { expect(strategy.call(error_type, **options)).to be == expected }
       end
     end
+
+    context 'when initialized with locale: value' do
+      let(:locale)              { 'en-gb' }
+      let(:constructor_options) { super().merge(locale: locale) }
+      let(:configuration) do
+        super().merge(
+          {
+            'en-gb': {
+              stannum: {
+                invalid: 'is bollocks'
+              }
+            }
+          }
+        )
+      end
+
+      describe 'with an error type with no corresponding value' do
+        let(:error_type) { 'stannum.valid' }
+        let(:expected)   { "no message defined for #{error_type.inspect}" }
+
+        it { expect(strategy.call(error_type)).to be == expected }
+      end
+
+      describe 'with an error type that corresponds to a basic string' do
+        let(:error_type) { 'stannum.invalid' }
+        let(:expected)   { 'is bollocks' }
+
+        it { expect(strategy.call(error_type)).to be == expected }
+      end
+    end
   end
 
   describe '#configuration' do
@@ -182,7 +212,7 @@ RSpec.describe Stannum::Messages::DefaultStrategy do
 
         expect(Stannum::Messages::DefaultLoader)
           .to have_received(:new)
-          .with(file_paths: strategy.load_paths, locale: 'en')
+          .with(file_paths: strategy.load_paths, locale: strategy.locale)
       end
 
       it 'should call the loader' do
@@ -270,6 +300,24 @@ RSpec.describe Stannum::Messages::DefaultStrategy do
 
       include_examples 'should delegate to a loader'
     end
+
+    context 'when initialized with locale: value' do
+      let(:locale)              { 'en-gb' }
+      let(:constructor_options) { super().merge(locale: locale) }
+
+      include_examples 'should delegate to a loader'
+    end
+  end
+
+  describe '#locale' do
+    include_examples 'should define reader', :locale, 'en'
+
+    context 'when initialized with locale: value' do
+      let(:locale)              { 'en-gb' }
+      let(:constructor_options) { super().merge(locale: locale) }
+
+      it { expect(strategy.locale).to be == locale }
+    end
   end
 
   describe '#load_paths' do
@@ -340,7 +388,7 @@ RSpec.describe Stannum::Messages::DefaultStrategy do
 
         expect(Stannum::Messages::DefaultLoader)
           .to have_received(:new)
-          .with(file_paths: strategy.load_paths, locale: 'en')
+          .with(file_paths: strategy.load_paths, locale: strategy.locale)
       end
 
       it 'should call the loader' do
@@ -407,6 +455,13 @@ RSpec.describe Stannum::Messages::DefaultStrategy do
       let(:constructor_options) do
         super().merge(load_paths: filenames)
       end
+
+      include_examples 'should delegate to a loader'
+    end
+
+    context 'when initialized with locale: value' do
+      let(:locale)              { 'en-gb' }
+      let(:constructor_options) { super().merge(locale: locale) }
 
       include_examples 'should delegate to a loader'
     end
