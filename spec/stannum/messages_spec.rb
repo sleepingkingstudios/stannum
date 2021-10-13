@@ -19,7 +19,8 @@ RSpec.describe Stannum::Messages do
       -> { an_instance_of(Stannum::Messages::DefaultStrategy) }
 
     it 'should configure the default strategy' do
-      expect(described_class.strategy.send(:load_path)).to be == [filename]
+      expect(described_class.strategy.send(:load_paths))
+        .to be == Stannum::Messages::DefaultStrategy::DEFAULT_LOAD_PATHS
     end
   end
 

@@ -9,17 +9,22 @@ require 'stannum/messages'
 module Stannum::Messages
   # Strategy to generate error messages from gem configuration.
   class DefaultStrategy
-    # @param configuration [Hash{Symbol, Object}] The configured messages.
-    # @param load_path [Array<String>] The filenames for the configuration
-    #   file(s).
-    def initialize(configuration: nil, load_path: nil)
-      @load_path     =
-        load_path.nil? ? [Stannum::Messages.locales_path] : Array(load_path)
-      @configuration = configuration
+    # The default directories from which to load configured error messages.
+    DEFAULT_LOAD_PATHS = [Stannum::Messages.locales_path].freeze
+
+    # @return [Array<String>] The directories from which to load configured
+    #   error messages.
+    def self.load_paths
+      @load_paths ||= DEFAULT_LOAD_PATHS.dup
     end
 
-    # @return [Array<String>] the filenames for the configuration file(s).
-    attr_reader :load_path
+    # @param configuration [Hash{Symbol, Object}] The configured messages.
+    # @param load_paths [Array<String>] The directories from which to load
+    #   configured error messages.
+    def initialize(configuration: nil, load_paths: nil)
+      @load_paths    = Array(load_paths) unless load_paths.nil?
+      @configuration = configuration
+    end
 
     # @param error_type [String] The qualified path to the configured error
     #   message.
@@ -33,6 +38,12 @@ module Stannum::Messages
       message = generate_message(error_type, options)
 
       interpolate_message(message, options)
+    end
+
+    # @return [Array<String>] The directories from which to load configured
+    #   error messages.
+    def load_paths
+      @load_paths || self.class.load_paths
     end
 
     # Reloads the configuration from the configured load_path.
@@ -79,7 +90,7 @@ module Stannum::Messages
     def load_configuration
       Stannum::Messages::DefaultLoader
         .new(
-          file_paths: load_path,
+          file_paths: load_paths,
           locale:     'en'
         )
         .call
