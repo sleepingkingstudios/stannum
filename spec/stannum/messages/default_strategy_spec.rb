@@ -7,12 +7,34 @@ RSpec.describe Stannum::Messages::DefaultStrategy do
 
   let(:constructor_options) { {} }
 
-  describe '::new' do
+  describe '::DEFAULT_LOAD_PATHS' do
+    it 'should define the constant' do
+      expect(described_class)
+        .to define_constant(:DEFAULT_LOAD_PATHS)
+        .with_value(be == [Stannum::Messages.locales_path])
+    end
+  end
+
+  describe '.new' do
     it 'should define the constructor' do
       expect(described_class)
         .to respond_to(:new)
         .with(0).arguments
-        .and_keywords(:configuration, :load_path)
+        .and_keywords(:configuration, :load_paths, :locale)
+    end
+  end
+
+  describe '.load_paths' do
+    include_examples 'should define class reader',
+      :load_paths,
+      -> { be == described_class::DEFAULT_LOAD_PATHS }
+
+    it 'should be mutable' do
+      expect { described_class.load_paths << '/path/to/configuration' }
+        .to change(described_class, :load_paths)
+        .to include '/path/to/configuration'
+    ensure
+      described_class.load_paths.replace(described_class::DEFAULT_LOAD_PATHS)
     end
   end
 
@@ -129,30 +151,41 @@ RSpec.describe Stannum::Messages::DefaultStrategy do
         it { expect(strategy.call(error_type, **options)).to be == expected }
       end
     end
-  end
 
-  describe '#configuration' do
-    include_examples 'should define private reader', :configuration
-
-    context 'when initialized with no arguments' do
-      let(:filename) { File.join(Stannum::Messages.locales_path, 'en.rb') }
+    context 'when initialized with locale: value' do
+      let(:locale)              { 'en-gb' }
+      let(:constructor_options) { super().merge(locale: locale) }
       let(:configuration) do
-        <<~RUBY
-          # frozen_string_literal: true
-
+        super().merge(
           {
-            en: {
+            'en-gb': {
               stannum: {
-                constraints: {
-                  invalid: 'is invalid',
-                  valid:   'is valid'
-                }
+                invalid: 'is bollocks'
               }
             }
           }
-        RUBY
+        )
       end
-      let(:expected) do
+
+      describe 'with an error type with no corresponding value' do
+        let(:error_type) { 'stannum.valid' }
+        let(:expected)   { "no message defined for #{error_type.inspect}" }
+
+        it { expect(strategy.call(error_type)).to be == expected }
+      end
+
+      describe 'with an error type that corresponds to a basic string' do
+        let(:error_type) { 'stannum.invalid' }
+        let(:expected)   { 'is bollocks' }
+
+        it { expect(strategy.call(error_type)).to be == expected }
+      end
+    end
+  end
+
+  describe '#configuration' do
+    shared_examples 'should delegate to a loader' do
+      let(:configuration) do
         {
           en: {
             stannum: {
@@ -164,18 +197,37 @@ RSpec.describe Stannum::Messages::DefaultStrategy do
           }
         }
       end
+      let(:loader) do
+        instance_double(Stannum::Messages::DefaultLoader, call: configuration)
+      end
 
       before(:example) do
-        allow(IO).to receive(:read).with(filename).and_return(configuration)
+        allow(Stannum::Messages::DefaultLoader)
+          .to receive(:new)
+          .and_return(loader)
       end
 
-      it { expect(strategy.send(:configuration)).to be == expected }
-
-      it 'should read the configuration from the file' do
+      it 'should initialize a loader' do
         strategy.send :configuration
 
-        expect(IO).to have_received(:read).with(filename)
+        expect(Stannum::Messages::DefaultLoader)
+          .to have_received(:new)
+          .with(file_paths: strategy.load_paths, locale: strategy.locale)
       end
+
+      it 'should call the loader' do
+        strategy.send :configuration
+
+        expect(loader).to have_received(:call).with(no_args)
+      end
+
+      it { expect(strategy.send(:configuration)).to be == configuration }
+    end
+
+    include_examples 'should define private reader', :configuration
+
+    context 'when initialized with no arguments' do
+      include_examples 'should delegate to a loader'
     end
 
     context 'when initialized with configuration: value' do
@@ -189,128 +241,52 @@ RSpec.describe Stannum::Messages::DefaultStrategy do
       let(:constructor_options) do
         super().merge(configuration: custom_configuration)
       end
+      let(:loader) do
+        instance_double(Stannum::Messages::DefaultLoader, call: nil)
+      end
 
-      before(:example) { allow(IO).to receive(:read) }
+      before(:example) do
+        allow(Stannum::Messages::DefaultLoader)
+          .to receive(:new)
+          .and_return(loader)
+      end
 
       it { expect(strategy.send :configuration).to be == custom_configuration }
 
-      it 'should not read the configuration' do
+      it 'should not call the loader' do
         strategy.send :configuration
 
-        expect(IO).not_to have_received(:read)
+        expect(loader).not_to have_received(:call)
       end
     end
 
-    context 'when initialized with load_path: an empty array' do
-      let(:expected) { {} }
+    context 'when initialized with load_paths: an empty array' do
       let(:constructor_options) do
-        super().merge(load_path: [])
+        super().merge(load_paths: [])
       end
 
-      before(:example) { allow(IO).to receive(:read) }
-
-      it { expect(strategy.send :configuration).to be == expected }
-
-      it 'should not read the configuration' do
-        strategy.send :configuration
-
-        expect(IO).not_to have_received(:read)
-      end
+      include_examples 'should delegate to a loader'
     end
 
-    context 'when initialized with load_path: a Ruby file name' do
+    context 'when initialized with load_paths: a Ruby file name' do
       let(:filename) { '/path/to/config/locale.rb' }
-      let(:configuration) do
-        <<~RUBY
-          # frozen_string_literal: true
-
-          {
-            en: {
-              spec: {
-                message: 'is a message'
-              }
-            }
-          }
-        RUBY
-      end
-      let(:expected) do
-        {
-          en: {
-            spec: {
-              message: 'is a message'
-            }
-          }
-        }
-      end
       let(:constructor_options) do
-        super().merge(load_path: filename)
+        super().merge(load_paths: filename)
       end
 
-      before(:example) do
-        allow(IO).to receive(:read).with(filename).and_return(configuration)
-      end
-
-      it { expect(strategy.send(:configuration)).to be == expected }
-
-      it 'should read the configuration from the file' do
-        strategy.send :configuration
-
-        expect(IO).to have_received(:read).with(filename)
-      end
+      include_examples 'should delegate to a loader'
     end
 
-    context 'when initialized with load_path: a YAML file name' do
+    context 'when initialized with load_paths: a YAML file name' do
       let(:filename) { '/path/to/config/locale.yml' }
-      let(:configuration) do
-        <<~YAML
-          en:
-            spec:
-              message: 'is a message'
-        YAML
-      end
-      let(:expected) do
-        {
-          en: {
-            spec: {
-              message: 'is a message'
-            }
-          }
-        }
-      end
       let(:constructor_options) do
-        super().merge(load_path: filename)
+        super().merge(load_paths: filename)
       end
 
-      before(:example) do
-        allow(IO).to receive(:read).with(filename).and_return(configuration)
-      end
-
-      it { expect(strategy.send(:configuration)).to be == expected }
-
-      it 'should read the configuration from the file' do
-        strategy.send :configuration
-
-        expect(IO).to have_received(:read).with(filename)
-      end
+      include_examples 'should delegate to a loader'
     end
 
-    context 'when initialized with load_path: a file with invalid extname' do
-      let(:filename) { '/path/to/config/locale.exe' }
-      let(:constructor_options) do
-        super().merge(load_path: filename)
-      end
-      let(:error_message) do
-        "unable to load configuration file #{filename} with extension" \
-          " #{File.extname(filename)}"
-      end
-
-      it 'should raise an error' do
-        expect { strategy.send(:configuration) }
-          .to raise_error RuntimeError, error_message
-      end
-    end
-
-    context 'when initialized with load_path: an array of file names' do
+    context 'when initialized with load_paths: an array of file names' do
       let(:filenames) do
         [
           '/path/to/alpha.rb',
@@ -318,100 +294,57 @@ RSpec.describe Stannum::Messages::DefaultStrategy do
           '/path/to/gamma.yml'
         ]
       end
-      let(:configuration_alpha) do
-        <<~RUBY
-          # frozen_string_literal: true
-
-          {
-            en: {
-              spec: {
-                alpha: 'from alpha.rb',
-                beta:  'from alpha.rb'
-              }
-            }
-          }
-        RUBY
-      end
-      let(:configuration_beta) do
-        <<~YAML
-          en:
-            spec:
-              beta:  'from beta.yml'
-              gamma: 'from beta.yml'
-        YAML
-      end
-      let(:configuration_gamma) do
-        <<~YAML
-          en:
-            spec:
-              gamma: 'from gamma.yml'
-        YAML
-      end
-      let(:configurations) do
-        [
-          configuration_alpha,
-          configuration_beta,
-          configuration_gamma
-        ]
-      end
-      let(:expected) do
-        {
-          en: {
-            spec: {
-              alpha: 'from alpha.rb',
-              beta:  'from beta.yml',
-              gamma: 'from gamma.yml'
-            }
-          }
-        }
-      end
       let(:constructor_options) do
-        super().merge(load_path: filenames)
+        super().merge(load_paths: filenames)
       end
 
-      before(:example) do
-        filenames.zip(configurations).each do |filename, configuration|
-          allow(IO).to receive(:read).with(filename).and_return(configuration)
-        end
-      end
+      include_examples 'should delegate to a loader'
+    end
 
-      it { expect(strategy.send(:configuration)).to be == expected }
+    context 'when initialized with locale: value' do
+      let(:locale)              { 'en-gb' }
+      let(:constructor_options) { super().merge(locale: locale) }
 
-      it 'should read the configuration from each file', :aggregate_failures do
-        strategy.send :configuration
-
-        filenames.each do |filename|
-          expect(IO).to have_received(:read).with(filename)
-        end
-      end
+      include_examples 'should delegate to a loader'
     end
   end
 
-  describe '#load_path' do
-    let(:expected) { [File.join(Stannum::Messages.locales_path, 'en.rb')] }
+  describe '#locale' do
+    include_examples 'should define reader', :locale, 'en'
 
-    include_examples 'should define reader', :load_path, -> { be == expected }
+    context 'when initialized with locale: value' do
+      let(:locale)              { 'en-gb' }
+      let(:constructor_options) { super().merge(locale: locale) }
 
-    context 'when initialized with load_path: an empty Array' do
-      let(:load_path) { [] }
+      it { expect(strategy.locale).to be == locale }
+    end
+  end
+
+  describe '#load_paths' do
+    let(:expected) { [Stannum::Messages.locales_path] }
+
+    include_examples 'should define reader', :load_paths, -> { be == expected }
+
+    context 'when initialized with load_paths: an empty Array' do
+      let(:load_paths) { [] }
       let(:constructor_options) do
-        super().merge(load_path: load_path)
+        super().merge(load_paths: load_paths)
       end
 
-      it { expect(strategy.load_path).to be == load_path }
+      it { expect(strategy.load_paths).to be == load_paths }
     end
 
-    context 'when initialized with load_path: a filename' do
-      let(:load_path) { '/path/to/config/locales.rb' }
+    context 'when initialized with load_paths: a filename' do
+      let(:load_paths) { '/path/to/config/locales.rb' }
       let(:constructor_options) do
-        super().merge(load_path: load_path)
+        super().merge(load_paths: load_paths)
       end
 
-      it { expect(strategy.load_path).to be == [load_path] }
+      it { expect(strategy.load_paths).to be == [load_paths] }
     end
 
-    context 'when initialized with load_path: an array of filenames' do
-      let(:load_path) do
+    context 'when initialized with load_paths: an array of filenames' do
+      let(:load_paths) do
         [
           '/path/to/config/de.rb',
           '/path/to/config/en.rb',
@@ -419,43 +352,16 @@ RSpec.describe Stannum::Messages::DefaultStrategy do
         ]
       end
       let(:constructor_options) do
-        super().merge(load_path: load_path)
+        super().merge(load_paths: load_paths)
       end
 
-      it { expect(strategy.load_path).to be == load_path }
+      it { expect(strategy.load_paths).to be == load_paths }
     end
   end
 
   describe '#reload_configuration!' do
-    let(:constructor_options) do
-      super().merge(configuration: { en: {} })
-    end
-
-    it 'should define the method' do
-      expect(strategy).to respond_to(:reload_configuration!).with(0).arguments
-    end
-
-    it { expect(strategy.reload_configuration!).to be strategy }
-
-    context 'when initialized with no arguments' do
-      let(:filename) { File.join(Stannum::Messages.locales_path, 'en.rb') }
+    shared_examples 'should delegate to a loader' do
       let(:configuration) do
-        <<~RUBY
-          # frozen_string_literal: true
-
-          {
-            en: {
-              stannum: {
-                constraints: {
-                  invalid: 'is invalid',
-                  valid:   'is valid'
-                }
-              }
-            }
-          }
-        RUBY
-      end
-      let(:expected) do
         {
           en: {
             stannum: {
@@ -467,104 +373,78 @@ RSpec.describe Stannum::Messages::DefaultStrategy do
           }
         }
       end
+      let(:loader) do
+        instance_double(Stannum::Messages::DefaultLoader, call: configuration)
+      end
 
       before(:example) do
-        allow(IO).to receive(:read).with(filename).and_return(configuration)
+        allow(Stannum::Messages::DefaultLoader)
+          .to receive(:new)
+          .and_return(loader)
+      end
+
+      it 'should initialize a loader' do
+        strategy.reload_configuration!
+
+        expect(Stannum::Messages::DefaultLoader)
+          .to have_received(:new)
+          .with(file_paths: strategy.load_paths, locale: strategy.locale)
+      end
+
+      it 'should call the loader' do
+        strategy.reload_configuration!
+
+        expect(loader).to have_received(:call).with(no_args)
       end
 
       it 'should update the configuration' do
-        expect { strategy.reload_configuration! }
-          .to change(strategy, :configuration)
-          .to be == expected
+        strategy.reload_configuration!
+
+        expect(strategy.send(:configuration)).to be == configuration
       end
     end
 
-    context 'when initialized with load_path: an empty array' do
-      let(:expected) { {} }
+    let(:constructor_options) do
+      super().merge(configuration: { en: {} })
+    end
+
+    it 'should define the method' do
+      expect(strategy).to respond_to(:reload_configuration!).with(0).arguments
+    end
+
+    it { expect(strategy.reload_configuration!).to be strategy }
+
+    context 'when initialized with no arguments' do
+      include_examples 'should delegate to a loader'
+    end
+
+    context 'when initialized with load_paths: an empty array' do
       let(:constructor_options) do
-        super().merge(load_path: [])
+        super().merge(load_paths: [])
       end
 
-      it 'should update the configuration' do
-        expect { strategy.reload_configuration! }
-          .to change(strategy, :configuration)
-          .to be == expected
-      end
+      include_examples 'should delegate to a loader'
     end
 
-    context 'when initialized with load_path: a Ruby file name' do
+    context 'when initialized with load_paths: a Ruby file name' do
       let(:filename) { '/path/to/config/locale.rb' }
-      let(:configuration) do
-        <<~RUBY
-          # frozen_string_literal: true
-
-          {
-            en: {
-              spec: {
-                message: 'is a message'
-              }
-            }
-          }
-        RUBY
-      end
-      let(:expected) do
-        {
-          en: {
-            spec: {
-              message: 'is a message'
-            }
-          }
-        }
-      end
       let(:constructor_options) do
-        super().merge(load_path: filename)
+        super().merge(load_paths: filename)
       end
 
-      before(:example) do
-        allow(IO).to receive(:read).with(filename).and_return(configuration)
-      end
-
-      it 'should update the configuration' do
-        expect { strategy.reload_configuration! }
-          .to change(strategy, :configuration)
-          .to be == expected
-      end
+      include_examples 'should delegate to a loader'
     end
 
-    context 'when initialized with load_path: a YAML file name' do
+    context 'when initialized with load_paths: a YAML file name' do
       let(:filename) { '/path/to/config/locale.yml' }
-      let(:configuration) do
-        <<~YAML
-          en:
-            spec:
-              message: 'is a message'
-        YAML
-      end
-      let(:expected) do
-        {
-          en: {
-            spec: {
-              message: 'is a message'
-            }
-          }
-        }
-      end
       let(:constructor_options) do
-        super().merge(load_path: filename)
+        super().merge(load_paths: filename)
       end
 
-      before(:example) do
-        allow(IO).to receive(:read).with(filename).and_return(configuration)
-      end
-
-      it 'should update the configuration' do
-        expect { strategy.reload_configuration! }
-          .to change(strategy, :configuration)
-          .to be == expected
-      end
+      include_examples 'should delegate to a loader'
     end
 
-    context 'when initialized with load_path: an array of file names' do
+    context 'when initialized with load_paths: an array of file names' do
       let(:filenames) do
         [
           '/path/to/alpha.rb',
@@ -572,68 +452,18 @@ RSpec.describe Stannum::Messages::DefaultStrategy do
           '/path/to/gamma.yml'
         ]
       end
-      let(:configuration_alpha) do
-        <<~RUBY
-          # frozen_string_literal: true
-
-          {
-            en: {
-              spec: {
-                alpha: 'from alpha.rb',
-                beta:  'from alpha.rb'
-              }
-            }
-          }
-        RUBY
-      end
-      let(:configuration_beta) do
-        <<~YAML
-          en:
-            spec:
-              beta:  'from beta.yml'
-              gamma: 'from beta.yml'
-        YAML
-      end
-      let(:configuration_gamma) do
-        <<~YAML
-          en:
-            spec:
-              gamma: 'from gamma.yml'
-        YAML
-      end
-      let(:configurations) do
-        [
-          configuration_alpha,
-          configuration_beta,
-          configuration_gamma
-        ]
-      end
-      let(:expected) do
-        {
-          en: {
-            spec: {
-              alpha: 'from alpha.rb',
-              beta:  'from beta.yml',
-              gamma: 'from gamma.yml'
-            }
-          }
-        }
-      end
       let(:constructor_options) do
-        super().merge(load_path: filenames)
+        super().merge(load_paths: filenames)
       end
 
-      before(:example) do
-        filenames.zip(configurations).each do |filename, configuration|
-          allow(IO).to receive(:read).with(filename).and_return(configuration)
-        end
-      end
+      include_examples 'should delegate to a loader'
+    end
 
-      it 'should update the configuration' do
-        expect { strategy.reload_configuration! }
-          .to change(strategy, :configuration)
-          .to be == expected
-      end
+    context 'when initialized with locale: value' do
+      let(:locale)              { 'en-gb' }
+      let(:constructor_options) { super().merge(locale: locale) }
+
+      include_examples 'should delegate to a loader'
     end
   end
 end

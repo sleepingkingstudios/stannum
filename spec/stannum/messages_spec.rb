@@ -12,14 +12,19 @@ RSpec.describe Stannum::Messages do
   end
 
   describe '.strategy' do
-    let(:filename) { File.join(described_class.locales_path, 'en.rb') }
+    let(:filename) { File.join(described_class.locales_path) }
 
     include_examples 'should define class reader',
       :strategy,
       -> { an_instance_of(Stannum::Messages::DefaultStrategy) }
 
-    it 'should configure the default strategy' do
-      expect(described_class.strategy.send(:load_path)).to be == [filename]
+    it 'should configure the default strategy load paths' do
+      expect(described_class.strategy.send(:load_paths))
+        .to be == Stannum::Messages::DefaultStrategy::DEFAULT_LOAD_PATHS
+    end
+
+    it 'should configure the default strategy locale' do
+      expect(described_class.strategy.send(:locale)).to be == 'en'
     end
   end
 

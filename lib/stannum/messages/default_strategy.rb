@@ -9,16 +9,28 @@ require 'stannum/messages'
 module Stannum::Messages
   # Strategy to generate error messages from gem configuration.
   class DefaultStrategy
+    # The default directories from which to load configured error messages.
+    DEFAULT_LOAD_PATHS = [Stannum::Messages.locales_path].freeze
+
+    # @return [Array<String>] The directories from which to load configured
+    #   error messages.
+    def self.load_paths
+      @load_paths ||= DEFAULT_LOAD_PATHS.dup
+    end
+
     # @param configuration [Hash{Symbol, Object}] The configured messages.
-    # @param load_path [Array<String>] The filenames for the configuration
-    #   file(s).
-    def initialize(configuration: nil, load_path: nil)
-      @load_path     = load_path.nil? ? [default_filename] : Array(load_path)
+    # @param load_paths [Array<String>] The directories from which to load
+    #   configured error messages.
+    # @param locale [String] The locale used to load and scope configured
+    #   messages.
+    def initialize(configuration: nil, load_paths: nil, locale: 'en')
+      @load_paths    = Array(load_paths) unless load_paths.nil?
+      @locale        = locale
       @configuration = configuration
     end
 
-    # @return [Array<String>] the filenames for the configuration file(s).
-    attr_reader :load_path
+    # @return [String] The locale used to load and scope configured messages.
+    attr_reader :locale
 
     # @param error_type [String] The qualified path to the configured error
     #   message.
@@ -32,6 +44,12 @@ module Stannum::Messages
       message = generate_message(error_type, options)
 
       interpolate_message(message, options)
+    end
+
+    # @return [Array<String>] The directories from which to load configured
+    #   error messages.
+    def load_paths
+      @load_paths || self.class.load_paths
     end
 
     # Reloads the configuration from the configured load_path.
@@ -52,23 +70,9 @@ module Stannum::Messages
       @configuration ||= load_configuration
     end
 
-    def deep_merge(source, target)
-      hsh = tools.hash_tools.deep_dup(source)
-
-      target.each do |key, value|
-        hsh[key] = value.is_a?(Hash) ? deep_merge(hsh[key] || {}, value) : value
-      end
-
-      hsh
-    end
-
-    def default_filename
-      File.join(Stannum::Messages.locales_path, 'en.rb')
-    end
-
     def generate_message(error_type, options)
       path = error_type.to_s.split('.').map(&:intern)
-      path.unshift(:en)
+      path.unshift(locale.intern)
 
       message = configuration.dig(*path)
 
@@ -90,35 +94,12 @@ module Stannum::Messages
     end
 
     def load_configuration
-      load_path.reduce({}) do |config, filename|
-        deep_merge(config, read_configuration(filename))
-      end
-    end
-
-    def read_configuration(filename)
-      case File.extname(filename)
-      when '.rb'
-        read_ruby_file(filename)
-      when '.yml'
-        read_yaml_file(filename)
-      else
-        raise "unable to load configuration file #{filename} with extension" \
-              " #{File.extname(filename)}"
-      end
-    end
-
-    def read_ruby_file(filename)
-      eval(File.read(filename), binding, filename) # rubocop:disable Security/Eval
-    end
-
-    def read_yaml_file(filename)
-      tools.hash_tools.convert_keys_to_symbols(
-        YAML.safe_load(File.read(filename))
-      )
-    end
-
-    def tools
-      SleepingKingStudios::Tools::Toolbelt.instance
+      Stannum::Messages::DefaultLoader
+        .new(
+          file_paths: load_paths,
+          locale:     locale
+        )
+        .call
     end
   end
 end

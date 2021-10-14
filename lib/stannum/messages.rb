@@ -5,6 +5,7 @@ require 'stannum'
 module Stannum
   # Namespace for generating messages for Stannum::Errors.
   module Messages
+    autoload :DefaultLoader,   'stannum/messages/default_loader'
     autoload :DefaultStrategy, 'stannum/messages/default_strategy'
 
     # @return [String] the absolute path to the configured locales.
