@@ -156,8 +156,12 @@ module Stannum::Constraints
     end
 
     # @overload matches?(actual)
+    #   Checks that the given object matches the constraint.
     #
-    # Checks that the given object matches the constraint.
+    #   @param actual [Object] The object to match.
+    #
+    #   @return [true, false] true if the object matches the expected properties
+    #     or behavior, otherwise false.
     #
     # @example Checking a matching object.
     #   constraint = CustomConstraint.new
@@ -170,11 +174,6 @@ module Stannum::Constraints
     #   object     = NonMatchingObject.new
     #
     #   constraint.matches?(object) #=> false
-    #
-    # @param actual [Object] The object to match.
-    #
-    # @return [true, false] true if the object matches the expected properties
-    #   or behavior, otherwise false.
     #
     # @see #does_not_match?
     def matches?(_actual)
