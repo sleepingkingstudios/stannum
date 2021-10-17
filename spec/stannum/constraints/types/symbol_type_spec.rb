@@ -51,7 +51,14 @@ RSpec.describe Stannum::Constraints::Types::SymbolType do
     end
     let(:matching) { :symbol }
     let(:expected_messages) do
-      expected_errors.merge(message: 'is not a Symbol')
+      message =
+        if constraint.required?
+          'is not a Symbol'
+        else
+          'is not a Symbol or nil'
+        end
+
+      expected_errors.merge(message: message)
     end
 
     include_examples 'should match the type constraint'
@@ -67,7 +74,14 @@ RSpec.describe Stannum::Constraints::Types::SymbolType do
     end
     let(:matching) { :symbol }
     let(:expected_messages) do
-      expected_errors.merge(message: 'is a Symbol')
+      message =
+        if constraint.required?
+          'is a Symbol'
+        else
+          'is a Symbol or nil'
+        end
+
+      expected_errors.merge(message: message)
     end
 
     include_examples 'should match the negated type constraint'

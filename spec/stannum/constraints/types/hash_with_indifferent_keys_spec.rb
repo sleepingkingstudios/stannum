@@ -83,7 +83,14 @@ RSpec.describe Stannum::Constraints::Types::HashWithIndifferentKeys do
     end
     let(:matching) { {} }
     let(:expected_messages) do
-      expected_errors.merge(message: 'is not a Hash')
+      message =
+        if constraint.required?
+          'is not a Hash'
+        else
+          'is not a Hash or nil'
+        end
+
+      expected_errors.merge(message: message)
     end
 
     include_examples 'should match the type constraint'
@@ -312,7 +319,14 @@ RSpec.describe Stannum::Constraints::Types::HashWithIndifferentKeys do
     end
     let(:matching) { {} }
     let(:expected_messages) do
-      expected_errors.merge(message: 'is a Hash')
+      message =
+        if constraint.required?
+          'is a Hash'
+        else
+          'is a Hash or nil'
+        end
+
+      expected_errors.merge(message: message)
     end
 
     include_examples 'should match the negated type constraint'

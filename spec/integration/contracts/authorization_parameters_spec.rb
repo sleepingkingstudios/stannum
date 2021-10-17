@@ -370,7 +370,7 @@ RSpec.describe Spec::AuthorizationParameters do
           },
           {
             data:    { required: false, type: Proc },
-            message: 'is a Proc',
+            message: 'is a Proc or nil',
             path:    %i[block],
             type:    Stannum::Constraints::Type::NEGATED_TYPE
           }
@@ -442,7 +442,7 @@ RSpec.describe Spec::AuthorizationParameters do
           },
           {
             data:    { required: false, type: Proc },
-            message: 'is a Proc',
+            message: 'is a Proc or nil',
             path:    %i[block],
             type:    Stannum::Constraints::Type::NEGATED_TYPE
           }
@@ -525,7 +525,7 @@ RSpec.describe Spec::AuthorizationParameters do
           },
           {
             data:    { required: false, type: Proc },
-            message: 'is a Proc',
+            message: 'is a Proc or nil',
             path:    %i[block],
             type:    Stannum::Constraints::Type::NEGATED_TYPE
           }

@@ -51,7 +51,14 @@ RSpec.describe Stannum::Constraints::Types::ProcType do
     end
     let(:matching) { -> {} }
     let(:expected_messages) do
-      expected_errors.merge(message: 'is not a Proc')
+      message =
+        if constraint.required?
+          'is not a Proc'
+        else
+          'is not a Proc or nil'
+        end
+
+      expected_errors.merge(message: message)
     end
 
     include_examples 'should match the type constraint'
@@ -67,7 +74,14 @@ RSpec.describe Stannum::Constraints::Types::ProcType do
     end
     let(:matching) { -> {} }
     let(:expected_messages) do
-      expected_errors.merge(message: 'is a Proc')
+      message =
+        if constraint.required?
+          'is a Proc'
+        else
+          'is a Proc or nil'
+        end
+
+      expected_errors.merge(message: message)
     end
 
     include_examples 'should match the negated type constraint'

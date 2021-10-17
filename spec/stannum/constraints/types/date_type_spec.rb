@@ -51,7 +51,14 @@ RSpec.describe Stannum::Constraints::Types::DateType do
     end
     let(:matching) { Date.new }
     let(:expected_messages) do
-      expected_errors.merge(message: 'is not a Date')
+      message =
+        if constraint.required?
+          'is not a Date'
+        else
+          'is not a Date or nil'
+        end
+
+      expected_errors.merge(message: message)
     end
 
     include_examples 'should match the type constraint'
@@ -67,7 +74,14 @@ RSpec.describe Stannum::Constraints::Types::DateType do
     end
     let(:matching) { Date.new }
     let(:expected_messages) do
-      expected_errors.merge(message: 'is a Date')
+      message =
+        if constraint.required?
+          'is a Date'
+        else
+          'is a Date or nil'
+        end
+
+      expected_errors.merge(message: message)
     end
 
     include_examples 'should match the negated type constraint'
