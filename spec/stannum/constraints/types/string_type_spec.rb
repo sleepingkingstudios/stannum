@@ -51,7 +51,14 @@ RSpec.describe Stannum::Constraints::Types::StringType do
     end
     let(:matching) { 'string' }
     let(:expected_messages) do
-      expected_errors.merge(message: 'is not a String')
+      message =
+        if constraint.required?
+          'is not a String'
+        else
+          'is not a String or nil'
+        end
+
+      expected_errors.merge(message: message)
     end
 
     include_examples 'should match the type constraint'
@@ -67,7 +74,14 @@ RSpec.describe Stannum::Constraints::Types::StringType do
     end
     let(:matching) { 'string' }
     let(:expected_messages) do
-      expected_errors.merge(message: 'is a String')
+      message =
+        if constraint.required?
+          'is a String'
+        else
+          'is a String or nil'
+        end
+
+      expected_errors.merge(message: message)
     end
 
     include_examples 'should match the negated type constraint'

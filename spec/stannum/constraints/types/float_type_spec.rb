@@ -51,7 +51,14 @@ RSpec.describe Stannum::Constraints::Types::FloatType do
     end
     let(:matching) { 1.0 }
     let(:expected_messages) do
-      expected_errors.merge(message: 'is not a Float')
+      message =
+        if constraint.required?
+          'is not a Float'
+        else
+          'is not a Float or nil'
+        end
+
+      expected_errors.merge(message: message)
     end
 
     include_examples 'should match the type constraint'
@@ -67,7 +74,14 @@ RSpec.describe Stannum::Constraints::Types::FloatType do
     end
     let(:matching) { 1.0 }
     let(:expected_messages) do
-      expected_errors.merge(message: 'is a Float')
+      message =
+        if constraint.required?
+          'is a Float'
+        else
+          'is a Float or nil'
+        end
+
+      expected_errors.merge(message: message)
     end
 
     include_examples 'should match the negated type constraint'

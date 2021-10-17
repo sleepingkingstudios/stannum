@@ -23,9 +23,21 @@
         is_not_equal_to: 'is not equal to',
         is_not_in_list: 'is not in the list',
         is_not_in_union: 'does not match any of the constraints',
-        is_not_type: ->(_type, data) { "is not a #{data[:type]}" },
+        is_not_type: lambda do |_type, data|
+          if data[:required]
+            "is not a #{data[:type]}"
+          else
+            "is not a #{data[:type]} or nil"
+          end
+        end,
         is_not_value: 'is not the expected value',
-        is_type: ->(_type, data) { "is a #{data[:type]}" },
+        is_type: lambda do |_type, data|
+          if data[:required]
+            "is a #{data[:type]}"
+          else
+            "is a #{data[:type]} or nil"
+          end
+        end,
         is_value: 'is the expected value',
         parameters: {
           extra_arguments: 'has extra arguments',

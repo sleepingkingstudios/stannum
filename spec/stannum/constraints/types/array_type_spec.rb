@@ -118,7 +118,14 @@ RSpec.describe Stannum::Constraints::Types::ArrayType do
     end
     let(:matching) { [] }
     let(:expected_messages) do
-      expected_errors.merge(message: 'is not a Array')
+      message =
+        if constraint.required?
+          'is not a Array'
+        else
+          'is not a Array or nil'
+        end
+
+      expected_errors.merge(message: message)
     end
 
     include_examples 'should match the type constraint'
@@ -240,7 +247,14 @@ RSpec.describe Stannum::Constraints::Types::ArrayType do
     end
     let(:matching) { [] }
     let(:expected_messages) do
-      expected_errors.merge(message: 'is a Array')
+      message =
+        if constraint.required?
+          'is a Array'
+        else
+          'is a Array or nil'
+        end
+
+      expected_errors.merge(message: message)
     end
 
     include_examples 'should match the negated type constraint'

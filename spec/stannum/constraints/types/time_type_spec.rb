@@ -51,7 +51,14 @@ RSpec.describe Stannum::Constraints::Types::TimeType do
     end
     let(:matching) { Time.new }
     let(:expected_messages) do
-      expected_errors.merge(message: 'is not a Time')
+      message =
+        if constraint.required?
+          'is not a Time'
+        else
+          'is not a Time or nil'
+        end
+
+      expected_errors.merge(message: message)
     end
 
     include_examples 'should match the type constraint'
@@ -67,7 +74,14 @@ RSpec.describe Stannum::Constraints::Types::TimeType do
     end
     let(:matching) { Time.new }
     let(:expected_messages) do
-      expected_errors.merge(message: 'is a Time')
+      message =
+        if constraint.required?
+          'is a Time'
+        else
+          'is a Time or nil'
+        end
+
+      expected_errors.merge(message: message)
     end
 
     include_examples 'should match the negated type constraint'

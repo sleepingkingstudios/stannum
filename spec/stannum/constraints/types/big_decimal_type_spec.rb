@@ -51,7 +51,14 @@ RSpec.describe Stannum::Constraints::Types::BigDecimalType do
     end
     let(:matching) { BigDecimal('0.0') }
     let(:expected_messages) do
-      expected_errors.merge(message: 'is not a BigDecimal')
+      message =
+        if constraint.required?
+          'is not a BigDecimal'
+        else
+          'is not a BigDecimal or nil'
+        end
+
+      expected_errors.merge(message: message)
     end
 
     include_examples 'should match the type constraint'
@@ -67,7 +74,14 @@ RSpec.describe Stannum::Constraints::Types::BigDecimalType do
     end
     let(:matching) { BigDecimal('0.0') }
     let(:expected_messages) do
-      expected_errors.merge(message: 'is a BigDecimal')
+      message =
+        if constraint.required?
+          'is a BigDecimal'
+        else
+          'is a BigDecimal or nil'
+        end
+
+      expected_errors.merge(message: message)
     end
 
     include_examples 'should match the negated type constraint'

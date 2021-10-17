@@ -51,7 +51,14 @@ RSpec.describe Stannum::Constraints::Types::IntegerType do
     end
     let(:matching) { 1 }
     let(:expected_messages) do
-      expected_errors.merge(message: 'is not a Integer')
+      message =
+        if constraint.required?
+          'is not a Integer'
+        else
+          'is not a Integer or nil'
+        end
+
+      expected_errors.merge(message: message)
     end
 
     include_examples 'should match the type constraint'
@@ -67,7 +74,14 @@ RSpec.describe Stannum::Constraints::Types::IntegerType do
     end
     let(:matching) { 1 }
     let(:expected_messages) do
-      expected_errors.merge(message: 'is a Integer')
+      message =
+        if constraint.required?
+          'is a Integer'
+        else
+          'is a Integer or nil'
+        end
+
+      expected_errors.merge(message: message)
     end
 
     include_examples 'should match the negated type constraint'
