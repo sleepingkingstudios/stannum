@@ -173,21 +173,18 @@ RSpec.describe Spec::AuthorizationParameters do
         )
       end
       let(:expected_errors) do
-        contract   = Stannum::Contracts::Parameters::ArgumentsContract
-        error_type = contract::EXTRA_ARGUMENTS_TYPE
-
         [
           {
             data:    { value: 'dry-run' },
             message: 'has extra arguments',
             path:    [:arguments, 2],
-            type:    error_type
+            type:    Stannum::Constraints::Parameters::ExtraArguments::TYPE
           },
           {
             data:    { value: 'verbose' },
             message: 'has extra arguments',
             path:    [:arguments, 3],
-            type:    error_type
+            type:    Stannum::Constraints::Parameters::ExtraArguments::TYPE
           }
         ]
       end
@@ -382,6 +379,8 @@ RSpec.describe Spec::AuthorizationParameters do
     describe 'with empty parameters' do
       let(:actual) { { arguments: [], keywords: {} } }
       let(:expected_errors) do
+        extra_arguments_type =
+          Stannum::Constraints::Parameters::ExtraArguments::NEGATED_TYPE
         extra_keywords_type =
           Stannum::Constraints::Parameters::ExtraKeywords::NEGATED_TYPE
 
@@ -412,9 +411,9 @@ RSpec.describe Spec::AuthorizationParameters do
           },
           {
             data:    {},
-            message: 'does not have extra items',
+            message: 'does not have extra arguments',
             path:    %i[arguments],
-            type:    Stannum::Constraints::Tuples::ExtraItems::NEGATED_TYPE
+            type:    extra_arguments_type
           },
           {
             data:    { required: true, type: Class },
@@ -456,6 +455,8 @@ RSpec.describe Spec::AuthorizationParameters do
 
     describe 'with valid parameters' do
       let(:expected_errors) do
+        extra_arguments_type =
+          Stannum::Constraints::Parameters::ExtraArguments::NEGATED_TYPE
         extra_keywords_type =
           Stannum::Constraints::Parameters::ExtraKeywords::NEGATED_TYPE
 
@@ -486,9 +487,9 @@ RSpec.describe Spec::AuthorizationParameters do
           },
           {
             data:    {},
-            message: 'does not have extra items',
+            message: 'does not have extra arguments',
             path:    %i[arguments],
-            type:    Stannum::Constraints::Tuples::ExtraItems::NEGATED_TYPE
+            type:    extra_arguments_type
           },
           {
             data:    { required: true, type: Symbol },

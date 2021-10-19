@@ -42,6 +42,7 @@
         parameters: {
           extra_arguments: 'has extra arguments',
           extra_keywords: 'has extra keywords',
+          no_extra_arguments: 'does not have extra arguments',
           no_extra_keywords: 'does not have extra keywords'
         },
         tuples: {

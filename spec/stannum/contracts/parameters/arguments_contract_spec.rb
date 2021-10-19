@@ -125,12 +125,6 @@ RSpec.describe Stannum::Contracts::Parameters::ArgumentsContract do
   let(:constructor_options) { {} }
   let(:expected_options)    { { allow_extra_items: false } }
 
-  describe '::EXTRA_ARGUMENTS_TYPE' do
-    include_examples 'should define immutable constant',
-      :EXTRA_ARGUMENTS_TYPE,
-      'stannum.constraints.parameters.extra_arguments'
-  end
-
   describe '::UNDEFINED' do
     include_examples 'should define immutable constant', :UNDEFINED
   end

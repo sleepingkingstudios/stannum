@@ -1,5 +1,6 @@
 # frozen_string_literal: true
 
+require 'stannum/constraints/parameters/extra_arguments'
 require 'stannum/contracts/parameters'
 require 'stannum/support/coercion'
 
@@ -8,9 +9,6 @@ module Stannum::Contracts::Parameters
   #
   # An ArgumentsContract constrains the arguments given for a method.
   class ArgumentsContract < Stannum::Contracts::TupleContract
-    # The :type of the error generated for extra arguments.
-    EXTRA_ARGUMENTS_TYPE = 'stannum.constraints.parameters.extra_arguments'
-
     # Value used when arguments array does not have a value for the given index.
     UNDEFINED = Object.new.freeze
 
@@ -154,10 +152,7 @@ module Stannum::Contracts::Parameters
       count = -> { expected_count }
 
       @variadic_constraint = Stannum::Constraints::Delegator.new(
-        Stannum::Constraints::Tuples::ExtraItems.new(
-          count,
-          type: EXTRA_ARGUMENTS_TYPE
-        )
+        Stannum::Constraints::Parameters::ExtraArguments.new(count)
       )
 
       add_constraint @variadic_constraint
