@@ -4,6 +4,7 @@
 
 ### Constraints
 
+- Implemented `Stannum::Constraints::Parameters::ExtraArguments`
 - Implemented `Stannum::Constraints::Parameters::ExtraKeywords`
 
 ## 0.1.0

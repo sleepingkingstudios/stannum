@@ -314,7 +314,7 @@ module Stannum::RSpec
 
     def extra_parameter?
       extra_arguments_type =
-        Stannum::Contracts::Parameters::ArgumentsContract::EXTRA_ARGUMENTS_TYPE
+        Stannum::Constraints::Parameters::ExtraArguments::TYPE
       extra_keywords_type =
         Stannum::Constraints::Parameters::ExtraKeywords::TYPE
 
