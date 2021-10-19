@@ -303,21 +303,18 @@ RSpec.describe Spec::AuthorizationParameters do
         )
       end
       let(:expected_errors) do
-        contract   = Stannum::Contracts::Parameters::KeywordsContract
-        error_type = contract::EXTRA_KEYWORDS_TYPE
-
         [
           {
             data:    { value: '12345' },
             message: 'has extra keywords',
             path:    %i[keywords secret],
-            type:    error_type
+            type:    Stannum::Constraints::Parameters::ExtraKeywords::TYPE
           },
           {
             data:    { value: 'bGV0bWVpbg==' },
             message: 'has extra keywords',
             path:    %i[keywords token],
-            type:    error_type
+            type:    Stannum::Constraints::Parameters::ExtraKeywords::TYPE
           }
         ]
       end
@@ -385,6 +382,9 @@ RSpec.describe Spec::AuthorizationParameters do
     describe 'with empty parameters' do
       let(:actual) { { arguments: [], keywords: {} } }
       let(:expected_errors) do
+        extra_keywords_type =
+          Stannum::Constraints::Parameters::ExtraKeywords::NEGATED_TYPE
+
         [
           {
             data:    { allow_empty: true, required: true, type: Hash },
@@ -430,9 +430,9 @@ RSpec.describe Spec::AuthorizationParameters do
           },
           {
             data:    {},
-            message: 'does not have extra keys',
+            message: 'does not have extra keywords',
             path:    %i[keywords],
-            type:    Stannum::Constraints::Hashes::ExtraKeys::NEGATED_TYPE
+            type:    extra_keywords_type
           },
           {
             data:    { required: true, type: String },
@@ -456,6 +456,9 @@ RSpec.describe Spec::AuthorizationParameters do
 
     describe 'with valid parameters' do
       let(:expected_errors) do
+        extra_keywords_type =
+          Stannum::Constraints::Parameters::ExtraKeywords::NEGATED_TYPE
+
         [
           {
             data:    { allow_empty: true, required: true, type: Hash },
@@ -507,9 +510,9 @@ RSpec.describe Spec::AuthorizationParameters do
           },
           {
             data:    {},
-            message: 'does not have extra keys',
+            message: 'does not have extra keywords',
             path:    %i[keywords],
-            type:    Stannum::Constraints::Hashes::ExtraKeys::NEGATED_TYPE
+            type:    extra_keywords_type
           },
           {
             data:    { required: true, type: String },

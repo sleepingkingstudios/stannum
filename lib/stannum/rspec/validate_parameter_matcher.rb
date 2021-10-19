@@ -6,6 +6,7 @@ rescue NameError
   # Optional dependency.
 end
 
+require 'stannum/constraints/parameters/extra_keywords'
 require 'stannum/rspec'
 require 'stannum/support/coercion'
 
@@ -315,7 +316,7 @@ module Stannum::RSpec
       extra_arguments_type =
         Stannum::Contracts::Parameters::ArgumentsContract::EXTRA_ARGUMENTS_TYPE
       extra_keywords_type =
-        Stannum::Contracts::Parameters::KeywordsContract::EXTRA_KEYWORDS_TYPE
+        Stannum::Constraints::Parameters::ExtraKeywords::TYPE
 
       return false unless scoped_errors(indexed: true).any? do |error|
         error[:type] == extra_arguments_type ||

@@ -15,6 +15,7 @@ module Stannum
     autoload :Hashes,     'stannum/constraints/hashes'
     autoload :Identity,   'stannum/constraints/identity'
     autoload :Nothing,    'stannum/constraints/nothing'
+    autoload :Parameters, 'stannum/constraints/parameters'
     autoload :Presence,   'stannum/constraints/presence'
     autoload :Signature,  'stannum/constraints/signature'
     autoload :Signatures, 'stannum/constraints/signatures'
