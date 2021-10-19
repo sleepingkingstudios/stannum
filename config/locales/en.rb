@@ -41,7 +41,8 @@
         is_value: 'is the expected value',
         parameters: {
           extra_arguments: 'has extra arguments',
-          extra_keywords: 'has extra keywords'
+          extra_keywords: 'has extra keywords',
+          no_extra_keywords: 'does not have extra keywords'
         },
         tuples: {
           extra_items: 'has extra items',

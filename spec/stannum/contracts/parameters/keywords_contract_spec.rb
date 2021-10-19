@@ -143,12 +143,6 @@ RSpec.describe Stannum::Contracts::Parameters::KeywordsContract do
     }
   end
 
-  describe '::EXTRA_KEYWORDS_TYPE' do
-    include_examples 'should define immutable constant',
-      :EXTRA_KEYWORDS_TYPE,
-      'stannum.constraints.parameters.extra_keywords'
-  end
-
   describe '::UNDEFINED' do
     include_examples 'should define immutable constant', :UNDEFINED
   end

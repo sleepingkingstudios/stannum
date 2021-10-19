@@ -1,5 +1,6 @@
 # frozen_string_literal: true
 
+require 'stannum/constraints/parameters/extra_keywords'
 require 'stannum/contracts/indifferent_hash_contract'
 require 'stannum/contracts/parameters'
 
@@ -8,9 +9,6 @@ module Stannum::Contracts::Parameters
   #
   # A KeywordsContract constrains the keywords given for a method.
   class KeywordsContract < Stannum::Contracts::IndifferentHashContract
-    # The :type of the error generated for extra keywords.
-    EXTRA_KEYWORDS_TYPE = 'stannum.constraints.parameters.extra_keywords'
-
     # Value used when keywords hash does not have a value for the given key.
     UNDEFINED = Object.new.freeze
 
@@ -156,10 +154,7 @@ module Stannum::Contracts::Parameters
       keys = -> { expected_keys }
 
       @variadic_constraint = Stannum::Constraints::Delegator.new(
-        Stannum::Constraints::Hashes::ExtraKeys.new(
-          keys,
-          type: EXTRA_KEYWORDS_TYPE
-        )
+        Stannum::Constraints::Parameters::ExtraKeywords.new(keys)
       )
 
       add_constraint @variadic_constraint
