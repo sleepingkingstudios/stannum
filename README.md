@@ -33,7 +33,7 @@ Still, most projects and applications use one framework to handle their data. Wh
 
 ### Compatibility
 
-Stannum is tested against Ruby (MRI) 2.6 through 3.0.
+Stannum is tested against Ruby (MRI) 2.7 through 3.1.
 
 ### Documentation
 

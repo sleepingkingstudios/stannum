@@ -57,7 +57,7 @@ RSpec.describe Stannum::Constraints::Type do
     describe 'with an invalid class name' do
       it 'should raise an error' do
         expect { described_class.new 'NotADefinedClass' }
-          .to raise_error(NameError, 'uninitialized constant NotADefinedClass')
+          .to raise_error(NameError, /uninitialized constant NotADefinedClass/)
       end
     end
   end

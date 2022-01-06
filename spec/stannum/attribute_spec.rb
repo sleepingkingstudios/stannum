@@ -192,7 +192,7 @@ RSpec.describe Stannum::Attribute do
 
       it 'should raise an error' do
         expect { attribute.resolved_type }
-          .to raise_error NameError, 'uninitialized constant Foo'
+          .to raise_error NameError, /uninitialized constant Foo/
       end
     end
 
@@ -202,7 +202,7 @@ RSpec.describe Stannum::Attribute do
       it 'should raise an error' do
         expect { attribute.resolved_type }
           .to raise_error NameError,
-            'constant RUBY_VERSION is not a Class or Module'
+            /constant RUBY_VERSION is not a Class or Module/
       end
     end
 
