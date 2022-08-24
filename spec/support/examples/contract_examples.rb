@@ -228,7 +228,7 @@ module Spec::Support::Examples
             do
               contract.send(match_method, actual)
 
-              sanity_constraints[1..-1].each do |constraint|
+              sanity_constraints[1..].each do |constraint|
                 expect(constraint).not_to have_received(matches_method)
               end
             end
@@ -248,7 +248,7 @@ module Spec::Support::Examples
                 .to receive(matches_method)
                 .and_return(!negated) # @see note
 
-              sanity_constraints[1..-1].each do |constraint|
+              sanity_constraints[1..].each do |constraint|
                 allow(constraint)
                   .to receive(matches_method)
                   .and_return(negated) # @see note
@@ -271,7 +271,7 @@ module Spec::Support::Examples
               do
                 contract.send(match_method, actual)
 
-                sanity_constraints[1..-1].each do |constraint|
+                sanity_constraints[1..].each do |constraint|
                   expect(constraint).not_to have_received(matches_method)
                 end
               end
@@ -293,7 +293,7 @@ module Spec::Support::Examples
               do
                 contract.send(match_method, actual)
 
-                sanity_constraints[2..-1].each do |constraint|
+                sanity_constraints[2..].each do |constraint|
                   expect(constraint).not_to have_received(matches_method)
                 end
               end
@@ -339,7 +339,7 @@ module Spec::Support::Examples
               do
                 contract.send(match_method, actual)
 
-                sanity_constraints[1..-1].each do |constraint|
+                sanity_constraints[1..].each do |constraint|
                   expect(constraint).not_to have_received(matches_method)
                 end
               end
@@ -613,7 +613,7 @@ module Spec::Support::Examples
             do
               contract.send(match_method, actual)
 
-              sanity_constraints[1..-1].each do |constraint|
+              sanity_constraints[1..].each do |constraint|
                 expect(constraint).not_to have_received(matches_method)
               end
             end
@@ -651,7 +651,7 @@ module Spec::Support::Examples
             do
               contract.send(match_method, actual)
 
-              sanity_constraints[1..-1].each do |constraint|
+              sanity_constraints[1..].each do |constraint|
                 expect(constraint).not_to have_received(update_errors_method)
               end
             end
@@ -671,7 +671,7 @@ module Spec::Support::Examples
                 .to receive(matches_method)
                 .and_return(!negated) # @see note
 
-              sanity_constraints[1..-1].each do |constraint|
+              sanity_constraints[1..].each do |constraint|
                 allow(constraint)
                   .to receive(matches_method)
                   .and_return(negated) # @see note
@@ -695,7 +695,7 @@ module Spec::Support::Examples
             do
               contract.send(match_method, actual)
 
-              sanity_constraints[2..-1].each do |constraint|
+              sanity_constraints[2..].each do |constraint|
                 expect(constraint).not_to have_received(matches_method)
               end
             end
@@ -725,7 +725,7 @@ module Spec::Support::Examples
               do
                 contract.send(match_method, actual)
 
-                sanity_constraints[1..-1].each do |constraint|
+                sanity_constraints[1..].each do |constraint|
                   expect(constraint).not_to have_received(update_errors_method)
                 end
               end
@@ -753,7 +753,7 @@ module Spec::Support::Examples
               do
                 contract.send(match_method, actual)
 
-                sanity_constraints[2..-1].each do |constraint|
+                sanity_constraints[2..].each do |constraint|
                   expect(constraint).not_to have_received(update_errors_method)
                 end
               end

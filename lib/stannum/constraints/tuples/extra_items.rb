@@ -78,7 +78,7 @@ module Stannum::Constraints::Tuples
     def each_extra_item(actual, &block)
       return if matches?(actual)
 
-      actual[expected_count..-1].each.with_index(expected_count, &block)
+      actual[expected_count..].each.with_index(expected_count, &block)
     end
   end
 end

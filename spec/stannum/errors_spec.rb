@@ -1379,7 +1379,7 @@ RSpec.describe Stannum::Errors do
         let(:cached) { errors.dig(:guilds) }
         let(:expected_errors) do
           expected_nested_errors.map do |hsh|
-            hsh.merge(path: hsh[:path][1..-1])
+            hsh.merge(path: hsh[:path][1..])
           end
         end
 
@@ -1428,7 +1428,7 @@ RSpec.describe Stannum::Errors do
         let(:expected_errors) do
           expected_nested_errors
             .select { |err| err[:path][0...3] == [:guilds, 2, :members] }
-            .map { |hsh| hsh.merge(path: hsh[:path][3..-1]) }
+            .map { |hsh| hsh.merge(path: hsh[:path][3..]) }
         end
 
         it { expect(errors.dig(:guilds, 2, :members)).to be == expected_errors }
@@ -1455,7 +1455,7 @@ RSpec.describe Stannum::Errors do
         let(:cached) { errors.dig([:guilds]) }
         let(:expected_errors) do
           expected_nested_errors.map do |hsh|
-            hsh.merge(path: hsh[:path][1..-1])
+            hsh.merge(path: hsh[:path][1..])
           end
         end
 
@@ -1504,7 +1504,7 @@ RSpec.describe Stannum::Errors do
         let(:expected_errors) do
           expected_nested_errors
             .select { |err| err[:path][0...3] == [:guilds, 2, :members] }
-            .map { |hsh| hsh.merge(path: hsh[:path][3..-1]) }
+            .map { |hsh| hsh.merge(path: hsh[:path][3..]) }
         end
 
         it 'should return the filtered errors' do
@@ -1814,7 +1814,7 @@ RSpec.describe Stannum::Errors do
   describe '#inspect' do
     let(:expected) do
       str = Object.instance_method(:inspect).bind(errors).call
-      oid = str[2...-1].split.first.split(':').last
+      oid = str[2...].split.first.split(':').last
 
       "#<Stannum::Errors:#{oid} @summary=%{#{errors.summary}}>"
     end

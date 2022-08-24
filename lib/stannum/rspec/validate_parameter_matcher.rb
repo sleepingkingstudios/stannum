@@ -281,20 +281,20 @@ module Stannum::RSpec
       unless @expected_constraint.nil?
         raise RuntimeError,
           '#does_not_match? with #using_constraint is not supported',
-          caller[1..-1]
+          caller[1..]
       end
 
       unless @parameters.nil?
         raise RuntimeError,
           '#does_not_match? with #with_parameters is not supported',
-          caller[1..-1]
+          caller[1..]
       end
 
       return if @parameter_value.nil?
 
       raise RuntimeError,
         '#does_not_match? with #with_value is not supported',
-        caller[1..-1]
+        caller[1..]
     end
 
     def equality_matcher
