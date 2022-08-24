@@ -600,8 +600,8 @@ RSpec.describe Stannum::Errors do
         super().reject { |err| err[:path][0] == key }
       end
       let(:error_message) do
-        'value must be an instance of Stannum::Errors, an array of error' \
-          ' hashes, or nil'
+        'value must be an instance of Stannum::Errors, an array of error ' \
+          'hashes, or nil'
       end
 
       before(:example) { cached } # Warm object cache.
@@ -1379,7 +1379,7 @@ RSpec.describe Stannum::Errors do
         let(:cached) { errors.dig(:guilds) }
         let(:expected_errors) do
           expected_nested_errors.map do |hsh|
-            hsh.merge(path: hsh[:path][1..-1])
+            hsh.merge(path: hsh[:path][1..])
           end
         end
 
@@ -1428,7 +1428,7 @@ RSpec.describe Stannum::Errors do
         let(:expected_errors) do
           expected_nested_errors
             .select { |err| err[:path][0...3] == [:guilds, 2, :members] }
-            .map { |hsh| hsh.merge(path: hsh[:path][3..-1]) }
+            .map { |hsh| hsh.merge(path: hsh[:path][3..]) }
         end
 
         it { expect(errors.dig(:guilds, 2, :members)).to be == expected_errors }
@@ -1455,7 +1455,7 @@ RSpec.describe Stannum::Errors do
         let(:cached) { errors.dig([:guilds]) }
         let(:expected_errors) do
           expected_nested_errors.map do |hsh|
-            hsh.merge(path: hsh[:path][1..-1])
+            hsh.merge(path: hsh[:path][1..])
           end
         end
 
@@ -1504,7 +1504,7 @@ RSpec.describe Stannum::Errors do
         let(:expected_errors) do
           expected_nested_errors
             .select { |err| err[:path][0...3] == [:guilds, 2, :members] }
-            .map { |hsh| hsh.merge(path: hsh[:path][3..-1]) }
+            .map { |hsh| hsh.merge(path: hsh[:path][3..]) }
         end
 
         it 'should return the filtered errors' do
@@ -1814,7 +1814,7 @@ RSpec.describe Stannum::Errors do
   describe '#inspect' do
     let(:expected) do
       str = Object.instance_method(:inspect).bind(errors).call
-      oid = str[2...-1].split.first.split(':').last
+      oid = str[2...].split.first.split(':').last
 
       "#<Stannum::Errors:#{oid} @summary=%{#{errors.summary}}>"
     end
@@ -1929,8 +1929,8 @@ RSpec.describe Stannum::Errors do
     end
 
     let(:error_message) do
-      'value must be an instance of Stannum::Errors or an array of error' \
-        ' hashes'
+      'value must be an instance of Stannum::Errors or an array of error ' \
+        'hashes'
     end
     let(:expected_other_errors) { [] }
 
@@ -1994,8 +1994,8 @@ RSpec.describe Stannum::Errors do
 
     wrap_context 'when the errors has many root errors' do
       let(:expected) do
-        'no message defined for "blank", no message defined for "invalid",' \
-          ' is upside down'
+        'no message defined for "blank", no message defined for "invalid", ' \
+          'is upside down'
       end
 
       it { expect(errors.summary).to be == expected }
@@ -2003,9 +2003,9 @@ RSpec.describe Stannum::Errors do
 
     wrap_context 'when the errors has many child errors' do
       let(:expected) do
-        'spells: no message defined for "mana_exhausted", spells: no message' \
-          ' defined for "missing_component", spells: can\'t cast spells of' \
-          ' that element'
+        'spells: no message defined for "mana_exhausted", spells: no message ' \
+          'defined for "missing_component", spells: can\'t cast spells of ' \
+          'that element'
       end
 
       it { expect(errors.summary).to be == expected }
@@ -2013,9 +2013,9 @@ RSpec.describe Stannum::Errors do
 
     wrap_context 'when the errors has many deeply nested errors' do
       let(:expected) do
-        'guilds[0]: is not recruiting, guilds[1].members: no message defined' \
-          ' for "empty", guilds[2].members[0]: no message defined for' \
-          ' "late_paying_dues"'
+        'guilds[0]: is not recruiting, guilds[1].members: no message defined ' \
+          'for "empty", guilds[2].members[0]: no message defined for ' \
+          '"late_paying_dues"'
       end
 
       it { expect(errors.summary).to be == expected }
@@ -2023,12 +2023,12 @@ RSpec.describe Stannum::Errors do
 
     wrap_context 'when the errors has many errors at different paths' do
       let(:expected) do
-        'no message defined for "blank", no message defined for "invalid", is' \
-          ' upside down, spells: no message defined for "mana_exhausted",' \
-          ' spells: no message defined for "missing_component", spells:' \
-          ' can\'t cast spells of that element, guilds[0]: is not recruiting,' \
-          ' guilds[1].members: no message defined for "empty",' \
-          ' guilds[2].members[0]: no message defined for "late_paying_dues"'
+        'no message defined for "blank", no message defined for "invalid", ' \
+          'is upside down, spells: no message defined for "mana_exhausted", ' \
+          'spells: no message defined for "missing_component", spells: ' \
+          'can\'t cast spells of that element, guilds[0]: is not recruiting, ' \
+          'guilds[1].members: no message defined for "empty", ' \
+          'guilds[2].members[0]: no message defined for "late_paying_dues"'
       end
 
       it { expect(errors.summary).to be == expected }
@@ -2036,8 +2036,9 @@ RSpec.describe Stannum::Errors do
 
     wrap_context 'when the errors has many indexed errors' do
       let(:expected) do
-        '0: no message defined for "target_invincible", 1: no message defined' \
-          ' for "target_immune", 2: target was able to evade your fireball'
+        '0: no message defined for "target_invincible", 1: no message ' \
+          'defined for "target_immune", 2: target was able to evade your ' \
+          'fireball'
       end
 
       it { expect(errors.summary).to be == expected }
@@ -2155,8 +2156,8 @@ RSpec.describe Stannum::Errors do
     end
 
     let(:error_message) do
-      'value must be an instance of Stannum::Errors or an array of error' \
-        ' hashes'
+      'value must be an instance of Stannum::Errors or an array of error ' \
+        'hashes'
     end
     let(:expected_other_errors) { [] }
 

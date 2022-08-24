@@ -4,8 +4,8 @@ begin
   require 'rspec/sleeping_king_studios/matchers/core/deep_matcher'
 rescue NameError
   # :nocov:
-  Kernel.warn 'WARNING: RSpec::SleepingKingStudios is a dependency for using' \
-              ' the MatchErrorsMatcher or the #match_errors method.'
+  Kernel.warn 'WARNING: RSpec::SleepingKingStudios is a dependency for using ' \
+              'the MatchErrorsMatcher or the #match_errors method.'
   # :nocov:
 end
 
@@ -40,8 +40,8 @@ module Stannum::RSpec
     # @return [String] a summary message describing a failed expectation.
     def failure_message
       unless errors?
-        return 'expected the errors to match the expected errors, but the' \
-               ' object is not an array or Errors object'
+        return 'expected the errors to match the expected errors, but the ' \
+               'object is not an array or Errors object'
       end
 
       equality_matcher.failure_message
@@ -51,8 +51,8 @@ module Stannum::RSpec
     #   expectation.
     def failure_message_when_negated
       unless errors?
-        return 'expected the errors not to match the expected errors, but the' \
-               ' object is not an array or Errors object'
+        return 'expected the errors not to match the expected errors, but ' \
+               'the object is not an array or Errors object'
       end
 
       equality_matcher.failure_message_when_negated

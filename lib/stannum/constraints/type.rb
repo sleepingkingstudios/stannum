@@ -107,7 +107,7 @@ module Stannum::Constraints
 
       raise ArgumentError,
         'expected type must be a Class or Module',
-        caller[1..-1]
+        caller[1..]
     end
   end
 end

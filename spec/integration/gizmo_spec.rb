@@ -375,8 +375,8 @@ RSpec.describe Spec::Gizmo do
 
   describe '#assign_attributes' do
     let(:description) do
-      'A self-sealing stem bolt is the entrepreneurial opportunity of a' \
-        ' lifetime.'
+      'A self-sealing stem bolt is the entrepreneurial opportunity of a ' \
+        'lifetime.'
     end
     let(:expected) do
       {
@@ -434,8 +434,8 @@ RSpec.describe Spec::Gizmo do
 
   describe '#attributes=' do
     let(:description) do
-      'A self-sealing stem bolt is the entrepreneurial opportunity of a' \
-        ' lifetime.'
+      'A self-sealing stem bolt is the entrepreneurial opportunity of a ' \
+        'lifetime.'
     end
     let(:hsh) { { description: description, quantity: nil } }
     let(:expected) do
@@ -477,8 +477,8 @@ RSpec.describe Spec::Gizmo do
 
   describe '#description=' do
     let(:value) do
-      'A self-sealing stem bolt is the entrepreneurial opportunity of a' \
-        ' lifetime.'
+      'A self-sealing stem bolt is the entrepreneurial opportunity of a ' \
+        'lifetime.'
     end
 
     include_examples 'should have writer', :description=

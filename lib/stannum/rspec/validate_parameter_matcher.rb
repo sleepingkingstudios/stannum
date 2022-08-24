@@ -139,11 +139,11 @@ module Stannum::RSpec
         when :method_does_not_have_parameter
           "##{method_name} does not have a #{parameter_name.inspect} parameter"
         when :parameter_not_validated
-          "##{method_name} does not expect a #{parameter_name.inspect}" \
-          " #{parameter_type}"
+          "##{method_name} does not expect a #{parameter_name.inspect} " \
+          "#{parameter_type}"
         when :valid_parameter_value
-          "#{valid_value.inspect} is a valid value for the" \
-          " #{parameter_name.inspect} #{parameter_type}"
+          "#{valid_value.inspect} is a valid value for the " \
+          "#{parameter_name.inspect} #{parameter_type}"
         end
 
       [message, reason].compact.join(', but ')
@@ -281,20 +281,20 @@ module Stannum::RSpec
       unless @expected_constraint.nil?
         raise RuntimeError,
           '#does_not_match? with #using_constraint is not supported',
-          caller[1..-1]
+          caller[1..]
       end
 
       unless @parameters.nil?
         raise RuntimeError,
           '#does_not_match? with #with_parameters is not supported',
-          caller[1..-1]
+          caller[1..]
       end
 
       return if @parameter_value.nil?
 
       raise RuntimeError,
         '#does_not_match? with #with_value is not supported',
-        caller[1..-1]
+        caller[1..]
     end
 
     def equality_matcher

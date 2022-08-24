@@ -2,7 +2,7 @@ require:
   - rubocop-rspec
 
 AllCops:
-  TargetRubyVersion: 2.5
+  TargetRubyVersion: 2.7
   NewCops: enable
   Include:
     - 'lib/**/*.rb'
@@ -47,7 +47,7 @@ Layout/HashAlignment:
   EnforcedHashRocketStyle: table
 
 Layout/LineLength:
-  IgnoredPatterns:
+  AllowedPatterns:
     - '\A\s*#'
   Max: 80
 
@@ -67,6 +67,9 @@ Metrics/ModuleLength:
 Naming/MethodParameterName:
   AllowedNames:
     - 'as'
+
+RSpec/BeNil:
+  Enabled: false
 
 RSpec/ExampleLength:
   Max: 10

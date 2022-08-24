@@ -46,9 +46,9 @@ RSpec.describe Stannum::Messages::DefaultStrategy do
           stannum: {
             greeting: lambda do |_key, options|
               if options[:name] == 'starfighter'
-                'Greetings, %{name}! You have been recruited by the Star' \
-                  ' League to defend the frontier against Xur and the Ko-Dan' \
-                  ' armada!'
+                'Greetings, %{name}! You have been recruited by the Star ' \
+                  'League to defend the frontier against Xur and the Ko-Dan ' \
+                  'armada!'
               else
                 'Greetings, %{name}!'
               end
@@ -143,8 +143,8 @@ RSpec.describe Stannum::Messages::DefaultStrategy do
 
       describe 'with name: starfighter' do
         let(:expected) do
-          'Greetings, starfighter! You have been recruited by the Star League' \
-            ' to defend the frontier against Xur and the Ko-Dan armada!'
+          'Greetings, starfighter! You have been recruited by the Star ' \
+            'League to defend the frontier against Xur and the Ko-Dan armada!'
         end
         let(:options) { { name: 'starfighter' } }
 

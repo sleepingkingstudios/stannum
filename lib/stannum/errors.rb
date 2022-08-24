@@ -492,7 +492,7 @@ module Stannum
 
     # @return [String] a human-readable representation of the object.
     def inspect
-      oid = super[2...-1].split.first.split(':').last
+      oid = super[2...].split.first.split(':').last
 
       "#<#{self.class.name}:#{oid} @summary=%{#{summary}}>"
     end
@@ -644,7 +644,7 @@ module Stannum
 
       return path.first.to_s if path.size == 1
 
-      path[1..-1].reduce(path.first.to_s) do |str, item|
+      path[1..].reduce(path.first.to_s) do |str, item|
         item.is_a?(Integer) ? "#{str}[#{item}]" : "#{str}.#{item}"
       end
     end
@@ -724,7 +724,7 @@ module Stannum
 
       raise ArgumentError,
         'key must be an Integer, a String or a Symbol',
-        caller(1..-1)
+        caller(1..)
     end
   end
 end

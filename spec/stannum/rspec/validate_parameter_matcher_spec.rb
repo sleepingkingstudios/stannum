@@ -203,8 +203,8 @@ RSpec.describe Stannum::RSpec::ValidateParameterMatcher do
     let(:actual)         { Spec::ExampleCommand.new }
     let(:parameter_type) { 'parameter' }
     let(:failure_message) do
-      "expected ##{method_name} not to validate the #{parameter_name.inspect}" \
-        " #{parameter_type}"
+      "expected ##{method_name} not to validate the " \
+        "#{parameter_name.inspect} #{parameter_type}"
     end
 
     example_class 'Spec::ExampleCommand' do |klass|
@@ -239,8 +239,8 @@ RSpec.describe Stannum::RSpec::ValidateParameterMatcher do
     describe 'with an object with a method that does not have the parameter' do
       let(:failure_message) do
         super() +
-          ", but ##{method_name} does not have a #{parameter_name.inspect}" \
-          ' parameter'
+          ", but ##{method_name} does not have a #{parameter_name.inspect} " \
+          'parameter'
       end
 
       before(:example) do
@@ -545,8 +545,8 @@ RSpec.describe Stannum::RSpec::ValidateParameterMatcher do
         let(:parameter_name) { unvalidated_parameter_name }
         let(:failure_message) do
           super() +
-            ", but ##{method_name} does not expect a"\
-            " #{parameter_name.inspect} #{parameter_type}"
+            ", but ##{method_name} does not expect a " \
+            "#{parameter_name.inspect} #{parameter_type}"
         end
 
         it { expect(matcher.matches?(actual)).to be false }
@@ -596,8 +596,8 @@ RSpec.describe Stannum::RSpec::ValidateParameterMatcher do
           let(:matcher)    { super().using_constraint(constraint) }
           let(:failure_message) do
             super() +
-              ", but #{parameter_value.inspect} is a valid value for the" \
-              " #{parameter_name.inspect} #{parameter_type}"
+              ", but #{parameter_value.inspect} is a valid value for the " \
+              "#{parameter_name.inspect} #{parameter_type}"
           end
 
           it { expect(matcher.matches?(actual)).to be false }
@@ -610,8 +610,8 @@ RSpec.describe Stannum::RSpec::ValidateParameterMatcher do
           let(:matcher) { super().using_constraint(type) }
           let(:failure_message) do
             super() +
-              ", but #{parameter_value.inspect} is a valid value for the" \
-              " #{parameter_name.inspect} #{parameter_type}"
+              ", but #{parameter_value.inspect} is a valid value for the " \
+              "#{parameter_name.inspect} #{parameter_type}"
           end
 
           it { expect(matcher.matches?(actual)).to be false }
@@ -703,8 +703,8 @@ RSpec.describe Stannum::RSpec::ValidateParameterMatcher do
         end
         let(:failure_message) do
           super() +
-            ", but #{custom_value.inspect} is a valid value for the" \
-            " #{parameter_name.inspect} #{parameter_type}"
+            ", but #{custom_value.inspect} is a valid value for the " \
+            "#{parameter_name.inspect} #{parameter_type}"
         end
 
         it { expect(matcher.matches?(actual)).to be false }
@@ -802,8 +802,8 @@ RSpec.describe Stannum::RSpec::ValidateParameterMatcher do
         let(:parameter_value) { valid_value }
         let(:failure_message) do
           super() +
-            ", but #{parameter_value.inspect} is a valid value for the" \
-            " #{parameter_name.inspect} #{parameter_type}"
+            ", but #{parameter_value.inspect} is a valid value for the " \
+            "#{parameter_name.inspect} #{parameter_type}"
         end
 
         it { expect(matcher.matches?(actual)).to be false }
@@ -915,8 +915,8 @@ RSpec.describe Stannum::RSpec::ValidateParameterMatcher do
       }
     end
     let(:failure_message) do
-      "expected ##{method_name} to validate the #{parameter_name.inspect}" \
-        " #{parameter_type}"
+      "expected ##{method_name} to validate the #{parameter_name.inspect} " \
+        "#{parameter_type}"
     end
 
     example_class 'Spec::ExampleCommand' do |klass|
@@ -953,8 +953,8 @@ RSpec.describe Stannum::RSpec::ValidateParameterMatcher do
 
     describe 'with an object that does not validate the method' do
       let(:failure_message) do
-        "#{super()}, but the object does not validate the parameters of" \
-          " ##{method_name}"
+        "#{super()}, but the object does not validate the parameters of " \
+          "##{method_name}"
       end
 
       it { expect(matcher.matches?(actual)).to be false }
@@ -965,8 +965,8 @@ RSpec.describe Stannum::RSpec::ValidateParameterMatcher do
     describe 'with an object with a method that does not have the parameter' do
       let(:failure_message) do
         super() +
-          ", but ##{method_name} does not have a #{parameter_name.inspect}" \
-          ' parameter'
+          ", but ##{method_name} does not have a #{parameter_name.inspect} " \
+          'parameter'
       end
 
       before(:example) do
