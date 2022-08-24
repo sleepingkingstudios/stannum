@@ -2854,9 +2854,9 @@ RSpec.describe Stannum::Struct do
 
     wrap_context 'when the struct has attribute values' do
       let(:expected) do
-        "#<#{described_class.name} name: #{attributes['name'].inspect}," \
-          " description: #{attributes['description'].inspect}," \
-          " quantity: #{attributes['quantity'].inspect}>"
+        "#<#{described_class.name} name: #{attributes['name'].inspect}, " \
+          "description: #{attributes['description'].inspect}, " \
+          "quantity: #{attributes['quantity'].inspect}>"
       end
 
       it { expect(struct.inspect).to be == expected }

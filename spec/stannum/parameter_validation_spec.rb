@@ -81,8 +81,8 @@ RSpec.describe Stannum::ParameterValidation do
           it { expect(included.contracts).to be == {} }
         end
 
-        context 'when there are contracts defined on the parent class and' \
-                ' subclass' \
+        context 'when there are contracts defined on the parent class and ' \
+                'subclass' \
         do
           let(:method_name)        { :do_something }
           let(:contract)           { Stannum::Contract.new }
@@ -107,8 +107,8 @@ RSpec.describe Stannum::ParameterValidation do
           it { expect(included.contracts).to be == parent_expected }
         end
 
-        context 'when the subclass overrides a contract defined on the' \
-                ' parent class' \
+        context 'when the subclass overrides a contract defined on the ' \
+                'parent class' \
         do
           let(:method_name)        { :do_something }
           let(:contract)           { Stannum::Contract.new }
@@ -318,7 +318,7 @@ RSpec.describe Stannum::ParameterValidation do
     end
 
     context 'with a subclass' do
-      let(:instance) { Spec::ExampleSubclass.new }
+      subject(:instance) { Spec::ExampleClass.new }
 
       example_class 'Spec::ExampleSubclass', 'Spec::ExampleClass'
 

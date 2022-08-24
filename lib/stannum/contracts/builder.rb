@@ -47,8 +47,8 @@ module Stannum::Contracts
     private
 
     def ambiguous_values_error(constraint)
-      'expected either a block or a constraint instance, but received both a' \
-        " block and #{constraint.inspect}"
+      'expected either a block or a constraint instance, but received both a ' \
+        "block and #{constraint.inspect}"
     end
 
     def resolve_constraint(constraint = nil, **options, &block)

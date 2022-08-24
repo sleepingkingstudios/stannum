@@ -81,8 +81,8 @@ module Spec::Support::Examples
       end
     end
 
-    shared_context 'when #each_pair yields many non-matching and matching' \
-                   ' constraints' \
+    shared_context 'when #each_pair yields many non-matching and matching ' \
+                   'constraints' \
     do
       let(:constraints) do
         [
@@ -896,8 +896,8 @@ module Spec::Support::Examples
           it { expect(status).to be true }
         end
 
-        wrap_context 'when #each_pair yields many non-matching and matching' \
-                     ' constraints' \
+        wrap_context 'when #each_pair yields many non-matching and matching ' \
+                     'constraints' \
         do
           it { expect(status).to be false }
         end
@@ -1006,8 +1006,8 @@ module Spec::Support::Examples
           end
         end
 
-        wrap_context 'when #each_pair yields many non-matching and matching' \
-                     ' constraints' \
+        wrap_context 'when #each_pair yields many non-matching and matching ' \
+                     'constraints' \
         do
           let(:expected_errors) do
             [{ type: 'spec.second_type' }]
@@ -1096,8 +1096,8 @@ module Spec::Support::Examples
           it { expect(errors).to equal_errors(wrapped_errors) }
         end
 
-        wrap_context 'when #each_pair yields many non-matching and matching' \
-                     ' constraints' \
+        wrap_context 'when #each_pair yields many non-matching and matching ' \
+                     'constraints' \
         do
           let(:expected_errors) do
             [{ type: 'spec.second_type' }]
@@ -1165,8 +1165,8 @@ module Spec::Support::Examples
           it { expect(status).to be false }
         end
 
-        wrap_context 'when #each_pair yields many non-matching and matching' \
-                     ' constraints' \
+        wrap_context 'when #each_pair yields many non-matching and matching ' \
+                     'constraints' \
         do
           it { expect(status).to be false }
         end
@@ -1235,8 +1235,8 @@ module Spec::Support::Examples
           it { expect(errors).to be == [] }
         end
 
-        wrap_context 'when #each_pair yields many non-matching and matching' \
-                     ' constraints' \
+        wrap_context 'when #each_pair yields many non-matching and matching ' \
+                     'constraints' \
         do
           let(:expected_errors) do
             [
@@ -1342,8 +1342,8 @@ module Spec::Support::Examples
           it { expect(errors).to be == [] }
         end
 
-        wrap_context 'when #each_pair yields many non-matching and matching' \
-                     ' constraints' \
+        wrap_context 'when #each_pair yields many non-matching and matching ' \
+                     'constraints' \
         do
           let(:expected_errors) do
             [

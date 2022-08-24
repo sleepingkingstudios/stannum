@@ -600,8 +600,8 @@ RSpec.describe Stannum::Errors do
         super().reject { |err| err[:path][0] == key }
       end
       let(:error_message) do
-        'value must be an instance of Stannum::Errors, an array of error' \
-          ' hashes, or nil'
+        'value must be an instance of Stannum::Errors, an array of error ' \
+          'hashes, or nil'
       end
 
       before(:example) { cached } # Warm object cache.
@@ -1929,8 +1929,8 @@ RSpec.describe Stannum::Errors do
     end
 
     let(:error_message) do
-      'value must be an instance of Stannum::Errors or an array of error' \
-        ' hashes'
+      'value must be an instance of Stannum::Errors or an array of error ' \
+        'hashes'
     end
     let(:expected_other_errors) { [] }
 
@@ -1994,8 +1994,8 @@ RSpec.describe Stannum::Errors do
 
     wrap_context 'when the errors has many root errors' do
       let(:expected) do
-        'no message defined for "blank", no message defined for "invalid",' \
-          ' is upside down'
+        'no message defined for "blank", no message defined for "invalid", ' \
+          'is upside down'
       end
 
       it { expect(errors.summary).to be == expected }
@@ -2003,9 +2003,9 @@ RSpec.describe Stannum::Errors do
 
     wrap_context 'when the errors has many child errors' do
       let(:expected) do
-        'spells: no message defined for "mana_exhausted", spells: no message' \
-          ' defined for "missing_component", spells: can\'t cast spells of' \
-          ' that element'
+        'spells: no message defined for "mana_exhausted", spells: no message ' \
+          'defined for "missing_component", spells: can\'t cast spells of ' \
+          'that element'
       end
 
       it { expect(errors.summary).to be == expected }
@@ -2013,9 +2013,9 @@ RSpec.describe Stannum::Errors do
 
     wrap_context 'when the errors has many deeply nested errors' do
       let(:expected) do
-        'guilds[0]: is not recruiting, guilds[1].members: no message defined' \
-          ' for "empty", guilds[2].members[0]: no message defined for' \
-          ' "late_paying_dues"'
+        'guilds[0]: is not recruiting, guilds[1].members: no message defined ' \
+          'for "empty", guilds[2].members[0]: no message defined for ' \
+          '"late_paying_dues"'
       end
 
       it { expect(errors.summary).to be == expected }
@@ -2023,12 +2023,12 @@ RSpec.describe Stannum::Errors do
 
     wrap_context 'when the errors has many errors at different paths' do
       let(:expected) do
-        'no message defined for "blank", no message defined for "invalid", is' \
-          ' upside down, spells: no message defined for "mana_exhausted",' \
-          ' spells: no message defined for "missing_component", spells:' \
-          ' can\'t cast spells of that element, guilds[0]: is not recruiting,' \
-          ' guilds[1].members: no message defined for "empty",' \
-          ' guilds[2].members[0]: no message defined for "late_paying_dues"'
+        'no message defined for "blank", no message defined for "invalid", ' \
+          'is upside down, spells: no message defined for "mana_exhausted", ' \
+          'spells: no message defined for "missing_component", spells: ' \
+          'can\'t cast spells of that element, guilds[0]: is not recruiting, ' \
+          'guilds[1].members: no message defined for "empty", ' \
+          'guilds[2].members[0]: no message defined for "late_paying_dues"'
       end
 
       it { expect(errors.summary).to be == expected }
@@ -2036,8 +2036,9 @@ RSpec.describe Stannum::Errors do
 
     wrap_context 'when the errors has many indexed errors' do
       let(:expected) do
-        '0: no message defined for "target_invincible", 1: no message defined' \
-          ' for "target_immune", 2: target was able to evade your fireball'
+        '0: no message defined for "target_invincible", 1: no message ' \
+          'defined for "target_immune", 2: target was able to evade your ' \
+          'fireball'
       end
 
       it { expect(errors.summary).to be == expected }
@@ -2155,8 +2156,8 @@ RSpec.describe Stannum::Errors do
     end
 
     let(:error_message) do
-      'value must be an instance of Stannum::Errors or an array of error' \
-        ' hashes'
+      'value must be an instance of Stannum::Errors or an array of error ' \
+        'hashes'
     end
     let(:expected_other_errors) { [] }
 

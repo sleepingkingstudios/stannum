@@ -139,11 +139,11 @@ module Stannum::RSpec
         when :method_does_not_have_parameter
           "##{method_name} does not have a #{parameter_name.inspect} parameter"
         when :parameter_not_validated
-          "##{method_name} does not expect a #{parameter_name.inspect}" \
-          " #{parameter_type}"
+          "##{method_name} does not expect a #{parameter_name.inspect} " \
+          "#{parameter_type}"
         when :valid_parameter_value
-          "#{valid_value.inspect} is a valid value for the" \
-          " #{parameter_name.inspect} #{parameter_type}"
+          "#{valid_value.inspect} is a valid value for the " \
+          "#{parameter_name.inspect} #{parameter_type}"
         end
 
       [message, reason].compact.join(', but ')
