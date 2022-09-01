@@ -47,6 +47,18 @@ RSpec.describe Stannum::Constraints::Properties::MatchProperty do
       -> { be == expected }
   end
 
+  describe '::NEGATED_TYPE' do
+    include_examples 'should define frozen constant',
+      :NEGATED_TYPE,
+      Stannum::Constraints::Equality::NEGATED_TYPE
+  end
+
+  describe '::TYPE' do
+    include_examples 'should define frozen constant',
+      :TYPE,
+      Stannum::Constraints::Equality::TYPE
+  end
+
   describe '.new' do
     it 'should define the constructor' do
       expect(described_class)
@@ -283,6 +295,32 @@ RSpec.describe Stannum::Constraints::Properties::MatchProperty do
       include_examples 'should match the constraint'
     end
 
+    describe 'with an object with nil expected value' do
+      let(:actual) { Spec::ExampleStruct.new(nil, '1982-07-09') }
+      let(:expected_errors) do
+        {
+          type: Stannum::Constraints::Equality::TYPE,
+          path: %w[confirmation],
+          data: { expected: nil, actual: '1982-07-09' }
+        }
+      end
+
+      include_examples 'should not match the constraint'
+    end
+
+    describe 'with an object with empty expected value' do
+      let(:actual) { Spec::ExampleStruct.new('', '1982-07-09') }
+      let(:expected_errors) do
+        {
+          type: Stannum::Constraints::Equality::TYPE,
+          path: %w[confirmation],
+          data: { expected: '', actual: '1982-07-09' }
+        }
+      end
+
+      include_examples 'should not match the constraint'
+    end
+
     describe 'with an object with nil property value' do
       let(:actual) { Spec::ExampleStruct.new('1982-07-09', nil) }
       let(:expected_errors) do
@@ -363,6 +401,25 @@ RSpec.describe Stannum::Constraints::Properties::MatchProperty do
         include_examples 'should match the constraint'
       end
 
+      describe 'with an object with nil expected value' do
+        let(:actual) { Spec::ExampleStruct.new(nil, '1982-07-09') }
+        let(:expected_errors) do
+          {
+            type: Stannum::Constraints::Equality::TYPE,
+            path: %w[confirmation],
+            data: { expected: nil, actual: '1982-07-09' }
+          }
+        end
+
+        include_examples 'should not match the constraint'
+      end
+
+      describe 'with an object with empty expected value' do
+        let(:actual) { Spec::ExampleStruct.new('', '1982-07-09') }
+
+        include_examples 'should match the constraint'
+      end
+
       describe 'with an object with nil property value' do
         let(:actual) { Spec::ExampleStruct.new('1982-07-09', nil) }
         let(:expected_errors) do
@@ -415,6 +472,25 @@ RSpec.describe Stannum::Constraints::Properties::MatchProperty do
         let(:actual) { Spec::ExampleStruct.new('', '') }
 
         include_examples 'should match the constraint'
+      end
+
+      describe 'with an object with nil expected value' do
+        let(:actual) { Spec::ExampleStruct.new(nil, '1982-07-09') }
+
+        include_examples 'should match the constraint'
+      end
+
+      describe 'with an object with empty expected value' do
+        let(:actual) { Spec::ExampleStruct.new('', '1982-07-09') }
+        let(:expected_errors) do
+          {
+            type: Stannum::Constraints::Equality::TYPE,
+            path: %w[confirmation],
+            data: { expected: '', actual: '1982-07-09' }
+          }
+        end
+
+        include_examples 'should not match the constraint'
       end
 
       describe 'with an object with nil property value' do
@@ -587,6 +663,18 @@ RSpec.describe Stannum::Constraints::Properties::MatchProperty do
       include_examples 'should not match the constraint'
     end
 
+    describe 'with an object with nil expected value' do
+      let(:actual) { Spec::ExampleStruct.new(nil, '1982-07-09') }
+
+      include_examples 'should match the constraint'
+    end
+
+    describe 'with an object with empty expected value' do
+      let(:actual) { Spec::ExampleStruct.new('', '1982-07-09') }
+
+      include_examples 'should match the constraint'
+    end
+
     describe 'with an object with nil property value' do
       let(:actual) { Spec::ExampleStruct.new('1982-07-09', nil) }
 
@@ -639,6 +727,26 @@ RSpec.describe Stannum::Constraints::Properties::MatchProperty do
             type: Stannum::Constraints::Equality::NEGATED_TYPE,
             path: %w[confirmation]
           }
+        end
+
+        include_examples 'should not match the constraint'
+      end
+
+      describe 'with an object with nil expected value' do
+        let(:actual) { Spec::ExampleStruct.new(nil, '1982-07-09') }
+
+        include_examples 'should match the constraint'
+      end
+
+      describe 'with an object with empty expected value' do
+        let(:actual) { Spec::ExampleStruct.new('', '1982-07-09') }
+        let(:expected_errors) do
+          {
+            type: Stannum::Constraints::Base::NEGATED_TYPE
+          }
+        end
+        let(:expected_messages) do
+          expected_errors.merge(message: 'is valid')
         end
 
         include_examples 'should not match the constraint'
@@ -706,6 +814,26 @@ RSpec.describe Stannum::Constraints::Properties::MatchProperty do
         end
 
         include_examples 'should not match the constraint'
+      end
+
+      describe 'with an object with nil expected value' do
+        let(:actual) { Spec::ExampleStruct.new(nil, '1982-07-09') }
+        let(:expected_errors) do
+          {
+            type: Stannum::Constraints::Base::NEGATED_TYPE
+          }
+        end
+        let(:expected_messages) do
+          expected_errors.merge(message: 'is valid')
+        end
+
+        include_examples 'should not match the constraint'
+      end
+
+      describe 'with an object with empty expected value' do
+        let(:actual) { Spec::ExampleStruct.new('', '1982-07-09') }
+
+        include_examples 'should match the constraint'
       end
 
       describe 'with an object with nil property value' do
