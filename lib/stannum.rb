@@ -9,6 +9,7 @@ module Stannum
   autoload :Contract,            'stannum/contract'
   autoload :Contracts,           'stannum/contracts'
   autoload :Errors,              'stannum/errors'
+  autoload :InvertedConstraint,  'stannum/inverted_constraint'
   autoload :Messages,            'stannum/messages'
   autoload :ParameterValidation, 'stannum/parameter_validation'
   autoload :Struct,              'stannum/struct'
