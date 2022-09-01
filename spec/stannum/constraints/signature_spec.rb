@@ -19,7 +19,9 @@ RSpec.describe Stannum::Constraints::Signature do
     include_examples 'should define frozen constant',
       :NEGATED_TYPE,
       'stannum.constraints.has_methods'
+  end
 
+  describe '::TYPE' do
     include_examples 'should define frozen constant',
       :TYPE,
       'stannum.constraints.does_not_have_methods'
