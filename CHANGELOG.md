@@ -4,8 +4,14 @@
 
 ### Constraints
 
+#### Parameter Constraints
+
 - Implemented `Stannum::Constraints::Parameters::ExtraArguments`
 - Implemented `Stannum::Constraints::Parameters::ExtraKeywords`
+
+#### Property Constraints
+
+- Implemented `Stannum::Constraints::Properties::MatchProperty`
 
 ## 0.1.0
 

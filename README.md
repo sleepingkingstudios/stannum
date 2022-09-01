@@ -331,7 +331,7 @@ contract.does_not_match?({ color: 'blue', shape: 'square'})
 
 Note that for an object that partially matches the contract, both `#matches?` and `#does_not_match?` methods will return false. If you want to check whether **any** of the constraints do not match the object, use the `#matches?` method and apply the `!` boolean negation operator (or switch from an `if` to an `unless`).
 
-#### Property Constraints
+#### Constraining Properties
 
 Constraints can also define constraints on the *properties* of the matched object. This is a powerful feature for defining validations on objects and nested data structures. To define a property constraint, use the `property` macro in a contract constructor block, or use the `#add_property_constraint` method on an existing contract.
 
@@ -1088,6 +1088,38 @@ constraint.matches?(Object.new)
 constraint.matches?('a String')
 #=> true
 constraint.matches?(:a_symbol)
+#=> true
+```
+
+#### Property Constraints
+
+Property constraints match against the properties of the object.
+
+**Match Property Constraint**
+
+Matches if the values of the given properties are equal to the value of the expected property.
+
+```ruby
+ResetPassword = Struct.new(:password, :confirmation)
+constraint    = Stannum::Constraints::Properties::MatchProperty.new(
+  :password,
+  :confirmation
+)
+
+params = ResetPassword.new('tronlives', 'ifightfortheusers')
+constraint.matches?(params)
+#=> false
+constraint.errors_for(params)
+#=> [
+  {
+    path: [:confirmation],
+    type: 'stannum.constraints.is_not_equal_to',
+    data: { expected: '[FILTERED]', actual: '[FILTERED]' }
+  }
+]
+
+params = ResetPassword.new('tronlives', 'tronlives')
+constraint.matches?(params)
 #=> true
 ```
 

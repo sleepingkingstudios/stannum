@@ -17,6 +17,7 @@ module Stannum
     autoload :Nothing,    'stannum/constraints/nothing'
     autoload :Parameters, 'stannum/constraints/parameters'
     autoload :Presence,   'stannum/constraints/presence'
+    autoload :Properties, 'stannum/constraints/properties'
     autoload :Signature,  'stannum/constraints/signature'
     autoload :Signatures, 'stannum/constraints/signatures'
     autoload :Tuples,     'stannum/constraints/tuples'
