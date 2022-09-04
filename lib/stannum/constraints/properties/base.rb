@@ -1,9 +1,11 @@
 # frozen_string_literal: true
 
+require 'sleeping_king_studios/tools/toolbelt'
+
 require 'stannum/constraints/properties'
 
 module Stannum::Constraints::Properties
-  # Abstract base class for property matching constraints.
+  # Abstract base class for property constraints.
   class Base < Stannum::Constraints::Base
     # Default parameter names to filter out of errors.
     FILTERED_PARAMETERS = %i[
@@ -97,6 +99,10 @@ module Stannum::Constraints::Properties
         methods: %i[[]],
         missing: %i[[]]
       )
+    end
+
+    def skip_property?(value)
+      (allow_empty? && empty?(value)) || (allow_nil? && value.nil?)
     end
 
     def tools

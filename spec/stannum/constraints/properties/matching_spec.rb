@@ -1,27 +1,29 @@
 # frozen_string_literal: true
 
-require 'stannum/constraints/properties/base'
+require 'stannum/constraints/properties/matching'
 
 require 'support/examples/constraint_examples'
 
-RSpec.describe Stannum::Constraints::Properties::Base do
+RSpec.describe Stannum::Constraints::Properties::Matching do
   include Spec::Support::Examples::ConstraintExamples
 
   subject(:constraint) do
-    described_class.new(*property_names, **constructor_options)
+    described_class.new(reference_name, *property_names, **constructor_options)
   end
 
   shared_context 'when initialized with multiple property names' do
     let(:property_names) { %w[confirmation verification] }
   end
 
+  let(:reference_name)      { 'launch_date' }
   let(:property_names)      { %w[confirmation] }
   let(:constructor_options) { {} }
   let(:expected_options) do
     {
       allow_empty:    false,
       allow_nil:      false,
-      property_names: property_names
+      property_names: property_names,
+      reference_name: reference_name
     }
   end
 
@@ -49,7 +51,7 @@ RSpec.describe Stannum::Constraints::Properties::Base do
     it 'should define the constructor' do
       expect(described_class)
         .to be_constructible
-        .with(0).arguments
+        .with(2).arguments
         .and_unlimited_arguments
         .and_keywords(:allow_empty, :allow_nil)
         .and_any_keywords
@@ -59,7 +61,7 @@ RSpec.describe Stannum::Constraints::Properties::Base do
       let(:error_message) { "property names can't be empty" }
 
       it 'should raise an error' do
-        expect { described_class.new }
+        expect { described_class.new(reference_name) }
           .to raise_error(ArgumentError, error_message)
       end
     end
@@ -68,7 +70,7 @@ RSpec.describe Stannum::Constraints::Properties::Base do
       let(:error_message) { "property name at 1 can't be blank" }
 
       it 'should raise an error' do
-        expect { described_class.new(*property_names, nil) }
+        expect { described_class.new(reference_name, *property_names, nil) }
           .to raise_error(ArgumentError, error_message)
       end
     end
@@ -78,7 +80,7 @@ RSpec.describe Stannum::Constraints::Properties::Base do
       let(:error_message) { 'property name at 1 is not a String or a Symbol' }
 
       it 'should raise an error' do
-        expect { described_class.new(*property_names, object) }
+        expect { described_class.new(reference_name, *property_names, object) }
           .to raise_error(ArgumentError, error_message)
       end
     end
@@ -87,7 +89,7 @@ RSpec.describe Stannum::Constraints::Properties::Base do
       let(:error_message) { "property name at 1 can't be blank" }
 
       it 'should raise an error' do
-        expect { described_class.new(*property_names, '') }
+        expect { described_class.new(reference_name, *property_names, '') }
           .to raise_error(ArgumentError, error_message)
       end
     end
@@ -96,7 +98,43 @@ RSpec.describe Stannum::Constraints::Properties::Base do
       let(:error_message) { "property name at 1 can't be blank" }
 
       it 'should raise an error' do
-        expect { described_class.new(*property_names, :'') }
+        expect { described_class.new(reference_name, *property_names, :'') }
+          .to raise_error(ArgumentError, error_message)
+      end
+    end
+
+    describe 'with reference_name: nil' do
+      let(:error_message) { "reference name can't be blank" }
+
+      it 'should raise an error' do
+        expect { described_class.new(nil, *property_names) }
+          .to raise_error(ArgumentError, error_message)
+      end
+    end
+
+    describe 'with reference_name: an Object' do
+      let(:error_message) { 'reference name is not a String or a Symbol' }
+
+      it 'should raise an error' do
+        expect { described_class.new(Object.new.freeze, *property_names) }
+          .to raise_error(ArgumentError, error_message)
+      end
+    end
+
+    describe 'with reference_name: an empty String' do
+      let(:error_message) { "reference name can't be blank" }
+
+      it 'should raise an error' do
+        expect { described_class.new('', *property_names) }
+          .to raise_error(ArgumentError, error_message)
+      end
+    end
+
+    describe 'with reference_name: an empty Symbol' do
+      let(:error_message) { "reference name can't be blank" }
+
+      it 'should raise an error' do
+        expect { described_class.new(:'', *property_names) }
           .to raise_error(ArgumentError, error_message)
       end
     end
@@ -264,6 +302,12 @@ RSpec.describe Stannum::Constraints::Properties::Base do
 
       it { expect(constraint.send(:filter_parameters?)).to be true }
     end
+
+    context 'when the reference name matches a filter' do
+      let(:reference_name) { 'password' }
+
+      it { expect(constraint.send(:filter_parameters?)).to be true }
+    end
   end
 
   describe '#filtered_parameters' do
@@ -303,6 +347,12 @@ RSpec.describe Stannum::Constraints::Properties::Base do
     wrap_context 'when initialized with multiple property names' do
       it { expect(constraint.property_names).to be == property_names }
     end
+  end
+
+  describe '#reference_name' do
+    include_examples 'should define reader',
+      :reference_name,
+      -> { reference_name }
   end
 
   describe '#skip_property?' do

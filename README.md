@@ -1095,18 +1095,46 @@ constraint.matches?(:a_symbol)
 
 Property constraints match against the properties of the object.
 
-**Match Property Constraint**
+**Do Not Match Property Constraint**
 
-Matches if the values of the given properties are equal to the value of the expected property.
+Matches if none of the values of the given properties are equal to the value of the expected property.
 
 ```ruby
-ResetPassword = Struct.new(:password, :confirmation)
+UpdatePassword = Struct.new(:old_password, :new_password)
+constraint    = Stannum::Constraints::Properties::DoNotMatchProperty.new(
+  :old_password,
+  :new_password
+)
+
+params = UpdatePassword.new('tronlives', 'ifightfortheusers')
+constraint.matches?(params)
+#=> true
+
+params = UpdatePassword.new('tronlives', 'tronlives')
+constraint.matches?(params)
+#=> false
+constraint.errors_for(params)
+#=> [
+  {
+    path: [:confirmation],
+    type: 'stannum.constraints.is_equal_to',
+    data: { expected: '[FILTERED]', actual: '[FILTERED]' }
+  }
+]
+```
+
+**Match Property Constraint**
+
+Matches if all the values of the given properties are equal to the value of the expected property.
+
+```ruby
+ConfirmPassword = Struct.new(:password, :confirmation)
 constraint    = Stannum::Constraints::Properties::MatchProperty.new(
   :password,
   :confirmation
 )
 
-params = ResetPassword.new('tronlives', 'ifightfortheusers')
+params = ConfirmPassword.new('tronlives', 'ifightfortheusers')
 constraint.matches?(params)
 #=> false
 constraint.errors_for(params)
@@ -1118,7 +1146,7 @@ constraint.errors_for(params)
   }
 ]
 
-params = ResetPassword.new('tronlives', 'tronlives')
+params = ConfirmPassword.new('tronlives', 'tronlives')
 constraint.matches?(params)
 #=> true
 ```
