@@ -11,13 +11,13 @@ module Stannum::Constraints::Properties
   # constraint will not match.
   #
   # @example Using an Properties::Match constraint
-  #   ResetPassword = Struct.new(:password, :confirmation)
+  #   ConfirmPassword = Struct.new(:password, :confirmation)
   #   constraint    = Stannum::Constraints::Properties::MatchProperty.new(
   #     :password,
   #     :confirmation
   #   )
   #
-  #   params = ResetPassword.new('tronlives', 'ifightfortheusers')
+  #   params = ConfirmPassword.new('tronlives', 'ifightfortheusers')
   #   constraint.matches?(params)
   #   #=> false
   #   constraint.errors_for(params)
@@ -29,7 +29,7 @@ module Stannum::Constraints::Properties
   #     }
   #   ]
   #
-  #   params = ResetPassword.new('tronlives', 'tronlives')
+  #   params = ConfirmPassword.new('tronlives', 'tronlives')
   #   constraint.matches?(params)
   #   #=> true
   class MatchProperty < Stannum::Constraints::Properties::Matching
