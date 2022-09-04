@@ -7,6 +7,8 @@ module Stannum::Constraints
   module Properties
     autoload :Base,
       'stannum/constraints/properties/base'
+    autoload :DoNotMatchProperty,
+      'stannum/constraints/properties/do_not_match_property'
     autoload :MatchProperty,
       'stannum/constraints/properties/match_property'
     autoload :Matching,
