@@ -11,6 +11,53 @@ RSpec.describe Stannum::Contracts::Builder do
     it { expect(described_class).to be_constructible.with(1).argument }
   end
 
+  describe '#concat' do
+    let(:error_message) { 'must be an instance of Stannum::Contract' }
+
+    it { expect(builder).to respond_to(:concat).with(1).argument }
+
+    describe 'with nil' do
+      it 'should raise an error' do
+        expect { builder.concat nil }
+          .to raise_error ArgumentError, error_message
+      end
+    end
+
+    describe 'with an object' do
+      it 'should raise an error' do
+        expect { builder.concat Object.new.freeze }
+          .to raise_error ArgumentError, error_message
+      end
+    end
+
+    describe 'with a constraint' do
+      it 'should raise an error' do
+        expect { builder.concat Stannum::Constraints::Base.new }
+          .to raise_error ArgumentError, error_message
+      end
+    end
+
+    describe 'with a contract with constraints' do
+      let(:constraint) { Stannum::Constraints::Base.new }
+      let(:other)      { Stannum::Contract.new }
+      let(:expected) do
+        Stannum::Contracts::Definition.new(
+          constraint: constraint,
+          contract:   other,
+          options:    { property: nil, sanity: false }
+        )
+      end
+
+      before(:example) { other.add_constraint(constraint) }
+
+      it 'should add the constraints to the contract' do
+        expect { builder.concat other }
+          .to change { contract.each_constraint.to_a }
+          .to include(expected)
+      end
+    end
+  end
+
   describe '#constraint' do
     it 'should define the method' do
       expect(builder)
