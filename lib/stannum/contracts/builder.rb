@@ -18,6 +18,17 @@ module Stannum::Contracts
     # @return [Stannum::Contract] The contract to which constraints are added.
     attr_reader :contract
 
+    # Concatenate the constraints from the given other contract.
+    #
+    # @param other [Stannum::Contract] the other contract.
+    #
+    # @return [self] the contract builder.
+    #
+    # @see Stannum::Contracts::Base#concat.
+    def concat(other)
+      contract.concat(other)
+    end
+
     # Adds a constraint to the contract.
     #
     # @overload constraint(constraint, **options)

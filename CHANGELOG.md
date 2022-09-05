@@ -7,6 +7,10 @@
 - Implemented `Stannum::Constraints::Properties::MatchProperty`
 - Implemented `Stannum::Constraints::Properties::DoNotMatchProperty`
 
+### Contracts
+
+- Added `#concat` to `Stannum::Contracts::Builder`.
+
 ## 0.2.0
 
 ### Constraints
