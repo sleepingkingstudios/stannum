@@ -350,7 +350,7 @@ RSpec.describe Stannum::Contracts::ParametersContract do
         let(:expected) do
           ary = [name, an_instance_of(Stannum::Constraint)]
 
-          RUBY_VERSION < '2.7' ? ary << {} : ary
+          RUBY_VERSION < '3.0' ? ary << {} : ary
         end
 
         it 'should delegate to #add_keyword_constraint' do
@@ -407,7 +407,7 @@ RSpec.describe Stannum::Contracts::ParametersContract do
         let(:expected) do
           ary = [name, type]
 
-          RUBY_VERSION < '2.7' ? ary << {} : ary
+          RUBY_VERSION < '3.0' ? ary << {} : ary
         end
 
         it 'should delegate to #add_keyword_constraint' do
@@ -437,7 +437,7 @@ RSpec.describe Stannum::Contracts::ParametersContract do
         let(:expected) do
           ary = [name, constraint]
 
-          RUBY_VERSION < '2.7' ? ary << {} : ary
+          RUBY_VERSION < '3.0' ? ary << {} : ary
         end
 
         it 'should delegate to #add_keyword_constraint' do
@@ -534,7 +534,7 @@ RSpec.describe Stannum::Contracts::ParametersContract do
     let(:expected) do
       ary = [nil, String]
 
-      RUBY_VERSION < '2.7' ? ary << {} : ary
+      RUBY_VERSION < '3.0' ? ary << {} : ary
     end
 
     before(:example) do
@@ -578,7 +578,7 @@ RSpec.describe Stannum::Contracts::ParametersContract do
     let(:expected) do
       ary = [keyword, String]
 
-      RUBY_VERSION < '2.7' ? ary << {} : ary
+      RUBY_VERSION < '3.0' ? ary << {} : ary
     end
 
     before(:example) do

@@ -34,7 +34,7 @@ module Spec::Support::Examples
       describe '#matches?' do
         it { expect(subject).to respond_to(:matches?).with(1).argument }
 
-        it { expect(subject).to alias_method(:matches?).as(:match?) }
+        it { expect(subject).to have_aliased_method(:matches?).as(:match?) }
       end
 
       describe '#message' do

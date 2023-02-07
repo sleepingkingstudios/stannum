@@ -16,7 +16,7 @@ RSpec.describe Spec::Support::Matchers::BeAConstraintMatcher do
   end
 
   shared_context 'when the expected constraint is a matcher' do
-    let(:expected_constraint) { be_kind_of(Spec::ExampleConstraint) }
+    let(:expected_constraint) { be_a(Spec::ExampleConstraint) }
 
     example_class 'Spec::ExampleConstraint', Stannum::Constraints::Base
   end

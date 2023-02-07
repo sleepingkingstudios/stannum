@@ -60,7 +60,7 @@ RSpec.describe Stannum::Constraints::Types::HashWithIndifferentKeys do
   include_examples 'should implement the Constraint methods'
 
   describe '#expected_type' do
-    include_examples 'should have reader', :expected_type, ::Hash
+    include_examples 'should have reader', :expected_type, Hash
   end
 
   describe '#key_type' do

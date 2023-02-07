@@ -14,7 +14,7 @@ module Spec
 
       add_constraint Spec::LengthConstraint.new(36)
 
-      add_constraint Spec::FormatConstraint.new(/\A[A-Fa-f0-9\-]+\d/)
+      add_constraint Spec::FormatConstraint.new(/\A[A-Fa-f0-9-]+\d/)
     end
   end
 end

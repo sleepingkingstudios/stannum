@@ -118,7 +118,7 @@ RSpec.describe Stannum::Constraints::Delegator do
 
     it { expect(constraint).to respond_to(:matches?).with(1).argument }
 
-    it { expect(constraint).to alias_method(:matches?).as(:match?) }
+    it { expect(constraint).to have_aliased_method(:matches?).as(:match?) }
 
     it 'should delegate to #receiver' do
       allow(receiver).to receive(:matches?)

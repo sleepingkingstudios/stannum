@@ -168,7 +168,7 @@ module Stannum::Contracts
 
         index = 1 + definition.options.fetch(:property, -1)
 
-        index > count ? index : count
+        [index, count].max
       end
     end
 
