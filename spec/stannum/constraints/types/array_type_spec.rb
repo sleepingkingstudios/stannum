@@ -73,7 +73,7 @@ RSpec.describe Stannum::Constraints::Types::ArrayType do
   end
 
   describe '#expected_type' do
-    include_examples 'should have reader', :expected_type, ::Array
+    include_examples 'should have reader', :expected_type, Array
   end
 
   describe '#item_type' do

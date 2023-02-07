@@ -1798,7 +1798,7 @@ RSpec.describe Stannum::Struct do
   describe '#assign_attributes' do
     it { expect(struct).to respond_to(:assign_attributes).with(1).argument }
 
-    it { expect(struct).to alias_method(:assign_attributes).as(:assign) }
+    it { expect(struct).to have_aliased_method(:assign_attributes).as(:assign) }
 
     describe 'with nil' do
       it 'should raise an error' do
@@ -2244,7 +2244,7 @@ RSpec.describe Stannum::Struct do
   describe '#attributes' do
     it { expect(struct).to respond_to(:attributes).with(0).arguments }
 
-    it { expect(struct).to alias_method(:attributes).as(:to_h) }
+    it { expect(struct).to have_aliased_method(:attributes).as(:to_h) }
 
     it { expect(struct.attributes).to be == {} }
 

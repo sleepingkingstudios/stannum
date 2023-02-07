@@ -1709,7 +1709,7 @@ RSpec.describe Stannum::Errors do
   describe '#empty?' do
     it { expect(errors).to respond_to(:empty?).with(0).arguments }
 
-    it { expect(errors).to alias_method(:empty?).as(:blank?) }
+    it { expect(errors).to have_aliased_method(:empty?).as(:blank?) }
 
     it { expect(errors.empty?).to be true }
 
@@ -1960,7 +1960,7 @@ RSpec.describe Stannum::Errors do
   describe '#size' do
     it { expect(errors).to respond_to(:size).with(0).arguments }
 
-    it { expect(errors).to alias_method(:size).as(:count) }
+    it { expect(errors).to have_aliased_method(:size).as(:count) }
 
     it { expect(errors.size).to be 0 }
 

@@ -400,7 +400,7 @@ module Stannum
 
     # @return [String] a string representation of the struct and its attributes.
     def inspect # rubocop:disable Metrics/AbcSize
-      if self.class.attributes.each_key.size.zero?
+      if self.class.attributes.each_key.size.zero? # rubocop:disable Style/ZeroLengthPredicate
         return "#<#{self.class.name}>"
       end
 
