@@ -288,7 +288,7 @@ RSpec.describe Stannum::Constraints::Properties::Base do
 
         yield
       ensure
-        Object.send(:remove_const, :Rails) if Rails == rails
+        Object.send(:remove_const, :Rails) if rails == Rails
       end
 
       it { expect(constraint.send :filtered_parameters).to be == expected }
