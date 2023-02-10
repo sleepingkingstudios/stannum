@@ -6,12 +6,17 @@ require 'stannum/support/coercion'
 module Stannum::Constraints::Hashes
   # Constraint for validating the keys of a hash-like object.
   #
+  # When using this constraint, the keys must be strings or symbols, and the
+  # hash keys must be of the same type. A constraint configured with string keys
+  # will not match a hash with symbol keys, and vice versa.
+  #
   # @example
-  #   keys       = %[fuel mass size]
+  #   keys       = %i[fuel mass size]
   #   constraint = Stannum::Constraints::Hashes::ExpectedKeys.new(keys)
   #
   #   constraint.matches?({})                                #=> true
   #   constraint.matches?({ fuel: 'Monopropellant' })        #=> true
+  #   constraint.matches?({ 'fuel' => 'Monopropellant' })    #=> false
   #   constraint.matches?({ electric: true, fuel: 'Xenon' }) #=> false
   #   constraint.matches?({ fuel: 'LF/O', mass: '1 ton', size: 'Medium' })
   #   #=> true
@@ -68,7 +73,7 @@ module Stannum::Constraints::Hashes
       errors
     end
 
-    # @return [Array] the expected keys.
+    # @return [Set] the expected keys.
     def expected_keys
       keys = options[:expected_keys]
 
