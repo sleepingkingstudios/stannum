@@ -1,10 +1,10 @@
 # frozen_string_literal: true
 
-require 'stannum/constraints/hashes/extra_keys'
+require 'stannum/constraints/hashes/indifferent_extra_keys'
 
 require 'support/examples/constraint_examples'
 
-RSpec.describe Stannum::Constraints::Hashes::ExtraKeys do
+RSpec.describe Stannum::Constraints::Hashes::IndifferentExtraKeys do
   include Spec::Support::Examples::ConstraintExamples
 
   subject(:constraint) do
@@ -61,12 +61,40 @@ RSpec.describe Stannum::Constraints::Hashes::ExtraKeys do
   describe '#expected_keys' do
     include_examples 'should have reader', :expected_keys
 
-    context 'when initialized with an array' do
-      let(:expected_keys) { %i[foo bar baz] }
+    context 'when initialized with an array of strings' do
+      let(:expected_keys)    { %w[foo bar baz] }
+      let(:indifferent_keys) { expected_keys + %i[foo bar baz] }
 
       it { expect(constraint.expected_keys).to be_a Set }
 
-      it { expect(constraint.expected_keys.to_a).to be == expected_keys }
+      it 'should match both string and symbol keys' do
+        expect(constraint.expected_keys.to_a)
+          .to contain_exactly(*indifferent_keys)
+      end
+    end
+
+    context 'when initialized with an array of symbols' do
+      let(:expected_keys)    { %i[foo bar baz] }
+      let(:indifferent_keys) { expected_keys + %w[foo bar baz] }
+
+      it { expect(constraint.expected_keys).to be_a Set }
+
+      it 'should match both string and symbol keys' do
+        expect(constraint.expected_keys.to_a)
+          .to contain_exactly(*indifferent_keys)
+      end
+    end
+
+    context 'when initialized with a mixed array of strings and symbols' do
+      let(:expected_keys)    { ['foo', :bar, 'baz'] }
+      let(:indifferent_keys) { expected_keys + [:foo, 'bar', :baz] }
+
+      it { expect(constraint.expected_keys).to be_a Set }
+
+      it 'should match both string and symbol keys' do
+        expect(constraint.expected_keys.to_a)
+          .to contain_exactly(*indifferent_keys)
+      end
     end
 
     context 'when initialized with a proc' do
@@ -75,10 +103,14 @@ RSpec.describe Stannum::Constraints::Hashes::ExtraKeys do
 
         -> { keys }
       end
+      let(:indifferent_keys) { expected_keys.call + %w[foo bar baz] }
 
       it { expect(constraint.expected_keys).to be_a Set }
 
-      it { expect(constraint.expected_keys.to_a).to be == %i[foo bar baz] }
+      it 'should match both string and symbol keys' do
+        expect(constraint.expected_keys.to_a)
+          .to contain_exactly(*indifferent_keys)
+      end
     end
   end
 
@@ -248,32 +280,8 @@ RSpec.describe Stannum::Constraints::Hashes::ExtraKeys do
 
       describe 'with a hash with matching keys of different type' do
         let(:actual) { { 'foo' => 'foo', 'bar' => 'bar', 'baz' => 'baz' } }
-        let(:expected_errors) do
-          [
-            {
-              data: { value: 'foo' },
-              path: %w[foo],
-              type: described_class::TYPE
-            },
-            {
-              data: { value: 'bar' },
-              path: %w[bar],
-              type: described_class::TYPE
-            },
-            {
-              data: { value: 'baz' },
-              path: %w[baz],
-              type: described_class::TYPE
-            }
-          ]
-        end
-        let(:expected_messages) do
-          expected_errors.map do |err|
-            err.merge(message: 'has extra keys')
-          end
-        end
 
-        include_examples 'should not match the constraint'
+        include_examples 'should match the constraint'
       end
     end
 
@@ -408,32 +416,8 @@ RSpec.describe Stannum::Constraints::Hashes::ExtraKeys do
 
       describe 'with a hash with matching keys of different type' do
         let(:actual) { { 'foo' => 'foo', 'bar' => 'bar', 'baz' => 'baz' } }
-        let(:expected_errors) do
-          [
-            {
-              data: { value: 'foo' },
-              path: %w[foo],
-              type: described_class::TYPE
-            },
-            {
-              data: { value: 'bar' },
-              path: %w[bar],
-              type: described_class::TYPE
-            },
-            {
-              data: { value: 'baz' },
-              path: %w[baz],
-              type: described_class::TYPE
-            }
-          ]
-        end
-        let(:expected_messages) do
-          expected_errors.map do |err|
-            err.merge(message: 'has extra keys')
-          end
-        end
 
-        include_examples 'should not match the constraint'
+        include_examples 'should match the constraint'
       end
     end
   end
@@ -507,7 +491,7 @@ RSpec.describe Stannum::Constraints::Hashes::ExtraKeys do
       describe 'with a hash with matching keys of different type' do
         let(:actual) { { 'foo' => 'foo', 'bar' => 'bar', 'baz' => 'baz' } }
 
-        include_examples 'should match the constraint'
+        include_examples 'should not match the constraint'
       end
     end
 
@@ -566,7 +550,7 @@ RSpec.describe Stannum::Constraints::Hashes::ExtraKeys do
       describe 'with a hash with matching keys of different type' do
         let(:actual) { { 'foo' => 'foo', 'bar' => 'bar', 'baz' => 'baz' } }
 
-        include_examples 'should match the constraint'
+        include_examples 'should not match the constraint'
       end
     end
   end
