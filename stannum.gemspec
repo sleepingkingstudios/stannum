@@ -7,7 +7,6 @@ require 'stannum/version'
 Gem::Specification.new do |gem|
   gem.name        = 'stannum'
   gem.version     = Stannum::VERSION
-  gem.date        = Time.now.utc.strftime '%Y-%m-%d'
   gem.summary     = 'A library for specifying and validating data structures.'
 
   gem.description = <<~DESCRIPTION.strip
@@ -22,11 +21,12 @@ Gem::Specification.new do |gem|
   gem.license     = 'MIT'
 
   gem.metadata = {
-    'bug_tracker_uri' => 'https://github.com/sleepingkingstudios/stannum/issues',
-    'source_code_uri' => 'https://github.com/sleepingkingstudios/stannum'
+    'bug_tracker_uri'       => 'https://github.com/sleepingkingstudios/stannum/issues',
+    'source_code_uri'       => 'https://github.com/sleepingkingstudios/stannum',
+    'rubygems_mfa_required' => 'true'
   }
 
-  gem.required_ruby_version = '>= 2.6'
+  gem.required_ruby_version = '>= 2.7'
   gem.require_path          = 'lib'
   gem.files                 =
     Dir['config/locales/*', 'lib/**/*.rb', 'LICENSE', '*.md']
