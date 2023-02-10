@@ -74,5 +74,18 @@ module Stannum::Contracts
         actual.fetch(property) { actual[property.to_s] }
       end
     end
+
+    private
+
+    def add_extra_keys_constraint
+      return if options[:allow_extra_keys]
+
+      keys = -> { expected_keys }
+
+      add_constraint(
+        Stannum::Constraints::Hashes::IndifferentExtraKeys.new(keys),
+        concatenatable: false
+      )
+    end
   end
 end

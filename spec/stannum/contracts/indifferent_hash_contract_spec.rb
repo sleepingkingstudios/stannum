@@ -62,6 +62,216 @@ RSpec.describe Stannum::Contracts::IndifferentHashContract do
 
   include_examples 'should implement the Contract methods'
 
+  describe '#each_constraint' do
+    let(:expected_keys) { Set.new }
+    let(:builtin_definitions) do
+      [
+        an_instance_of(Stannum::Contracts::Definition).and(
+          satisfy do |definition|
+            expect(definition.constraint)
+              .to be_a Stannum::Constraints::Type
+            expect(definition.constraint.expected_type).to be Hash
+            expect(definition.constraint.key_type)
+              .to be_a Stannum::Constraints::Hashes::IndifferentKey
+            expect(definition.constraint.value_type).to be nil
+            expect(definition.sanity?).to be true
+          end
+        ),
+        an_instance_of(Stannum::Contracts::Definition).and(
+          satisfy do |definition|
+            expect(definition.constraint)
+              .to be_a Stannum::Constraints::Hashes::IndifferentExtraKeys
+            expect(definition.constraint.expected_keys).to be == expected_keys
+            expect(definition.concatenatable?).to be false
+            expect(definition.sanity?).to be false
+          end
+        )
+      ]
+    end
+    let(:expected) { builtin_definitions }
+
+    it { expect(contract).to respond_to(:each_constraint).with(0).arguments }
+
+    it { expect(contract.each_constraint).to be_a Enumerator }
+
+    it { expect(contract.each_constraint.count).to be 2 }
+
+    it 'should yield each definition' do
+      expect { |block| contract.each_constraint(&block) }
+        .to yield_successive_args(*expected)
+    end
+
+    context 'when initialized with allow_extra_keys: true' do
+      let(:constructor_options) { super().merge(allow_extra_keys: true) }
+      let(:builtin_definitions) do
+        [
+          an_instance_of(Stannum::Contracts::Definition).and(
+            satisfy do |definition|
+              expect(definition.constraint)
+                .to be_a Stannum::Constraints::Type
+              expect(definition.constraint.expected_type).to be Hash
+              expect(definition.constraint.key_type)
+                .to be_a Stannum::Constraints::Hashes::IndifferentKey
+              expect(definition.constraint.value_type).to be nil
+              expect(definition.sanity?).to be true
+            end
+          )
+        ]
+      end
+
+      it { expect(contract.each_constraint.count).to be 1 }
+
+      it 'should yield each definition' do
+        expect { |block| contract.each_constraint(&block) }
+          .to yield_successive_args(*expected)
+      end
+    end
+
+    context 'when initialized with key_type: value' do
+      let(:constructor_options) { super().merge(key_type: String) }
+      let(:builtin_definitions) do
+        [
+          an_instance_of(Stannum::Contracts::Definition).and(
+            satisfy do |definition|
+              expect(definition.constraint)
+                .to be_a Stannum::Constraints::Type
+              expect(definition.constraint.expected_type).to be Hash
+              expect(definition.constraint.key_type)
+                .to be_a Stannum::Constraints::Type
+              expect(definition.constraint.key_type.expected_type)
+                .to be String
+              expect(definition.constraint.value_type).to be nil
+              expect(definition.sanity?).to be true
+            end
+          ),
+          an_instance_of(Stannum::Contracts::Definition).and(
+            satisfy do |definition|
+              expect(definition.constraint)
+                .to be_a Stannum::Constraints::Hashes::ExtraKeys
+              expect(definition.constraint.expected_keys).to be == expected_keys
+              expect(definition.sanity?).to be false
+            end
+          )
+        ]
+      end
+
+      it { expect(contract.each_constraint.count).to be 2 }
+
+      it 'should yield each definition' do
+        expect { |block| contract.each_constraint(&block) }
+          .to yield_successive_args(*expected)
+      end
+    end
+  end
+
+  describe '#each_pair' do
+    let(:actual) do
+      {
+        'name' => 'Self-sealing Stem Bolt',
+        'mass' => 10,
+        'size' => 'Tiny'
+      }
+    end
+    let(:expected_keys) { Set.new }
+    let(:builtin_definitions) do
+      [
+        an_instance_of(Stannum::Contracts::Definition).and(
+          satisfy do |definition|
+            expect(definition.constraint)
+              .to be_a Stannum::Constraints::Type
+            expect(definition.constraint.expected_type).to be Hash
+            expect(definition.constraint.key_type)
+              .to be_a Stannum::Constraints::Hashes::IndifferentKey
+            expect(definition.constraint.value_type).to be nil
+            expect(definition.sanity?).to be true
+          end
+        ),
+        an_instance_of(Stannum::Contracts::Definition).and(
+          satisfy do |definition|
+            expect(definition.constraint)
+              .to be_a Stannum::Constraints::Hashes::IndifferentExtraKeys
+            expect(definition.constraint.expected_keys).to be == expected_keys
+            expect(definition.concatenatable?).to be false
+            expect(definition.sanity?).to be false
+          end
+        )
+      ]
+    end
+    let(:expected) do
+      builtin_definitions.zip(Array.new(builtin_definitions.size, actual))
+    end
+
+    it { expect(contract).to respond_to(:each_pair).with(1).argument }
+
+    it { expect(contract.each_pair(actual)).to be_a Enumerator }
+
+    it { expect(contract.each_pair(actual).count).to be 2 }
+
+    it 'should yield each definition and the mapped property' do
+      expect { |block| contract.each_pair(actual, &block) }
+        .to yield_successive_args(*expected)
+    end
+
+    context 'when initialized with allow_extra_keys: true' do
+      let(:constructor_options) { super().merge(allow_extra_keys: true) }
+      let(:builtin_definitions) do
+        [
+          an_instance_of(Stannum::Contracts::Definition).and(
+            satisfy do |definition|
+              expect(definition.constraint)
+                .to be_a Stannum::Constraints::Type
+              expect(definition.constraint.expected_type).to be Hash
+              expect(definition.sanity?).to be true
+            end
+          )
+        ]
+      end
+
+      it { expect(contract.each_pair(actual).count).to be 1 }
+
+      it 'should yield each definition and the mapped property' do
+        expect { |block| contract.each_pair(actual, &block) }
+          .to yield_successive_args(*expected)
+      end
+    end
+
+    context 'when initialized with key_type: value' do
+      let(:constructor_options) { super().merge(key_type: String) }
+      let(:builtin_definitions) do
+        [
+          an_instance_of(Stannum::Contracts::Definition).and(
+            satisfy do |definition|
+              expect(definition.constraint)
+                .to be_a Stannum::Constraints::Type
+              expect(definition.constraint.expected_type).to be Hash
+              expect(definition.constraint.key_type)
+                .to be_a Stannum::Constraints::Type
+              expect(definition.constraint.key_type.expected_type)
+                .to be String
+              expect(definition.constraint.value_type).to be nil
+              expect(definition.sanity?).to be true
+            end
+          ),
+          an_instance_of(Stannum::Contracts::Definition).and(
+            satisfy do |definition|
+              expect(definition.constraint)
+                .to be_a Stannum::Constraints::Hashes::IndifferentExtraKeys
+              expect(definition.constraint.expected_keys).to be == expected_keys
+              expect(definition.sanity?).to be false
+            end
+          )
+        ]
+      end
+
+      it { expect(contract.each_pair(actual).count).to be 2 }
+
+      it 'should yield each definition and the mapped property' do
+        expect { |block| contract.each_pair(actual, &block) }
+          .to yield_successive_args(*expected)
+      end
+    end
+  end
+
   describe '#key_type' do
     include_examples 'should define reader',
       :key_type,
