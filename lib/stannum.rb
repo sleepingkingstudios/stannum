@@ -11,6 +11,7 @@ module Stannum
   autoload :Errors,              'stannum/errors'
   autoload :Messages,            'stannum/messages'
   autoload :ParameterValidation, 'stannum/parameter_validation'
+  autoload :Schema,              'stannum/schema'
   autoload :Struct,              'stannum/struct'
 
   # @return [String] the absolute path to the gem directory.
