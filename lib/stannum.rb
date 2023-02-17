@@ -8,6 +8,7 @@ module Stannum
   autoload :Constraints,         'stannum/constraints'
   autoload :Contract,            'stannum/contract'
   autoload :Contracts,           'stannum/contracts'
+  autoload :Entities,            'stannum/entities'
   autoload :Errors,              'stannum/errors'
   autoload :Messages,            'stannum/messages'
   autoload :ParameterValidation, 'stannum/parameter_validation'
