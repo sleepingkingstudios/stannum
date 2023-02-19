@@ -1,5 +1,5 @@
 # frozen_string_literal: true
 
 module Spec::Support
-  module Examples; end
+  module Entities; end
 end

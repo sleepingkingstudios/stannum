@@ -141,6 +141,11 @@ module Stannum::Entities
       {}
     end
 
+    def invalid_properties_message(properties, as: 'property')
+      "unknown #{tools.int.pluralize(properties.size, as)} " +
+        properties.keys.map(&:inspect).join(', ')
+    end
+
     def set_property(key, _)
       raise ArgumentError, "unknown property #{key.inspect}"
     end
@@ -148,11 +153,7 @@ module Stannum::Entities
     def set_properties(properties, **_)
       return if properties.empty?
 
-      error_message =
-        "unknown #{tools.int.pluralize(properties.size, 'property')} " +
-        properties.keys.map(&:inspect).join(', ')
-
-      raise ArgumentError, error_message
+      raise ArgumentError, invalid_properties_message(properties)
     end
 
     def tools
