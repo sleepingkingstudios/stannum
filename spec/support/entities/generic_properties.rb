@@ -13,7 +13,9 @@ module Spec::Support::Entities
       super(**properties)
     end
 
-    attr_reader :properties
+    def properties
+      super.merge(@properties)
+    end
 
     private
 
@@ -22,11 +24,11 @@ module Spec::Support::Entities
     end
 
     def inspectable_properties
-      @properties
+      super.merge(@properties)
     end
 
     def set_properties(properties, force:)
-      matching, non_matching = bisect_properties(properties, self.properties)
+      matching, non_matching = bisect_properties(properties, @properties)
 
       super(non_matching, force: force)
 
@@ -40,9 +42,9 @@ module Spec::Support::Entities
     end
 
     def set_property(key, value)
-      super(key, value) unless properties.key?(key.to_s)
+      super(key, value) unless @properties.key?(key.to_s)
 
-      properties[key.to_s] = value
+      @properties[key.to_s] = value
     end
   end
 end

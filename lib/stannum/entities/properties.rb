@@ -27,27 +27,27 @@ module Stannum::Entities
 
     # Retrieves the property with the given key.
     #
-    # @param key [String, Symbol] The property key.
+    # @param property [String, Symbol] The property key.
     #
     # @return [Object] the value of the property.
     #
     # @raise ArgumentError if the key is not a valid property.
-    def [](key)
-      tools.assertions.assert_name(key, as: 'key', error_class: ArgumentError)
+    def [](property)
+      tools.assertions.validate_name(property, as: 'property')
 
-      get_property(key)
+      get_property(property)
     end
 
     # Sets the given property to the given value.
     #
-    # @param key [String, Symbol] The property key.
+    # @param property [String, Symbol] The property key.
     # @param value [Object] The value for the property.
     #
     # @raise ArgumentError if the key is not a valid property.
-    def []=(key, value)
-      tools.assertions.assert_name(key, as: 'key', error_class: ArgumentError)
+    def []=(property, value)
+      tools.assertions.validate_name(property, as: 'property')
 
-      set_property(key, value)
+      set_property(property, value)
     end
 
     # Updates the struct's properties with the given values.
@@ -87,7 +87,7 @@ module Stannum::Entities
 
     # Collects the entity properties.
     #
-    # @param properties [Hash<String, Object>] the entity properties.
+    # @return [Hash<String, Object>] the entity properties.
     def properties
       {}
     end
@@ -107,13 +107,22 @@ module Stannum::Entities
     #
     # @raise ArgumentError if any key is not a valid property.
     #
-    # @see #assign_attributes
+    # @see #assign_properties
     def properties=(properties)
       unless properties.is_a?(Hash)
         raise ArgumentError, 'properties must be a Hash'
       end
 
       set_properties(properties, force: true)
+    end
+
+    # Returns a Hash representation of the entity.
+    #
+    # @return [Hash<String, Object>] the entity properties.
+    #
+    # @see #properties
+    def to_h
+      properties
     end
 
     private
@@ -123,7 +132,7 @@ module Stannum::Entities
       non_matching = {}
 
       properties.each do |key, value|
-        if expected.key?(key.to_s)
+        if valid_property_key?(key) && expected.key?(key.to_s)
           matching[key.to_s] = value
         else
           non_matching[key] = value
@@ -135,6 +144,14 @@ module Stannum::Entities
 
     def get_property(key)
       raise ArgumentError, "unknown property #{key.inspect}"
+    end
+
+    def handle_invalid_properties(properties, as: 'property')
+      properties.each_key do |key|
+        tools.assertions.assert_name(key, as: as, error_class: ArgumentError)
+      end
+
+      raise ArgumentError, invalid_properties_message(properties, as: as)
     end
 
     def inspectable_properties
@@ -153,11 +170,17 @@ module Stannum::Entities
     def set_properties(properties, **_)
       return if properties.empty?
 
-      raise ArgumentError, invalid_properties_message(properties)
+      handle_invalid_properties(properties)
     end
 
     def tools
       SleepingKingStudios::Tools::Toolbelt.instance
+    end
+
+    def valid_property_key?(key)
+      return false unless key.is_a?(String) || key.is_a?(Symbol)
+
+      !key.empty?
     end
   end
 end

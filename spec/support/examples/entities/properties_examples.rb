@@ -19,11 +19,16 @@ module Spec::Support::Examples::Entities
     end
 
     shared_context 'when the entity has property values' do
-      let(:properties) do
+      let(:generic_properties) do
         {
           'amplitude' => '1 TW',
           'frequency' => '1 Hz'
         }
+      end
+      let(:properties) do
+        next super().merge(generic_properties) if defined?(super())
+
+        generic_properties
       end
     end
 
@@ -43,6 +48,46 @@ module Spec::Support::Examples::Entities
 
           it 'should not set the entity properties' do
             expect(described_class.new(**properties).properties).to be == {}
+          end
+        end
+
+        describe 'with properties with nil keys' do
+          let(:properties)    { { nil => 'value' } }
+          let(:error_message) { "property can't be blank" }
+
+          it 'should raise an exception' do
+            expect { described_class.new(**properties) }
+              .to raise_error ArgumentError, error_message
+          end
+        end
+
+        describe 'with properties with Object keys' do
+          let(:properties)    { { Object.new.freeze => 'value' } }
+          let(:error_message) { 'property is not a String or a Symbol' }
+
+          it 'should raise an exception' do
+            expect { described_class.new(**properties) }
+              .to raise_error ArgumentError, error_message
+          end
+        end
+
+        describe 'with properties with empty String keys' do
+          let(:properties)    { { '' => 'value' } }
+          let(:error_message) { "property can't be blank" }
+
+          it 'should raise an exception' do
+            expect { described_class.new(**properties) }
+              .to raise_error ArgumentError, error_message
+          end
+        end
+
+        describe 'with properties with empty Symbol keys' do
+          let(:properties)    { { '': 'value' } }
+          let(:error_message) { "property can't be blank" }
+
+          it 'should raise an exception' do
+            expect { described_class.new(**properties) }
+              .to raise_error ArgumentError, error_message
           end
         end
 
@@ -242,7 +287,7 @@ module Spec::Support::Examples::Entities
         it { expect(entity).to respond_to(:[]).with(1).argument }
 
         describe 'with nil' do
-          let(:error_message) { "key can't be blank" }
+          let(:error_message) { "property can't be blank" }
 
           it 'should raise an exception' do
             expect { entity[nil] }
@@ -251,7 +296,7 @@ module Spec::Support::Examples::Entities
         end
 
         describe 'with an Object' do
-          let(:error_message) { 'key is not a String or a Symbol' }
+          let(:error_message) { 'property is not a String or a Symbol' }
 
           it 'should raise an exception' do
             expect { entity[Object.new.freeze] }
@@ -260,7 +305,7 @@ module Spec::Support::Examples::Entities
         end
 
         describe 'with an empty String' do
-          let(:error_message) { "key can't be blank" }
+          let(:error_message) { "property can't be blank" }
 
           it 'should raise an exception' do
             expect { entity[''] }
@@ -269,7 +314,7 @@ module Spec::Support::Examples::Entities
         end
 
         describe 'with an empty Symbol' do
-          let(:error_message) { "key can't be blank" }
+          let(:error_message) { "property can't be blank" }
 
           it 'should raise an exception' do
             expect { entity[:''] }
@@ -338,7 +383,7 @@ module Spec::Support::Examples::Entities
         it { expect(entity).to respond_to(:[]=).with(2).arguments }
 
         describe 'with nil' do
-          let(:error_message) { "key can't be blank" }
+          let(:error_message) { "property can't be blank" }
 
           it 'should raise an exception' do
             expect { entity[nil] = 'value' }
@@ -347,7 +392,7 @@ module Spec::Support::Examples::Entities
         end
 
         describe 'with an Object' do
-          let(:error_message) { 'key is not a String or a Symbol' }
+          let(:error_message) { 'property is not a String or a Symbol' }
 
           it 'should raise an exception' do
             expect { entity[Object.new.freeze] = 'value' }
@@ -356,7 +401,7 @@ module Spec::Support::Examples::Entities
         end
 
         describe 'with an empty String' do
-          let(:error_message) { "key can't be blank" }
+          let(:error_message) { "property can't be blank" }
 
           it 'should raise an exception' do
             expect { entity[''] = 'value' }
@@ -365,7 +410,7 @@ module Spec::Support::Examples::Entities
         end
 
         describe 'with an empty Symbol' do
-          let(:error_message) { "key can't be blank" }
+          let(:error_message) { "property can't be blank" }
 
           it 'should raise an exception' do
             expect { entity[:''] = 'value' }
@@ -459,6 +504,46 @@ module Spec::Support::Examples::Entities
           end
         end
 
+        describe 'with a Hash with nil keys' do
+          let(:values)        { { nil => 'value' } }
+          let(:error_message) { "property can't be blank" }
+
+          it 'should raise an exception' do
+            expect { entity.assign_properties(values) }
+              .to raise_error ArgumentError, error_message
+          end
+        end
+
+        describe 'with a Hash with Object keys' do
+          let(:values)        { { Object.new.freeze => 'value' } }
+          let(:error_message) { 'property is not a String or a Symbol' }
+
+          it 'should raise an exception' do
+            expect { entity.assign_properties(values) }
+              .to raise_error ArgumentError, error_message
+          end
+        end
+
+        describe 'with a Hash with empty String keys' do
+          let(:values)        { { '' => 'value' } }
+          let(:error_message) { "property can't be blank" }
+
+          it 'should raise an exception' do
+            expect { entity.assign_properties(values) }
+              .to raise_error ArgumentError, error_message
+          end
+        end
+
+        describe 'with a Hash with empty Symbol keys' do
+          let(:values)        { { '': 'value' } }
+          let(:error_message) { "property can't be blank" }
+
+          it 'should raise an exception' do
+            expect { entity.assign_properties(values) }
+              .to raise_error ArgumentError, error_message
+          end
+        end
+
         describe 'with empty properties' do
           let(:values) { {} }
 
@@ -501,6 +586,19 @@ module Spec::Support::Examples::Entities
         end
 
         wrap_context 'when the entity class defines properties' do
+          describe 'with empty properties' do
+            let(:values) { {} }
+
+            it 'should not raise an exception' do
+              expect { entity.assign_properties(values) }.not_to raise_error
+            end
+
+            it 'should not change the properties' do
+              expect { entity.assign_properties(values) }
+                .not_to change(entity, :properties)
+            end
+          end
+
           describe 'with invalid String keys' do
             let(:values)        { { 'phase_angle' => 'π' } }
             let(:error_message) { 'unknown property "phase_angle"' }
@@ -622,6 +720,19 @@ module Spec::Support::Examples::Entities
           end
 
           wrap_context 'when the entity has property values' do
+            describe 'with empty properties' do
+              let(:values) { {} }
+
+              it 'should not raise an exception' do
+                expect { entity.assign_properties(values) }.not_to raise_error
+              end
+
+              it 'should not change the properties' do
+                expect { entity.assign_properties(values) }
+                  .not_to change(entity, :properties)
+              end
+            end
+
             describe 'with valid String keys' do
               let(:values) do
                 {
@@ -743,6 +854,46 @@ module Spec::Support::Examples::Entities
           end
         end
 
+        describe 'with a Hash with nil keys' do
+          let(:values)        { { nil => 'value' } }
+          let(:error_message) { "property can't be blank" }
+
+          it 'should raise an exception' do
+            expect { entity.properties = values }
+              .to raise_error ArgumentError, error_message
+          end
+        end
+
+        describe 'with a Hash with Object keys' do
+          let(:values)        { { Object.new.freeze => 'value' } }
+          let(:error_message) { 'property is not a String or a Symbol' }
+
+          it 'should raise an exception' do
+            expect { entity.properties = values }
+              .to raise_error ArgumentError, error_message
+          end
+        end
+
+        describe 'with a Hash with empty String keys' do
+          let(:values)        { { '' => 'value' } }
+          let(:error_message) { "property can't be blank" }
+
+          it 'should raise an exception' do
+            expect { entity.properties = values }
+              .to raise_error ArgumentError, error_message
+          end
+        end
+
+        describe 'with a Hash with empty Symbol keys' do
+          let(:values)        { { '': 'value' } }
+          let(:error_message) { "property can't be blank" }
+
+          it 'should raise an exception' do
+            expect { entity.properties = values }
+              .to raise_error ArgumentError, error_message
+          end
+        end
+
         describe 'with empty properties' do
           let(:values) { {} }
 
@@ -785,6 +936,17 @@ module Spec::Support::Examples::Entities
         end
 
         wrap_context 'when the entity class defines properties' do
+          describe 'with empty properties' do
+            let(:values) { {} }
+
+            it { expect { entity.properties = values }.not_to raise_error }
+
+            it 'should not change the entity properties' do
+              expect { entity.properties = values }
+                .not_to change(entity, :properties)
+            end
+          end
+
           describe 'with invalid String keys' do
             let(:values)        { { 'phase_angle' => 'π' } }
             let(:error_message) { 'unknown property "phase_angle"' }
@@ -902,6 +1064,24 @@ module Spec::Support::Examples::Entities
           end
 
           wrap_context 'when the entity has property values' do
+            describe 'with empty properties' do
+              let(:values) { {} }
+              let(:expected) do
+                {
+                  'amplitude' => nil,
+                  'frequency' => nil
+                }
+              end
+
+              it { expect { entity.properties = values }.not_to raise_error }
+
+              it 'should clear the entity properties' do
+                expect { entity.properties = values }
+                  .to change(entity, :properties)
+                  .to be == expected
+              end
+            end
+
             describe 'with valid String keys' do
               let(:values) do
                 {
@@ -945,6 +1125,25 @@ module Spec::Support::Examples::Entities
                   .to be == expected
               end
             end
+          end
+        end
+      end
+
+      describe '#to_h' do
+        include_examples 'should define reader', :to_h, {}
+
+        wrap_context 'when the entity class defines properties' do
+          let(:expected) do
+            {
+              'amplitude' => nil,
+              'frequency' => nil
+            }
+          end
+
+          it { expect(entity.to_h).to be == expected }
+
+          wrap_context 'when the entity has property values' do
+            it { expect(entity.to_h).to be == properties }
           end
         end
       end
