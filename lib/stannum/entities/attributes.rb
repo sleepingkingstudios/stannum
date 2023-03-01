@@ -16,8 +16,6 @@ module Stannum::Entities
       # - Adds the attribute to #attributes and the associated methods, such as
       #   #assign_attributes, #[] and #[]=.
       # - Defines reader and writer methods.
-      # - Adds a type constraint to ::Attributes::Contract, and indirectly to
-      #   ::Contract.
       #
       # @param attr_name [String, Symbol] The name of the attribute. Must be a
       #   non-empty String or Symbol.
@@ -136,7 +134,7 @@ module Stannum::Entities
     #
     # @param attributes [Hash<String, Object>] the entity attributes.
     def attributes
-      @attributes
+      @attributes.dup
     end
 
     # Replaces the entity's attributes with the given values.

@@ -28,7 +28,9 @@ module Spec::Support::Examples::Entities
       let(:properties) do
         next super().merge(generic_properties) if defined?(super())
 
+        # :nocov:
         generic_properties
+        # :nocov:
       end
     end
 

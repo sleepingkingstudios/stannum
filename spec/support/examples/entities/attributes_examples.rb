@@ -2262,6 +2262,11 @@ module Spec::Support::Examples::Entities
       describe '#attributes' do
         include_examples 'should define reader', :attributes, {}
 
+        it 'should return a copy of the attributes' do
+          expect { entity.attributes['name'] = 'Can of Headlight Fluid' }
+            .not_to change(entity, :attributes)
+        end
+
         wrap_context 'when the entity class defines attributes' do
           let(:expected) do
             {
