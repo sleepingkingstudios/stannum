@@ -275,7 +275,7 @@ RSpec.describe Stannum::Schema do
     describe 'with an Object' do
       it 'should raise an error' do
         expect { attributes[Object.new.freeze] }
-          .to raise_error ArgumentError, 'key must be a String or Symbol'
+          .to raise_error ArgumentError, 'key is not a String or a Symbol'
       end
     end
 
@@ -754,6 +754,141 @@ RSpec.describe Stannum::Schema do
       it { expect(attributes.key? 'size').to be true }
 
       it { expect(attributes.key? :size).to be true }
+    end
+  end
+
+  describe '#keys' do
+    it { expect(attributes).to respond_to(:keys).with(0).arguments }
+
+    it { expect(attributes.keys).to be == [] }
+
+    wrap_context 'when there are many defined attributes' do
+      let(:expected_attributes) { defined_attributes }
+      let(:expected_keys) do
+        expected_attributes.map { |hsh| hsh[:name] }
+      end
+
+      it { expect(attributes.keys).to be == expected_keys }
+    end
+
+    wrap_context 'when parent attributes are included' do
+      let(:expected_attributes) do
+        parent_defined_attributes + defined_attributes
+      end
+      let(:expected_keys) do
+        expected_attributes.map { |hsh| hsh[:name] }
+      end
+
+      it { expect(attributes.keys).to be == expected_keys }
+    end
+
+    wrap_context 'when grandparent attributes are included' do
+      let(:expected_attributes) do
+        grandparent_defined_attributes +
+          parent_defined_attributes +
+          defined_attributes
+      end
+      let(:expected_keys) do
+        expected_attributes.map { |hsh| hsh[:name] }
+      end
+
+      it { expect(attributes.keys).to be == expected_keys }
+    end
+  end
+
+  describe '#size' do
+    it { expect(attributes).to respond_to(:size).with(0).arguments }
+
+    it { expect(attributes).to have_aliased_method(:size).as(:count) }
+
+    it { expect(attributes.size).to be 0 }
+
+    wrap_context 'when there are many defined attributes' do
+      let(:expected_attributes) { defined_attributes }
+
+      it { expect(attributes.size).to be expected_attributes.size }
+    end
+
+    wrap_context 'when parent attributes are included' do
+      let(:expected_attributes) do
+        parent_defined_attributes + defined_attributes
+      end
+
+      it { expect(attributes.size).to be expected_attributes.size }
+    end
+
+    wrap_context 'when grandparent attributes are included' do
+      let(:expected_attributes) do
+        grandparent_defined_attributes +
+          parent_defined_attributes +
+          defined_attributes
+      end
+
+      it { expect(attributes.size).to be expected_attributes.size }
+    end
+  end
+
+  describe '#values' do
+    it { expect(attributes).to respond_to(:values).with(0).arguments }
+
+    it { expect(attributes.values).to be == [] }
+
+    wrap_context 'when there are many defined attributes' do
+      let(:expected_attributes) do
+        defined_attributes.map do |attribute|
+          attribute.merge(
+            options: Stannum::Support::Optional.resolve(**attribute[:options])
+          )
+        end
+      end
+      let(:expected_values) do
+        expected_attributes.map do |attribute|
+          an_instance_of(Stannum::Attribute)
+            .and(have_attributes(**attribute))
+        end
+      end
+
+      it { expect(attributes.values).to deep_match expected_values }
+    end
+
+    wrap_context 'when parent attributes are included' do
+      let(:expected_attributes) do
+        (parent_defined_attributes + defined_attributes).map do |attribute|
+          attribute.merge(
+            options: Stannum::Support::Optional.resolve(**attribute[:options])
+          )
+        end
+      end
+      let(:expected_values) do
+        expected_attributes.map do |attribute|
+          an_instance_of(Stannum::Attribute)
+            .and(have_attributes(**attribute))
+        end
+      end
+
+      it { expect(attributes.values).to deep_match expected_values }
+    end
+
+    wrap_context 'when grandparent attributes are included' do
+      let(:expected_attributes) do
+        (
+          grandparent_defined_attributes +
+          parent_defined_attributes +
+          defined_attributes
+        ).map do |attribute|
+          attribute.merge(
+            options: Stannum::Support::Optional.resolve(**attribute[:options])
+          )
+        end
+      end
+      let(:expected_values) do
+        expected_attributes.map do |attribute|
+          an_instance_of(Stannum::Attribute)
+            .and(have_attributes(**attribute))
+        end
+      end
+
+      it { expect(attributes.values).to deep_match expected_values }
     end
   end
 end

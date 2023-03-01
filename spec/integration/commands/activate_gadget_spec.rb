@@ -4,7 +4,7 @@ require 'stannum'
 require 'stannum/rspec/validate_parameter'
 
 require 'support/commands/activate_gadget'
-require 'support/structs/gizmo'
+require 'support/entities/gizmo'
 
 # @note Integration spec for Stannum::ParameterValidation.
 RSpec.describe Spec::ActivateGadget do

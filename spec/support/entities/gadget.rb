@@ -4,7 +4,7 @@ require 'stannum'
 
 module Spec
   class Gadget
-    include Stannum::Struct
+    include Stannum::Entity
 
     attribute :name,        String
     attribute :description, String,  optional: true

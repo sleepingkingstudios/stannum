@@ -8,9 +8,12 @@ module Stannum
   autoload :Constraints,         'stannum/constraints'
   autoload :Contract,            'stannum/contract'
   autoload :Contracts,           'stannum/contracts'
+  autoload :Entities,            'stannum/entities'
+  autoload :Entity,              'stannum/entity'
   autoload :Errors,              'stannum/errors'
   autoload :Messages,            'stannum/messages'
   autoload :ParameterValidation, 'stannum/parameter_validation'
+  autoload :Schema,              'stannum/schema'
   autoload :Struct,              'stannum/struct'
 
   # @return [String] the absolute path to the gem directory.

@@ -2,7 +2,7 @@
 
 require 'stannum/contracts/parameters_contract'
 
-require 'support/structs/user'
+require 'support/entities/user'
 
 module Spec
   class AuthorizationParameters < Stannum::Contracts::ParametersContract

@@ -83,6 +83,10 @@ RSpec.describe Stannum::Struct do
     SleepingKingStudios::Tools::Toolbelt.instance
   end
 
+  before(:example) do
+    allow(SleepingKingStudios::Tools::CoreTools.instance).to receive(:deprecate)
+  end
+
   describe '::Attributes' do
     let(:attributes) { described_class::Attributes }
 
@@ -810,7 +814,7 @@ RSpec.describe Stannum::Struct do
     describe 'with attribute name: an Object' do
       it 'should raise an error' do
         expect { described_class.constraint(Object.new.freeze) }
-          .to raise_error ArgumentError, 'attribute must be a String or Symbol'
+          .to raise_error ArgumentError, 'attribute is not a String or a Symbol'
       end
     end
 
@@ -1062,6 +1066,14 @@ RSpec.describe Stannum::Struct do
   describe '.new' do
     it { expect(described_class).to be_constructible.with(0..1).arguments }
 
+    it 'should display a deprecation warning' do
+      described_class.new
+
+      expect(SleepingKingStudios::Tools::CoreTools.instance)
+        .to have_received(:deprecate)
+        .with('Stannum::Struct', 'use Stannum::Entity instead')
+    end
+
     describe 'with no arguments' do
       it { expect(described_class.new.attributes).to be == {} }
     end
@@ -1083,42 +1095,42 @@ RSpec.describe Stannum::Struct do
     describe 'with a nil key' do
       it 'should raise an error' do
         expect { described_class.new(nil => 'value') }
-          .to raise_error ArgumentError, "attribute can't be blank"
+          .to raise_error ArgumentError, "property can't be blank"
       end
     end
 
     describe 'with an Object key' do
       it 'should raise an error' do
         expect { described_class.new(Object.new.freeze => 'value') }
-          .to raise_error ArgumentError, 'attribute must be a String or Symbol'
+          .to raise_error ArgumentError, 'property is not a String or a Symbol'
       end
     end
 
     describe 'with an empty String key' do
       it 'should raise an error' do
         expect { described_class.new('' => 'value') }
-          .to raise_error ArgumentError, "attribute can't be blank"
+          .to raise_error ArgumentError, "property can't be blank"
       end
     end
 
     describe 'with an empty Symbol key' do
       it 'should raise an error' do
         expect { described_class.new('': 'value') }
-          .to raise_error ArgumentError, "attribute can't be blank"
+          .to raise_error ArgumentError, "property can't be blank"
       end
     end
 
     describe 'with an invalid String key' do
       it 'should raise an error' do
         expect { described_class.new('invalid' => 'value') }
-          .to raise_error ArgumentError, 'unknown attribute "invalid"'
+          .to raise_error ArgumentError, 'unknown property "invalid"'
       end
     end
 
     describe 'with an invalid Symbol key' do
       it 'should raise an error' do
         expect { described_class.new(invalid: 'value') }
-          .to raise_error ArgumentError, 'unknown attribute :invalid'
+          .to raise_error ArgumentError, 'unknown property :invalid'
       end
     end
 
@@ -1142,14 +1154,14 @@ RSpec.describe Stannum::Struct do
       describe 'with an invalid String key' do
         it 'should raise an error' do
           expect { described_class.new('invalid' => 'value') }
-            .to raise_error ArgumentError, 'unknown attribute "invalid"'
+            .to raise_error ArgumentError, 'unknown property "invalid"'
         end
       end
 
       describe 'with an invalid Symbol key' do
         it 'should raise an error' do
           expect { described_class.new(invalid: 'value') }
-            .to raise_error ArgumentError, 'unknown attribute :invalid'
+            .to raise_error ArgumentError, 'unknown property :invalid'
         end
       end
 
@@ -1469,42 +1481,42 @@ RSpec.describe Stannum::Struct do
     describe 'with a nil key' do
       it 'should raise an error' do
         expect { struct[nil] }
-          .to raise_error ArgumentError, "attribute can't be blank"
+          .to raise_error ArgumentError, "property can't be blank"
       end
     end
 
     describe 'with an Object key' do
       it 'should raise an error' do
         expect { struct[Object.new.freeze] }
-          .to raise_error ArgumentError, 'attribute must be a String or Symbol'
+          .to raise_error ArgumentError, 'property is not a String or a Symbol'
       end
     end
 
     describe 'with an empty String key' do
       it 'should raise an error' do
         expect { struct[''] }
-          .to raise_error ArgumentError, "attribute can't be blank"
+          .to raise_error ArgumentError, "property can't be blank"
       end
     end
 
     describe 'with an empty Symbol key' do
       it 'should raise an error' do
         expect { struct[:''] }
-          .to raise_error ArgumentError, "attribute can't be blank"
+          .to raise_error ArgumentError, "property can't be blank"
       end
     end
 
     describe 'with an invalid String key' do
       it 'should raise an error' do
         expect { struct['invalid'] }
-          .to raise_error ArgumentError, 'unknown attribute "invalid"'
+          .to raise_error ArgumentError, 'unknown property "invalid"'
       end
     end
 
     describe 'with an invalid Symbol key' do
       it 'should raise an error' do
         expect { struct[:invalid] }
-          .to raise_error ArgumentError, 'unknown attribute :invalid'
+          .to raise_error ArgumentError, 'unknown property :invalid'
       end
     end
 
@@ -1512,14 +1524,14 @@ RSpec.describe Stannum::Struct do
       describe 'with an invalid String key' do
         it 'should raise an error' do
           expect { struct['invalid'] }
-            .to raise_error ArgumentError, 'unknown attribute "invalid"'
+            .to raise_error ArgumentError, 'unknown property "invalid"'
         end
       end
 
       describe 'with an invalid Symbol key' do
         it 'should raise an error' do
           expect { struct[:invalid] }
-            .to raise_error ArgumentError, 'unknown attribute :invalid'
+            .to raise_error ArgumentError, 'unknown property :invalid'
         end
       end
 
@@ -1556,14 +1568,14 @@ RSpec.describe Stannum::Struct do
       describe 'with an invalid String key' do
         it 'should raise an error' do
           expect { struct['invalid'] }
-            .to raise_error ArgumentError, 'unknown attribute "invalid"'
+            .to raise_error ArgumentError, 'unknown property "invalid"'
         end
       end
 
       describe 'with an invalid Symbol key' do
         it 'should raise an error' do
           expect { struct[:invalid] }
-            .to raise_error ArgumentError, 'unknown attribute :invalid'
+            .to raise_error ArgumentError, 'unknown property :invalid'
         end
       end
 
@@ -1571,14 +1583,14 @@ RSpec.describe Stannum::Struct do
         describe 'with an invalid String key' do
           it 'should raise an error' do
             expect { struct['invalid'] }
-              .to raise_error ArgumentError, 'unknown attribute "invalid"'
+              .to raise_error ArgumentError, 'unknown property "invalid"'
           end
         end
 
         describe 'with an invalid Symbol key' do
           it 'should raise an error' do
             expect { struct[:invalid] }
-              .to raise_error ArgumentError, 'unknown attribute :invalid'
+              .to raise_error ArgumentError, 'unknown property :invalid'
           end
         end
 
@@ -1641,42 +1653,42 @@ RSpec.describe Stannum::Struct do
     describe 'with a nil key' do
       it 'should raise an error' do
         expect { struct[nil] = value }
-          .to raise_error ArgumentError, "attribute can't be blank"
+          .to raise_error ArgumentError, "property can't be blank"
       end
     end
 
     describe 'with an Object key' do
       it 'should raise an error' do
         expect { struct[Object.new.freeze] = value }
-          .to raise_error ArgumentError, 'attribute must be a String or Symbol'
+          .to raise_error ArgumentError, 'property is not a String or a Symbol'
       end
     end
 
     describe 'with an empty String key' do
       it 'should raise an error' do
         expect { struct[''] = value }
-          .to raise_error ArgumentError, "attribute can't be blank"
+          .to raise_error ArgumentError, "property can't be blank"
       end
     end
 
     describe 'with an empty Symbol key' do
       it 'should raise an error' do
         expect { struct[:''] = value }
-          .to raise_error ArgumentError, "attribute can't be blank"
+          .to raise_error ArgumentError, "property can't be blank"
       end
     end
 
     describe 'with an invalid String key' do
       it 'should raise an error' do
         expect { struct['invalid'] = value }
-          .to raise_error ArgumentError, 'unknown attribute "invalid"'
+          .to raise_error ArgumentError, 'unknown property "invalid"'
       end
     end
 
     describe 'with an invalid Symbol key' do
       it 'should raise an error' do
         expect { struct[:invalid] = value }
-          .to raise_error ArgumentError, 'unknown attribute :invalid'
+          .to raise_error ArgumentError, 'unknown property :invalid'
       end
     end
 
@@ -1684,14 +1696,14 @@ RSpec.describe Stannum::Struct do
       describe 'with an invalid String key' do
         it 'should raise an error' do
           expect { struct['invalid'] = value }
-            .to raise_error ArgumentError, 'unknown attribute "invalid"'
+            .to raise_error ArgumentError, 'unknown property "invalid"'
         end
       end
 
       describe 'with an invalid Symbol key' do
         it 'should raise an error' do
           expect { struct[:invalid] = value }
-            .to raise_error ArgumentError, 'unknown attribute :invalid'
+            .to raise_error ArgumentError, 'unknown property :invalid'
         end
       end
 
@@ -1718,14 +1730,14 @@ RSpec.describe Stannum::Struct do
       describe 'with an invalid String key' do
         it 'should raise an error' do
           expect { struct['invalid'] = value }
-            .to raise_error ArgumentError, 'unknown attribute "invalid"'
+            .to raise_error ArgumentError, 'unknown property "invalid"'
         end
       end
 
       describe 'with an invalid Symbol key' do
         it 'should raise an error' do
           expect { struct[:invalid] = value }
-            .to raise_error ArgumentError, 'unknown attribute :invalid'
+            .to raise_error ArgumentError, 'unknown property :invalid'
         end
       end
 
@@ -1733,14 +1745,14 @@ RSpec.describe Stannum::Struct do
         describe 'with an invalid String key' do
           it 'should raise an error' do
             expect { struct['invalid'] = value }
-              .to raise_error ArgumentError, 'unknown attribute "invalid"'
+              .to raise_error ArgumentError, 'unknown property "invalid"'
           end
         end
 
         describe 'with an invalid Symbol key' do
           it 'should raise an error' do
             expect { struct[:invalid] = value }
-              .to raise_error ArgumentError, 'unknown attribute :invalid'
+              .to raise_error ArgumentError, 'unknown property :invalid'
           end
         end
 
@@ -1765,14 +1777,14 @@ RSpec.describe Stannum::Struct do
         describe 'with an invalid String key' do
           it 'should raise an error' do
             expect { struct['invalid'] = value }
-              .to raise_error ArgumentError, 'unknown attribute "invalid"'
+              .to raise_error ArgumentError, 'unknown property "invalid"'
           end
         end
 
         describe 'with an invalid Symbol key' do
           it 'should raise an error' do
             expect { struct[:invalid] = value }
-              .to raise_error ArgumentError, 'unknown attribute :invalid'
+              .to raise_error ArgumentError, 'unknown property :invalid'
           end
         end
 
@@ -1798,8 +1810,6 @@ RSpec.describe Stannum::Struct do
   describe '#assign_attributes' do
     it { expect(struct).to respond_to(:assign_attributes).with(1).argument }
 
-    it { expect(struct).to have_aliased_method(:assign_attributes).as(:assign) }
-
     describe 'with nil' do
       it 'should raise an error' do
         expect { struct.assign_attributes(nil) }
@@ -1824,7 +1834,7 @@ RSpec.describe Stannum::Struct do
     describe 'with an Object key' do
       it 'should raise an error' do
         expect { struct.assign_attributes(Object.new.freeze => 'value') }
-          .to raise_error ArgumentError, 'attribute must be a String or Symbol'
+          .to raise_error ArgumentError, 'attribute is not a String or a Symbol'
       end
     end
 
@@ -2244,8 +2254,6 @@ RSpec.describe Stannum::Struct do
   describe '#attributes' do
     it { expect(struct).to respond_to(:attributes).with(0).arguments }
 
-    it { expect(struct).to have_aliased_method(:attributes).as(:to_h) }
-
     it { expect(struct.attributes).to be == {} }
 
     it 'should return a copy' do
@@ -2336,7 +2344,7 @@ RSpec.describe Stannum::Struct do
     describe 'with an Object key' do
       it 'should raise an error' do
         expect { struct.attributes = { Object.new.freeze => 'value' } }
-          .to raise_error ArgumentError, 'attribute must be a String or Symbol'
+          .to raise_error ArgumentError, 'attribute is not a String or a Symbol'
       end
     end
 
@@ -2846,7 +2854,7 @@ RSpec.describe Stannum::Struct do
 
     wrap_context 'when the struct defines attributes' do
       let(:expected) do
-        "#<#{described_class.name} name: nil, description: nil, quantity: 0>"
+        "#<#{described_class.name} name: nil description: nil quantity: 0>"
       end
 
       it { expect(struct.inspect).to be == expected }
@@ -2854,8 +2862,8 @@ RSpec.describe Stannum::Struct do
 
     wrap_context 'when the struct has attribute values' do
       let(:expected) do
-        "#<#{described_class.name} name: #{attributes['name'].inspect}, " \
-          "description: #{attributes['description'].inspect}, " \
+        "#<#{described_class.name} name: #{attributes['name'].inspect} " \
+          "description: #{attributes['description'].inspect} " \
           "quantity: #{attributes['quantity'].inspect}>"
       end
 

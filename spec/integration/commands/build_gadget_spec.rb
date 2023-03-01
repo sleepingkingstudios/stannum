@@ -4,9 +4,9 @@ require 'stannum'
 require 'stannum/rspec/validate_parameter'
 
 require 'support/commands/build_gadget'
-require 'support/structs/factory'
-require 'support/structs/gadget'
-require 'support/structs/gizmo'
+require 'support/entities/factory'
+require 'support/entities/gadget'
+require 'support/entities/gizmo'
 
 # @note Integration spec for Stannum::ParameterValidation.
 RSpec.describe Spec::BuildGadget do
@@ -135,7 +135,7 @@ RSpec.describe Spec::BuildGadget do
 
       it 'should build a gadget' do
         expect(command.call(**keywords))
-          .to be == [true, Spec::Gadget.new({})]
+          .to be == [true, Spec::Gadget.new]
       end
     end
 
@@ -152,7 +152,7 @@ RSpec.describe Spec::BuildGadget do
 
       it 'should build a gadget' do
         expect(command.call(**keywords))
-          .to be == [true, Spec::Gadget.new({})]
+          .to be == [true, Spec::Gadget.new]
       end
     end
 
@@ -161,7 +161,7 @@ RSpec.describe Spec::BuildGadget do
 
       it 'should build a gadget' do
         expect(command.call(**keywords))
-          .to be == [true, Spec::Gizmo.new({})]
+          .to be == [true, Spec::Gizmo.new]
       end
     end
   end

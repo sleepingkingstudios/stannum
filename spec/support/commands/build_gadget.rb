@@ -2,8 +2,8 @@
 
 require 'stannum'
 
-require 'support/structs/factory'
-require 'support/structs/gadget'
+require 'support/entities/factory'
+require 'support/entities/gadget'
 
 module Spec
   class BuildGadget

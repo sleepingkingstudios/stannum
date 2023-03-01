@@ -1,15 +1,16 @@
 # frozen_string_literal: true
 
+require 'stannum'
 require 'stannum/entities/attributes'
 require 'stannum/entities/constraints'
 require 'stannum/entities/properties'
 
 module Stannum
-  # Abstract class for defining objects with structured attributes.
+  # Abstract module for defining objects with structured attributes.
   #
   # @example Defining Attributes
   #   class Widget
-  #     include Stannum::Struct
+  #     include Stannum::Entity
   #
   #     attribute :name,        String
   #     attribute :description, String,  optional: true
@@ -74,37 +75,9 @@ module Stannum
   #     name:        'Diode',
   #     description: 'A low budget Diode',
   #   ) #=> true
-  module Struct
+  module Entity
     include Stannum::Entities::Properties
     include Stannum::Entities::Attributes
     include Stannum::Entities::Constraints
-
-    # Initializes the struct with the given attributes.
-    #
-    # For each key in the attributes hash, the corresponding writer method will
-    # be called with the attribute value. If the hash does not include the key
-    # for an attribute, or if the value is nil, the attribute will be set to
-    # its default value.
-    #
-    # If the attributes hash includes any keys that do not correspond to an
-    # attribute, the struct will raise an error.
-    #
-    # @param attributes [Hash] The initial attributes for the struct.
-    #
-    # @see #attributes=
-    #
-    # @raise ArgumentError if given an invalid attributes hash.
-    def initialize(attributes = {})
-      unless attributes.is_a?(Hash)
-        raise ArgumentError, 'attributes must be a Hash'
-      end
-
-      super(**attributes)
-
-      SleepingKingStudios::Tools::CoreTools.deprecate(
-        'Stannum::Struct',
-        'use Stannum::Entity instead'
-      )
-    end
   end
 end
