@@ -11,6 +11,18 @@
 
 - Added `#concat` to `Stannum::Contracts::Builder`.
 
+### Entities
+
+Implemented `Stannum::Entity`, a replacement for the existing `Stannum::Struct`.
+
+Entitise are largely identical to structs, except for the constructor signature - entities require properties to be passed as keyword parameters, rather than as an attributes hash. Entities (and now Structs) are defined using composable modules.
+
+- Implemented `Stannum::Entities::Attributes`.
+- Implemented `Stannum::Entities::Constraints`.
+- Implemented `Stannum::Entities::Properties`.
+
+`Stannum::Struct` is now deprecated, and will be removed in a future release.
+
 ## 0.2.0
 
 ### Constraints

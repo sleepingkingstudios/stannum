@@ -7,7 +7,7 @@ Stannum defines the following objects:
 - [Constraints](#constraints): A validator object that responds to `#match`, `#matches?` and `#errors_for` for a given object.
 - [Contracts](#contracts): A collection of constraints about an object or its properties. Obeys the `Constraint` interface.
 - [Errors](#errors): Data object for storing validation errors. Supports arbitrary nesting of errors.
-- [Structs](#structs): Defines a mutable data object with a specified set of typed attributes.
+- [Entities](#entities): Defines a mutable data object with a specified set of typed attributes.
 
 ## About
 
@@ -17,11 +17,11 @@ First and foremost, Stannum provides you with the tools to validate your data. U
 
 Finally, you can combine your constraints into a `Stannum::Contract` to combine multiple validations of your object and its properties. Stannum provides pre-defined contracts for asserting on objects, `Array`s, `Hash`es, and even method parameters.
 
-Stannum also defines the `Stannum::Struct` module for defining structured data entities that are not tied to any framework or datastore. Stannum structs have more functionality and a friendlier interface than a core library `Struct`, provide more structure than a `Hash` or hash-like object (such as an `OpenStruct` or `Hashie::Mash`), and are completely independent from the source of the data. Need to load seed data from a YAML configuration file, perform operations in a SQL database, cross-reference with a MongoDB data store, and use an in-memory data array for lightning-fast tests? A `Stannum::Struct` won't fight you every step of the way.
+Stannum also defines the `Stannum::Entity` module for defining structured data entities that are not tied to any framework or datastore. Stannum entities have more functionality and a friendlier interface than a core library `Struct`, provide more structure than a `Hash` or hash-like object (such as an `OpenStruct` or `Hashie::Mash`), and are completely independent from the source of the data. Need to load seed data from a YAML configuration file, perform operations in a SQL database, cross-reference with a MongoDB data store, and use an in-memory data array for lightning-fast tests? A `Stannum::Entity` won't fight you every step of the way.
 
 ### Why Stannum?
 
-Stannum is not tied to any framework. You can create constraints and contracts to validate Ruby objects and Structs, data structures such as Arrays, Hashes, and Sets, and even framework objects such as `ActiveRecord::Model`s and `Mongoid::Document`s.
+Stannum is not tied to any framework. You can create constraints and contracts to validate Ruby objects and Entities, data structures such as Arrays, Hashes, and Sets, and even framework objects such as `ActiveRecord::Model`s and `Mongoid::Document`s.
 
 Still, most projects and applications use one framework to handle their data. Why use Stannum constraints?
 
@@ -725,16 +725,20 @@ errors.first.message
 
 Stannum uses the strategy pattern to determine how error messages are generated. You can pass the `strategy:` keyword to `#with_messages` to force Stannum to use the specified strategy, or set the `Stannum::Messages.strategy` property to define the default for your application. The default strategy for Stannum uses an I18n-like configuration file to define messages based on the type and optionally the data for each error.
 
-<a id="structs"></a>
+<a id="entities"></a>
 
-### Structs
+### Entities
 
-While constraints and contracts are used to validate data, structs are used to define and structure that data. Each `Stannum::Struct` contains a specific set of attributes, and each attribute has a type definition that is a `Class` or `Module` or the name of a Class or Module.
+While constraints and contracts are used to validate data, entities are used to define and structure that data. Each `Stannum::Entity` contains a specific set of attributes, and each attribute has a type definition that is a `Class` or `Module` or the name of a Class or Module.
 
-Structs are defined by creating a new class and including `Stannum::Struct`:
+Entities are defined by creating a new class and including `Stannum::Entity`:
 
 ```ruby
+require 'stannum'
+
 class Gadget
+  include Stannum::Entity
+
   attribute :name,        String
   attribute :description, String,  optional: true
   attribute :quantity,    Integer, default:  0
@@ -763,21 +767,21 @@ gadget[:description]
 
 Our `Gadget` class has three attributes: `#name`, `#description`, and `#quantity`, which we are defining using the `.attribute` class method.
 
-We can initialize a gadget with values by passing the desired attributes to `.new`. We can read or write the attributes using either dot `.` notation or `#[]` notation. Finally, we can access all of a struct's attributes and values using the `#attributes` method.
+We can initialize a gadget with values by passing the desired attributes to `.new`. We can read or write the attributes using either dot `.` notation or `#[]` notation. Finally, we can access all of a entity's attributes and values using the `#attributes` method.
 
-`Stannum::Struct` defines a number of helper methods for interacting with a struct's attributes:
+`Stannum::Entity` defines a number of helper methods for interacting with a entity's attributes:
 
 - `#[](attribute)`: Returns the value of the given attribute.
 - `#[]=(attribute, value)`: Writes the given value to the given attribute.
-- `#assign_attributes(values)`: Updates the struct's attributes using the given values. If an attribute is not given, that value is unchanged.
+- `#assign_attributes(values)`: Updates the entity's attributes using the given values. If an attribute is not given, that value is unchanged.
 - `#attributes`: Returns a hash containing the attribute keys and values.
-- `#attributes=(values)`: Sets the struct's attributes to the given values. If an attribute is not given, that attribute is set to `nil`.
+- `#attributes=(values)`: Sets the entity's attributes to the given values. If an attribute is not given, that attribute is set to `nil`.
 
-For all of the above methods, if a given attribute is invalid or the attribute is not defined on the struct, an `ArgumentError` will be raised.
+For all of the above methods, if a given attribute is invalid or the attribute is not defined on the entity, an `ArgumentError` will be raised.
 
 #### Attributes
 
-A struct's attributes are defined using the `.attribute` class method, and can be accessed and enumerated using the `.attributes` class method on the struct class or via the `::Attributes` constant. Internally, each attribute is represented by a `Stannum::Attribute` instance, which stores the attribute's `:name`, `:type`, and `:attributes`.
+A entity's attributes are defined using the `.attribute` class method, and can be accessed and enumerated using the `.attributes` class method on the entity class or via the `::Attributes` constant. Internally, each attribute is represented by a `Stannum::Attribute` instance, which stores the attribute's `:name`, `:type`, and `:attributes`.
 
 ```ruby
 Gadget::Attributes
@@ -796,11 +800,11 @@ Gadget.attributes[:quantity].options
 
 ##### Default Values
 
-Structs can define default values for attributes by passing a `:default` value to the `.attribute` call.
+Entities can define default values for attributes by passing a `:default` value to the `.attribute` call.
 
 ```ruby
 class LightsCounter
-  include Stannum::Struct
+  include Stannum::Entity
 
   attribute :count, Integer, default: 4
 end
@@ -811,11 +815,11 @@ LightsCounter.new.count
 
 ##### Optional Attributes
 
-Struct classes can also mark attributes as `optional`. When a struct is validated (see [Validation](#structs-validation), below), optional attributes will pass with a value of `nil`.
+Entity classes can also mark attributes as `optional`. When an entity is validated (see [Validation](#entities-validation), below), optional attributes will pass with a value of `nil`.
 
 ```ruby
 class WhereWeAreGoing
-  include Stannum::Struct
+  include Stannum::Entity
 
   attribute :roads, Object, optional: true
 end
@@ -823,11 +827,11 @@ end
 
 `Stannum` supports both `:optional` and `:required` as keys. Passing either `optional: true` or `required: false` will mark the attribute as optional. Attributes are required by default.
 
-<a id="structs-validation"></a>
+<a id="entities-validation"></a>
 
 #### Validation
 
-Each `Stannum::Struct` automatically generates a contract that can be used to validate instances of the struct class. The contract can be accessed using the `.contract` class method or via the `::Contract` constant.
+Each `Stannum::Entity` automatically generates a contract that can be used to validate instances of the entity class. The contract can be accessed using the `.contract` class method or via the `::Contract` constant.
 
 ```ruby
 class Gadget
