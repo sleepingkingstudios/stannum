@@ -5,9 +5,9 @@ require 'stannum/contract'
 require 'support/examples/constraint_examples'
 require 'support/examples/contract_builder_examples'
 require 'support/examples/contract_examples'
-require 'support/structs/factory'
-require 'support/structs/gadget'
-require 'support/structs/manufacturer'
+require 'support/entities/factory'
+require 'support/entities/gadget'
+require 'support/entities/manufacturer'
 
 RSpec.describe Stannum::Contract do
   include Spec::Support::Examples::ConstraintExamples

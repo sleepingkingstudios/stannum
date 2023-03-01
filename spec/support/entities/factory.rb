@@ -2,11 +2,11 @@
 
 require 'stannum'
 
-require 'support/structs/gadget'
+require 'support/entities/gadget'
 
 module Spec
   class Factory
-    include Stannum::Struct
+    include Stannum::Entity
 
     attribute :address, String
     attribute :gadget,  Spec::Gadget

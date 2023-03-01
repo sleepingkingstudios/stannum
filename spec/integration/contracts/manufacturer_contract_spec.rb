@@ -3,9 +3,9 @@
 require 'stannum/rspec/match_errors'
 
 require 'support/contracts/manufacturer_contract'
-require 'support/structs/factory'
-require 'support/structs/gadget'
-require 'support/structs/manufacturer'
+require 'support/entities/factory'
+require 'support/entities/gadget'
+require 'support/entities/manufacturer'
 
 # @note Integration spec for Stannum::Contract.
 RSpec.describe Spec::ManufacturerContract do

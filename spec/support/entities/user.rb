@@ -4,7 +4,7 @@ require 'stannum'
 
 module Spec
   class User
-    include Stannum::Struct
+    include Stannum::Entity
 
     attribute :name, String
   end

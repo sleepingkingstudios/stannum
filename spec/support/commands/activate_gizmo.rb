@@ -3,7 +3,7 @@
 require 'stannum'
 
 require 'support/commands/activate_gadget'
-require 'support/structs/gizmo'
+require 'support/entities/gizmo'
 
 module Spec
   class ActivateGizmo < Spec::ActivateGadget

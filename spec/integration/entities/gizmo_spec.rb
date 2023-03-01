@@ -1,20 +1,21 @@
 # frozen_string_literal: true
 
-require 'support/structs/gadget'
+require 'support/entities/gizmo'
 
-# @note Integration spec for Stannum::Gadget.
-RSpec.describe Spec::Gadget do
+# @note Integration spec for a subclassed Stannum::Entity.
+RSpec.describe Spec::Gizmo do
   shared_context 'when initialized with attribute values' do
     let(:attributes) do
       {
         name:        'Self-Sealing Stem Bolt',
         description: 'No one is sure what a self-sealing stem bolt is.',
-        quantity:    1_000
+        quantity:    1_000,
+        size:        'Small'
       }
     end
   end
 
-  subject(:gadget) { described_class.new(attributes) }
+  subject(:gadget) { described_class.new(**attributes) }
 
   let(:attributes) { {} }
 
@@ -42,7 +43,7 @@ RSpec.describe Spec::Gadget do
     end
 
     describe '.each' do
-      let(:expected_keys) { %w[name description quantity] }
+      let(:expected_keys) { %w[name description quantity size] }
       let(:expected_values) do
         [
           {
@@ -59,6 +60,11 @@ RSpec.describe Spec::Gadget do
             name:    'quantity',
             type:    'Integer',
             options: { default: 0, required: true }
+          },
+          {
+            name:    'size',
+            type:    'String',
+            options: { required: true }
           }
         ].map do |attributes|
           an_instance_of(Stannum::Attribute).and(
@@ -69,7 +75,7 @@ RSpec.describe Spec::Gadget do
 
       it { expect(described_class.attributes.each).to be_a Enumerator }
 
-      it { expect(described_class.attributes.each.size).to be 3 }
+      it { expect(described_class.attributes.each.size).to be 4 }
 
       it 'should yield the attributes' do
         expect { |block| described_class.attributes.each(&block) }
@@ -93,9 +99,21 @@ RSpec.describe Spec::Gadget do
             type:    'stannum.constraints.is_not_type'
           },
           {
+            data:    { required: true, type: String },
+            message: nil,
+            path:    [:size],
+            type:    'stannum.constraints.is_not_type'
+          },
+          {
             data:    {},
             message: nil,
             path:    [],
+            type:    'stannum.constraints.invalid'
+          },
+          {
+            data:    {},
+            message: nil,
+            path:    [:size],
             type:    'stannum.constraints.invalid'
           }
         ]
@@ -111,7 +129,8 @@ RSpec.describe Spec::Gadget do
         {
           name:        'Self-Sealing Stem Bolt',
           description: :invalid_description,
-          quantity:    -10
+          quantity:    -10,
+          size:        'Lilliputian'
         }
       end
       let(:expected_errors) do
@@ -133,6 +152,12 @@ RSpec.describe Spec::Gadget do
             message: nil,
             path:    [:quantity],
             type:    'stannum.constraints.invalid'
+          },
+          {
+            data:    {},
+            message: nil,
+            path:    [:size],
+            type:    'stannum.constraints.invalid'
           }
         ]
       end
@@ -147,7 +172,8 @@ RSpec.describe Spec::Gadget do
         {
           name:        'Self-Sealing Stem Bolt',
           description: 'No one is sure what a self-sealing stem bolt is.',
-          quantity:    0
+          quantity:    0,
+          size:        'Small'
         }
       end
 
@@ -161,19 +187,35 @@ RSpec.describe Spec::Gadget do
     it { expect(gadget).to respond_to(:[]).with(1).argument }
 
     describe 'with a string key' do
-      it { expect(gadget['name']).to be nil }
+      it { expect(gadget['size']).to be nil }
     end
 
     describe 'with a symbol key' do
+      it { expect(gadget[:size]).to be nil }
+    end
+
+    describe 'with a string key for a parent attribute' do
+      it { expect(gadget['name']).to be nil }
+    end
+
+    describe 'with a symbol key for a parent attribute' do
       it { expect(gadget[:name]).to be nil }
     end
 
     wrap_context 'when initialized with attribute values' do
       describe 'with a string key' do
-        it { expect(gadget['name']).to be == attributes[:name] }
+        it { expect(gadget['size']).to be == attributes[:size] }
       end
 
       describe 'with a symbol key' do
+        it { expect(gadget[:size]).to be == attributes[:size] }
+      end
+
+      describe 'with a string key for a parent attributes' do
+        it { expect(gadget['name']).to be == attributes[:name] }
+      end
+
+      describe 'with a symbol key for a parent attribute' do
         it { expect(gadget[:name]).to be == attributes[:name] }
       end
     end
@@ -200,11 +242,29 @@ RSpec.describe Spec::Gadget do
   end
 
   describe '#[]=' do
-    let(:value) { 'Inverse Chronoton Emitter' }
+    let(:value) { 'Colossal' }
 
     it { expect(gadget).to respond_to(:[]=).with(2).arguments }
 
     describe 'with a string key' do
+      it 'should update the value' do
+        expect { gadget['size'] = value }
+          .to change(gadget, :size)
+          .to be == value
+      end
+    end
+
+    describe 'with a symbol key' do
+      it 'should update the value' do
+        expect { gadget[:size] = value }
+          .to change(gadget, :size)
+          .to be == value
+      end
+    end
+
+    describe 'with a string key for a parent attribute' do
+      let(:value) { 'Inverse Chronoton Emitter' }
+
       it 'should update the value' do
         expect { gadget['name'] = value }
           .to change(gadget, :name)
@@ -212,7 +272,9 @@ RSpec.describe Spec::Gadget do
       end
     end
 
-    describe 'with a symbol key' do
+    describe 'with a symbol key for a parent attribute' do
+      let(:value) { 'Inverse Chronoton Emitter' }
+
       it 'should update the value' do
         expect { gadget[:name] = value }
           .to change(gadget, :name)
@@ -223,13 +285,33 @@ RSpec.describe Spec::Gadget do
     wrap_context 'when initialized with attribute values' do
       describe 'with a string key' do
         it 'should update the value' do
+          expect { gadget['size'] = value }
+            .to change(gadget, :size)
+            .to be == value
+        end
+      end
+
+      describe 'with a symbol key' do
+        it 'should update the value' do
+          expect { gadget[:size] = value }
+            .to change(gadget, :size)
+            .to be == value
+        end
+      end
+
+      describe 'with a string key for a parent attribute' do
+        let(:value) { 'Inverse Chronoton Emitter' }
+
+        it 'should update the value' do
           expect { gadget['name'] = value }
             .to change(gadget, :name)
             .to be == value
         end
       end
 
-      describe 'with a symbol key' do
+      describe 'with a symbol key for a parent attribute' do
+        let(:value) { 'Inverse Chronoton Emitter' }
+
         it 'should update the value' do
           expect { gadget[:name] = value }
             .to change(gadget, :name)
@@ -300,7 +382,8 @@ RSpec.describe Spec::Gadget do
       {
         'name'        => nil,
         'description' => description,
-        'quantity'    => 0
+        'quantity'    => 0,
+        'size'        => nil
       }
     end
 
@@ -333,7 +416,8 @@ RSpec.describe Spec::Gadget do
       {
         'name'        => nil,
         'description' => nil,
-        'quantity'    => 0
+        'quantity'    => 0,
+        'size'        => nil
       }
     end
 
@@ -358,7 +442,8 @@ RSpec.describe Spec::Gadget do
       {
         'name'        => nil,
         'description' => description,
-        'quantity'    => 0
+        'quantity'    => 0,
+        'size'        => nil
       }
     end
 
@@ -479,6 +564,34 @@ RSpec.describe Spec::Gadget do
             .to change(gadget, :quantity)
             .to be 100
         end
+      end
+    end
+  end
+
+  describe '#size' do
+    include_examples 'should have reader', :size
+
+    wrap_context 'when initialized with attribute values' do
+      it { expect(gadget.size).to be == 'Small' }
+    end
+  end
+
+  describe '#size=' do
+    let(:value) { 'Colossal' }
+
+    include_examples 'should have writer', :size=
+
+    it 'should update the value' do
+      expect { gadget.size = value }
+        .to change(gadget, :size)
+        .to be == value
+    end
+
+    wrap_context 'when initialized with attribute values' do
+      it 'should update the value' do
+        expect { gadget.size = value }
+          .to change(gadget, :size)
+          .to be == value
       end
     end
   end
