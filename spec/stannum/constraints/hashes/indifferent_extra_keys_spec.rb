@@ -69,7 +69,7 @@ RSpec.describe Stannum::Constraints::Hashes::IndifferentExtraKeys do
 
       it 'should match both string and symbol keys' do
         expect(constraint.expected_keys.to_a)
-          .to contain_exactly(*indifferent_keys)
+          .to match_array(indifferent_keys)
       end
     end
 
@@ -81,7 +81,7 @@ RSpec.describe Stannum::Constraints::Hashes::IndifferentExtraKeys do
 
       it 'should match both string and symbol keys' do
         expect(constraint.expected_keys.to_a)
-          .to contain_exactly(*indifferent_keys)
+          .to match_array(indifferent_keys)
       end
     end
 
@@ -93,7 +93,7 @@ RSpec.describe Stannum::Constraints::Hashes::IndifferentExtraKeys do
 
       it 'should match both string and symbol keys' do
         expect(constraint.expected_keys.to_a)
-          .to contain_exactly(*indifferent_keys)
+          .to match_array(indifferent_keys)
       end
     end
 
@@ -109,7 +109,7 @@ RSpec.describe Stannum::Constraints::Hashes::IndifferentExtraKeys do
 
       it 'should match both string and symbol keys' do
         expect(constraint.expected_keys.to_a)
-          .to contain_exactly(*indifferent_keys)
+          .to match_array(indifferent_keys)
       end
     end
   end
