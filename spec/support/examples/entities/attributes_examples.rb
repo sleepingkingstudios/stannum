@@ -190,6 +190,12 @@ module Spec::Support::Examples::Entities
             .and_any_keywords
         end
 
+        it 'should alias the class method' do
+          expect(described_class)
+            .to have_aliased_method(:attribute)
+            .as(:define_attribute)
+        end
+
         describe 'with attr_name: a String' do
           let(:attr_name) { 'price' }
 

@@ -25,6 +25,8 @@ module Stannum::Entities
       #
       # @option options [Object] :default The default value for the attribute.
       #   Defaults to nil.
+      # @option options [Boolean] :primary_key true if the attribute represents
+      #   the primary key for the entity; otherwise false. Defaults to false.
       #
       # @return [Symbol] The attribute name as a symbol.
       def attribute(attr_name, attr_type, **options)
@@ -36,6 +38,7 @@ module Stannum::Entities
 
         attr_name.intern
       end
+      alias define_attribute attribute
 
       # @return [Stannum::Schema] The attributes Schema object for the Entity.
       def attributes

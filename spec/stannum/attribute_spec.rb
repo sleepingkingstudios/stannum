@@ -13,6 +13,14 @@ RSpec.describe Stannum::Attribute do
     before(:example) { options.update(default: default) }
   end
 
+  shared_context 'with primary_key: false' do
+    before(:example) { options.update(primary_key: false) }
+  end
+
+  shared_context 'with primary_key: true' do
+    before(:example) { options.update(primary_key: true) }
+  end
+
   subject(:attribute) do
     described_class.new(name: name, type: type, options: options)
   end
@@ -131,7 +139,7 @@ RSpec.describe Stannum::Attribute do
   end
 
   describe '#default?' do
-    include_examples 'should have predicate', :default?, false
+    include_examples 'should define predicate', :default?, false
 
     wrap_context 'with default: value' do
       it { expect(attribute.default?).to be true }
@@ -139,7 +147,7 @@ RSpec.describe Stannum::Attribute do
   end
 
   describe '#name' do
-    include_examples 'should have reader', :name, -> { name }
+    include_examples 'should define reader', :name, -> { name }
 
     context 'when the name is a symbol' do
       let(:name) { :description }
@@ -155,7 +163,7 @@ RSpec.describe Stannum::Attribute do
         .merge(required: true)
     end
 
-    include_examples 'should have reader', :options, -> { expected }
+    include_examples 'should define reader', :options, -> { expected }
 
     context 'with options: a Hash with String keys' do
       let(:options) { { 'key' => 'value' } }
@@ -169,13 +177,35 @@ RSpec.describe Stannum::Attribute do
       it { expect(attribute.options).to be == expected }
     end
 
+    # rubocop:disable RSpec/RepeatedExampleGroupBody
     wrap_context 'with default: value' do
       it { expect(attribute.options).to be == expected }
+    end
+
+    wrap_context 'with primary_key: false' do
+      it { expect(attribute.options).to be == expected }
+    end
+
+    wrap_context 'with primary_key: true' do
+      it { expect(attribute.options).to be == expected }
+    end
+    # rubocop:enable RSpec/RepeatedExampleGroupBody
+  end
+
+  describe '#primary_key?' do
+    include_examples 'should define predicate', :primary_key?, false
+
+    wrap_context 'with primary_key: false' do
+      it { expect(attribute.primary_key?).to be false }
+    end
+
+    wrap_context 'with primary_key: true' do
+      it { expect(attribute.primary_key?).to be true }
     end
   end
 
   describe '#reader_name' do
-    include_examples 'should have reader', :reader_name, -> { name.intern }
+    include_examples 'should define reader', :reader_name, -> { name.intern }
 
     context 'when the name is a symbol' do
       let(:name) { :description }
@@ -185,7 +215,7 @@ RSpec.describe Stannum::Attribute do
   end
 
   describe '#resolved_type' do
-    include_examples 'should have reader', :resolved_type, -> { type }
+    include_examples 'should define reader', :resolved_type, -> { type }
 
     context 'when the type is an invalid constant name' do
       let(:type) { 'Foo' }
@@ -214,7 +244,7 @@ RSpec.describe Stannum::Attribute do
   end
 
   describe '#type' do
-    include_examples 'should have reader', :type, -> { type.to_s }
+    include_examples 'should define reader', :type, -> { type.to_s }
 
     context 'when the type is a String' do
       let(:type) { 'String' }
@@ -224,7 +254,7 @@ RSpec.describe Stannum::Attribute do
   end
 
   describe '#writer_name' do
-    include_examples 'should have reader', :writer_name, -> { :"#{name}=" }
+    include_examples 'should define reader', :writer_name, -> { :"#{name}=" }
 
     context 'when the name is a symbol' do
       let(:name) { :description }

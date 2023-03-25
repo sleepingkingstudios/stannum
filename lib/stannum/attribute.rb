@@ -14,6 +14,11 @@ module Stannum
     #   with Symbol keys. Defaults to an empty Hash.
     # @param type [Class, Module, String] The type of the attribute. Can be a
     #   Class, a Module, or the name of a class or module.
+    #
+    # @option options [Object] :default The default value for the attribute.
+    #   Defaults to nil.
+    # @option options [Boolean] :primary_key true if the attribute represents
+    #   the primary key for the entity; otherwise false. Defaults to false.
     def initialize(name:, options:, type:)
       validate_name(name)
       validate_options(options)
@@ -44,6 +49,12 @@ module Stannum
     #   false.
     def default?
       !@options[:default].nil?
+    end
+
+    # @return [Boolean] true if the attribute represents the primary key for the
+    #   entity; otherwise false.
+    def primary_key?
+      !!@options[:primary_key]
     end
 
     # @return [Symbol] the name of the reader method for the attribute.

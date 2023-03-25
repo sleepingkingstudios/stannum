@@ -7,7 +7,8 @@ require 'stannum/entities'
 module Stannum
   # Namespace for modules implementing Entity functionality.
   module Entities
-    autoload :Attributes, 'stannum/entities/attributes'
-    autoload :Properties, 'stannum/entities/properties'
+    autoload :Attributes,  'stannum/entities/attributes'
+    autoload :Constraints, 'stannum/entities/constraints'
+    autoload :Properties,  'stannum/entities/properties'
   end
 end
