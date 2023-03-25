@@ -610,7 +610,7 @@ RSpec.describe Stannum::Errors do
         it 'should remove the errors' do
           errors[key] = nil
 
-          expect(errors.to_a).to contain_exactly(*expected_errors)
+          expect(errors.to_a).to match_array(expected_errors)
         end
 
         it 'should clear the child errors' do
@@ -637,7 +637,7 @@ RSpec.describe Stannum::Errors do
         it 'should remove the errors' do
           errors[key] = []
 
-          expect(errors.to_a).to contain_exactly(*expected_errors)
+          expect(errors.to_a).to match_array(expected_errors)
         end
 
         it 'should clear the errors' do
@@ -682,7 +682,7 @@ RSpec.describe Stannum::Errors do
         it 'should update the errors' do
           errors[key] = other_errors.to_a
 
-          expect(errors.to_a).to contain_exactly(*expected_errors)
+          expect(errors.to_a).to match_array(expected_errors)
         end
 
         it 'should set the child errors', :aggregate_failures do
@@ -703,7 +703,7 @@ RSpec.describe Stannum::Errors do
         it 'should remove the errors' do
           errors[key] = described_class.new
 
-          expect(errors.to_a).to contain_exactly(*expected_errors)
+          expect(errors.to_a).to match_array(expected_errors)
         end
 
         it 'should clear the errors' do
@@ -727,7 +727,7 @@ RSpec.describe Stannum::Errors do
         it 'should update the errors' do
           errors[key] = other_errors
 
-          expect(errors.to_a).to contain_exactly(*expected_errors)
+          expect(errors.to_a).to match_array(expected_errors)
         end
 
         it 'should copy the child errors', :aggregate_failures do
@@ -1575,7 +1575,7 @@ RSpec.describe Stannum::Errors do
 
     it { expect(errors.dup).to be == errors }
 
-    it { expect(errors.dup.to_a).to contain_exactly(*expected_errors) }
+    it { expect(errors.dup.to_a).to match_array(expected_errors) }
 
     it 'should create a copy of the errors' do
       expect { errors.dup.add(:some_error) }.not_to change(errors, :size)
@@ -1585,7 +1585,7 @@ RSpec.describe Stannum::Errors do
     wrap_context 'when the errors has many root errors' do
       it { expect(errors.dup).to be == errors }
 
-      it { expect(errors.dup.to_a).to contain_exactly(*expected_errors) }
+      it { expect(errors.dup.to_a).to match_array(expected_errors) }
 
       it 'should create a copy of the errors' do
         expect { errors.dup.add(:some_error) }.not_to change(errors, :size)
@@ -1595,7 +1595,7 @@ RSpec.describe Stannum::Errors do
     wrap_context 'when the errors has many child errors' do
       it { expect(errors.dup).to be == errors }
 
-      it { expect(errors.dup.to_a).to contain_exactly(*expected_errors) }
+      it { expect(errors.dup.to_a).to match_array(expected_errors) }
 
       it 'should create a copy of the errors' do
         expect { errors.dup.add(:some_error) }.not_to change(errors, :size)
@@ -1605,7 +1605,7 @@ RSpec.describe Stannum::Errors do
     wrap_context 'when the errors has many deeply nested errors' do
       it { expect(errors.dup).to be == errors }
 
-      it { expect(errors.dup.to_a).to contain_exactly(*expected_errors) }
+      it { expect(errors.dup.to_a).to match_array(expected_errors) }
 
       it 'should create a copy of the errors' do
         expect { errors.dup.add(:some_error) }.not_to change(errors, :size)
@@ -1615,7 +1615,7 @@ RSpec.describe Stannum::Errors do
     wrap_context 'when the errors has many errors at different paths' do
       it { expect(errors.dup).to be == errors }
 
-      it { expect(errors.dup.to_a).to contain_exactly(*expected_errors) }
+      it { expect(errors.dup.to_a).to match_array(expected_errors) }
 
       it 'should create a copy of the errors' do
         expect { errors.dup.add(:some_error) }.not_to change(errors, :size)
@@ -1625,7 +1625,7 @@ RSpec.describe Stannum::Errors do
     wrap_context 'when the errors has many indexed errors' do
       it { expect(errors.dup).to be == errors }
 
-      it { expect(errors.dup.to_a).to contain_exactly(*expected_errors) }
+      it { expect(errors.dup.to_a).to match_array(expected_errors) }
 
       it 'should create a copy of the errors' do
         expect { errors.dup.add(:some_error) }.not_to change(errors, :size)
@@ -1648,7 +1648,7 @@ RSpec.describe Stannum::Errors do
 
           enumerator.each { |error| yielded << error }
 
-          expect(yielded).to contain_exactly(*expected_errors)
+          expect(yielded).to match_array(expected_errors)
         end
       end
 
@@ -1658,7 +1658,7 @@ RSpec.describe Stannum::Errors do
 
           errors.each { |error| yielded << error }
 
-          expect(yielded).to contain_exactly(*expected_errors)
+          expect(yielded).to match_array(expected_errors)
         end
       end
     end
@@ -1859,7 +1859,7 @@ RSpec.describe Stannum::Errors do
       it { expect(errors.merge(value).size).to be expected_errors.size }
 
       it 'should merge the errors' do
-        expect(errors.merge(value).to_a).to contain_exactly(*expected_errors)
+        expect(errors.merge(value).to_a).to match_array(expected_errors)
       end
     end
 
@@ -2052,23 +2052,23 @@ RSpec.describe Stannum::Errors do
 
     # rubocop:disable RSpec/RepeatedExampleGroupBody
     wrap_context 'when the errors has many root errors' do
-      it { expect(errors.to_a).to contain_exactly(*expected_errors) }
+      it { expect(errors.to_a).to match_array(expected_errors) }
     end
 
     wrap_context 'when the errors has many child errors' do
-      it { expect(errors.to_a).to contain_exactly(*expected_errors) }
+      it { expect(errors.to_a).to match_array(expected_errors) }
     end
 
     wrap_context 'when the errors has many deeply nested errors' do
-      it { expect(errors.to_a).to contain_exactly(*expected_errors) }
+      it { expect(errors.to_a).to match_array(expected_errors) }
     end
 
     wrap_context 'when the errors has many errors at different paths' do
-      it { expect(errors.to_a).to contain_exactly(*expected_errors) }
+      it { expect(errors.to_a).to match_array(expected_errors) }
     end
 
     wrap_context 'when the errors has many indexed errors' do
-      it { expect(errors.to_a).to contain_exactly(*expected_errors) }
+      it { expect(errors.to_a).to match_array(expected_errors) }
     end
     # rubocop:enable RSpec/RepeatedExampleGroupBody
   end
@@ -2086,7 +2086,7 @@ RSpec.describe Stannum::Errors do
       it 'should update the errors' do
         errors.update value
 
-        expect(errors.to_a).to contain_exactly(*expected_errors)
+        expect(errors.to_a).to match_array(expected_errors)
       end
     end
 
@@ -2200,7 +2200,7 @@ RSpec.describe Stannum::Errors do
 
       it 'should generate the error messages' do
         expect(errors.with_messages(**options).to_a)
-          .to contain_exactly(*errors_with_messages)
+          .to match_array(errors_with_messages)
       end
 
       describe 'with strategy: value' do
@@ -2212,7 +2212,7 @@ RSpec.describe Stannum::Errors do
 
         it 'should generate the error messages' do
           expect(errors.with_messages(strategy: strategy, **options).to_a)
-            .to contain_exactly(*errors_with_messages)
+            .to match_array(errors_with_messages)
         end
       end
     end
