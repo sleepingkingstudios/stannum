@@ -9,6 +9,7 @@ module Stannum
   module Entities
     autoload :Attributes,  'stannum/entities/attributes'
     autoload :Constraints, 'stannum/entities/constraints'
+    autoload :PrimaryKey,  'stannum/entities/primary_key'
     autoload :Properties,  'stannum/entities/properties'
   end
 end
