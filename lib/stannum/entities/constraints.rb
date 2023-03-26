@@ -29,6 +29,7 @@ module Stannum::Entities
 
         returned
       end
+      alias define_attribute attribute
     end
 
     # Class methods to extend the class when including Constraints.

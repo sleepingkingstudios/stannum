@@ -4,12 +4,14 @@ require 'stannum/entity'
 
 require 'support/examples/entities/attributes_examples'
 require 'support/examples/entities/constraints_examples'
+require 'support/examples/entities/primary_key_examples'
 require 'support/examples/entities/properties_examples'
 
 RSpec.describe Stannum::Entity do
   include Spec::Support::Examples::EntityExamples
   include Spec::Support::Examples::Entities::AttributesExamples
   include Spec::Support::Examples::Entities::ConstraintsExamples
+  include Spec::Support::Examples::Entities::PrimaryKeyExamples
   include Spec::Support::Examples::Entities::PropertiesExamples
 
   subject(:entity) { described_class.new(**properties) }
@@ -25,6 +27,8 @@ RSpec.describe Stannum::Entity do
   include_examples 'should implement the Attributes methods'
 
   include_examples 'should implement the Constraints methods'
+
+  include_examples 'should implement the PrimaryKey methods'
 
   include_examples 'should implement the Properties methods'
 end

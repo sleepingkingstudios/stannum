@@ -7,6 +7,7 @@ RSpec.describe Spec::Gadget do
   shared_context 'when initialized with attribute values' do
     let(:attributes) do
       {
+        id:          0,
         name:        'Self-Sealing Stem Bolt',
         description: 'No one is sure what a self-sealing stem bolt is.',
         quantity:    1_000
@@ -42,9 +43,14 @@ RSpec.describe Spec::Gadget do
     end
 
     describe '.each' do
-      let(:expected_keys) { %w[name description quantity] }
+      let(:expected_keys) { %w[id name description quantity] }
       let(:expected_values) do
         [
+          {
+            name:    'id',
+            type:    'Integer',
+            options: { primary_key: true, required: true }
+          },
           {
             name:    'name',
             type:    'String',
@@ -69,7 +75,7 @@ RSpec.describe Spec::Gadget do
 
       it { expect(described_class.attributes.each).to be_a Enumerator }
 
-      it { expect(described_class.attributes.each.size).to be 3 }
+      it { expect(described_class.attributes.each.size).to be 4 }
 
       it 'should yield the attributes' do
         expect { |block| described_class.attributes.each(&block) }
@@ -86,6 +92,12 @@ RSpec.describe Spec::Gadget do
     describe 'with an empty struct' do
       let(:expected_errors) do
         [
+          {
+            data:    { required: true, type: Integer },
+            message: nil,
+            path:    [:id],
+            type:    'stannum.constraints.is_not_type'
+          },
           {
             data:    { required: true, type: String },
             message: nil,
@@ -109,6 +121,7 @@ RSpec.describe Spec::Gadget do
     describe 'with a struct with invalid attributes' do
       let(:attributes) do
         {
+          id:          0,
           name:        'Self-Sealing Stem Bolt',
           description: :invalid_description,
           quantity:    -10
@@ -145,6 +158,7 @@ RSpec.describe Spec::Gadget do
     describe 'with a struct with valid attributes' do
       let(:attributes) do
         {
+          id:          0,
           name:        'Self-Sealing Stem Bolt',
           description: 'No one is sure what a self-sealing stem bolt is.',
           quantity:    0
@@ -298,6 +312,7 @@ RSpec.describe Spec::Gadget do
     end
     let(:expected) do
       {
+        'id'          => nil,
         'name'        => nil,
         'description' => description,
         'quantity'    => 0
@@ -331,6 +346,7 @@ RSpec.describe Spec::Gadget do
   describe '#attributes' do
     let(:expected) do
       {
+        'id'          => nil,
         'name'        => nil,
         'description' => nil,
         'quantity'    => 0
@@ -356,6 +372,7 @@ RSpec.describe Spec::Gadget do
     let(:hsh) { { description: description, quantity: nil } }
     let(:expected) do
       {
+        'id'          => nil,
         'name'        => nil,
         'description' => description,
         'quantity'    => 0
@@ -409,6 +426,32 @@ RSpec.describe Spec::Gadget do
         expect { gadget.description = value }
           .to change(gadget, :description)
           .to be == value
+      end
+    end
+  end
+
+  describe '#id' do
+    include_examples 'should have reader', :id, nil
+
+    wrap_context 'when initialized with attribute values' do
+      it { expect(gadget.id).to be 0 }
+    end
+  end
+
+  describe '#id=' do
+    include_examples 'should have writer', :id=
+
+    it 'should update the value' do
+      expect { gadget.id = 1 }
+        .to change(gadget, :id)
+        .to be 1
+    end
+
+    wrap_context 'when initialized with attribute values' do
+      it 'should update the value' do
+        expect { gadget.id = 1 }
+          .to change(gadget, :id)
+          .to be 1
       end
     end
   end

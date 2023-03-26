@@ -3,6 +3,7 @@
 require 'stannum'
 require 'stannum/entities/attributes'
 require 'stannum/entities/constraints'
+require 'stannum/entities/primary_key'
 require 'stannum/entities/properties'
 
 module Stannum
@@ -78,6 +79,7 @@ module Stannum
   module Entity
     include Stannum::Entities::Properties
     include Stannum::Entities::Attributes
+    include Stannum::Entities::PrimaryKey
     include Stannum::Entities::Constraints
   end
 end

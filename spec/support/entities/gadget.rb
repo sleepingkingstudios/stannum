@@ -6,6 +6,8 @@ module Spec
   class Gadget
     include Stannum::Entity
 
+    define_primary_key :id, Integer
+
     attribute :name,        String
     attribute :description, String,  optional: true
     attribute :quantity,    Integer, default:  0
