@@ -7,6 +7,7 @@
         absent: 'is nil or empty',
         anything: 'is a value',
         does_not_have_methods: 'does not respond to the methods',
+        does_not_match_format: 'does not match the expected format',
         has_methods: 'responds to the methods',
         hashes: {
           extra_keys: 'has extra keys',
@@ -39,6 +40,7 @@
           end
         end,
         is_value: 'is the expected value',
+        matches_format: 'matches the expected format',
         parameters: {
           extra_arguments: 'has extra arguments',
           extra_keywords: 'has extra keywords',
