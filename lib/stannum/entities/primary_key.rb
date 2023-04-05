@@ -28,7 +28,7 @@ module Stannum::Entities
       #
       # @return [Symbol] The attribute name as a symbol.
       #
-      # @see Stannum::Entities::Attributes::ClassMethods#define_primary_key.
+      # @see Stannum::Entities::Attributes::ClassMethods#define_attribute.
       def define_primary_key(attr_name, attr_type, **options)
         if primary_key?
           raise PrimaryKeyAlreadyExists,
@@ -68,6 +68,15 @@ module Stannum::Entities
           &.name
       end
 
+      # @return [Class, nil] the type of the primary key attribute, or nil if
+      #   the entity does not define a primary key.
+      def primary_key_type
+        attributes
+          .find { |_, attribute| attribute.primary_key? }
+          &.last
+          &.resolved_type
+      end
+
       private
 
       def included(other)
@@ -97,6 +106,30 @@ module Stannum::Entities
       return false if value.nil? || (value.respond_to?(:empty?) && value.empty?)
 
       true
+    end
+
+    # @return [String] the name of the primary key attribute.
+    #
+    # @raise [Stannum::Entities::PrimaryKey::PrimaryKeyMissing] if the entity
+    #   does not define a primary key.
+    def primary_key_name
+      unless self.class.primary_key?
+        raise PrimaryKeyMissing, "#{self.class} does not define a primary key"
+      end
+
+      self.class.primary_key_name
+    end
+
+    # @return [Class] the type of the primary key attribute.
+    #
+    # @raise [Stannum::Entities::PrimaryKey::PrimaryKeyMissing] if the entity
+    #   does not define a primary key.
+    def primary_key_type
+      unless self.class.primary_key?
+        raise PrimaryKeyMissing, "#{self.class} does not define a primary key"
+      end
+
+      self.class.primary_key_type
     end
 
     # @return [Object] the current value of the primary key attribute.

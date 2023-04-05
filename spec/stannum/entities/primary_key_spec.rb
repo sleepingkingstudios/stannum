@@ -35,9 +35,9 @@ RSpec.describe Stannum::Entities::PrimaryKey do
       -> { be_a(Class).and(be < StandardError) }
   end
 
-  # include_examples 'should implement the Attributes methods'
+  include_examples 'should implement the Attributes methods'
 
-  # include_examples 'should implement the Properties methods'
+  include_examples 'should implement the Properties methods'
 
   include_examples 'should implement the PrimaryKey methods'
 end

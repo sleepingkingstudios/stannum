@@ -387,6 +387,40 @@ module Spec::Support::Examples::Entities
         end
       end
 
+      describe '::primary_key_type' do
+        include_examples 'should define class reader', :primary_key_type, nil
+
+        wrap_context 'when the entity class defines attributes' do
+          it { expect(described_class.primary_key_type).to be nil }
+        end
+
+        wrap_context 'when the entity class defines integer primary key' do
+          it { expect(described_class.primary_key_type).to be Integer }
+        end
+
+        wrap_context 'when the entity class defines string primary key' do
+          it { expect(described_class.primary_key_type).to be String }
+        end
+
+        wrap_context 'with an entity subclass' do
+          it { expect(described_class.primary_key_name).to be nil }
+
+          # rubocop:disable RSpec/RepeatedExampleGroupBody
+          wrap_context 'when the entity class defines integer primary key' do
+            it { expect(described_class.primary_key_type).to be Integer }
+          end
+
+          wrap_context 'when the entity class defines string primary key' do
+            it { expect(described_class.primary_key_type).to be String }
+          end
+
+          wrap_context 'when the subclass defines primary key' do
+            it { expect(described_class.primary_key_type).to be Integer }
+          end
+          # rubocop:enable RSpec/RepeatedExampleGroupBody
+        end
+      end
+
       describe '#primary_key?' do
         include_examples 'should define predicate', :primary_key?, false
 
@@ -461,6 +495,122 @@ module Spec::Support::Examples::Entities
 
               it { expect(entity.primary_key?).to be true }
             end
+          end
+          # rubocop:enable RSpec/RepeatedExampleGroupBody
+        end
+      end
+
+      describe '#primary_key_name' do
+        let(:error_message) do
+          "#{described_class.name} does not define a primary key"
+        end
+
+        include_examples 'should define reader', :primary_key_name
+
+        it 'should raise an exception' do
+          expect { entity.primary_key_name }
+            .to raise_error(
+              Stannum::Entities::PrimaryKey::PrimaryKeyMissing,
+              error_message
+            )
+        end
+
+        wrap_context 'when the entity class defines attributes' do
+          it 'should raise an exception' do
+            expect { entity.primary_key_name }
+              .to raise_error(
+                Stannum::Entities::PrimaryKey::PrimaryKeyMissing,
+                error_message
+              )
+          end
+        end
+
+        wrap_context 'when the entity class defines integer primary key' do
+          it { expect(entity.primary_key_name).to be == 'id' }
+        end
+
+        wrap_context 'when the entity class defines string primary key' do
+          it { expect(entity.primary_key_name).to be == 'uuid' }
+        end
+
+        wrap_context 'with an entity subclass' do
+          it 'should raise an exception' do
+            expect { entity.primary_key_name }
+              .to raise_error(
+                Stannum::Entities::PrimaryKey::PrimaryKeyMissing,
+                error_message
+              )
+          end
+
+          # rubocop:disable RSpec/RepeatedExampleGroupBody
+          wrap_context 'when the entity class defines integer primary key' do
+            it { expect(entity.primary_key_name).to be == 'id' }
+          end
+
+          wrap_context 'when the entity class defines string primary key' do
+            it { expect(entity.primary_key_name).to be == 'uuid' }
+          end
+
+          wrap_context 'when the subclass defines primary key' do
+            it { expect(entity.primary_key_name).to be == 'id' }
+          end
+          # rubocop:enable RSpec/RepeatedExampleGroupBody
+        end
+      end
+
+      describe '#primary_key_type' do
+        let(:error_message) do
+          "#{described_class.name} does not define a primary key"
+        end
+
+        include_examples 'should define reader', :primary_key_type
+
+        it 'should raise an exception' do
+          expect { entity.primary_key_type }
+            .to raise_error(
+              Stannum::Entities::PrimaryKey::PrimaryKeyMissing,
+              error_message
+            )
+        end
+
+        wrap_context 'when the entity class defines attributes' do
+          it 'should raise an exception' do
+            expect { entity.primary_key_type }
+              .to raise_error(
+                Stannum::Entities::PrimaryKey::PrimaryKeyMissing,
+                error_message
+              )
+          end
+        end
+
+        wrap_context 'when the entity class defines integer primary key' do
+          it { expect(entity.primary_key_type).to be Integer }
+        end
+
+        wrap_context 'when the entity class defines string primary key' do
+          it { expect(entity.primary_key_type).to be String }
+        end
+
+        wrap_context 'with an entity subclass' do
+          it 'should raise an exception' do
+            expect { entity.primary_key_type }
+              .to raise_error(
+                Stannum::Entities::PrimaryKey::PrimaryKeyMissing,
+                error_message
+              )
+          end
+
+          # rubocop:disable RSpec/RepeatedExampleGroupBody
+          wrap_context 'when the entity class defines integer primary key' do
+            it { expect(entity.primary_key_type).to be Integer }
+          end
+
+          wrap_context 'when the entity class defines string primary key' do
+            it { expect(entity.primary_key_type).to be String }
+          end
+
+          wrap_context 'when the subclass defines primary key' do
+            it { expect(entity.primary_key_type).to be Integer }
           end
           # rubocop:enable RSpec/RepeatedExampleGroupBody
         end
