@@ -12,6 +12,7 @@ module Stannum
     autoload :Delegator,  'stannum/constraints/delegator'
     autoload :Enum,       'stannum/constraints/enum'
     autoload :Equality,   'stannum/constraints/equality'
+    autoload :Format,     'stannum/constraints/format'
     autoload :Hashes,     'stannum/constraints/hashes'
     autoload :Identity,   'stannum/constraints/identity'
     autoload :Nothing,    'stannum/constraints/nothing'
@@ -24,5 +25,6 @@ module Stannum
     autoload :Type,       'stannum/constraints/type'
     autoload :Types,      'stannum/constraints/types'
     autoload :Union,      'stannum/constraints/union'
+    autoload :Uuid,       'stannum/constraints/uuid'
   end
 end

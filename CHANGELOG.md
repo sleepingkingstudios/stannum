@@ -1,5 +1,16 @@
 # Changelog
 
+## 0.4.0
+
+### Constraints
+
+- Implemented `Stannum::Constraints::Format`
+- Implemented `Stannum::Constraints::Uuid`
+
+### Entities
+
+Implemented `Stannum::Entities::PrimaryKey`.
+
 ## 0.3.0
 
 ### Constraints
@@ -15,7 +26,7 @@
 
 Implemented `Stannum::Entity`, a replacement for the existing `Stannum::Struct`.
 
-Entitise are largely identical to structs, except for the constructor signature - entities require properties to be passed as keyword parameters, rather than as an attributes hash. Entities (and now Structs) are defined using composable modules.
+Entities are largely identical to structs, except for the constructor signature - entities require properties to be passed as keyword parameters, rather than as an attributes hash. Entities (and now Structs) are defined using composable modules.
 
 - Implemented `Stannum::Entities::Attributes`.
 - Implemented `Stannum::Entities::Constraints`.

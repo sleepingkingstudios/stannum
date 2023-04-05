@@ -135,7 +135,7 @@ module Stannum::Entities
 
     # Collects the entity attributes.
     #
-    # @param attributes [Hash<String, Object>] the entity attributes.
+    # @return [Hash<String, Object>] the entity attributes.
     def attributes
       @attributes.dup
     end

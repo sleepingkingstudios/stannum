@@ -114,6 +114,10 @@ Style/NestedParenthesizedCalls:
     - 'spec/**/*_examples.rb'
     - 'spec/**/*_spec.rb'
 
+Style/RedundantLineContinuation:
+  # Broken for line continuation followed by start of do; end block.
+  Enabled: false
+
 Style/SingleLineBlockParams:
   # Prefer descriptive block param names.
   Enabled: false

@@ -7,6 +7,7 @@
         absent: 'is nil or empty',
         anything: 'is a value',
         does_not_have_methods: 'does not respond to the methods',
+        does_not_match_format: 'does not match the expected format',
         has_methods: 'responds to the methods',
         hashes: {
           extra_keys: 'has extra keys',
@@ -15,10 +16,12 @@
           no_extra_keys: 'does not have extra keys'
         },
         invalid: 'is invalid',
+        is_a_uuid: 'is a valid UUID',
         is_boolean: 'is true or false',
         is_in_list: 'is in the list',
         is_in_union: 'matches one of the constraints',
         is_equal_to: 'is equal to',
+        is_not_a_uuid: 'is not a valid UUID',
         is_not_boolean: 'is not true or false',
         is_not_equal_to: 'is not equal to',
         is_not_in_list: 'is not in the list',
@@ -39,6 +42,7 @@
           end
         end,
         is_value: 'is the expected value',
+        matches_format: 'matches the expected format',
         parameters: {
           extra_arguments: 'has extra arguments',
           extra_keywords: 'has extra keywords',

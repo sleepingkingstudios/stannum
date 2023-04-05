@@ -93,10 +93,10 @@ RSpec.describe Spec::Item do
             type:    'stannum.constraints.is_not_type'
           },
           {
-            data:    {},
+            data:    { required: true, type: String },
             message: nil,
             path:    [:uuid],
-            type:    'stannum.constraints.invalid'
+            type:    'stannum.constraints.is_not_type'
           },
           {
             data:    { required: true, type: String },
@@ -125,7 +125,7 @@ RSpec.describe Spec::Item do
             data:    {},
             message: nil,
             path:    [:uuid],
-            type:    'stannum.constraints.invalid'
+            type:    'stannum.constraints.is_not_a_uuid'
           },
           {
             data:    { required: true, type: String },
