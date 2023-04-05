@@ -25,5 +25,6 @@ module Stannum
     autoload :Type,       'stannum/constraints/type'
     autoload :Types,      'stannum/constraints/types'
     autoload :Union,      'stannum/constraints/union'
+    autoload :Uuid,       'stannum/constraints/uuid'
   end
 end

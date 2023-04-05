@@ -16,10 +16,12 @@
           no_extra_keys: 'does not have extra keys'
         },
         invalid: 'is invalid',
+        is_a_uuid: 'is a valid UUID',
         is_boolean: 'is true or false',
         is_in_list: 'is in the list',
         is_in_union: 'matches one of the constraints',
         is_equal_to: 'is equal to',
+        is_not_a_uuid: 'is not a valid UUID',
         is_not_boolean: 'is not true or false',
         is_not_equal_to: 'is not equal to',
         is_not_in_list: 'is not in the list',
