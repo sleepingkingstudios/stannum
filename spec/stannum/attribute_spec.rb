@@ -7,6 +7,12 @@ require 'support/examples/optional_examples'
 RSpec.describe Stannum::Attribute do
   include Spec::Support::Examples::OptionalExamples
 
+  shared_context 'with default: Proc' do
+    let(:default) { -> { 'Self-Sealing Stem Bolt' } }
+
+    before(:example) { options.update(default: default) }
+  end
+
   shared_context 'with default: value' do
     let(:default) { 'Self-Sealing Stem Bolt' }
 
@@ -133,16 +139,62 @@ RSpec.describe Stannum::Attribute do
 
     it { expect(attribute.default).to be nil }
 
+    # rubocop:disable RSpec/RepeatedExampleGroupBody
+    wrap_context 'with default: Proc' do
+      it { expect(attribute.default).to be default }
+    end
+
     wrap_context 'with default: value' do
       it { expect(attribute.default).to be default }
     end
+    # rubocop:enable RSpec/RepeatedExampleGroupBody
   end
 
   describe '#default?' do
     include_examples 'should define predicate', :default?, false
 
+    # rubocop:disable RSpec/RepeatedExampleGroupBody
+    wrap_context 'with default: Proc' do
+      it { expect(attribute.default?).to be true }
+    end
+
     wrap_context 'with default: value' do
       it { expect(attribute.default?).to be true }
+    end
+    # rubocop:enable RSpec/RepeatedExampleGroupBody
+  end
+
+  describe '#default_value_for' do
+    let(:context) do
+      Struct.new(:first_name, :last_name).new('Alan', 'Bradley')
+    end
+
+    it { expect(attribute).to respond_to(:default_value_for).with(1).argument }
+
+    it { expect(attribute.default_value_for(context)).to be nil }
+
+    wrap_context 'with default: Proc' do
+      context 'when the Proc does not accept a context argument' do
+        let(:default) { -> { 'Alan Bradley' } }
+
+        it 'should generate the default value' do
+          expect(attribute.default_value_for(context)).to be == 'Alan Bradley'
+        end
+      end
+
+      context 'when the Proc accepts a context argument' do
+        let(:default) do
+          ->(context) { "#{context.first_name} #{context.last_name}" }
+        end
+
+        it 'should generate the default value' do
+          expect(attribute.default_value_for(context)).to be == 'Alan Bradley'
+        end
+      end
+    end
+
+    wrap_context 'with default: value' do
+      it { expect(attribute.default_value_for(context)).to be default }
     end
   end
 
