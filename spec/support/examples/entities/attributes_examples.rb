@@ -35,6 +35,24 @@ module Spec::Support::Examples::Entities
       end
     end
 
+    shared_context 'when the entity class defines attributes with defaults' do
+      include_context 'when the entity class defines attributes'
+
+      before(:example) do
+        entity_class.instance_eval do
+          attribute :creation_date,
+            'String',
+            default: -> { '1977-05-25' }
+          attribute :shipping_label,
+            'String',
+            default: lambda { |entity|
+              "#{entity.name || 'Unknown Item'} (#{entity.quantity}) " \
+                "[#{entity.creation_date}]"
+            }
+        end
+      end
+    end
+
     shared_context 'when the entity has attribute values' do
       let(:attributes) do
         {
@@ -182,6 +200,11 @@ module Spec::Support::Examples::Entities
         let(:attr_name) { :price }
         let(:attr_type) { BigDecimal }
         let(:options)   { {} }
+        let(:attribute) do
+          described_class
+            .tap { |klass| klass.attribute(attr_name, attr_type, **options) }
+            .attributes[attr_name]
+        end
 
         it 'should define the class method' do
           expect(described_class)
@@ -205,6 +228,8 @@ module Spec::Support::Examples::Entities
           end
 
           include_examples 'should define the attribute'
+
+          it { expect(attribute.default?).to be false }
         end
 
         describe 'with attr_name: a Symbol' do
@@ -216,12 +241,39 @@ module Spec::Support::Examples::Entities
           end
 
           include_examples 'should define the attribute'
+
+          it { expect(attribute.default?).to be false }
         end
 
-        describe 'with options: value' do
+        describe 'with options: { default: value }' do
+          let(:options) { super().merge(default: 0) }
+
+          include_examples 'should define the attribute'
+
+          it { expect(attribute.default?).to be true }
+
+          it { expect(attribute.default_value_for(entity)).to be 0 }
+        end
+
+        describe 'with options: { default: Proc }' do
+          let(:default) { -> { '00000000-0000-0000-0000-000000000000' } }
+          let(:options) { super().merge(default: default) }
+
+          include_examples 'should define the attribute'
+
+          it { expect(attribute.default?).to be true }
+
+          it 'should call the default proc' do
+            expect(attribute.default_value_for(entity)).to be == default.call
+          end
+        end
+
+        describe 'with options: custom value' do
           let(:options) { { key: 'value' } }
 
           include_examples 'should define the attribute'
+
+          it { expect(attribute.default?).to be false }
         end
 
         wrap_context 'when the entity class defines attributes' do
@@ -326,6 +378,30 @@ module Spec::Support::Examples::Entities
 
       describe '.new' do
         wrap_context 'when the entity class defines attributes' do
+          describe 'with no parameters' do
+            let(:expected) do
+              {
+                'description' => nil,
+                'name'        => nil,
+                'quantity'    => 0
+              }
+            end
+
+            it 'should not raise an exception' do
+              expect { described_class.new(**properties) }.not_to raise_error
+            end
+
+            it 'should set the attributes' do
+              expect(described_class.new(**properties).attributes)
+                .to be == expected
+            end
+
+            it 'should set the properties' do
+              expect(described_class.new(**properties).properties)
+                .to be == expected
+            end
+          end
+
           describe 'with invalid String keys' do
             let(:properties)    { super().merge('upc' => '12345') }
             let(:error_message) { 'unknown property "upc"' }
@@ -420,6 +496,170 @@ module Spec::Support::Examples::Entities
                 'description' => 'No one is quite sure what this thing is.',
                 'name'        => 'Self-sealing Stem Bolt',
                 'quantity'    => 0
+              }
+            end
+
+            it 'should not raise an exception' do
+              expect { described_class.new(**properties) }.not_to raise_error
+            end
+
+            it 'should set the attributes' do
+              expect(described_class.new(**properties).attributes)
+                .to be == expected
+            end
+
+            it 'should set the properties' do
+              expect(described_class.new(**properties).properties)
+                .to be == expected
+            end
+          end
+        end
+
+        wrap_context 'when the entity class defines attributes with defaults' do
+          describe 'with no parameters' do
+            let(:expected) do
+              {
+                'description'    => nil,
+                'name'           => nil,
+                'quantity'       => 0,
+                'creation_date'  => '1977-05-25',
+                'shipping_label' => 'Unknown Item (0) [1977-05-25]'
+              }
+            end
+
+            it 'should not raise an exception' do
+              expect { described_class.new(**properties) }.not_to raise_error
+            end
+
+            it 'should set the attributes' do
+              expect(described_class.new(**properties).attributes)
+                .to be == expected
+            end
+
+            it 'should set the properties' do
+              expect(described_class.new(**properties).properties)
+                .to be == expected
+            end
+          end
+
+          describe 'with partial String keys' do
+            let(:properties) do
+              {
+                'description'   => 'No one is quite sure what this thing is.',
+                'name'          => 'Self-sealing Stem Bolt',
+                'creation_date' => '1980-05-17'
+              }
+            end
+            let(:expected) do
+              {
+                'description'    => 'No one is quite sure what this thing is.',
+                'name'           => 'Self-sealing Stem Bolt',
+                'quantity'       => 0,
+                'creation_date'  => '1980-05-17',
+                'shipping_label' => 'Self-sealing Stem Bolt (0) [1980-05-17]'
+              }
+            end
+
+            it 'should not raise an exception' do
+              expect { described_class.new(**properties) }.not_to raise_error
+            end
+
+            it 'should set the attributes' do
+              expect(described_class.new(**properties).attributes)
+                .to be == expected
+            end
+
+            it 'should set the properties' do
+              expect(described_class.new(**properties).properties)
+                .to be == expected
+            end
+          end
+
+          describe 'with partial Symbol keys' do
+            let(:properties) do
+              {
+                description:   'No one is quite sure what this thing is.',
+                name:          'Self-sealing Stem Bolt',
+                creation_date: '1980-05-17'
+              }
+            end
+            let(:expected) do
+              {
+                'description'    => 'No one is quite sure what this thing is.',
+                'name'           => 'Self-sealing Stem Bolt',
+                'quantity'       => 0,
+                'creation_date'  => '1980-05-17',
+                'shipping_label' => 'Self-sealing Stem Bolt (0) [1980-05-17]'
+              }
+            end
+
+            it 'should not raise an exception' do
+              expect { described_class.new(**properties) }.not_to raise_error
+            end
+
+            it 'should set the attributes' do
+              expect(described_class.new(**properties).attributes)
+                .to be == expected
+            end
+
+            it 'should set the properties' do
+              expect(described_class.new(**properties).properties)
+                .to be == expected
+            end
+          end
+
+          describe 'with complete String keys' do
+            let(:properties) do
+              {
+                'description'    => 'No one is quite sure what this thing is.',
+                'name'           => 'Self-sealing Stem Bolt',
+                'quantity'       => 1_000,
+                'creation_date'  => '1983-05-23',
+                'shipping_label' => 'Self-sealing Stem Bolt (1000) [1983-05-23]'
+              }
+            end
+            let(:expected) do
+              {
+                'description'    => 'No one is quite sure what this thing is.',
+                'name'           => 'Self-sealing Stem Bolt',
+                'quantity'       => 1_000,
+                'creation_date'  => '1983-05-23',
+                'shipping_label' => 'Self-sealing Stem Bolt (1000) [1983-05-23]'
+              }
+            end
+
+            it 'should not raise an exception' do
+              expect { described_class.new(**properties) }.not_to raise_error
+            end
+
+            it 'should set the attributes' do
+              expect(described_class.new(**properties).attributes)
+                .to be == expected
+            end
+
+            it 'should set the properties' do
+              expect(described_class.new(**properties).properties)
+                .to be == expected
+            end
+          end
+
+          describe 'with complete Symbol keys' do
+            let(:properties) do
+              {
+                description:    'No one is quite sure what this thing is.',
+                name:           'Self-sealing Stem Bolt',
+                quantity:       1_000,
+                creation_date:  '1983-05-23',
+                shipping_label: 'Self-sealing Stem Bolt (1000) [1983-05-23]'
+              }
+            end
+            let(:expected) do
+              {
+                'description'    => 'No one is quite sure what this thing is.',
+                'name'           => 'Self-sealing Stem Bolt',
+                'quantity'       => 1_000,
+                'creation_date'  => '1983-05-23',
+                'shipping_label' => 'Self-sealing Stem Bolt (1000) [1983-05-23]'
               }
             end
 
@@ -1408,6 +1648,352 @@ module Spec::Support::Examples::Entities
                   'name'        => 'Can of Headlight Fluid',
                   'description' => 'No one is quite sure what this thing is.',
                   'quantity'    => 0
+                }
+              end
+
+              it 'should not raise an exception' do
+                expect { entity.assign_attributes(values) }.not_to raise_error
+              end
+
+              it 'should change the entity attributes' do
+                expect { rescue_exception { entity.assign_attributes(values) } }
+                  .to change(entity, :attributes)
+                  .to be == expected
+              end
+
+              it 'should change the entity properties' do
+                expect { rescue_exception { entity.assign_attributes(values) } }
+                  .to change(entity, :properties)
+                  .to be >= expected
+              end
+            end
+          end
+        end
+
+        wrap_context 'when the entity class defines attributes with defaults' do
+          describe 'with empty attributes' do
+            let(:values) { {} }
+
+            it 'should not raise an exception' do
+              expect { entity.assign_attributes(values) }.not_to raise_error
+            end
+
+            it 'should not change the entity attributes' do
+              expect { entity.assign_attributes(values) }
+                .not_to change(entity, :attributes)
+            end
+
+            it 'should not change the entity properties' do
+              expect { entity.assign_attributes(values) }
+                .not_to change(entity, :properties)
+            end
+          end
+
+          describe 'with partial String keys' do
+            let(:values) do
+              {
+                'name'           => 'Self-sealing Stem Bolt',
+                'creation_date'  => '1980-05-17',
+                'shipping_label' => nil
+              }
+            end
+            let(:expected) do
+              {
+                'description'    => nil,
+                'name'           => 'Self-sealing Stem Bolt',
+                'quantity'       => 0,
+                'creation_date'  => '1980-05-17',
+                'shipping_label' => 'Self-sealing Stem Bolt (0) [1980-05-17]'
+              }
+            end
+
+            it 'should not raise an exception' do
+              expect { entity.assign_attributes(values) }.not_to raise_error
+            end
+
+            it 'should change the entity attributes' do
+              expect { rescue_exception { entity.assign_attributes(values) } }
+                .to change(entity, :attributes)
+                .to be == expected
+            end
+
+            it 'should change the entity properties' do
+              expect { rescue_exception { entity.assign_attributes(values) } }
+                .to change(entity, :properties)
+                .to be >= expected
+            end
+          end
+
+          describe 'with partial Symbol keys' do
+            let(:values) do
+              {
+                name:           'Self-sealing Stem Bolt',
+                creation_date:  '1980-05-17',
+                shipping_label: nil
+              }
+            end
+            let(:expected) do
+              {
+                'description'    => nil,
+                'name'           => 'Self-sealing Stem Bolt',
+                'quantity'       => 0,
+                'creation_date'  => '1980-05-17',
+                'shipping_label' => 'Self-sealing Stem Bolt (0) [1980-05-17]'
+              }
+            end
+
+            it 'should not raise an exception' do
+              expect { entity.assign_attributes(values) }.not_to raise_error
+            end
+
+            it 'should change the entity attributes' do
+              expect { rescue_exception { entity.assign_attributes(values) } }
+                .to change(entity, :attributes)
+                .to be == expected
+            end
+
+            it 'should change the entity properties' do
+              expect { rescue_exception { entity.assign_attributes(values) } }
+                .to change(entity, :properties)
+                .to be >= expected
+            end
+          end
+
+          describe 'with complete String keys' do
+            let(:values) do
+              {
+                'description'    => 'No one is quite sure what this thing is.',
+                'name'           => 'Self-sealing Stem Bolt',
+                'quantity'       => 1_000,
+                'creation_date'  => '1983-05-23',
+                'shipping_label' => 'Self-sealing Stem Bolt (1000) [1983-05-23]'
+              }
+            end
+            let(:expected) do
+              {
+                'description'    => 'No one is quite sure what this thing is.',
+                'name'           => 'Self-sealing Stem Bolt',
+                'quantity'       => 1_000,
+                'creation_date'  => '1983-05-23',
+                'shipping_label' => 'Self-sealing Stem Bolt (1000) [1983-05-23]'
+              }
+            end
+
+            it 'should not raise an exception' do
+              expect { entity.assign_attributes(values) }.not_to raise_error
+            end
+
+            it 'should change the entity attributes' do
+              expect { rescue_exception { entity.assign_attributes(values) } }
+                .to change(entity, :attributes)
+                .to be == expected
+            end
+
+            it 'should change the entity properties' do
+              expect { rescue_exception { entity.assign_attributes(values) } }
+                .to change(entity, :properties)
+                .to be >= expected
+            end
+          end
+
+          describe 'with complete Symbol keys' do
+            let(:values) do
+              {
+                description:    'No one is quite sure what this thing is.',
+                name:           'Self-sealing Stem Bolt',
+                quantity:       1_000,
+                creation_date:  '1983-05-23',
+                shipping_label: 'Self-sealing Stem Bolt (1000) [1983-05-23]'
+              }
+            end
+            let(:expected) do
+              {
+                'description'    => 'No one is quite sure what this thing is.',
+                'name'           => 'Self-sealing Stem Bolt',
+                'quantity'       => 1_000,
+                'creation_date'  => '1983-05-23',
+                'shipping_label' => 'Self-sealing Stem Bolt (1000) [1983-05-23]'
+              }
+            end
+
+            it 'should not raise an exception' do
+              expect { entity.assign_attributes(values) }.not_to raise_error
+            end
+
+            it 'should change the entity attributes' do
+              expect { rescue_exception { entity.assign_attributes(values) } }
+                .to change(entity, :attributes)
+                .to be == expected
+            end
+
+            it 'should change the entity properties' do
+              expect { rescue_exception { entity.assign_attributes(values) } }
+                .to change(entity, :properties)
+                .to be >= expected
+            end
+          end
+
+          wrap_context 'when the entity has attribute values' do
+            describe 'with empty attributes' do
+              let(:values) { {} }
+
+              it 'should not raise an exception' do
+                expect { entity.assign_attributes(values) }.not_to raise_error
+              end
+
+              it 'should not change the entity attributes' do
+                expect { entity.assign_attributes(values) }
+                  .not_to change(entity, :attributes)
+              end
+
+              it 'should not change the entity properties' do
+                expect { entity.assign_attributes(values) }
+                  .not_to change(entity, :properties)
+              end
+            end
+
+            describe 'with partial String keys' do
+              let(:values) do
+                {
+                  'name'           => 'Can of Headlight Fluid',
+                  'creation_date'  => '1980-05-17',
+                  'shipping_label' => nil
+                }
+              end
+              let(:expected) do
+                description    = 'No one is quite sure what this thing is.'
+                shipping_label = 'Can of Headlight Fluid (1000) [1980-05-17]'
+
+                {
+                  'description'    => description,
+                  'name'           => 'Can of Headlight Fluid',
+                  'quantity'       => 1_000,
+                  'creation_date'  => '1980-05-17',
+                  'shipping_label' => shipping_label
+                }
+              end
+
+              it 'should not raise an exception' do
+                expect { entity.assign_attributes(values) }.not_to raise_error
+              end
+
+              it 'should change the entity attributes' do
+                expect { rescue_exception { entity.assign_attributes(values) } }
+                  .to change(entity, :attributes)
+                  .to be == expected
+              end
+
+              it 'should change the entity properties' do
+                expect { rescue_exception { entity.assign_attributes(values) } }
+                  .to change(entity, :properties)
+                  .to be >= expected
+              end
+            end
+
+            describe 'with partial Symbol keys' do
+              let(:values) do
+                {
+                  name:           'Can of Headlight Fluid',
+                  creation_date:  '1980-05-17',
+                  shipping_label: nil
+                }
+              end
+              let(:expected) do
+                description    = 'No one is quite sure what this thing is.'
+                shipping_label = 'Can of Headlight Fluid (1000) [1980-05-17]'
+
+                {
+                  'description'    => description,
+                  'name'           => 'Can of Headlight Fluid',
+                  'quantity'       => 1_000,
+                  'creation_date'  => '1980-05-17',
+                  'shipping_label' => shipping_label
+                }
+              end
+
+              it 'should not raise an exception' do
+                expect { entity.assign_attributes(values) }.not_to raise_error
+              end
+
+              it 'should change the entity attributes' do
+                expect { rescue_exception { entity.assign_attributes(values) } }
+                  .to change(entity, :attributes)
+                  .to be == expected
+              end
+
+              it 'should change the entity properties' do
+                expect { rescue_exception { entity.assign_attributes(values) } }
+                  .to change(entity, :properties)
+                  .to be >= expected
+              end
+            end
+
+            describe 'with complete String keys' do
+              let(:values) do
+                description    = 'No one is quite sure what this thing is.'
+                shipping_label = 'Can of Headlight Fluid (1000) [1983-05-23]'
+
+                {
+                  'description'    => description,
+                  'name'           => 'Can of Headlight Fluid',
+                  'quantity'       => 1_000,
+                  'creation_date'  => '1983-05-23',
+                  'shipping_label' => shipping_label
+                }
+              end
+              let(:expected) do
+                description    = 'No one is quite sure what this thing is.'
+                shipping_label = 'Can of Headlight Fluid (1000) [1983-05-23]'
+
+                {
+                  'description'    => description,
+                  'name'           => 'Can of Headlight Fluid',
+                  'quantity'       => 1_000,
+                  'creation_date'  => '1983-05-23',
+                  'shipping_label' => shipping_label
+                }
+              end
+
+              it 'should not raise an exception' do
+                expect { entity.assign_attributes(values) }.not_to raise_error
+              end
+
+              it 'should change the entity attributes' do
+                expect { rescue_exception { entity.assign_attributes(values) } }
+                  .to change(entity, :attributes)
+                  .to be == expected
+              end
+
+              it 'should change the entity properties' do
+                expect { rescue_exception { entity.assign_attributes(values) } }
+                  .to change(entity, :properties)
+                  .to be >= expected
+              end
+            end
+
+            describe 'with complete Symbol keys' do
+              let(:values) do
+                description    = 'No one is quite sure what this thing is.'
+                shipping_label = 'Can of Headlight Fluid (1000) [1983-05-23]'
+
+                {
+                  description:    description,
+                  name:           'Can of Headlight Fluid',
+                  quantity:       1_000,
+                  creation_date:  '1983-05-23',
+                  shipping_label: shipping_label
+                }
+              end
+              let(:expected) do
+                description    = 'No one is quite sure what this thing is.'
+                shipping_label = 'Can of Headlight Fluid (1000) [1983-05-23]'
+
+                {
+                  'description'    => description,
+                  'name'           => 'Can of Headlight Fluid',
+                  'quantity'       => 1_000,
+                  'creation_date'  => '1983-05-23',
+                  'shipping_label' => shipping_label
                 }
               end
 
@@ -2686,6 +3272,355 @@ module Spec::Support::Examples::Entities
                   'name'        => 'Self-sealing Stem Bolt',
                   'description' => nil,
                   'quantity'    => 0
+                }
+              end
+
+              it 'should not raise an exception' do
+                expect { entity.attributes = values }.not_to raise_error
+              end
+
+              it 'should change the entity attributes' do
+                expect { rescue_exception { entity.attributes = values } }
+                  .to change(entity, :attributes)
+                  .to be == expected
+              end
+
+              it 'should change the entity properties' do
+                expect { rescue_exception { entity.attributes = values } }
+                  .to change(entity, :properties)
+                  .to be >= expected
+              end
+            end
+          end
+        end
+
+        wrap_context 'when the entity class defines attributes with defaults' do
+          describe 'with empty attributes' do
+            let(:values) { {} }
+
+            it { expect { entity.attributes = values }.not_to raise_error }
+
+            it 'should not change the entity attributes' do
+              expect { entity.attributes = values }
+                .not_to change(entity, :attributes)
+            end
+
+            it 'should not change the entity properties' do
+              expect { entity.attributes = values }
+                .not_to change(entity, :properties)
+            end
+          end
+
+          describe 'with partial String keys' do
+            let(:values) do
+              {
+                'name'           => 'Self-sealing Stem Bolt',
+                'creation_date'  => '1980-05-17',
+                'shipping_label' => nil
+              }
+            end
+            let(:expected) do
+              {
+                'description'    => nil,
+                'name'           => 'Self-sealing Stem Bolt',
+                'quantity'       => 0,
+                'creation_date'  => '1980-05-17',
+                'shipping_label' => 'Self-sealing Stem Bolt (0) [1980-05-17]'
+              }
+            end
+
+            it 'should not raise an exception' do
+              expect { entity.attributes = values }.not_to raise_error
+            end
+
+            it 'should change the entity attributes' do
+              expect { rescue_exception { entity.attributes = values } }
+                .to change(entity, :attributes)
+                .to be == expected
+            end
+
+            it 'should change the entity properties' do
+              expect { rescue_exception { entity.attributes = values } }
+                .to change(entity, :properties)
+                .to be >= expected
+            end
+          end
+
+          describe 'with partial Symbol keys' do
+            let(:values) do
+              {
+                name:           'Self-sealing Stem Bolt',
+                creation_date:  '1980-05-17',
+                shipping_label: nil
+              }
+            end
+            let(:expected) do
+              {
+                'description'    => nil,
+                'name'           => 'Self-sealing Stem Bolt',
+                'quantity'       => 0,
+                'creation_date'  => '1980-05-17',
+                'shipping_label' => 'Self-sealing Stem Bolt (0) [1980-05-17]'
+              }
+            end
+
+            it 'should not raise an exception' do
+              expect { entity.attributes = values }.not_to raise_error
+            end
+
+            it 'should change the entity attributes' do
+              expect { rescue_exception { entity.attributes = values } }
+                .to change(entity, :attributes)
+                .to be == expected
+            end
+
+            it 'should change the entity properties' do
+              expect { rescue_exception { entity.attributes = values } }
+                .to change(entity, :properties)
+                .to be >= expected
+            end
+          end
+
+          describe 'with complete String keys' do
+            let(:values) do
+              {
+                'description'    => 'No one is quite sure what this thing is.',
+                'name'           => 'Self-sealing Stem Bolt',
+                'quantity'       => 1_000,
+                'creation_date'  => '1983-05-23',
+                'shipping_label' => 'Self-sealing Stem Bolt (1000) [1983-05-23]'
+              }
+            end
+            let(:expected) do
+              {
+                'description'    => 'No one is quite sure what this thing is.',
+                'name'           => 'Self-sealing Stem Bolt',
+                'quantity'       => 1_000,
+                'creation_date'  => '1983-05-23',
+                'shipping_label' => 'Self-sealing Stem Bolt (1000) [1983-05-23]'
+              }
+            end
+
+            it 'should not raise an exception' do
+              expect { entity.attributes = values }.not_to raise_error
+            end
+
+            it 'should change the entity attributes' do
+              expect { rescue_exception { entity.attributes = values } }
+                .to change(entity, :attributes)
+                .to be == expected
+            end
+
+            it 'should change the entity properties' do
+              expect { rescue_exception { entity.attributes = values } }
+                .to change(entity, :properties)
+                .to be >= expected
+            end
+          end
+
+          describe 'with complete Symbol keys' do
+            let(:values) do
+              {
+                description:    'No one is quite sure what this thing is.',
+                name:           'Self-sealing Stem Bolt',
+                quantity:       1_000,
+                creation_date:  '1983-05-23',
+                shipping_label: 'Self-sealing Stem Bolt (1000) [1983-05-23]'
+              }
+            end
+            let(:expected) do
+              {
+                'description'    => 'No one is quite sure what this thing is.',
+                'name'           => 'Self-sealing Stem Bolt',
+                'quantity'       => 1_000,
+                'creation_date'  => '1983-05-23',
+                'shipping_label' => 'Self-sealing Stem Bolt (1000) [1983-05-23]'
+              }
+            end
+
+            it 'should not raise an exception' do
+              expect { entity.attributes = values }.not_to raise_error
+            end
+
+            it 'should change the entity attributes' do
+              expect { rescue_exception { entity.attributes = values } }
+                .to change(entity, :attributes)
+                .to be == expected
+            end
+
+            it 'should change the entity properties' do
+              expect { rescue_exception { entity.attributes = values } }
+                .to change(entity, :properties)
+                .to be >= expected
+            end
+          end
+
+          wrap_context 'when the entity has attribute values' do
+            describe 'with empty attributes' do
+              let(:values) { {} }
+              let(:expected) do
+                {
+                  'description'    => nil,
+                  'name'           => nil,
+                  'quantity'       => 0,
+                  'creation_date'  => '1977-05-25',
+                  'shipping_label' => 'Unknown Item (0) [1977-05-25]'
+                }
+              end
+
+              it 'should not raise an exception' do
+                expect { entity.attributes = values }.not_to raise_error
+              end
+
+              it 'should clear the entity attributes' do
+                expect { entity.attributes = values }
+                  .to change(entity, :attributes)
+                  .to be == expected
+              end
+
+              it 'should clear the entity properties' do
+                expect { entity.attributes = values }
+                  .to change(entity, :properties)
+                  .to be == expected
+              end
+            end
+
+            describe 'with partial String keys' do
+              let(:values) do
+                {
+                  'name'           => 'Can of Headlight Fluid',
+                  'creation_date'  => '1980-05-17',
+                  'shipping_label' => nil
+                }
+              end
+              let(:expected) do
+                {
+                  'description'    => nil,
+                  'name'           => 'Can of Headlight Fluid',
+                  'quantity'       => 0,
+                  'creation_date'  => '1980-05-17',
+                  'shipping_label' => 'Can of Headlight Fluid (0) [1980-05-17]'
+                }
+              end
+
+              it 'should not raise an exception' do
+                expect { entity.attributes = values }.not_to raise_error
+              end
+
+              it 'should change the entity attributes' do
+                expect { rescue_exception { entity.attributes = values } }
+                  .to change(entity, :attributes)
+                  .to be == expected
+              end
+
+              it 'should change the entity properties' do
+                expect { rescue_exception { entity.attributes = values } }
+                  .to change(entity, :properties)
+                  .to be >= expected
+              end
+            end
+
+            describe 'with partial Symbol keys' do
+              let(:values) do
+                {
+                  name:           'Can of Headlight Fluid',
+                  creation_date:  '1980-05-17',
+                  shipping_label: nil
+                }
+              end
+              let(:expected) do
+                {
+                  'description'    => nil,
+                  'name'           => 'Can of Headlight Fluid',
+                  'quantity'       => 0,
+                  'creation_date'  => '1980-05-17',
+                  'shipping_label' => 'Can of Headlight Fluid (0) [1980-05-17]'
+                }
+              end
+
+              it 'should not raise an exception' do
+                expect { entity.attributes = values }.not_to raise_error
+              end
+
+              it 'should change the entity attributes' do
+                expect { rescue_exception { entity.attributes = values } }
+                  .to change(entity, :attributes)
+                  .to be == expected
+              end
+
+              it 'should change the entity properties' do
+                expect { rescue_exception { entity.attributes = values } }
+                  .to change(entity, :properties)
+                  .to be >= expected
+              end
+            end
+
+            describe 'with complete String keys' do
+              let(:values) do
+                description    = 'No one is quite sure what this thing is.'
+                shipping_label = 'Can of Headlight Fluid (1000) [1983-05-23]'
+
+                {
+                  'description'    => description,
+                  'name'           => 'Can of Headlight Fluid',
+                  'quantity'       => 1_000,
+                  'creation_date'  => '1983-05-23',
+                  'shipping_label' => shipping_label
+                }
+              end
+              let(:expected) do
+                description    = 'No one is quite sure what this thing is.'
+                shipping_label = 'Can of Headlight Fluid (1000) [1983-05-23]'
+
+                {
+                  'description'    => description,
+                  'name'           => 'Can of Headlight Fluid',
+                  'quantity'       => 1_000,
+                  'creation_date'  => '1983-05-23',
+                  'shipping_label' => shipping_label
+                }
+              end
+
+              it 'should not raise an exception' do
+                expect { entity.attributes = values }.not_to raise_error
+              end
+
+              it 'should change the entity attributes' do
+                expect { rescue_exception { entity.attributes = values } }
+                  .to change(entity, :attributes)
+                  .to be == expected
+              end
+
+              it 'should change the entity properties' do
+                expect { rescue_exception { entity.attributes = values } }
+                  .to change(entity, :properties)
+                  .to be >= expected
+              end
+            end
+
+            describe 'with complete Symbol keys' do
+              let(:values) do
+                description    = 'No one is quite sure what this thing is.'
+                shipping_label = 'Can of Headlight Fluid (1000) [1983-05-23]'
+
+                {
+                  description:    description,
+                  name:           'Can of Headlight Fluid',
+                  quantity:       1_000,
+                  creation_date:  '1983-05-23',
+                  shipping_label: shipping_label
+                }
+              end
+              let(:expected) do
+                description    = 'No one is quite sure what this thing is.'
+                shipping_label = 'Can of Headlight Fluid (1000) [1983-05-23]'
+
+                {
+                  'description'    => description,
+                  'name'           => 'Can of Headlight Fluid',
+                  'quantity'       => 1_000,
+                  'creation_date'  => '1983-05-23',
+                  'shipping_label' => shipping_label
                 }
               end
 
