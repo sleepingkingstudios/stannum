@@ -51,6 +51,17 @@ module Stannum
       !@options[:default].nil?
     end
 
+    # @param context [Object] the context object used to determinet the default
+    #   value.
+    #
+    # @return [Object] the value of the default attribute for the given context
+    #   object, if any.
+    def default_value_for(context)
+      return default unless default.is_a?(Proc)
+
+      default.arity.zero? ? default.call : default.call(context)
+    end
+
     # @return [Boolean] true if the attribute represents the primary key for the
     #   entity; otherwise false.
     def primary_key?

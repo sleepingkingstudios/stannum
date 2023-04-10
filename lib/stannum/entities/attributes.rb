@@ -5,7 +5,7 @@ require 'stannum/schema'
 
 module Stannum::Entities
   # Methods for defining and accessing entity attributes.
-  module Attributes
+  module Attributes # rubocop:disable Metrics/ModuleLength
     # Class methods to extend the class when including Attributes.
     module ClassMethods
       # Defines an attribute on the entity.
@@ -171,6 +171,37 @@ module Stannum::Entities
 
     private
 
+    def apply_defaults_for(attributes) # rubocop:disable Metrics/AbcSize, Metrics/MethodLength
+      with_value, with_proc = bisect_attributes_by_default_type
+
+      with_value.each do |attribute|
+        next unless @attributes[attribute.name].nil?
+        next unless attributes.key?(attribute.name)
+
+        send(attribute.writer_name, attribute.default)
+      end
+
+      with_proc.each do |attribute|
+        next unless @attributes[attribute.name].nil?
+        next unless attributes.key?(attribute.name)
+
+        send(attribute.writer_name, attribute.default_value_for(self))
+      end
+    end
+
+    def bisect_attributes_by_default_type
+      with_value = []
+      with_proc  = []
+
+      self.class.attributes.each_value do |attribute|
+        next unless attribute.default?
+
+        (attribute.default.is_a?(Proc) ? with_proc : with_value) << attribute
+      end
+
+      [with_value, with_proc]
+    end
+
     def get_property(key)
       return @attributes[key.to_s] if attributes.key?(key.to_s)
 
@@ -211,11 +242,14 @@ module Stannum::Entities
       self.class.attributes.each do |attr_name, attribute|
         next unless attributes.key?(attr_name) || force
 
-        send(
-          attribute.writer_name,
-          attributes[attr_name].nil? ? attribute.default : attributes[attr_name]
-        )
+        if attributes[attr_name].nil? && attribute.default?
+          @attributes[attr_name] = nil
+        else
+          send(attribute.writer_name, attributes[attr_name])
+        end
       end
+
+      apply_defaults_for(force ? @attributes : attributes)
     end
   end
 end
