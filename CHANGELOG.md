@@ -9,7 +9,8 @@
 
 ### Entities
 
-Implemented `Stannum::Entities::PrimaryKey`.
+- Implemented `Stannum::Entities::PrimaryKey`.
+- Added support for default blocks to `Stannum::Entities::Attributes`.
 
 ## 0.3.0
 

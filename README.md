@@ -797,6 +797,39 @@ LightsCounter.new.count
 #=> 4
 ```
 
+Defaults can also be defined as a `Proc`. If the default block takes no arguments, then the block will be called with no parameters. If the default block takes an argument, then the block will be called with the current entity. This allows you to define default values that depend on other attributes.
+
+```ruby
+class Employee
+  include Stannum::Entity
+
+  AccessCard = Struct.new(:employee_id, :full_name)
+
+  attribute :employee_id, String, default: -> { SecureRandom.uuid }
+  attribute :full_name,   String, default: lambda { |employee|
+    "#{employee.first_name} #{employee.last_name}"
+  }
+  attribute :first_name,  String, default: 'Jane'
+  attribute :last_name,   String, default: 'Doe'
+  attribute :access_card, AccessCard, default: lambda { |employee|
+    AccessCard.new(employee.employee_id, employee.full_name)
+  }
+end
+
+Employee.new.access_card.full_name
+#=> 'Jane Doe'
+```
+
+Attribute defaults are always applied in the following order:
+
+1. Attribute values defined by the user or already set on the entity.
+2. Default attributes that are not `Proc`s.
+3. Default attribute blocks, in the order they are defined.
+
+In the example above, the `employee_id`, `first_name` and `last_name` are generated first. Then, the `full_name` attribute is generated, using the values of `#first_name` and `#last_name`. Finally, the `#access_card` is generated, using the values of `#employee_id` and `#full_name`.
+
+Default values that are defined as `Proc`s are always executed when generating the default value. If you need to define a default value that is itself a `Proc` or `lambda`, you can do so by defining the `Proc` and wrapping it another `Proc`.
+
 ##### Optional Attributes
 
 Entity classes can also mark attributes as `optional`. When an entity is validated (see [Validation](#entities-validation), below), optional attributes will pass with a value of `nil`.
