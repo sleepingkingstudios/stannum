@@ -4,9 +4,11 @@ require 'bigdecimal'
 
 require 'stannum/schema'
 
+require 'support/generic_property'
+
 RSpec.describe Stannum::Schema do
-  shared_context 'when there are many defined attributes' do
-    let(:defined_attributes) do
+  shared_context 'when there are many defined properties' do
+    let(:defined_properties) do
       [
         {
           name:    'name',
@@ -27,16 +29,16 @@ RSpec.describe Stannum::Schema do
     end
 
     before(:example) do
-      defined_attributes.each do |attribute|
-        attributes.define_attribute(**attribute)
+      defined_properties.each do |property|
+        schema.define(**property)
       end
     end
   end
 
-  shared_context 'when parent attributes are included' do
-    include_context 'when there are many defined attributes'
+  shared_context 'when parent properties are included' do
+    include_context 'when there are many defined properties'
 
-    let(:parent_defined_attributes) do
+    let(:parent_defined_properties) do
       [
         {
           name:    'size',
@@ -45,25 +47,30 @@ RSpec.describe Stannum::Schema do
         }
       ]
     end
-    let(:parent_attributes) do
-      described_class.new.tap do |parent_attributes|
-        if defined?(grandparent_attributes)
-          parent_attributes.include(grandparent_attributes)
+    let(:parent_properties) do
+      described_class
+        .new(
+          property_class: property_class,
+          property_name:  property_name
+        )
+        .tap do |parent_properties|
+          if defined?(grandparent_properties)
+            parent_properties.include(grandparent_properties)
+          end
         end
-      end
     end
 
     before(:example) do
-      parent_defined_attributes.each do |attribute|
-        parent_attributes.define_attribute(**attribute)
+      parent_defined_properties.each do |property|
+        parent_properties.define(**property)
       end
     end
   end
 
-  shared_context 'when grandparent attributes are included' do
-    include_context 'when parent attributes are included'
+  shared_context 'when grandparent properties are included' do
+    include_context 'when parent properties are included'
 
-    let(:grandparent_defined_attributes) do
+    let(:grandparent_defined_properties) do
       [
         {
           name:    'price',
@@ -72,823 +79,713 @@ RSpec.describe Stannum::Schema do
         }
       ]
     end
-    let(:grandparent_attributes) { described_class.new }
+    let(:grandparent_properties) do
+      described_class.new(
+        property_class: property_class,
+        property_name:  property_name
+      )
+    end
 
     before(:example) do
-      grandparent_defined_attributes.each do |attribute|
-        grandparent_attributes.define_attribute(**attribute)
+      grandparent_defined_properties.each do |property|
+        grandparent_properties.define(**property)
       end
     end
   end
 
-  subject(:attributes) do
-    described_class.new.tap do |attributes|
-      attributes.include(parent_attributes) if defined?(parent_attributes)
-    end
+  subject(:schema) do
+    described_class
+      .new(
+        property_class: property_class,
+        property_name:  property_name
+      )
+      .tap do |schema|
+        schema.include(parent_properties) if defined?(parent_properties)
+      end
   end
 
-  let(:struct) { Spec::BasicStruct.new }
+  let(:struct)         { Spec::BasicStruct.new }
+  let(:property_class) { Spec::GenericProperty }
+  let(:property_name)  { 'properties' }
 
   example_class 'Spec::BasicStruct' do |klass|
     klass.send(:define_method, :initialize) { @attributes = {} }
 
     klass.send(:attr_reader, :attributes)
 
-    klass.const_set(:Attributes, attributes)
+    klass.const_set(:Attributes, schema)
 
-    klass.send(:include, attributes)
+    klass.send(:include, schema)
   end
 
-  it { expect(attributes).to be_a Enumerable }
+  example_class 'Spec::PropertyBuilder' do |klass|
+    klass.define_method(:initialize) { |*| nil }
+
+    klass.define_method(:call) { |*| nil }
+  end
+
+  example_class 'Spec::Property',
+    Struct.new(:name, :options, :type, keyword_init: true) \
+  do |klass|
+    klass.const_set(:Builder, Spec::PropertyBuilder)
+  end
+
+  it { expect(schema).to be_a Enumerable }
+
+  it { expect(schema).to be_a Module }
 
   describe '.new' do
-    it { expect(described_class).to be_constructible.with(0).arguments }
+    it 'should define the constructor' do
+      expect(schema)
+        .to respond_to(:initialize, true)
+        .with(0).arguments
+        .and_keywords(:property_class, :property_name)
+    end
 
-    it { expect(described_class.new).to be_a Module }
-  end
+    describe 'with property_class: object' do
+      let(:error_message) { 'property class is not a Class' }
 
-  describe '#:attribute' do
-    shared_examples 'should define the attribute reader' \
-    do |attr_name:, attr_value:|
-      it { expect(struct).to respond_to(attr_name).with(0).arguments }
-
-      it { expect(struct.send(attr_name)).to be nil }
-
-      context 'when the attribute has a value' do
-        before(:example) do
-          struct.attributes[attr_name.to_s] = attr_value
+      it 'should raise an exception' do
+        expect do
+          described_class.new(
+            property_class: Object.new.freeze,
+            property_name:  property_name
+          )
         end
-
-        it { expect(struct.send(attr_name)).to be == attr_value }
+          .to raise_error ArgumentError, error_message
       end
     end
 
-    it { expect(struct).not_to respond_to(:name) }
+    describe 'with property_name: nil' do
+      let(:error_message) { "property name can't be blank" }
 
-    it { expect(struct).not_to respond_to(:price) }
-
-    it { expect(struct).not_to respond_to(:size) }
-
-    wrap_context 'when there are many defined attributes' do
-      include_examples 'should define the attribute reader',
-        attr_name:  :name,
-        attr_value: 'Self-Sealing Stem Bolt'
-
-      it { expect(struct).not_to respond_to(:price) }
-
-      it { expect(struct).not_to respond_to(:size) }
-    end
-
-    wrap_context 'when parent attributes are included' do
-      include_examples 'should define the attribute reader',
-        attr_name:  :size,
-        attr_value: 'Colossal'
-
-      it { expect(struct).not_to respond_to(:price) }
-    end
-
-    wrap_context 'when grandparent attributes are included' do
-      include_examples 'should define the attribute reader',
-        attr_name:  :price,
-        attr_value: BigDecimal('10.0')
-    end
-  end
-
-  describe '#:attribute=' do
-    shared_examples 'should define the attribute writer' \
-    do |attr_name:, new_value:, old_value:|
-      writer_name = :"#{attr_name}="
-
-      it { expect(struct).to respond_to(writer_name).with(1).argument }
-
-      it 'should update the attribute' do
-        expect { struct.send(writer_name, new_value) }
-          .to change { struct.attributes[attr_name.to_s] }
-          .to be new_value
-      end
-
-      context 'when the attribute has a value' do
-        before(:example) do
-          struct.attributes[attr_name.to_s] = old_value
+      it 'should raise an exception' do
+        expect do
+          described_class.new(
+            property_class: property_class,
+            property_name:  nil
+          )
         end
-
-        it 'should update the attribute' do
-          expect { struct.send(writer_name, new_value) }
-            .to change { struct.attributes[attr_name.to_s] }
-            .from(old_value)
-            .to be new_value
-        end
+          .to raise_error ArgumentError, error_message
       end
     end
 
-    it { expect(struct).not_to respond_to(:name=) }
+    describe 'with property_name: an Object' do
+      let(:error_message) { 'property name is not a String or a Symbol' }
 
-    it { expect(struct).not_to respond_to(:price=) }
-
-    it { expect(struct).not_to respond_to(:size=) }
-
-    wrap_context 'when there are many defined attributes' do
-      include_examples 'should define the attribute writer',
-        attr_name: :name,
-        old_value: 'Self-Sealing Stem Bolt',
-        new_value: 'Can of Headlight Fluid'
-
-      it { expect(struct).not_to respond_to(:price=) }
-
-      it { expect(struct).not_to respond_to(:size=) }
-
-      context 'when the attribute has a default' do
-        let(:default_value) { 0 }
-        let(:old_value)     { 1_000 }
-        let(:new_value)     { 100 }
-
-        before(:example) { struct.quantity = default_value }
-
-        describe 'with nil' do
-          it 'should not change the attribute' do
-            expect { struct.quantity = nil }
-              .not_to(change { struct.attributes['quantity'] })
-          end
+      it 'should raise an exception' do
+        expect do
+          described_class.new(
+            property_class: property_class,
+            property_name:  Object.new.freeze
+          )
         end
-
-        describe 'with a value' do
-          it 'should update the attribute' do
-            expect { struct.quantity = new_value }
-              .to change { struct.attributes['quantity'] }
-              .from(default_value)
-              .to be new_value
-          end
-        end
-
-        context 'when the attribute has a value' do
-          before(:example) do
-            struct.attributes['quantity'] = old_value
-          end
-
-          describe 'with nil' do # rubocop:disable RSpec/NestedGroups
-            it 'should reset the attribute' do
-              expect { struct.quantity = nil }
-                .to change { struct.attributes['quantity'] }
-                .to be default_value
-            end
-          end
-
-          describe 'with a value' do # rubocop:disable RSpec/NestedGroups
-            it 'should update the attribute' do
-              expect { struct.quantity = new_value }
-                .to change { struct.attributes['quantity'] }
-                .from(old_value)
-                .to be new_value
-            end
-          end
-        end
+          .to raise_error ArgumentError, error_message
       end
     end
 
-    wrap_context 'when parent attributes are included' do
-      include_examples 'should define the attribute writer',
-        attr_name: :size,
-        old_value: 'Gargantuan',
-        new_value: 'Colossal'
+    describe 'with property_name: an empty String' do
+      let(:error_message) { "property name can't be blank" }
 
-      it { expect(struct).not_to respond_to(:price=) }
+      it 'should raise an exception' do
+        expect do
+          described_class.new(
+            property_class: property_class,
+            property_name:  ''
+          )
+        end
+          .to raise_error ArgumentError, error_message
+      end
     end
 
-    wrap_context 'when grandparent attributes are included' do
-      include_examples 'should define the attribute writer',
-        attr_name: :price,
-        old_value: BigDecimal('5.0'),
-        new_value: BigDecimal('10.0')
+    describe 'with property_name: an empty Symbol' do
+      let(:error_message) { "property name can't be blank" }
+
+      it 'should raise an exception' do
+        expect do
+          described_class.new(
+            property_class: property_class,
+            property_name:  :''
+          )
+        end
+          .to raise_error ArgumentError, error_message
+      end
     end
   end
 
   describe '#[]' do
-    it { expect(attributes).to respond_to(:[]).with(1).argument }
+    it { expect(schema).to respond_to(:[]).with(1).argument }
 
     describe 'with nil' do
       it 'should raise an error' do
-        expect { attributes[nil] }
+        expect { schema[nil] }
           .to raise_error ArgumentError, "key can't be blank"
       end
     end
 
     describe 'with an Object' do
       it 'should raise an error' do
-        expect { attributes[Object.new.freeze] }
+        expect { schema[Object.new.freeze] }
           .to raise_error ArgumentError, 'key is not a String or a Symbol'
       end
     end
 
     describe 'with an empty String' do
       it 'should raise an error' do
-        expect { attributes[''] }
+        expect { schema[''] }
           .to raise_error ArgumentError, "key can't be blank"
       end
     end
 
     describe 'with an empty Symbol' do
       it 'should raise an error' do
-        expect { attributes[:''] }
+        expect { schema[:''] }
           .to raise_error ArgumentError, "key can't be blank"
       end
     end
 
     describe 'with an undefined String' do
       it 'should raise an error' do
-        expect { attributes['unknown'] }
+        expect { schema['unknown'] }
           .to raise_error KeyError, 'key not found: "unknown"'
       end
     end
 
     describe 'with an undefined Symbol' do
       it 'should raise an error' do
-        expect { attributes[:unknown] }
+        expect { schema[:unknown] }
           .to raise_error KeyError, 'key not found: "unknown"'
       end
     end
 
-    wrap_context 'when there are many defined attributes' do
+    wrap_context 'when there are many defined properties' do
       describe 'with an undefined String' do
         it 'should raise an error' do
-          expect { attributes['unknown'] }
+          expect { schema['unknown'] }
             .to raise_error KeyError, 'key not found: "unknown"'
         end
       end
 
       describe 'with an undefined Symbol' do
         it 'should raise an error' do
-          expect { attributes[:unknown] }
+          expect { schema[:unknown] }
             .to raise_error KeyError, 'key not found: "unknown"'
         end
       end
 
       describe 'with a valid String' do
-        def be_the_expected_attribute
-          an_instance_of(Stannum::Attribute)
-            .and(
-              have_attributes(
-                name:    'name',
-                options: { required: true },
-                type:    'String'
-              )
-            )
+        let(:expected) do
+          Spec::GenericProperty.new(
+            name:    'name',
+            options: {},
+            type:    'String'
+          )
         end
 
-        it { expect(attributes['name']).to be_the_expected_attribute }
+        it { expect(schema['name']).to be == expected }
       end
 
       describe 'with a valid Symbol' do
-        def be_the_expected_attribute
-          an_instance_of(Stannum::Attribute)
-            .and(
-              have_attributes(
-                name:    'name',
-                options: { required: true },
-                type:    'String'
-              )
-            )
+        let(:expected) do
+          Spec::GenericProperty.new(
+            name:    'name',
+            options: {},
+            type:    'String'
+          )
         end
 
-        it { expect(attributes[:name]).to be_the_expected_attribute }
+        it { expect(schema[:name]).to be == expected }
       end
     end
 
-    wrap_context 'when parent attributes are included' do
+    wrap_context 'when parent properties are included' do
       describe 'with a valid String' do
-        def be_the_expected_attribute
-          an_instance_of(Stannum::Attribute)
-            .and(
-              have_attributes(
-                name:    'size',
-                options: { required: true },
-                type:    'String'
-              )
-            )
+        let(:expected) do
+          Spec::GenericProperty.new(
+            name:    'size',
+            options: {},
+            type:    'String'
+          )
         end
 
-        it { expect(attributes['size']).to be_the_expected_attribute }
+        it { expect(schema['size']).to be == expected }
       end
 
       describe 'with a valid Symbol' do
-        def be_the_expected_attribute
-          an_instance_of(Stannum::Attribute)
-            .and(
-              have_attributes(
-                name:    'size',
-                options: { required: true },
-                type:    'String'
-              )
-            )
+        let(:expected) do
+          Spec::GenericProperty.new(
+            name:    'size',
+            options: {},
+            type:    'String'
+          )
         end
 
-        it { expect(attributes[:size]).to be_the_expected_attribute }
+        it { expect(schema[:size]).to be == expected }
       end
     end
 
-    wrap_context 'when grandparent attributes are included' do
+    wrap_context 'when grandparent properties are included' do
       describe 'with a valid String' do
-        def be_the_expected_attribute
-          an_instance_of(Stannum::Attribute)
-            .and(
-              have_attributes(
-                name:    'price',
-                options: { required: true },
-                type:    'BigDecimal'
-              )
-            )
+        let(:expected) do
+          Spec::GenericProperty.new(
+            name:    'price',
+            options: {},
+            type:    'BigDecimal'
+          )
         end
 
-        it { expect(attributes['price']).to be_the_expected_attribute }
+        it { expect(schema['price']).to be == expected }
       end
 
       describe 'with a valid Symbol' do
-        def be_the_expected_attribute
-          an_instance_of(Stannum::Attribute)
-            .and(
-              have_attributes(
-                name:    'price',
-                options: { required: true },
-                type:    'BigDecimal'
-              )
-            )
+        let(:expected) do
+          Spec::GenericProperty.new(
+            name:    'price',
+            options: {},
+            type:    'BigDecimal'
+          )
         end
 
-        it { expect(attributes[:price]).to be_the_expected_attribute }
+        it { expect(schema[:price]).to be == expected }
       end
     end
   end
 
-  describe '#define_attribute' do
-    let(:name)    { :price }
-    let(:options) { { default: BigDecimal('9.99') } }
-    let(:type)    { BigDecimal }
-    let(:attribute) do
-      attributes.define_attribute(name: name, options: options, type: type)
+  describe '#define' do
+    let(:name)     { 'price' }
+    let(:options)  { { default: BigDecimal('9.99') } }
+    let(:type)     { BigDecimal }
+    let(:property) { schema.define(name: name, options: options, type: type) }
+    let(:builder)  { instance_double(property_class::Builder, call: nil) }
+
+    before(:example) do
+      allow(property_class::Builder).to receive(:new).and_return(builder)
     end
 
     it 'should define the method' do
-      expect(attributes)
-        .to respond_to(:define_attribute)
+      expect(schema)
+        .to respond_to(:define)
         .with(0).arguments
         .and_keywords(:name, :options, :type)
     end
 
-    it { expect(attribute).to be_a Stannum::Attribute }
+    it { expect(property).to be_a property_class }
 
-    it { expect(attribute.name).to be == name.to_s }
+    it { expect(property.name).to be == name }
 
-    it { expect(attribute.options).to be == options.merge(required: true) }
+    it { expect(property.options).to be == options }
 
-    it { expect(attribute.type).to be == type.to_s }
+    it { expect(property.type).to be == type }
 
-    it 'should add the attribute to @attributes' do
-      expect do
-        attributes.define_attribute(name: name, options: options, type: type)
-      end
-        .to change(attributes.each, :size)
+    it 'should add the property' do
+      expect { schema.define(name: name, options: options, type: type) }
+        .to change(schema.each, :size)
         .by 1
     end
 
-    context 'when the attribute is already defined' do
+    it 'should call the builder', :aggregate_failures do
+      schema.define(name: name, options: options, type: type)
+
+      property = schema[name]
+
+      expect(property_class::Builder).to have_received(:new).with(schema)
+      expect(builder).to have_received(:call).with(property)
+    end
+
+    context 'when the property is already defined' do
+      let(:error_message) do
+        "#{tools.str.singularize(property_name)} #{name.inspect} already exists"
+      end
+
+      def tools
+        SleepingKingStudios::Tools::Toolbelt.instance
+      end
+
       before(:example) do
-        attributes.define_attribute(name: name, options: {}, type: 'Object')
+        schema.define(name: name, options: {}, type: 'Object')
       end
 
       it 'should raise an error' do
-        expect do
-          attributes.define_attribute(name: name, options: options, type: type)
-        end
-          .to raise_error ArgumentError,
-            "attribute #{name.inspect} already exists"
+        expect { schema.define(name: name, options: options, type: type) }
+          .to raise_error ArgumentError, error_message
       end
     end
 
-    wrap_context 'when there are many defined attributes' do
-      it 'should add the attribute to @attributes' do
-        expect do
-          attributes.define_attribute(name: name, options: options, type: type)
-        end
-          .to change(attributes.each, :size)
+    wrap_context 'when there are many defined properties' do
+      it 'should add the property' do
+        expect { schema.define(name: name, options: options, type: type) }
+          .to change(schema.each, :size)
           .by 1
+      end
+
+      it 'should call the builder', :aggregate_failures do
+        schema.define(name: name, options: options, type: type)
+
+        property = schema[name]
+
+        expect(property_class::Builder)
+          .to have_received(:new)
+          .with(schema)
+          .exactly(4).times
+        expect(builder).to have_received(:call).with(property)
       end
     end
   end
 
   describe '#each' do
-    it { expect(attributes).to respond_to(:each).with(0).arguments }
-
-    it { expect(attributes.each).to be_a Enumerator }
-
-    it { expect(attributes.each.size).to be 0 }
-
-    it { expect { |block| attributes.each(&block) }.not_to yield_control }
-
-    wrap_context 'when there are many defined attributes' do
-      let(:expected_attributes) do
-        defined_attributes.map do |attribute|
-          attribute.merge(
-            options: Stannum::Support::Optional.resolve(**attribute[:options])
-          )
-        end
+    let(:expected_properties) { [] }
+    let(:expected_keys) do
+      expected_properties.map { |hsh| hsh[:name] }
+    end
+    let(:expected_values) do
+      expected_properties.map do |property|
+        Spec::GenericProperty.new(
+          name:    property[:name],
+          options: property[:options],
+          type:    property[:type]
+        )
       end
-      let(:expected_keys) do
-        expected_attributes.map { |hsh| hsh[:name] }
-      end
-      let(:expected_values) do
-        expected_attributes.map do |attribute|
-          an_instance_of(Stannum::Attribute)
-            .and(have_attributes(**attribute))
-        end
-      end
+    end
 
-      it { expect(attributes.each.size).to be expected_attributes.size }
+    it { expect(schema).to respond_to(:each).with(0).arguments }
 
-      it 'should yield the attribute names and attributes' do
-        expect { |block| attributes.each(&block) }
+    it { expect(schema.each).to be_a Enumerator }
+
+    it { expect(schema.each.size).to be 0 }
+
+    it { expect { |block| schema.each(&block) }.not_to yield_control }
+
+    wrap_context 'when there are many defined properties' do
+      let(:expected_properties) { defined_properties }
+
+      it { expect(schema.each.size).to be defined_properties.size }
+
+      it 'should yield the property names and properties' do
+        expect { |block| schema.each(&block) }
           .to yield_successive_args(*expected_keys.zip(expected_values))
       end
     end
 
-    wrap_context 'when parent attributes are included' do
-      let(:expected_attributes) do
-        (parent_defined_attributes + defined_attributes).map do |attribute|
-          attribute.merge(
-            options: Stannum::Support::Optional.resolve(**attribute[:options])
-          )
-        end
-      end
-      let(:expected_keys) do
-        expected_attributes.map { |hsh| hsh[:name] }
-      end
-      let(:expected_values) do
-        expected_attributes.map do |attribute|
-          an_instance_of(Stannum::Attribute)
-            .and(have_attributes(**attribute))
-        end
+    wrap_context 'when parent properties are included' do
+      let(:expected_properties) do
+        parent_defined_properties + defined_properties
       end
 
-      it { expect(attributes.each.size).to be expected_attributes.size }
+      it { expect(schema.each.size).to be expected_properties.size }
 
-      it 'should yield the attribute names and attributes' do
-        expect { |block| attributes.each(&block) }
+      it 'should yield the property names and properties' do
+        expect { |block| schema.each(&block) }
           .to yield_successive_args(*expected_keys.zip(expected_values))
       end
     end
 
-    wrap_context 'when grandparent attributes are included' do
-      let(:expected_attributes) do
-        (
-          grandparent_defined_attributes +
-          parent_defined_attributes +
-          defined_attributes
-        ).map do |attribute|
-          attribute.merge(
-            options: Stannum::Support::Optional.resolve(**attribute[:options])
-          )
-        end
-      end
-      let(:expected_keys) do
-        expected_attributes.map { |hsh| hsh[:name] }
-      end
-      let(:expected_values) do
-        expected_attributes.map do |attribute|
-          an_instance_of(Stannum::Attribute)
-            .and(have_attributes(**attribute))
-        end
+    wrap_context 'when grandparent properties are included' do
+      let(:expected_properties) do
+        grandparent_defined_properties +
+          parent_defined_properties +
+          defined_properties
       end
 
-      it { expect(attributes.each.size).to be expected_attributes.size }
+      it { expect(schema.each.size).to be expected_properties.size }
 
-      it 'should yield the attribute names and attributes' do
-        expect { |block| attributes.each(&block) }
+      it 'should yield the property names and properties' do
+        expect { |block| schema.each(&block) }
           .to yield_successive_args(*expected_keys.zip(expected_values))
       end
     end
   end
 
   describe '#each_key' do
-    it { expect(attributes).to respond_to(:each_key).with(0).arguments }
+    let(:expected_properties) { [] }
+    let(:expected_keys) do
+      expected_properties.map { |hsh| hsh[:name] }
+    end
 
-    it { expect(attributes.each_key).to be_a Enumerator }
+    it { expect(schema).to respond_to(:each_key).with(0).arguments }
 
-    it { expect(attributes.each_key.size).to be 0 }
+    it { expect(schema.each_key).to be_a Enumerator }
 
-    it { expect { |block| attributes.each_key(&block) }.not_to yield_control }
+    it { expect(schema.each_key.size).to be 0 }
 
-    wrap_context 'when there are many defined attributes' do
-      let(:expected_attributes) { defined_attributes }
-      let(:expected_keys) do
-        expected_attributes.map { |hsh| hsh[:name] }
-      end
+    it { expect { |block| schema.each_key(&block) }.not_to yield_control }
 
-      it { expect(attributes.each_key.size).to be expected_attributes.size }
+    wrap_context 'when there are many defined properties' do
+      let(:expected_properties) { defined_properties }
 
-      it 'should yield the attribute names' do
-        expect { |block| attributes.each_key(&block) }
+      it { expect(schema.each_key.size).to be expected_properties.size }
+
+      it 'should yield the property names' do
+        expect { |block| schema.each_key(&block) }
           .to yield_successive_args(*expected_keys)
       end
     end
 
-    wrap_context 'when parent attributes are included' do
-      let(:expected_attributes) do
-        parent_defined_attributes + defined_attributes
-      end
-      let(:expected_keys) do
-        expected_attributes.map { |hsh| hsh[:name] }
+    wrap_context 'when parent properties are included' do
+      let(:expected_properties) do
+        parent_defined_properties + defined_properties
       end
 
-      it { expect(attributes.each_key.size).to be expected_attributes.size }
+      it { expect(schema.each_key.size).to be expected_properties.size }
 
-      it 'should yield the attribute names' do
-        expect { |block| attributes.each_key(&block) }
+      it 'should yield the property names' do
+        expect { |block| schema.each_key(&block) }
           .to yield_successive_args(*expected_keys)
       end
     end
 
-    wrap_context 'when grandparent attributes are included' do
-      let(:expected_attributes) do
-        grandparent_defined_attributes +
-          parent_defined_attributes +
-          defined_attributes
-      end
-      let(:expected_keys) do
-        expected_attributes.map { |hsh| hsh[:name] }
+    wrap_context 'when grandparent properties are included' do
+      let(:expected_properties) do
+        grandparent_defined_properties +
+          parent_defined_properties +
+          defined_properties
       end
 
-      it { expect(attributes.each_key.size).to be expected_attributes.size }
+      it { expect(schema.each_key.size).to be expected_properties.size }
 
-      it 'should yield the attribute names' do
-        expect { |block| attributes.each_key(&block) }
+      it 'should yield the property names' do
+        expect { |block| schema.each_key(&block) }
           .to yield_successive_args(*expected_keys)
       end
     end
   end
 
   describe '#each_value' do
-    it { expect(attributes).to respond_to(:each_value).with(0).arguments }
-
-    it { expect(attributes.each_value).to be_a Enumerator }
-
-    it { expect(attributes.each_value.size).to be 0 }
-
-    it { expect { |block| attributes.each_value(&block) }.not_to yield_control }
-
-    wrap_context 'when there are many defined attributes' do
-      let(:expected_attributes) do
-        defined_attributes.map do |attribute|
-          attribute.merge(
-            options: Stannum::Support::Optional.resolve(**attribute[:options])
-          )
-        end
+    let(:expected_properties) { [] }
+    let(:expected_values) do
+      expected_properties.map do |property|
+        Spec::GenericProperty.new(
+          name:    property[:name],
+          options: property[:options],
+          type:    property[:type]
+        )
       end
-      let(:expected_values) do
-        expected_attributes.map do |attribute|
-          an_instance_of(Stannum::Attribute)
-            .and(have_attributes(**attribute))
-        end
-      end
+    end
 
-      it { expect(attributes.each_value.size).to be expected_attributes.size }
+    it { expect(schema).to respond_to(:each_value).with(0).arguments }
 
-      it 'should yield the attributes' do
-        expect { |block| attributes.each_value(&block) }
+    it { expect(schema.each_value).to be_a Enumerator }
+
+    it { expect(schema.each_value.size).to be 0 }
+
+    it { expect { |block| schema.each_value(&block) }.not_to yield_control }
+
+    wrap_context 'when there are many defined properties' do
+      let(:expected_properties) { defined_properties }
+
+      it { expect(schema.each_value.size).to be expected_properties.size }
+
+      it 'should yield the properties' do
+        expect { |block| schema.each_value(&block) }
           .to yield_successive_args(*expected_values)
       end
     end
 
-    wrap_context 'when parent attributes are included' do
-      let(:expected_attributes) do
-        (parent_defined_attributes + defined_attributes).map do |attribute|
-          attribute.merge(
-            options: Stannum::Support::Optional.resolve(**attribute[:options])
-          )
-        end
-      end
-      let(:expected_values) do
-        expected_attributes.map do |attribute|
-          an_instance_of(Stannum::Attribute)
-            .and(have_attributes(**attribute))
-        end
+    wrap_context 'when parent properties are included' do
+      let(:expected_properties) do
+        parent_defined_properties + defined_properties
       end
 
-      it { expect(attributes.each_value.size).to be expected_attributes.size }
+      it { expect(schema.each_value.size).to be expected_properties.size }
 
-      it 'should yield the attributes' do
-        expect { |block| attributes.each_value(&block) }
+      it 'should yield the properties' do
+        expect { |block| schema.each_value(&block) }
           .to yield_successive_args(*expected_values)
       end
     end
 
-    wrap_context 'when grandparent attributes are included' do
-      let(:expected_attributes) do
-        (
-          grandparent_defined_attributes +
-          parent_defined_attributes +
-          defined_attributes
-        ).map do |attribute|
-          attribute.merge(
-            options: Stannum::Support::Optional.resolve(**attribute[:options])
-          )
-        end
-      end
-      let(:expected_values) do
-        expected_attributes.map do |attribute|
-          an_instance_of(Stannum::Attribute)
-            .and(have_attributes(**attribute))
-        end
+    wrap_context 'when grandparent properties are included' do
+      let(:expected_properties) do
+        grandparent_defined_properties +
+          parent_defined_properties +
+          defined_properties
       end
 
-      it { expect(attributes.each_value.size).to be expected_attributes.size }
+      it { expect(schema.each_value.size).to be expected_properties.size }
 
-      it 'should yield the attributes' do
-        expect { |block| attributes.each_value(&block) }
+      it 'should yield the property' do
+        expect { |block| schema.each_value(&block) }
           .to yield_successive_args(*expected_values)
       end
     end
   end
 
   describe '#key?' do
-    it { expect(attributes).to respond_to(:key?).with(1).argument }
+    it { expect(schema).to respond_to(:key?).with(1).argument }
 
-    it { expect(attributes.key? 'name').to be false }
+    it { expect(schema.key? 'name').to be false }
 
-    it { expect(attributes.key? :name).to be false }
+    it { expect(schema.key? :name).to be false }
 
-    wrap_context 'when there are many defined attributes' do
-      it { expect(attributes.key? 'other').to be false }
+    wrap_context 'when there are many defined properties' do
+      it { expect(schema.key? 'other').to be false }
 
-      it { expect(attributes.key? :other).to be false }
+      it { expect(schema.key? :other).to be false }
 
-      it { expect(attributes.key? 'name').to be true }
+      it { expect(schema.key? 'name').to be true }
 
-      it { expect(attributes.key? :name).to be true }
+      it { expect(schema.key? :name).to be true }
     end
 
-    wrap_context 'when parent attributes are included' do
-      it { expect(attributes.key? 'other').to be false }
+    wrap_context 'when parent properties are included' do
+      it { expect(schema.key? 'other').to be false }
 
-      it { expect(attributes.key? :other).to be false }
+      it { expect(schema.key? :other).to be false }
 
-      it { expect(attributes.key? 'name').to be true }
+      it { expect(schema.key? 'name').to be true }
 
-      it { expect(attributes.key? :name).to be true }
+      it { expect(schema.key? :name).to be true }
 
-      it { expect(attributes.key? 'size').to be true }
+      it { expect(schema.key? 'size').to be true }
 
-      it { expect(attributes.key? :size).to be true }
+      it { expect(schema.key? :size).to be true }
     end
 
-    wrap_context 'when grandparent attributes are included' do
-      it { expect(attributes.key? 'other').to be false }
+    wrap_context 'when grandparent properties are included' do
+      it { expect(schema.key? 'other').to be false }
 
-      it { expect(attributes.key? :other).to be false }
+      it { expect(schema.key? :other).to be false }
 
-      it { expect(attributes.key? 'name').to be true }
+      it { expect(schema.key? 'name').to be true }
 
-      it { expect(attributes.key? :name).to be true }
+      it { expect(schema.key? :name).to be true }
 
-      it { expect(attributes.key? 'price').to be true }
+      it { expect(schema.key? 'price').to be true }
 
-      it { expect(attributes.key? :price).to be true }
+      it { expect(schema.key? :price).to be true }
 
-      it { expect(attributes.key? 'size').to be true }
+      it { expect(schema.key? 'size').to be true }
 
-      it { expect(attributes.key? :size).to be true }
+      it { expect(schema.key? :size).to be true }
     end
   end
 
   describe '#keys' do
-    it { expect(attributes).to respond_to(:keys).with(0).arguments }
+    it { expect(schema).to respond_to(:keys).with(0).arguments }
 
-    it { expect(attributes.keys).to be == [] }
+    it { expect(schema.keys).to be == [] }
 
-    wrap_context 'when there are many defined attributes' do
-      let(:expected_attributes) { defined_attributes }
+    wrap_context 'when there are many defined properties' do
+      let(:expected_properties) { defined_properties }
       let(:expected_keys) do
-        expected_attributes.map { |hsh| hsh[:name] }
+        expected_properties.map { |hsh| hsh[:name] }
       end
 
-      it { expect(attributes.keys).to be == expected_keys }
+      it { expect(schema.keys).to be == expected_keys }
     end
 
-    wrap_context 'when parent attributes are included' do
-      let(:expected_attributes) do
-        parent_defined_attributes + defined_attributes
+    wrap_context 'when parent properties are included' do
+      let(:expected_properties) do
+        parent_defined_properties + defined_properties
       end
       let(:expected_keys) do
-        expected_attributes.map { |hsh| hsh[:name] }
+        expected_properties.map { |hsh| hsh[:name] }
       end
 
-      it { expect(attributes.keys).to be == expected_keys }
+      it { expect(schema.keys).to be == expected_keys }
     end
 
-    wrap_context 'when grandparent attributes are included' do
-      let(:expected_attributes) do
-        grandparent_defined_attributes +
-          parent_defined_attributes +
-          defined_attributes
+    wrap_context 'when grandparent properties are included' do
+      let(:expected_properties) do
+        grandparent_defined_properties +
+          parent_defined_properties +
+          defined_properties
       end
       let(:expected_keys) do
-        expected_attributes.map { |hsh| hsh[:name] }
+        expected_properties.map { |hsh| hsh[:name] }
       end
 
-      it { expect(attributes.keys).to be == expected_keys }
+      it { expect(schema.keys).to be == expected_keys }
+    end
+  end
+
+  describe '#property_class' do
+    include_examples 'should define reader',
+      :property_class,
+      -> { property_class }
+  end
+
+  describe '#property_name' do
+    include_examples 'should define reader',
+      :property_name,
+      -> { property_name }
+
+    context 'when initialized with property_name: a Symbol' do
+      let(:property_name) { :properties }
+
+      it { expect(schema.property_name).to be == property_name.to_s }
     end
   end
 
   describe '#size' do
-    it { expect(attributes).to respond_to(:size).with(0).arguments }
+    it { expect(schema).to respond_to(:size).with(0).arguments }
 
-    it { expect(attributes).to have_aliased_method(:size).as(:count) }
+    it { expect(schema).to have_aliased_method(:size).as(:count) }
 
-    it { expect(attributes.size).to be 0 }
+    it { expect(schema.size).to be 0 }
 
-    wrap_context 'when there are many defined attributes' do
-      let(:expected_attributes) { defined_attributes }
+    wrap_context 'when there are many defined properties' do
+      let(:expected_properties) { defined_properties }
 
-      it { expect(attributes.size).to be expected_attributes.size }
+      it { expect(schema.size).to be expected_properties.size }
     end
 
-    wrap_context 'when parent attributes are included' do
-      let(:expected_attributes) do
-        parent_defined_attributes + defined_attributes
+    wrap_context 'when parent properties are included' do
+      let(:expected_properties) do
+        parent_defined_properties + defined_properties
       end
 
-      it { expect(attributes.size).to be expected_attributes.size }
+      it { expect(schema.size).to be expected_properties.size }
     end
 
-    wrap_context 'when grandparent attributes are included' do
-      let(:expected_attributes) do
-        grandparent_defined_attributes +
-          parent_defined_attributes +
-          defined_attributes
+    wrap_context 'when grandparent properties are included' do
+      let(:expected_properties) do
+        grandparent_defined_properties +
+          parent_defined_properties +
+          defined_properties
       end
 
-      it { expect(attributes.size).to be expected_attributes.size }
+      it { expect(schema.size).to be expected_properties.size }
     end
   end
 
   describe '#values' do
-    it { expect(attributes).to respond_to(:values).with(0).arguments }
-
-    it { expect(attributes.values).to be == [] }
-
-    wrap_context 'when there are many defined attributes' do
-      let(:expected_attributes) do
-        defined_attributes.map do |attribute|
-          attribute.merge(
-            options: Stannum::Support::Optional.resolve(**attribute[:options])
-          )
-        end
+    let(:expected_properties) { [] }
+    let(:expected_values) do
+      expected_properties.map do |property|
+        Spec::GenericProperty.new(
+          name:    property[:name],
+          options: property[:options],
+          type:    property[:type]
+        )
       end
-      let(:expected_values) do
-        expected_attributes.map do |attribute|
-          an_instance_of(Stannum::Attribute)
-            .and(have_attributes(**attribute))
-        end
-      end
-
-      it { expect(attributes.values).to deep_match expected_values }
     end
 
-    wrap_context 'when parent attributes are included' do
-      let(:expected_attributes) do
-        (parent_defined_attributes + defined_attributes).map do |attribute|
-          attribute.merge(
-            options: Stannum::Support::Optional.resolve(**attribute[:options])
-          )
-        end
-      end
-      let(:expected_values) do
-        expected_attributes.map do |attribute|
-          an_instance_of(Stannum::Attribute)
-            .and(have_attributes(**attribute))
-        end
-      end
+    it { expect(schema).to respond_to(:values).with(0).arguments }
 
-      it { expect(attributes.values).to deep_match expected_values }
+    it { expect(schema.values).to be == [] }
+
+    wrap_context 'when there are many defined properties' do
+      let(:expected_properties) { defined_properties }
+
+      it { expect(schema.values).to deep_match expected_values }
     end
 
-    wrap_context 'when grandparent attributes are included' do
-      let(:expected_attributes) do
-        (
-          grandparent_defined_attributes +
-          parent_defined_attributes +
-          defined_attributes
-        ).map do |attribute|
-          attribute.merge(
-            options: Stannum::Support::Optional.resolve(**attribute[:options])
-          )
-        end
-      end
-      let(:expected_values) do
-        expected_attributes.map do |attribute|
-          an_instance_of(Stannum::Attribute)
-            .and(have_attributes(**attribute))
-        end
+    wrap_context 'when parent properties are included' do
+      let(:expected_properties) do
+        parent_defined_properties + defined_properties
       end
 
-      it { expect(attributes.values).to deep_match expected_values }
+      it { expect(schema.values).to deep_match expected_values }
+    end
+
+    wrap_context 'when grandparent properties are included' do
+      let(:expected_properties) do
+        grandparent_defined_properties +
+          parent_defined_properties +
+          defined_properties
+      end
+
+      it { expect(schema.values).to deep_match expected_values }
     end
   end
 end

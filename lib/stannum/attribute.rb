@@ -4,9 +4,43 @@ require 'stannum'
 require 'stannum/support/optional'
 
 module Stannum
-  # Data object representing an attribute on a struct.
+  # Data object representing an attribute on an entity.
   class Attribute
     include Stannum::Support::Optional
+
+    # Builder class for defining attribute methods on an entity.
+    class Builder
+      # @param entity_class [Class] the entity class on which to define methods.
+      def initialize(entity_class)
+        @entity_class = entity_class
+      end
+
+      # @return [Class] the entity class on which to define methods.
+      attr_reader :entity_class
+
+      # Defines the reader and writer methods for the attribute.
+      #
+      # @param attribute [Stannum::Attribute]
+      def call(attribute)
+        define_reader(attribute)
+        define_writer(attribute)
+      end
+
+      private
+
+      def define_reader(attribute)
+        entity_class.define_method(attribute.reader_name) do
+          @attributes[attribute.name]
+        end
+      end
+
+      def define_writer(attribute)
+        entity_class.define_method(attribute.writer_name) do |value|
+          @attributes[attribute.name] =
+            value.nil? ? attribute.default_value_for(self) : value
+        end
+      end
+    end
 
     # @param name [String, Symbol] The name of the attribute. Converted to a
     #   String.
@@ -104,13 +138,7 @@ module Stannum
     end
 
     def validate_name(name)
-      raise ArgumentError, "name can't be blank" if name.nil?
-
-      unless name.is_a?(String) || name.is_a?(Symbol)
-        raise ArgumentError, 'name must be a String or Symbol'
-      end
-
-      raise ArgumentError, "name can't be blank" if name.empty?
+      tools.assertions.validate_name(name, as: 'name')
     end
 
     def validate_options(options)

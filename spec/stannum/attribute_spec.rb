@@ -8,13 +8,13 @@ RSpec.describe Stannum::Attribute do
   include Spec::Support::Examples::OptionalExamples
 
   shared_context 'with default: Proc' do
-    let(:default) { -> { 'Self-Sealing Stem Bolt' } }
+    let(:default) { -> { 'No one is quite sure what this does.' } }
 
     before(:example) { options.update(default: default) }
   end
 
   shared_context 'with default: value' do
-    let(:default) { 'Self-Sealing Stem Bolt' }
+    let(:default) { 'No one is quite sure what this does.' }
 
     before(:example) { options.update(default: default) }
   end
@@ -37,6 +37,158 @@ RSpec.describe Stannum::Attribute do
   let(:name)    { 'description' }
   let(:type)    { String }
   let(:options) { constructor_options }
+
+  describe '::Builder' do
+    subject(:builder) do
+      described_class::Builder.new(entity_class)
+    end
+
+    let(:entity_class) { Spec::Entity }
+
+    example_class 'Spec::Entity' do |klass|
+      klass.define_method(:initialize) do |values = {}|
+        @attributes = values
+      end
+
+      klass.attr_accessor :attributes
+    end
+
+    describe '.new' do
+      it 'should be constructible' do
+        expect(described_class::Builder).to be_constructible.with(1).argument
+      end
+    end
+
+    describe '#call' do
+      let(:attribute) do
+        described_class.new(name: name, type: type, options: options)
+      end
+      let(:values) { {} }
+      let(:entity) { entity_class.new(values) }
+
+      it { expect(builder).to respond_to(:call).with(1).argument }
+
+      describe '#:attribute' do
+        before(:example) { builder.call(attribute) }
+
+        it { expect(entity).to define_reader(attribute.name) }
+
+        it { expect(entity.send(attribute.name)).to be nil }
+
+        context 'when the attribute has a value' do
+          let(:values) do
+            { 'description' => 'No one is quite sure what this does.' }
+          end
+
+          it 'should get the attribute value' do
+            expect(entity.send(attribute.name)).to be == values[attribute.name]
+          end
+        end
+      end
+
+      describe '#:attribute=' do
+        let(:value) { 'A mechanical mystery.' }
+
+        before(:example) { builder.call(attribute) }
+
+        it { expect(entity).to define_writer("#{attribute.name}=") }
+
+        it 'should set the attribute value' do
+          expect { entity.send("#{attribute.name}=", value) }
+            .to change(entity, attribute.name)
+            .to be == value
+        end
+
+        # rubocop:disable RSpec/NestedGroups
+        context 'when the attribute has a value' do
+          let(:values) do
+            { 'description' => 'No one is quite sure what this does.' }
+          end
+
+          describe 'with nil' do
+            it 'should clear the attribute value' do
+              expect { entity.send("#{attribute.name}=", nil) }
+                .to change(entity, attribute.name)
+                .to be nil
+            end
+          end
+
+          describe 'with a value' do
+            it 'should set the attribute value' do
+              expect { entity.send("#{attribute.name}=", value) }
+                .to change(entity, attribute.name)
+                .to be == value
+            end
+          end
+        end
+
+        context 'when the attribute has a default Proc' do
+          let(:name)    { 'quantity' }
+          let(:default) { -> { 0 } }
+          let(:value)   { 500 }
+          let(:options) { super().merge(default: default) }
+
+          context 'when the attribute has a value' do
+            let(:values) do
+              { 'quantity' => 1_000 }
+            end
+
+            describe 'with nil' do
+              it 'should set the attribute value to the default' do
+                expect { entity.send("#{attribute.name}=", nil) }
+                  .to change(entity, attribute.name)
+                  .to be == default.call
+              end
+            end
+
+            describe 'with a value' do
+              it 'should set the attribute value' do
+                expect { entity.send("#{attribute.name}=", value) }
+                  .to change(entity, attribute.name)
+                  .to be == value
+              end
+            end
+          end
+        end
+
+        context 'when the attrbute has a default value' do
+          let(:name)    { 'quantity' }
+          let(:default) { 0 }
+          let(:value)   { 500 }
+          let(:options) { super().merge(default: default) }
+
+          context 'when the attribute has a value' do
+            let(:values) do
+              { 'quantity' => 1_000 }
+            end
+
+            describe 'with nil' do
+              it 'should set the attribute value to the default' do
+                expect { entity.send("#{attribute.name}=", nil) }
+                  .to change(entity, attribute.name)
+                  .to be == default
+              end
+            end
+
+            describe 'with a value' do
+              it 'should set the attribute value' do
+                expect { entity.send("#{attribute.name}=", value) }
+                  .to change(entity, attribute.name)
+                  .to be == value
+              end
+            end
+          end
+        end
+        # rubocop:enable RSpec/NestedGroups
+      end
+    end
+
+    describe '#entity_class' do
+      include_examples 'should define reader',
+        :entity_class,
+        -> { entity_class }
+    end
+  end
 
   describe '.new' do
     it 'should define the constructor' do
@@ -62,7 +214,7 @@ RSpec.describe Stannum::Attribute do
             options: options
           )
         end
-          .to raise_error ArgumentError, 'name must be a String or Symbol'
+          .to raise_error ArgumentError, 'name is not a String or a Symbol'
       end
     end
 
