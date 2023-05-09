@@ -2,158 +2,160 @@
 
 require 'forwardable'
 
-require 'stannum/attribute'
-
 module Stannum
-  # Abstract class for defining attribute methods for a struct.
+  # Abstract class for defining property methods for a struct.
   #
   # @see Stannum::Attribute.
   class Schema < Module
     extend  Forwardable
     include Enumerable
 
-    def initialize
-      super
+    # @param property_class [Class] the class representing the elements of the
+    #   schema.
+    # @param property_name [String, Symbol] the name of the schema elements.
+    def initialize(property_class:, property_name:)
+      super()
 
-      @attributes = {}
+      tools.assertions.validate_class(property_class, as: 'property class')
+      tools.assertions.validate_name(property_name, as: 'property name')
+
+      @properties     = {}
+      @property_class = property_class
+      @property_name  = property_name.to_s
     end
 
-    # Retrieves the named attribute object.
+    # @return [Class] the class representing the elements of the schema.
+    attr_reader :property_class
+
+    # @return [String] the name of the schema elements.
+    attr_reader :property_name
+
+    # Retrieves the named property object.
     #
-    # @param key [String, Symbol] The name of the requested attribute.
+    # @param key [String, Symbol] The name of the requested property.
     #
-    # @return [Stannum::Attribute] The attribute object.
+    # @return [Stannum::Attribute] The property object.
     #
     # @raise ArgumentError if the key is invalid.
-    # @raise KeyError if the attribute is not defined.
+    # @raise KeyError if the property is not defined.
     def [](key)
       tools.assertions.assert_name(key, as: 'key', error_class: ArgumentError)
 
       str = -key.to_s
 
       each_ancestor do |ancestor|
-        next unless ancestor.own_attributes.key?(str)
+        next unless ancestor.own_properties.key?(str)
 
-        return ancestor.own_attributes[str]
+        return ancestor.own_properties[str]
       end
 
       {}.fetch(str)
     end
 
-    # rubocop:disable Metrics/MethodLength
-
     # @api private
     #
-    # Defines an attribute and adds the attribute to the contract.
+    # Defines an property and adds the property to the contract.
     #
-    # This method should not be called directly. Instead, define attributes via
-    # the Struct.attribute class method.
+    # This method should not be called directly. Instead, define properties via
+    # the Struct.property class method.
     #
     # @see Stannum::Struct
-    def define_attribute(name:, options:, type:)
-      attribute = Stannum::Attribute.new(
+    def define(name:, options:, type:) # rubocop:disable Metrics/MethodLength
+      property = property_class.new(
         name:    name,
         options: options,
         type:    type
       )
 
-      if @attributes.key?(attribute.name)
-        raise ArgumentError, "attribute #{name.inspect} already exists"
+      if @properties.key?(property.name)
+        message =
+          "#{tools.str.singularize(property_name)} #{name.inspect} " \
+          'already exists'
+
+        raise ArgumentError, message
       end
 
-      define_reader(attribute.name, attribute.reader_name)
-      define_writer(attribute.name, attribute.writer_name, attribute.default)
+      property_class::Builder.new(self).call(property)
 
-      @attributes[attribute.name] = attribute
+      @properties[property.name] = property
     end
-    # rubocop:enable Metrics/MethodLength
 
-    # Iterates through the the attributes by name and attribute object.
+    # Iterates through the the properties by name and property object.
     #
-    # @yieldparam name [String] The name of the attribute.
-    # @yieldparam attribute [Stannum::Attribute] The attribute object.
+    # @yieldparam name [String] The name of the property.
+    # @yieldparam property [Stannum::Attribute] The property object.
     def each(&block)
       return enum_for(:each) { size } unless block_given?
 
       each_ancestor do |ancestor|
-        ancestor.own_attributes.each(&block)
+        ancestor.own_properties.each(&block)
       end
     end
 
-    # Iterates through the the attributes by name.
+    # Iterates through the the properties by name.
     #
-    # @yieldparam name [String] The name of the attribute.
+    # @yieldparam name [String] The name of the property.
     def each_key(&block)
       return enum_for(:each_key) { size } unless block_given?
 
       each_ancestor do |ancestor|
-        ancestor.own_attributes.each_key(&block)
+        ancestor.own_properties.each_key(&block)
       end
     end
 
-    # Iterates through the the attributes by attribute object.
+    # Iterates through the the properties by property object.
     #
-    # @yieldparam attribute [Stannum::Attribute] The attribute object.
+    # @yieldparam property [Stannum::Attribute] The property object.
     def each_value(&block)
       return enum_for(:each_value) { size } unless block_given?
 
       each_ancestor do |ancestor|
-        ancestor.own_attributes.each_value(&block)
+        ancestor.own_properties.each_value(&block)
       end
     end
 
-    # Checks if the given attribute is defined.
+    # Checks if the given property is defined.
     #
-    # @param key [String, Symbol] the name of the attribute to check.
+    # @param key [String, Symbol] the name of the property to check.
     #
-    # @return [Boolean] true if the attribute is defined; otherwise false.
+    # @return [Boolean] true if the property is defined; otherwise false.
     def key?(key)
       tools.assertions.assert_name(key, as: 'key', error_class: ArgumentError)
 
       each_ancestor.any? do |ancestor|
-        ancestor.own_attributes.key?(key.to_s)
+        ancestor.own_properties.key?(key.to_s)
       end
     end
     alias has_key? key?
 
-    # Returns the defined attribute keys.
+    # Returns the defined property keys.
     #
-    # @return [Array<String>] the attribute keys.
+    # @return [Array<String>] the property keys.
     def keys
       each_key.to_a
     end
 
     # @private
-    def own_attributes
-      @attributes
+    def own_properties
+      @properties
     end
 
-    # @return [Integer] the number of defined attributes.
+    # @return [Integer] the number of defined properties.
     def size
       each_ancestor.reduce(0) do |memo, ancestor|
-        memo + ancestor.own_attributes.size
+        memo + ancestor.own_properties.size
       end
     end
     alias count size
 
-    # Returns the defined attribute value.
+    # Returns the defined property value.
     #
-    # @return [Array<Stannum::Attribute>] the attribute values.
+    # @return [Array<Stannum::Attribute>] the property values.
     def values
       each_value.to_a
     end
 
     private
-
-    def define_reader(attr_name, reader_name)
-      define_method(reader_name) { @attributes[attr_name] }
-    end
-
-    def define_writer(attr_name, writer_name, default_value)
-      define_method(writer_name) do |value|
-        @attributes[attr_name] = value.nil? ? default_value : value
-      end
-    end
 
     def each_ancestor
       return enum_for(:each_ancestor) unless block_given?

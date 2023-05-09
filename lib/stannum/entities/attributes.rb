@@ -1,7 +1,6 @@
 # frozen_string_literal: true
 
 require 'stannum/entities'
-require 'stannum/schema'
 
 module Stannum::Entities
   # Methods for defining and accessing entity attributes.
@@ -30,7 +29,7 @@ module Stannum::Entities
       #
       # @return [Symbol] The attribute name as a symbol.
       def attribute(attr_name, attr_type, **options)
-        attributes.define_attribute(
+        attributes.define(
           name:    attr_name,
           type:    attr_type,
           options: options
@@ -76,7 +75,7 @@ module Stannum::Entities
 
         return if entity_class?(other)
 
-        other.const_set(:Attributes, Stannum::Schema.new)
+        other.const_set(:Attributes, build_schema)
 
         if entity_class?(other.superclass)
           other::Attributes.include(other.superclass::Attributes)
@@ -86,6 +85,13 @@ module Stannum::Entities
       end
 
       private
+
+      def build_schema
+        Stannum::Schema.new(
+          property_class: Stannum::Attribute,
+          property_name:  'attributes'
+        )
+      end
 
       def entity_class?(other)
         other.const_defined?(:Attributes, false)

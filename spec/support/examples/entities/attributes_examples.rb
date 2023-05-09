@@ -773,8 +773,37 @@ module Spec::Support::Examples::Entities
 
           it { expect(entity.name).to be nil }
 
+          context 'when the attribute has a default proc' do
+            let(:expected) { 'd41d8cd98f00b204e9800998ecf8427e' }
+
+            before(:example) do
+              entity_class.instance_eval do
+                attribute :checksum, 'String', default: lambda { |entity|
+                  Digest::MD5.hexdigest(entity.name.to_s)
+                }
+              end
+            end
+
+            it { expect(entity.checksum).to be == expected }
+
+            wrap_context 'when the entity has attribute values' do
+              let(:attributes) do
+                {
+                  'name'     => 'Self-sealing Stem Bolt',
+                  'checksum' => '67890'
+                }
+              end
+
+              it { expect(entity.checksum).to be == attributes['checksum'] }
+            end
+          end
+
           context 'when the attribute has a default value' do
             it { expect(entity.quantity).to be 0 }
+
+            wrap_context 'when the entity has attribute values' do
+              it { expect(entity.quantity).to be == attributes['quantity'] }
+            end
           end
 
           wrap_context 'when the entity has attribute values' do
@@ -838,6 +867,101 @@ module Spec::Support::Examples::Entities
             expect { entity.name = 'Can of Headlight Fluid' }
               .to change(entity, :name)
               .to be == 'Can of Headlight Fluid'
+          end
+
+          context 'when the attribute has an existing value' do
+            include_context 'when the entity has attribute values'
+
+            describe 'with nil' do
+              it 'should clear the attribute' do
+                expect { entity.name = nil }
+                  .to change(entity, :name)
+                  .to be nil
+              end
+            end
+
+            describe 'with a value' do
+              it 'should update the attribute' do
+                expect { entity.name = 'Can of Headlight Fluid' }
+                  .to change(entity, :name)
+                  .to be == 'Can of Headlight Fluid'
+              end
+            end
+          end
+
+          context 'when the attribute has a default proc' do
+            before(:example) do
+              entity_class.instance_eval do
+                attribute :checksum, 'String', default: lambda { |entity|
+                  Digest::MD5.hexdigest(entity.name.to_s)
+                }
+              end
+            end
+
+            describe 'with a value' do
+              it 'should update the attribute' do
+                expect { entity.checksum = '12345' }
+                  .to change(entity, :checksum)
+                  .to be == '12345'
+              end
+            end
+
+            context 'when the attribute has an existing value' do
+              include_context 'when the entity has attribute values'
+
+              let(:attributes) do
+                {
+                  'name'     => 'Self-sealing Stem Bolt',
+                  'checksum' => '67890'
+                }
+              end
+
+              describe 'with nil' do
+                it 'should set the attribute to the default value' do
+                  expect { entity.checksum = nil }
+                    .to change(entity, :checksum)
+                    .to be == '25d7cee39469ac80d2a3f98b30bd6016'
+                end
+              end
+
+              describe 'with a value' do
+                it 'should update the attribute' do
+                  expect { entity.checksum = '12345' }
+                    .to change(entity, :checksum)
+                    .to be == '12345'
+                end
+              end
+            end
+          end
+
+          context 'when the attribute has a default value' do
+            describe 'with a value' do
+              it 'should update the attribute' do
+                expect { entity.quantity = 500 }
+                  .to change(entity, :quantity)
+                  .to be 500
+              end
+            end
+
+            context 'when the attribute has an existing value' do
+              include_context 'when the entity has attribute values'
+
+              describe 'with nil' do
+                it 'should set the attribute to the default value' do
+                  expect { entity.quantity = nil }
+                    .to change(entity, :quantity)
+                    .to be 0
+                end
+              end
+
+              describe 'with a value' do
+                it 'should update the attribute' do
+                  expect { entity.quantity = 500 }
+                    .to change(entity, :quantity)
+                    .to be 500
+                end
+              end
+            end
           end
         end
 
