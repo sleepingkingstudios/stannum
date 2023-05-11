@@ -175,6 +175,55 @@ module Stannum::Entities
       super.merge(attributes)
     end
 
+    # Retrieves the attribute value for the requested key.
+    #
+    # If the :safe flag is set, will verify that the attribute name is valid (a
+    # non-empty String or Symbol) and that there is a defined attribute by that
+    # name. By default, :safe is set to true.
+    #
+    # @param key [String, Symbol] the key of the attribute to retrieve.
+    # @param safe [Boolean] if true, validates the attribute key.
+    #
+    # @return [Object] the value of the requested attribute.
+    #
+    # @api private
+    def read_attribute(key, safe: true)
+      if safe
+        tools.assertions.validate_name(key, as: 'attribute')
+
+        unless attributes.key?(key.to_s)
+          raise ArgumentError, "unknown attribute #{key.inspect}"
+        end
+      end
+
+      @attributes[key.to_s]
+    end
+
+    # Assigns the attribute value for the requested key.
+    #
+    # If the :safe flag is set, will verify that the attribute name is valid (a
+    # non-empty String or Symbol) and that there is a defined attribute by that
+    # name. By default, :safe is set to true.
+    #
+    # @param key [String, Symbol] the key of the attribute to assign.
+    # @oaram value [Object] the value to assign.
+    # @param safe [Boolean] if true, validates the attribute key.
+    #
+    # @return [Object] the assigned value.
+    #
+    # @api private
+    def write_attribute(key, value, safe: true)
+      if safe
+        tools.assertions.validate_name(key, as: 'attribute')
+
+        unless attributes.key?(key.to_s)
+          raise ArgumentError, "unknown attribute #{key.inspect}"
+        end
+      end
+
+      @attributes[key.to_s] = value
+    end
+
     private
 
     def apply_defaults_for(attributes) # rubocop:disable Metrics/AbcSize, Metrics/MethodLength
