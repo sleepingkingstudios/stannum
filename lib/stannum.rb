@@ -4,6 +4,7 @@ require 'stannum/version'
 
 # A library for specifying and validating data structures.
 module Stannum
+  autoload :Association,         'stannum/association'
   autoload :Attribute,           'stannum/attribute'
   autoload :Constraint,          'stannum/constraint'
   autoload :Constraints,         'stannum/constraints'
