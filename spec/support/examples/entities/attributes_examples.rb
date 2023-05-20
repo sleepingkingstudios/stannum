@@ -2998,6 +2998,71 @@ module Spec::Support::Examples::Entities
             it { expect(entity.attributes).to be == attributes }
           end
         end
+
+        wrap_context 'with an entity subclass' do
+          it { expect(entity.attributes).to be == {} }
+
+          wrap_context 'when the entity class defines attributes' do
+            let(:expected) do
+              {
+                'description' => nil,
+                'name'        => nil,
+                'quantity'    => 0
+              }
+            end
+
+            it { expect(entity.attributes).to be == expected }
+
+            wrap_context 'when the entity has attribute values' do
+              it { expect(entity.attributes).to be == attributes }
+            end
+          end
+
+          wrap_context 'when the subclass defines attributes' do
+            let(:expected) do
+              { 'size' => nil }
+            end
+
+            it { expect(entity.attributes).to be == expected }
+
+            wrap_context 'when the entity has attribute values' do
+              let(:attributes) do
+                { 'size' => 'Gargantuan' }
+              end
+
+              it { expect(entity.attributes).to be == attributes }
+            end
+          end
+
+          context 'when the struct and the subclass define attributes' do
+            include_context 'when the entity class defines attributes'
+            include_context 'when the subclass defines attributes'
+
+            let(:expected) do
+              {
+                'description' => nil,
+                'name'        => nil,
+                'quantity'    => 0,
+                'size'        => nil
+              }
+            end
+
+            it { expect(entity.attributes).to be == expected }
+
+            wrap_context 'when the entity has attribute values' do
+              let(:attributes) do
+                {
+                  'description' => 'No one is quite sure what this thing is.',
+                  'name'        => 'Self-sealing Stem Bolt',
+                  'quantity'    => 1_000,
+                  'size'        => 'Gargantuan'
+                }
+              end
+
+              it { expect(entity.attributes).to be == attributes }
+            end
+          end
+        end
       end
 
       describe '#attributes=' do

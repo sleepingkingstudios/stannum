@@ -392,6 +392,57 @@ RSpec.describe Stannum::Schema do
       expect(builder).to have_received(:call).with(property)
     end
 
+    describe 'with definition_class: value' do
+      let(:property)       { define_property }
+      let(:custom_builder) { instance_double(Spec::CustomBuilder, call: nil) }
+
+      def define_property
+        schema.define(
+          definition_class: Spec::CustomProperty,
+          name:             name,
+          options:          options,
+          type:             type
+        )
+      end
+
+      example_class 'Spec::CustomBuilder', 'Spec::Property::Builder'
+
+      example_class 'Spec::CustomProperty', 'Spec::Property' do |klass|
+        klass.const_set(:Builder, Spec::CustomBuilder)
+      end
+
+      before(:example) do
+        allow(Spec::CustomProperty::Builder)
+          .to receive(:new)
+          .and_return(custom_builder)
+      end
+
+      it { expect(property).to be_a Spec::CustomProperty }
+
+      it { expect(property.name).to be == name }
+
+      it { expect(property.options).to be == options }
+
+      it { expect(property.type).to be == type }
+
+      it 'should add the property' do
+        expect { define_property }
+          .to change(schema.each, :size)
+          .by 1
+      end
+
+      it 'should call the builder', :aggregate_failures do
+        define_property
+
+        property = schema[name]
+
+        expect(Spec::CustomProperty::Builder)
+          .to have_received(:new)
+          .with(schema)
+        expect(custom_builder).to have_received(:call).with(property)
+      end
+    end
+
     context 'when the property is already defined' do
       let(:error_message) do
         "#{tools.str.singularize(property_name)} #{name.inspect} already exists"
@@ -428,6 +479,57 @@ RSpec.describe Stannum::Schema do
           .with(schema)
           .exactly(4).times
         expect(builder).to have_received(:call).with(property)
+      end
+
+      describe 'with definition_class: value' do
+        let(:property)       { define_property }
+        let(:custom_builder) { instance_double(Spec::CustomBuilder, call: nil) }
+
+        def define_property
+          schema.define(
+            definition_class: Spec::CustomProperty,
+            name:             name,
+            options:          options,
+            type:             type
+          )
+        end
+
+        example_class 'Spec::CustomBuilder', 'Spec::Property::Builder'
+
+        example_class 'Spec::CustomProperty', 'Spec::Property' do |klass|
+          klass.const_set(:Builder, Spec::CustomBuilder)
+        end
+
+        before(:example) do
+          allow(Spec::CustomProperty::Builder)
+            .to receive(:new)
+            .and_return(custom_builder)
+        end
+
+        it { expect(property).to be_a Spec::CustomProperty }
+
+        it { expect(property.name).to be == name }
+
+        it { expect(property.options).to be == options }
+
+        it { expect(property.type).to be == type }
+
+        it 'should add the property' do
+          expect { define_property }
+            .to change(schema.each, :size)
+            .by 1
+        end
+
+        it 'should call the builder', :aggregate_failures do
+          define_property
+
+          property = schema[name]
+
+          expect(Spec::CustomProperty::Builder)
+            .to have_received(:new)
+            .with(schema)
+          expect(custom_builder).to have_received(:call).with(property)
+        end
       end
     end
   end

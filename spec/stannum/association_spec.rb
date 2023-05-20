@@ -31,9 +31,7 @@ RSpec.describe Stannum::Association do
       klass.include Stannum::Entities::Properties
       klass.include Stannum::Entities::Associations
 
-      klass.define_method(:set_properties) do |values, **|
-        @attributes = values
-      end
+      klass.define_method(:set_properties) { |values, **| @attributes = values }
     end
 
     include_examples 'should implement the Association::Builder methods'

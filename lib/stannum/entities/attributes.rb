@@ -27,7 +27,7 @@ module Stannum::Entities
       # @option options [Boolean] :primary_key true if the attribute represents
       #   the primary key for the entity; otherwise false. Defaults to false.
       #
-      # @return [Symbol] The attribute name as a symbol.
+      # @return [Symbol] the attribute name as a symbol.
       def attribute(attr_name, attr_type, **options)
         attributes.define(
           name:    attr_name,
@@ -126,9 +126,9 @@ module Stannum::Entities
     # If the attributes hash includes any keys that do not correspond to an
     # attribute, the struct will raise an error.
     #
-    # @param attributes [Hash] The initial attributes for the struct.
+    # @param attributes [Hash] The attributes for the struct.
     #
-    # @raise ArgumentError if the key is not a valid attribute.
+    # @raise ArgumentError if any key is not a valid attribute.
     #
     # @see #attributes=
     def assign_attributes(attributes)
@@ -191,7 +191,7 @@ module Stannum::Entities
       if safe
         tools.assertions.validate_name(key, as: 'attribute')
 
-        unless attributes.key?(key.to_s)
+        unless self.class.attributes.key?(key.to_s)
           raise ArgumentError, "unknown attribute #{key.inspect}"
         end
       end
@@ -216,7 +216,7 @@ module Stannum::Entities
       if safe
         tools.assertions.validate_name(key, as: 'attribute')
 
-        unless attributes.key?(key.to_s)
+        unless self.class.attributes.key?(key.to_s)
           raise ArgumentError, "unknown attribute #{key.inspect}"
         end
       end
