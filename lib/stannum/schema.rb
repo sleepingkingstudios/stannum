@@ -60,8 +60,8 @@ module Stannum
     # the Struct.property class method.
     #
     # @see Stannum::Struct
-    def define(name:, options:, type:) # rubocop:disable Metrics/MethodLength
-      property = property_class.new(
+    def define(name:, options:, type:, definition_class: nil) # rubocop:disable Metrics/MethodLength
+      property = (definition_class || property_class).new(
         name:    name,
         options: options,
         type:    type
@@ -75,7 +75,7 @@ module Stannum
         raise ArgumentError, message
       end
 
-      property_class::Builder.new(self).call(property)
+      (definition_class || property_class)::Builder.new(self).call(property)
 
       @properties[property.name] = property
     end

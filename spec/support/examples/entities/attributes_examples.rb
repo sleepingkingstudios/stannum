@@ -2998,6 +2998,71 @@ module Spec::Support::Examples::Entities
             it { expect(entity.attributes).to be == attributes }
           end
         end
+
+        wrap_context 'with an entity subclass' do
+          it { expect(entity.attributes).to be == {} }
+
+          wrap_context 'when the entity class defines attributes' do
+            let(:expected) do
+              {
+                'description' => nil,
+                'name'        => nil,
+                'quantity'    => 0
+              }
+            end
+
+            it { expect(entity.attributes).to be == expected }
+
+            wrap_context 'when the entity has attribute values' do
+              it { expect(entity.attributes).to be == attributes }
+            end
+          end
+
+          wrap_context 'when the subclass defines attributes' do
+            let(:expected) do
+              { 'size' => nil }
+            end
+
+            it { expect(entity.attributes).to be == expected }
+
+            wrap_context 'when the entity has attribute values' do
+              let(:attributes) do
+                { 'size' => 'Gargantuan' }
+              end
+
+              it { expect(entity.attributes).to be == attributes }
+            end
+          end
+
+          context 'when the struct and the subclass define attributes' do
+            include_context 'when the entity class defines attributes'
+            include_context 'when the subclass defines attributes'
+
+            let(:expected) do
+              {
+                'description' => nil,
+                'name'        => nil,
+                'quantity'    => 0,
+                'size'        => nil
+              }
+            end
+
+            it { expect(entity.attributes).to be == expected }
+
+            wrap_context 'when the entity has attribute values' do
+              let(:attributes) do
+                {
+                  'description' => 'No one is quite sure what this thing is.',
+                  'name'        => 'Self-sealing Stem Bolt',
+                  'quantity'    => 1_000,
+                  'size'        => 'Gargantuan'
+                }
+              end
+
+              it { expect(entity.attributes).to be == attributes }
+            end
+          end
+        end
       end
 
       describe '#attributes=' do
@@ -4808,6 +4873,360 @@ module Spec::Support::Examples::Entities
         end
       end
 
+      describe '#read_attribute' do
+        it 'should define the method' do
+          expect(entity)
+            .to respond_to(:read_attribute)
+            .with(1).argument
+            .and_keywords(:safe)
+        end
+
+        describe 'with key: nil' do
+          let(:error_message) { "attribute can't be blank" }
+
+          it 'should raise an exception' do
+            expect { entity.read_attribute(nil) }
+              .to raise_error ArgumentError, error_message
+          end
+        end
+
+        describe 'with key: an Object' do
+          let(:error_message) { 'attribute is not a String or a Symbol' }
+
+          it 'should raise an exception' do
+            expect { entity.read_attribute(Object.new.freeze) }
+              .to raise_error ArgumentError, error_message
+          end
+        end
+
+        describe 'with key: an empty String' do
+          let(:error_message) { "attribute can't be blank" }
+
+          it 'should raise an exception' do
+            expect { entity.read_attribute('') }
+              .to raise_error ArgumentError, error_message
+          end
+        end
+
+        describe 'with key: an empty Symbol' do
+          let(:error_message) { "attribute can't be blank" }
+
+          it 'should raise an exception' do
+            expect { entity.read_attribute(:'') }
+              .to raise_error ArgumentError, error_message
+          end
+        end
+
+        describe 'with key: an invalid String' do
+          let(:error_message) { 'unknown attribute "phase_angle"' }
+
+          it 'should raise an exception' do
+            expect { entity.read_attribute('phase_angle') }
+              .to raise_error ArgumentError, error_message
+          end
+        end
+
+        describe 'with key: an invalid Symbol' do
+          let(:error_message) { 'unknown attribute :phase_angle' }
+
+          it 'should raise an exception' do
+            expect { entity.read_attribute(:phase_angle) }
+              .to raise_error ArgumentError, error_message
+          end
+        end
+
+        wrap_context 'when the entity class defines attributes' do
+          describe 'with key: an invalid String' do
+            let(:error_message) { 'unknown attribute "phase_angle"' }
+
+            it 'should raise an exception' do
+              expect { entity.read_attribute('phase_angle') }
+                .to raise_error ArgumentError, error_message
+            end
+          end
+
+          describe 'with key: an invalid Symbol' do
+            let(:error_message) { 'unknown attribute :phase_angle' }
+
+            it 'should raise an exception' do
+              expect { entity.read_attribute(:phase_angle) }
+                .to raise_error ArgumentError, error_message
+            end
+          end
+
+          describe 'with a valid String' do
+            it { expect(entity.read_attribute('name')).to be nil }
+          end
+
+          describe 'with a valid Symbol' do
+            it { expect(entity.read_attribute(:name)).to be nil }
+          end
+
+          wrap_context 'when the entity has attribute values' do
+            describe 'with a valid String' do
+              it 'should return the attribute value' do
+                expect(entity.read_attribute('name'))
+                  .to be == attributes['name']
+              end
+            end
+
+            describe 'with a valid Symbol' do
+              it 'should return the attribute value' do
+                expect(entity.read_attribute(:name))
+                  .to be == attributes['name']
+              end
+            end
+          end
+        end
+
+        wrap_context 'when the entity class defines properties' do
+          include_context 'when the entity has property values'
+
+          describe 'with a property String' do
+            let(:error_message) { 'unknown attribute "amplitude"' }
+
+            it 'should raise an exception' do
+              expect { entity.read_attribute('amplitude') }
+                .to raise_error ArgumentError, error_message
+            end
+          end
+
+          describe 'with a property Symbol' do
+            let(:error_message) { 'unknown attribute :amplitude' }
+
+            it 'should raise an exception' do
+              expect { entity.read_attribute(:amplitude) }
+                .to raise_error ArgumentError, error_message
+            end
+          end
+        end
+
+        describe 'with safe: false' do
+          describe 'with key: nil' do
+            it 'should get the attribute value' do
+              expect(entity.read_attribute(nil, safe: false)).to be nil
+            end
+          end
+
+          describe 'with key: an Object' do
+            it 'should get the attribute value' do
+              expect(entity.read_attribute(Object.new.freeze, safe: false))
+                .to be nil
+            end
+          end
+
+          describe 'with key: an empty String' do
+            it 'should get the attribute value' do
+              expect(entity.read_attribute('', safe: false)).to be nil
+            end
+          end
+
+          describe 'with key: an empty Symbol' do
+            it 'should get the attribute value' do
+              expect(entity.read_attribute(:'', safe: false)).to be nil
+            end
+          end
+
+          describe 'with key: an invalid String' do
+            it 'should get the attribute value' do
+              expect(entity.read_attribute('phase_angle', safe: false))
+                .to be nil
+            end
+          end
+
+          describe 'with key: an invalid Symbol' do
+            it 'should get the attribute value' do
+              expect(entity.read_attribute(:phase_angle, safe: false))
+                .to be nil
+            end
+          end
+
+          wrap_context 'when the entity class defines attributes' do
+            describe 'with key: an invalid String' do
+              it 'should get the attribute value' do
+                expect(entity.read_attribute('phase_angle', safe: false))
+                  .to be nil
+              end
+            end
+
+            describe 'with key: an invalid Symbol' do
+              it 'should get the attribute value' do
+                expect(entity.read_attribute(:phase_angle, safe: false))
+                  .to be nil
+              end
+            end
+
+            describe 'with key: a valid String' do
+              it 'should get the attribute value' do
+                expect(entity.read_attribute('name', safe: false)).to be nil
+              end
+            end
+
+            describe 'with key: a valid Symbol' do
+              it 'should get the attribute value' do
+                expect(entity.read_attribute(:name, safe: false)).to be nil
+              end
+            end
+
+            wrap_context 'when the entity has attribute values' do
+              describe 'with key: a valid String' do
+                it 'should get the attribute value' do
+                  expect(entity.read_attribute('name', safe: false))
+                    .to be == attributes['name']
+                end
+              end
+
+              describe 'with key: a valid Symbol' do
+                it 'should get the attribute value' do
+                  expect(entity.read_attribute(:name, safe: false))
+                    .to be == attributes['name']
+                end
+              end
+            end
+          end
+
+          wrap_context 'when the entity class defines properties' do
+            include_context 'when the entity has property values'
+
+            describe 'with a property String' do
+              it 'should get the attribute value' do
+                expect(entity.read_attribute('amplitude', safe: false))
+                  .to be nil
+              end
+            end
+
+            describe 'with a property Symbol' do
+              it 'should get the attribute value' do
+                expect(entity.read_attribute(:amplitude, safe: false))
+                  .to be nil
+              end
+            end
+          end
+        end
+
+        describe 'with safe: true' do
+          describe 'with key: nil' do
+            let(:error_message) { "attribute can't be blank" }
+
+            it 'should raise an exception' do
+              expect { entity.read_attribute(nil, safe: true) }
+                .to raise_error ArgumentError, error_message
+            end
+          end
+
+          describe 'with key: an Object' do
+            let(:error_message) { 'attribute is not a String or a Symbol' }
+
+            it 'should raise an exception' do
+              expect { entity.read_attribute(Object.new.freeze, safe: true) }
+                .to raise_error ArgumentError, error_message
+            end
+          end
+
+          describe 'with key: an empty String' do
+            let(:error_message) { "attribute can't be blank" }
+
+            it 'should raise an exception' do
+              expect { entity.read_attribute('', safe: true) }
+                .to raise_error ArgumentError, error_message
+            end
+          end
+
+          describe 'with key: an empty Symbol' do
+            let(:error_message) { "attribute can't be blank" }
+
+            it 'should raise an exception' do
+              expect { entity.read_attribute(:'', safe: true) }
+                .to raise_error ArgumentError, error_message
+            end
+          end
+
+          describe 'with key: an invalid String' do
+            let(:error_message) { 'unknown attribute "phase_angle"' }
+
+            it 'should raise an exception' do
+              expect { entity.read_attribute('phase_angle', safe: true) }
+                .to raise_error ArgumentError, error_message
+            end
+          end
+
+          describe 'with key: an invalid Symbol' do
+            let(:error_message) { 'unknown attribute :phase_angle' }
+
+            it 'should raise an exception' do
+              expect { entity.read_attribute(:phase_angle, safe: true) }
+                .to raise_error ArgumentError, error_message
+            end
+          end
+
+          wrap_context 'when the entity class defines attributes' do
+            describe 'with key: an invalid String' do
+              let(:error_message) { 'unknown attribute "phase_angle"' }
+
+              it 'should raise an exception' do
+                expect { entity.read_attribute('phase_angle', safe: true) }
+                  .to raise_error ArgumentError, error_message
+              end
+            end
+
+            describe 'with key: an invalid Symbol' do
+              let(:error_message) { 'unknown attribute :phase_angle' }
+
+              it 'should raise an exception' do
+                expect { entity.read_attribute(:phase_angle, safe: true) }
+                  .to raise_error ArgumentError, error_message
+              end
+            end
+
+            describe 'with a valid String' do
+              it { expect(entity.read_attribute('name', safe: true)).to be nil }
+            end
+
+            describe 'with a valid Symbol' do
+              it { expect(entity.read_attribute(:name, safe: true)).to be nil }
+            end
+
+            wrap_context 'when the entity has attribute values' do
+              describe 'with a valid String' do
+                it 'should return the attribute value' do
+                  expect(entity.read_attribute('name', safe: true))
+                    .to be == attributes['name']
+                end
+              end
+
+              describe 'with a valid Symbol' do
+                it 'should return the attribute value' do
+                  expect(entity.read_attribute(:name, safe: true))
+                    .to be == attributes['name']
+                end
+              end
+            end
+          end
+
+          wrap_context 'when the entity class defines properties' do
+            include_context 'when the entity has property values'
+
+            describe 'with a property String' do
+              let(:error_message) { 'unknown attribute "amplitude"' }
+
+              it 'should raise an exception' do
+                expect { entity.read_attribute('amplitude', safe: true) }
+                  .to raise_error ArgumentError, error_message
+              end
+            end
+
+            describe 'with a property Symbol' do
+              let(:error_message) { 'unknown attribute :amplitude' }
+
+              it 'should raise an exception' do
+                expect { entity.read_attribute(:amplitude, safe: true) }
+                  .to raise_error ArgumentError, error_message
+              end
+            end
+          end
+        end
+      end
+
       describe '#to_h' do
         wrap_context 'when the entity class defines attributes' do
           let(:expected) do
@@ -4848,6 +5267,695 @@ module Spec::Support::Examples::Entities
             let(:properties) { generic_properties.merge(attributes) }
 
             it { expect(entity.to_h).to be == properties }
+          end
+        end
+      end
+
+      describe '#write_attribute' do
+        it 'should define the method' do
+          expect(entity)
+            .to respond_to(:write_attribute)
+            .with(2).arguments
+            .and_keywords(:safe)
+        end
+
+        describe 'with key: nil' do
+          let(:error_message) { "attribute can't be blank" }
+
+          it 'should raise an exception' do
+            expect { entity.write_attribute(nil, nil) }
+              .to raise_error ArgumentError, error_message
+          end
+        end
+
+        describe 'with key: an Object' do
+          let(:error_message) { 'attribute is not a String or a Symbol' }
+
+          it 'should raise an exception' do
+            expect { entity.write_attribute(Object.new.freeze, nil) }
+              .to raise_error ArgumentError, error_message
+          end
+        end
+
+        describe 'with key: an empty String' do
+          let(:error_message) { "attribute can't be blank" }
+
+          it 'should raise an exception' do
+            expect { entity.write_attribute('', nil) }
+              .to raise_error ArgumentError, error_message
+          end
+        end
+
+        describe 'with key: an empty Symbol' do
+          let(:error_message) { "attribute can't be blank" }
+
+          it 'should raise an exception' do
+            expect { entity.write_attribute(:'', nil) }
+              .to raise_error ArgumentError, error_message
+          end
+        end
+
+        describe 'with key: an invalid String' do
+          let(:error_message) { 'unknown attribute "phase_angle"' }
+
+          it 'should raise an exception' do
+            expect { entity.write_attribute('phase_angle', nil) }
+              .to raise_error ArgumentError, error_message
+          end
+        end
+
+        describe 'with key: an invalid Symbol' do
+          let(:error_message) { 'unknown attribute :phase_angle' }
+
+          it 'should raise an exception' do
+            expect { entity.write_attribute(:phase_angle, nil) }
+              .to raise_error ArgumentError, error_message
+          end
+        end
+
+        wrap_context 'when the entity class defines attributes' do
+          describe 'with key: an invalid String' do
+            let(:error_message) { 'unknown attribute "phase_angle"' }
+
+            it 'should raise an exception' do
+              expect { entity.write_attribute('phase_angle', nil) }
+                .to raise_error ArgumentError, error_message
+            end
+          end
+
+          describe 'with key: an invalid Symbol' do
+            let(:error_message) { 'unknown attribute :phase_angle' }
+
+            it 'should raise an exception' do
+              expect { entity.write_attribute(:phase_angle, nil) }
+                .to raise_error ArgumentError, error_message
+            end
+          end
+
+          describe 'with key: a valid String' do
+            describe 'with nil' do
+              it 'should not change the attribute' do
+                expect { entity.write_attribute('name', nil) }
+                  .not_to change(entity, :name)
+              end
+            end
+
+            describe 'with a value' do
+              let(:value) { 'Can of Headlight Fluid' }
+
+              it 'should set the attribute' do
+                expect { entity.write_attribute('name', value) }
+                  .to change(entity, :name)
+                  .to be == value
+              end
+            end
+          end
+
+          describe 'with key: a valid Symbol' do
+            describe 'with nil' do
+              it 'should not change the attribute' do
+                expect { entity.write_attribute(:name, nil) }
+                  .not_to change(entity, :name)
+              end
+            end
+
+            describe 'with a value' do
+              let(:value) { 'Can of Headlight Fluid' }
+
+              it 'should set the attribute' do
+                expect { entity.write_attribute(:name, value) }
+                  .to change(entity, :name)
+                  .to be == value
+              end
+            end
+          end
+
+          context 'when the attribute has a default' do
+            describe 'with key: a valid String' do
+              describe 'with nil' do
+                it 'should set the attribute' do
+                  expect { entity.write_attribute('quantity', nil) }
+                    .to change(entity, :quantity)
+                    .to be nil
+                end
+              end
+
+              describe 'with a value' do
+                let(:value) { 10_000 }
+
+                it 'should set the attribute' do
+                  expect { entity.write_attribute('quantity', value) }
+                    .to change(entity, :quantity)
+                    .to be == value
+                end
+              end
+            end
+
+            describe 'with key: a valid Symbol' do
+              describe 'with nil' do
+                it 'should set the attribute' do
+                  expect { entity.write_attribute(:quantity, nil) }
+                    .to change(entity, :quantity)
+                    .to be nil
+                end
+              end
+
+              describe 'with a value' do
+                let(:value) { 10_000 }
+
+                it 'should set the attribute' do
+                  expect { entity.write_attribute(:quantity, value) }
+                    .to change(entity, :quantity)
+                    .to be == value
+                end
+              end
+            end
+          end
+
+          wrap_context 'when the entity has attribute values' do
+            describe 'with key: a valid String' do
+              describe 'with nil' do
+                it 'should clear the attribute' do
+                  expect { entity.write_attribute('name', nil) }
+                    .to change(entity, :name)
+                    .to be nil
+                end
+              end
+
+              describe 'with a value' do
+                let(:value) { 'Can of Headlight Fluid' }
+
+                it 'should set the attribute' do
+                  expect { entity.write_attribute('name', value) }
+                    .to change(entity, :name)
+                    .to be == value
+                end
+              end
+            end
+
+            describe 'with key: a valid Symbol' do
+              describe 'with nil' do
+                it 'should clear the attribute' do
+                  expect { entity.write_attribute(:name, nil) }
+                    .to change(entity, :name)
+                    .to be nil
+                end
+              end
+
+              describe 'with a value' do
+                let(:value) { 'Can of Headlight Fluid' }
+
+                it 'should set the attribute' do
+                  expect { entity.write_attribute(:name, value) }
+                    .to change(entity, :name)
+                    .to be == value
+                end
+              end
+            end
+          end
+        end
+
+        wrap_context 'when the entity class defines properties' do
+          describe 'with key: an invalid String' do
+            let(:error_message) { 'unknown attribute "amplitude"' }
+
+            it 'should raise an exception' do
+              expect { entity.write_attribute('amplitude', nil) }
+                .to raise_error ArgumentError, error_message
+            end
+          end
+
+          describe 'with key: an invalid Symbol' do
+            let(:error_message) { 'unknown attribute :amplitude' }
+
+            it 'should raise an exception' do
+              expect { entity.write_attribute(:amplitude, nil) }
+                .to raise_error ArgumentError, error_message
+            end
+          end
+        end
+
+        describe 'with safe: false' do
+          let(:value) { Object.new.freeze }
+
+          describe 'with key: nil' do
+            it 'should force update the attributes' do
+              expect { entity.write_attribute(nil, value, safe: false) }
+                .to change(entity, :attributes)
+                .to be >= { '' => value }
+            end
+          end
+
+          describe 'with key: an Object' do
+            let(:key) { Object.new.freeze }
+
+            it 'should force update the attributes' do
+              expect { entity.write_attribute(key, value, safe: false) }
+                .to change(entity, :attributes)
+                .to be >= { key.to_s => value }
+            end
+          end
+
+          describe 'with key: an empty String' do
+            it 'should force update the attributes' do
+              expect { entity.write_attribute('', value, safe: false) }
+                .to change(entity, :attributes)
+                .to be >= { '' => value }
+            end
+          end
+
+          describe 'with key: an empty Symbol' do
+            it 'should force update the attributes' do
+              expect { entity.write_attribute(:'', value, safe: false) }
+                .to change(entity, :attributes)
+                .to be >= { '' => value }
+            end
+          end
+
+          describe 'with key: an invalid String' do
+            it 'should force update the attributes' do
+              expect do
+                entity.write_attribute('phase_angle', value, safe: false)
+              end
+                .to change(entity, :attributes)
+                .to be >= { 'phase_angle' => value }
+            end
+          end
+
+          describe 'with key: an invalid Symbol' do
+            it 'should force update the attributes' do
+              expect do
+                entity.write_attribute(:phase_angle, value, safe: false)
+              end
+                .to change(entity, :attributes)
+                .to be >= { 'phase_angle' => value }
+            end
+          end
+
+          wrap_context 'when the entity class defines attributes' do
+            describe 'with key: an invalid String' do
+              it 'should force update the attributes' do
+                expect do
+                  entity.write_attribute('phase_angle', value, safe: false)
+                end
+                  .to change(entity, :attributes)
+                  .to be >= { 'phase_angle' => value }
+              end
+            end
+
+            describe 'with key: an invalid Symbol' do
+              it 'should force update the attributes' do
+                expect do
+                  entity.write_attribute(:phase_angle, value, safe: false)
+                end
+                  .to change(entity, :attributes)
+                  .to be >= { 'phase_angle' => value }
+              end
+            end
+
+            describe 'with key: a valid String' do
+              describe 'with nil' do
+                it 'should not change the attribute' do
+                  expect { entity.write_attribute('name', nil, safe: false) }
+                    .not_to change(entity, :name)
+                end
+              end
+
+              describe 'with a value' do
+                let(:value) { 'Can of Headlight Fluid' }
+
+                it 'should set the attribute' do
+                  expect { entity.write_attribute('name', value, safe: false) }
+                    .to change(entity, :name)
+                    .to be == value
+                end
+              end
+            end
+
+            describe 'with key: a valid Symbol' do
+              describe 'with nil' do
+                it 'should not change the attribute' do
+                  expect { entity.write_attribute(:name, nil, safe: false) }
+                    .not_to change(entity, :name)
+                end
+              end
+
+              describe 'with a value' do
+                let(:value) { 'Can of Headlight Fluid' }
+
+                it 'should set the attribute' do
+                  expect { entity.write_attribute(:name, value, safe: false) }
+                    .to change(entity, :name)
+                    .to be == value
+                end
+              end
+            end
+
+            context 'when the attribute has a default' do
+              describe 'with key: a valid String' do
+                describe 'with nil' do
+                  it 'should set the attribute' do
+                    expect do
+                      entity.write_attribute('quantity', nil, safe: false)
+                    end
+                      .to change(entity, :quantity)
+                      .to be nil
+                  end
+                end
+
+                describe 'with a value' do
+                  let(:value) { 10_000 }
+
+                  it 'should set the attribute' do
+                    expect do
+                      entity.write_attribute('quantity', value, safe: false)
+                    end
+                      .to change(entity, :quantity)
+                      .to be == value
+                  end
+                end
+              end
+
+              describe 'with key: a valid Symbol' do
+                describe 'with nil' do
+                  it 'should set the attribute' do
+                    expect do
+                      entity.write_attribute(:quantity, nil, safe: false)
+                    end
+                      .to change(entity, :quantity)
+                      .to be nil
+                  end
+                end
+
+                describe 'with a value' do
+                  let(:value) { 10_000 }
+
+                  it 'should set the attribute' do
+                    expect do
+                      entity.write_attribute(:quantity, value, safe: false)
+                    end
+                      .to change(entity, :quantity)
+                      .to be == value
+                  end
+                end
+              end
+            end
+
+            wrap_context 'when the entity has attribute values' do
+              describe 'with key: a valid String' do
+                describe 'with nil' do
+                  it 'should clear the attribute' do
+                    expect { entity.write_attribute('name', nil, safe: false) }
+                      .to change(entity, :name)
+                      .to be nil
+                  end
+                end
+
+                describe 'with a value' do
+                  let(:value) { 'Can of Headlight Fluid' }
+
+                  it 'should set the attribute' do
+                    expect do
+                      entity.write_attribute('name', value, safe: false)
+                    end
+                      .to change(entity, :name)
+                      .to be == value
+                  end
+                end
+              end
+
+              describe 'with key: a valid Symbol' do
+                describe 'with nil' do
+                  it 'should clear the attribute' do
+                    expect { entity.write_attribute(:name, nil, safe: false) }
+                      .to change(entity, :name)
+                      .to be nil
+                  end
+                end
+
+                describe 'with a value' do
+                  let(:value) { 'Can of Headlight Fluid' }
+
+                  it 'should set the attribute' do
+                    expect { entity.write_attribute(:name, value, safe: false) }
+                      .to change(entity, :name)
+                      .to be == value
+                  end
+                end
+              end
+            end
+          end
+
+          wrap_context 'when the entity class defines properties' do
+            describe 'with key: an invalid String' do
+              it 'should force update the attributes' do
+                expect do
+                  entity.write_attribute('amplitude', value, safe: false)
+                end
+                  .to change(entity, :attributes)
+                  .to be >= { 'amplitude' => value }
+              end
+            end
+
+            describe 'with key: an invalid Symbol' do
+              it 'should force update the attributes' do
+                expect do
+                  entity.write_attribute(:amplitude, value, safe: false)
+                end
+                  .to change(entity, :attributes)
+                  .to be >= { 'amplitude' => value }
+              end
+            end
+          end
+        end
+
+        describe 'with safe: true' do
+          describe 'with key: nil' do
+            let(:error_message) { "attribute can't be blank" }
+
+            it 'should raise an exception' do
+              expect { entity.write_attribute(nil, nil, safe: true) }
+                .to raise_error ArgumentError, error_message
+            end
+          end
+
+          describe 'with key: an Object' do
+            let(:error_message) { 'attribute is not a String or a Symbol' }
+
+            it 'should raise an exception' do
+              expect do
+                entity.write_attribute(Object.new.freeze, nil, safe: true)
+              end
+                .to raise_error ArgumentError, error_message
+            end
+          end
+
+          describe 'with key: an empty String' do
+            let(:error_message) { "attribute can't be blank" }
+
+            it 'should raise an exception' do
+              expect { entity.write_attribute('', nil, safe: true) }
+                .to raise_error ArgumentError, error_message
+            end
+          end
+
+          describe 'with key: an empty Symbol' do
+            let(:error_message) { "attribute can't be blank" }
+
+            it 'should raise an exception' do
+              expect { entity.write_attribute(:'', nil, safe: true) }
+                .to raise_error ArgumentError, error_message
+            end
+          end
+
+          describe 'with key: an invalid String' do
+            let(:error_message) { 'unknown attribute "phase_angle"' }
+
+            it 'should raise an exception' do
+              expect { entity.write_attribute('phase_angle', nil, safe: true) }
+                .to raise_error ArgumentError, error_message
+            end
+          end
+
+          describe 'with key: an invalid Symbol' do
+            let(:error_message) { 'unknown attribute :phase_angle' }
+
+            it 'should raise an exception' do
+              expect { entity.write_attribute(:phase_angle, nil, safe: true) }
+                .to raise_error ArgumentError, error_message
+            end
+          end
+
+          wrap_context 'when the entity class defines attributes' do
+            describe 'with key: an invalid String' do
+              let(:error_message) { 'unknown attribute "phase_angle"' }
+
+              it 'should raise an exception' do
+                expect do
+                  entity.write_attribute('phase_angle', nil, safe: true)
+                end
+                  .to raise_error ArgumentError, error_message
+              end
+            end
+
+            describe 'with key: an invalid Symbol' do
+              let(:error_message) { 'unknown attribute :phase_angle' }
+
+              it 'should raise an exception' do
+                expect { entity.write_attribute(:phase_angle, nil, safe: true) }
+                  .to raise_error ArgumentError, error_message
+              end
+            end
+
+            describe 'with key: a valid String' do
+              describe 'with nil' do
+                it 'should not change the attribute' do
+                  expect { entity.write_attribute('name', nil, safe: true) }
+                    .not_to change(entity, :name)
+                end
+              end
+
+              describe 'with a value' do
+                let(:value) { 'Can of Headlight Fluid' }
+
+                it 'should set the attribute' do
+                  expect { entity.write_attribute('name', value, safe: true) }
+                    .to change(entity, :name)
+                    .to be == value
+                end
+              end
+            end
+
+            describe 'with key: a valid Symbol' do
+              describe 'with nil' do
+                it 'should not change the attribute' do
+                  expect { entity.write_attribute(:name, nil, safe: true) }
+                    .not_to change(entity, :name)
+                end
+              end
+
+              describe 'with a value' do
+                let(:value) { 'Can of Headlight Fluid' }
+
+                it 'should set the attribute' do
+                  expect { entity.write_attribute(:name, value, safe: true) }
+                    .to change(entity, :name)
+                    .to be == value
+                end
+              end
+            end
+
+            context 'when the attribute has a default' do
+              describe 'with key: a valid String' do
+                describe 'with nil' do
+                  it 'should set the attribute' do
+                    expect do
+                      entity.write_attribute('quantity', nil, safe: true)
+                    end
+                      .to change(entity, :quantity)
+                      .to be nil
+                  end
+                end
+
+                describe 'with a value' do
+                  let(:value) { 10_000 }
+
+                  it 'should set the attribute' do
+                    expect do
+                      entity.write_attribute('quantity', value, safe: true)
+                    end
+                      .to change(entity, :quantity)
+                      .to be == value
+                  end
+                end
+              end
+
+              describe 'with key: a valid Symbol' do
+                describe 'with nil' do
+                  it 'should set the attribute' do
+                    expect do
+                      entity.write_attribute(:quantity, nil, safe: true)
+                    end
+                      .to change(entity, :quantity)
+                      .to be nil
+                  end
+                end
+
+                describe 'with a value' do
+                  let(:value) { 10_000 }
+
+                  it 'should set the attribute' do
+                    expect do
+                      entity.write_attribute(:quantity, value, safe: true)
+                    end
+                      .to change(entity, :quantity)
+                      .to be == value
+                  end
+                end
+              end
+            end
+
+            wrap_context 'when the entity has attribute values' do
+              describe 'with key: a valid String' do
+                describe 'with nil' do
+                  it 'should clear the attribute' do
+                    expect { entity.write_attribute('name', nil, safe: true) }
+                      .to change(entity, :name)
+                      .to be nil
+                  end
+                end
+
+                describe 'with a value' do
+                  let(:value) { 'Can of Headlight Fluid' }
+
+                  it 'should set the attribute' do
+                    expect { entity.write_attribute('name', value, safe: true) }
+                      .to change(entity, :name)
+                      .to be == value
+                  end
+                end
+              end
+
+              describe 'with key: a valid Symbol' do
+                describe 'with nil' do
+                  it 'should clear the attribute' do
+                    expect { entity.write_attribute(:name, nil, safe: true) }
+                      .to change(entity, :name)
+                      .to be nil
+                  end
+                end
+
+                describe 'with a value' do
+                  let(:value) { 'Can of Headlight Fluid' }
+
+                  it 'should set the attribute' do
+                    expect { entity.write_attribute(:name, value, safe: true) }
+                      .to change(entity, :name)
+                      .to be == value
+                  end
+                end
+              end
+            end
+          end
+
+          wrap_context 'when the entity class defines properties' do
+            describe 'with key: an invalid String' do
+              let(:error_message) { 'unknown attribute "amplitude"' }
+
+              it 'should raise an exception' do
+                expect { entity.write_attribute('amplitude', nil, safe: true) }
+                  .to raise_error ArgumentError, error_message
+              end
+            end
+
+            describe 'with key: an invalid Symbol' do
+              let(:error_message) { 'unknown attribute :amplitude' }
+
+              it 'should raise an exception' do
+                expect { entity.write_attribute(:amplitude, nil, safe: true) }
+                  .to raise_error ArgumentError, error_message
+              end
+            end
           end
         end
       end

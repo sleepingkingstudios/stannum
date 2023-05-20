@@ -1,6 +1,7 @@
 # frozen_string_literal: true
 
 require 'stannum'
+require 'stannum/entities/associations'
 require 'stannum/entities/attributes'
 require 'stannum/entities/constraints'
 require 'stannum/entities/primary_key'
@@ -79,6 +80,7 @@ module Stannum
   module Entity
     include Stannum::Entities::Properties
     include Stannum::Entities::Attributes
+    include Stannum::Entities::Associations
     include Stannum::Entities::PrimaryKey
     include Stannum::Entities::Constraints
   end

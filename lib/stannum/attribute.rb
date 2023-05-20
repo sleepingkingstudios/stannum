@@ -30,14 +30,17 @@ module Stannum
 
       def define_reader(attribute)
         entity_class.define_method(attribute.reader_name) do
-          @attributes[attribute.name]
+          read_attribute(attribute.name, safe: false)
         end
       end
 
       def define_writer(attribute)
         entity_class.define_method(attribute.writer_name) do |value|
-          @attributes[attribute.name] =
-            value.nil? ? attribute.default_value_for(self) : value
+          write_attribute(
+            attribute.name,
+            value.nil? ? attribute.default_value_for(self) : value,
+            safe: false
+          )
         end
       end
     end

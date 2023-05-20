@@ -27,7 +27,7 @@ module Stannum::Entities
       # @option options [Boolean] :primary_key true if the attribute represents
       #   the primary key for the entity; otherwise false. Defaults to false.
       #
-      # @return [Symbol] The attribute name as a symbol.
+      # @return [Symbol] the attribute name as a symbol.
       def attribute(attr_name, attr_type, **options)
         attributes.define(
           name:    attr_name,
@@ -126,9 +126,9 @@ module Stannum::Entities
     # If the attributes hash includes any keys that do not correspond to an
     # attribute, the struct will raise an error.
     #
-    # @param attributes [Hash] The initial attributes for the struct.
+    # @param attributes [Hash] The attributes for the struct.
     #
-    # @raise ArgumentError if the key is not a valid attribute.
+    # @raise ArgumentError if any key is not a valid attribute.
     #
     # @see #attributes=
     def assign_attributes(attributes)
@@ -173,6 +173,55 @@ module Stannum::Entities
     # (see Stannum::Entities::Properties#properties)
     def properties
       super.merge(attributes)
+    end
+
+    # Retrieves the attribute value for the requested key.
+    #
+    # If the :safe flag is set, will verify that the attribute name is valid (a
+    # non-empty String or Symbol) and that there is a defined attribute by that
+    # name. By default, :safe is set to true.
+    #
+    # @param key [String, Symbol] the key of the attribute to retrieve.
+    # @param safe [Boolean] if true, validates the attribute key.
+    #
+    # @return [Object] the value of the requested attribute.
+    #
+    # @api private
+    def read_attribute(key, safe: true)
+      if safe
+        tools.assertions.validate_name(key, as: 'attribute')
+
+        unless self.class.attributes.key?(key.to_s)
+          raise ArgumentError, "unknown attribute #{key.inspect}"
+        end
+      end
+
+      @attributes[key.to_s]
+    end
+
+    # Assigns the attribute value for the requested key.
+    #
+    # If the :safe flag is set, will verify that the attribute name is valid (a
+    # non-empty String or Symbol) and that there is a defined attribute by that
+    # name. By default, :safe is set to true.
+    #
+    # @param key [String, Symbol] the key of the attribute to assign.
+    # @oaram value [Object] the value to assign.
+    # @param safe [Boolean] if true, validates the attribute key.
+    #
+    # @return [Object] the assigned value.
+    #
+    # @api private
+    def write_attribute(key, value, safe: true)
+      if safe
+        tools.assertions.validate_name(key, as: 'attribute')
+
+        unless self.class.attributes.key?(key.to_s)
+          raise ArgumentError, "unknown attribute #{key.inspect}"
+        end
+      end
+
+      @attributes[key.to_s] = value
     end
 
     private

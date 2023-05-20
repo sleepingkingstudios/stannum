@@ -46,11 +46,12 @@ RSpec.describe Stannum::Attribute do
     let(:entity_class) { Spec::Entity }
 
     example_class 'Spec::Entity' do |klass|
-      klass.define_method(:initialize) do |values = {}|
+      klass.include Stannum::Entities::Properties
+      klass.include Stannum::Entities::Attributes
+
+      klass.define_method(:set_properties) do |values, **|
         @attributes = values
       end
-
-      klass.attr_accessor :attributes
     end
 
     describe '.new' do
@@ -64,7 +65,7 @@ RSpec.describe Stannum::Attribute do
         described_class.new(name: name, type: type, options: options)
       end
       let(:values) { {} }
-      let(:entity) { entity_class.new(values) }
+      let(:entity) { entity_class.new(**values) }
 
       it { expect(builder).to respond_to(:call).with(1).argument }
 
