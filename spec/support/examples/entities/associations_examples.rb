@@ -138,21 +138,29 @@ module Spec::Support::Examples::Entities
       end
 
       describe '.association' do
-        shared_examples 'should define a singular association' do
+        shared_examples 'should define a singular association' \
+        do |**example_options|
+          let(:foreign_key_options) do
+            next {} unless example_options[:foreign_key]
+
+            name = example_options.fetch(:foreign_key_name) do
+              "#{assoc_name}_id"
+            end
+            type = example_options.fetch(:foreign_key_type) do
+              described_class.default_foreign_key_type
+            end
+
+            {
+              foreign_key_name: name,
+              foreign_key_type: type
+            }
+          end
           let(:expected_options) do
             options
               .dup
               .tap { |hsh| hsh.delete(:class_name) }
-          end
-          let(:expected) do
-            an_instance_of(Stannum::Associations::One)
-              .and(
-                have_attributes(
-                  name:    assoc_name.to_s,
-                  type:    assoc_type.to_s,
-                  options: expected_options
-                )
-              )
+              .tap { |hsh| hsh.delete(:foreign_key) }
+              .merge(foreign_key_options)
           end
 
           def define_association
@@ -171,10 +179,17 @@ module Spec::Support::Examples::Entities
               .to include(assoc_name.to_s)
           end
 
-          it 'should add the association value to ::Associations' do
-            expect { define_association }
-              .to change(described_class.associations, :each_value)
-              .to include(expected)
+          it 'should add the association value to ::Associations',
+            :aggregate_failures \
+          do
+            define_association
+
+            association = described_class.associations[assoc_name.to_s]
+
+            expect(association).to be_a Stannum::Associations::One
+            expect(association.name).to be == assoc_name.to_s
+            expect(association.type).to be == assoc_type.to_s
+            expect(association.options).to deep_match(expected_options)
           end
         end
 
@@ -355,6 +370,171 @@ module Spec::Support::Examples::Entities
             include_examples 'should define a singular association'
           end
 
+          describe 'with options: { foreign_key: true }' do
+            let(:options) { { foreign_key: true } }
+
+            include_examples 'should define a singular association',
+              foreign_key: true
+
+            context 'when the entity class defines a primary key' do
+              before(:example) do
+                unless entity_class < Stannum::Entities::Attributes
+                  entity_class.include Stannum::Entities::Attributes
+                end
+
+                unless entity_class < Stannum::Entities::PrimaryKey
+                  entity_class.include Stannum::Entities::PrimaryKey
+                end
+
+                entity_class.define_primary_key(:uuid, String)
+              end
+
+              include_examples 'should define a singular association',
+                foreign_key:      true,
+                foreign_key_type: String
+            end
+          end
+
+          describe 'with options: { foreign_key: an object }' do
+            let(:options) { { foreign_key: Object.new.freeze } }
+            let(:error_message) do
+              "invalid foreign key #{options[:foreign_key].inspect}"
+            end
+
+            it 'should raise an exception' do
+              expect { described_class.association(:one, key, **options) }
+                .to raise_error(
+                  described_class::InvalidOptionError,
+                  error_message
+                )
+            end
+          end
+
+          describe 'with options: { foreign_key: a string }' do
+            let(:options) { { foreign_key: 'reference_fk' } }
+
+            include_examples 'should define a singular association',
+              foreign_key:      true,
+              foreign_key_name: 'reference_fk'
+
+            context 'when the entity class defines a primary key' do
+              before(:example) do
+                unless entity_class < Stannum::Entities::Attributes
+                  entity_class.include Stannum::Entities::Attributes
+                end
+
+                unless entity_class < Stannum::Entities::PrimaryKey
+                  entity_class.include Stannum::Entities::PrimaryKey
+                end
+
+                entity_class.define_primary_key(:uuid, String)
+              end
+
+              include_examples 'should define a singular association',
+                foreign_key:      true,
+                foreign_key_name: 'reference_fk',
+                foreign_key_type: String
+            end
+          end
+
+          describe 'with options: { foreign_key: a symbol }' do
+            let(:options) { { foreign_key: :reference_fk } }
+
+            include_examples 'should define a singular association',
+              foreign_key:      true,
+              foreign_key_name: 'reference_fk'
+
+            context 'when the entity class defines a primary key' do
+              before(:example) do
+                unless entity_class < Stannum::Entities::Attributes
+                  entity_class.include Stannum::Entities::Attributes
+                end
+
+                unless entity_class < Stannum::Entities::PrimaryKey
+                  entity_class.include Stannum::Entities::PrimaryKey
+                end
+
+                entity_class.define_primary_key(:uuid, String)
+              end
+
+              include_examples 'should define a singular association',
+                foreign_key:      true,
+                foreign_key_name: 'reference_fk',
+                foreign_key_type: String
+            end
+          end
+
+          describe 'with options: { foreign_key: a hash }' do
+            let(:options) { { foreign_key: {} } }
+
+            include_examples 'should define a singular association',
+              foreign_key: true
+
+            context 'when the entity class defines a primary key' do
+              before(:example) do
+                unless entity_class < Stannum::Entities::Attributes
+                  entity_class.include Stannum::Entities::Attributes
+                end
+
+                unless entity_class < Stannum::Entities::PrimaryKey
+                  entity_class.include Stannum::Entities::PrimaryKey
+                end
+
+                entity_class.define_primary_key(:uuid, String)
+              end
+
+              include_examples 'should define a singular association',
+                foreign_key:      true,
+                foreign_key_type: String
+            end
+
+            describe 'with name: value' do
+              let(:options) { { foreign_key: { name: 'reference_fk' } } }
+
+              include_examples 'should define a singular association',
+                foreign_key:      true,
+                foreign_key_name: 'reference_fk'
+
+              context 'when the entity class defines a primary key' do
+                before(:example) do
+                  unless entity_class < Stannum::Entities::Attributes
+                    entity_class.include Stannum::Entities::Attributes
+                  end
+
+                  unless entity_class < Stannum::Entities::PrimaryKey
+                    entity_class.include Stannum::Entities::PrimaryKey
+                  end
+
+                  entity_class.define_primary_key(:uuid, String)
+                end
+
+                include_examples 'should define a singular association',
+                  foreign_key:      true,
+                  foreign_key_name: 'reference_fk',
+                  foreign_key_type: String
+              end
+            end
+
+            describe 'with type: value' do
+              let(:options) { { foreign_key: { type: String } } }
+
+              include_examples 'should define a singular association',
+                foreign_key:      true,
+                foreign_key_type: String
+            end
+
+            describe 'with name: value and type: value' do
+              let(:options) do
+                { foreign_key: { name: 'reference_fk', type: String } }
+              end
+
+              include_examples 'should define a singular association',
+                foreign_key:      true,
+                foreign_key_name: 'reference_fk',
+                foreign_key_type: String
+            end
+          end
+
           describe 'with options: custom value' do
             let(:options) { { key: 'value' } }
 
@@ -460,6 +640,31 @@ module Spec::Support::Examples::Entities
               expect(described_class.associations.keys)
                 .to contain_exactly('parent', 'sibling', 'child', 'bestie')
             end
+          end
+        end
+      end
+
+      describe '.default_foreign_key_type' do
+        include_examples 'should define class reader',
+          :default_foreign_key_type,
+          Integer
+
+        context 'when the entity class defines a primary key' do
+          before(:example) do
+            unless entity_class < Stannum::Entities::Attributes
+              entity_class.include Stannum::Entities::Attributes
+            end
+
+            unless entity_class < Stannum::Entities::PrimaryKey
+              entity_class.include Stannum::Entities::PrimaryKey
+            end
+
+            entity_class.define_primary_key(:uuid, String)
+          end
+
+          it 'should default to the primary key type' do
+            expect(described_class.default_foreign_key_type)
+              .to be == described_class.primary_key_type
           end
         end
       end

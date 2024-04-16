@@ -1,6 +1,7 @@
 # frozen_string_literal: true
 
 require 'stannum/associations/one'
+require 'stannum/constraints/type'
 
 require 'support/examples/association_examples'
 
@@ -106,73 +107,64 @@ RSpec.describe Stannum::Associations::One do
 
   include_examples 'should implement the Association methods'
 
-  describe '#foreign_key' do
-    include_examples 'should define reader', :foreign_key, nil
-
-    context 'with options: { foreign_key: a string }' do
-      let(:options)  { { 'foreign_key' => 'reference_uuid' } }
-      let(:expected) { options['foreign_key'] }
-
-      it { expect(association.foreign_key).to be == expected }
-    end
-
-    context 'with options: { foreign_key: a symbol }' do
-      let(:options)  { { 'foreign_key' => :reference_uuid } }
-      let(:expected) { options['foreign_key'].to_s }
-
-      it { expect(association.foreign_key).to be == expected }
-    end
-
-    context 'with options: { foreign_key: false }' do
-      let(:options) { { 'foreign_key' => false } }
-
-      it { expect(association.foreign_key).to be nil }
-    end
-
-    context 'with options: { foreign_key: nil }' do
-      let(:options) { { 'foreign_key' => nil } }
-
-      it { expect(association.foreign_key).to be nil }
-    end
-
-    context 'with options: { foreign_key: true }' do
-      let(:options) { { 'foreign_key' => true } }
-
-      it { expect(association.foreign_key).to be == 'reference_id' }
-    end
-  end
-
   describe '#foreign_key?' do
     include_examples 'should define predicate', :foreign_key?, false
 
-    context 'with options: { foreign_key: a string }' do
-      let(:options) { { 'foreign_key' => 'reference_uuid' } }
+    context 'with options: { foreign_key_name: a string }' do
+      let(:options) { { 'foreign_key_name' => 'reference_uuid' } }
 
       it { expect(association.foreign_key?).to be true }
     end
 
-    context 'with options: { foreign_key: a symbol }' do
-      let(:options) { { 'foreign_key' => :reference_uuid } }
+    context 'with options: { foreign_key_name: a symbol }' do
+      let(:options) { { 'foreign_key_name' => :reference_uuid } }
 
       it { expect(association.foreign_key?).to be true }
     end
+  end
 
-    context 'with options: { foreign_key: false }' do
-      let(:options) { { 'foreign_key' => false } }
+  describe '#foreign_key_name' do
+    include_examples 'should define reader', :foreign_key_name, nil
 
-      it { expect(association.foreign_key?).to be false }
+    context 'with options: { foreign_key_name: a string }' do
+      let(:options)  { { 'foreign_key_name' => 'reference_id' } }
+      let(:expected) { options['foreign_key_name'] }
+
+      it { expect(association.foreign_key_name).to be == expected }
     end
 
-    context 'with options: { foreign_key: nil }' do
-      let(:options) { { 'foreign_key' => nil } }
+    context 'with options: { foreign_key_name: a symbol }' do
+      let(:options) { { 'foreign_key_name' => :reference_id } }
+      let(:expected) { options['foreign_key_name'].to_s }
 
-      it { expect(association.foreign_key?).to be false }
+      it { expect(association.foreign_key_name).to be == expected }
+    end
+  end
+
+  describe '#foreign_key_type' do
+    include_examples 'should define reader', :foreign_key_type, nil
+
+    context 'with options: { foreign_key_name: a class }' do
+      let(:options) do
+        {
+          'foreign_key_name' => 'reference_id',
+          'foreign_key_type' => String
+        }
+      end
+
+      it { expect(association.foreign_key_type).to be String }
     end
 
-    context 'with options: { foreign_key: true }' do
-      let(:options) { { 'foreign_key' => true } }
+    context 'with options: { foreign_key_name: a constraint }' do
+      let(:constraint) { Stannum::Constraints::Uuid.new }
+      let(:options) do
+        {
+          'foreign_key_name' => 'reference_id',
+          'foreign_key_type' => constraint
+        }
+      end
 
-      it { expect(association.foreign_key?).to be true }
+      it { expect(association.foreign_key_type).to be constraint }
     end
   end
 

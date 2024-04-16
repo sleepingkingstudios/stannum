@@ -5,7 +5,7 @@ require 'stannum/schema'
 
 module Stannum::Entities
   # Methods for defining and accessing entity associations.
-  module Associations
+  module Associations # rubocop:disable Metrics/ModuleLength
     # Class methods to extend the class when including Associations.
     module ClassMethods
       # Defines an association on the entity.
@@ -29,6 +29,9 @@ module Stannum::Entities
       #   @param options [Hash] additional options for the association.
       #
       #   @option options [String] :class_name the name of the associated class.
+      #   @option options [true, Hash] :foreign_key the foreign key options for
+      #     the association. Can be true, or a Hash containing :name and/or
+      #     :type keys.
       #
       #   @return [Symbol] the association name as a symbol.
       #
@@ -42,6 +45,10 @@ module Stannum::Entities
       #   @param assoc_type [String, Symbol, Class] the type of the associated
       #   @param options [Hash] additional options for the association.
       #
+      #   @option options [true, Hash] :foreign_key the foreign key options for
+      #     the association. Can be true, or a Hash containing :name and/or
+      #     :type keys.
+      #
       #   @return [Symbol] the association name as a symbol.
       def association(arity, class_or_name, **options) # rubocop:disable Metrics/MethodLength
         assoc_class                     =
@@ -53,7 +60,7 @@ module Stannum::Entities
           definition_class: assoc_class,
           name:             assoc_name,
           type:             assoc_type,
-          options:          options
+          options:          parse_options(assoc_name, **options)
         )
 
         assoc_name.intern
@@ -63,6 +70,11 @@ module Stannum::Entities
       # @return [Stannum::Schema] The associations Schema object for the Entity.
       def associations
         self::Associations
+      end
+
+      # @return [Class] the default type for foreign key attributes.
+      def default_foreign_key_type
+        (defined?(primary_key_type) && primary_key_type) || Integer
       end
 
       private
@@ -96,6 +108,36 @@ module Stannum::Entities
         Stannum::Entities::Associations.apply(other)
       end
 
+      def parse_foreign_key_options(assoc_name, foreign_key) # rubocop:disable Metrics/MethodLength
+        foreign_key = {} if foreign_key == true
+
+        if foreign_key.is_a?(String) || foreign_key.is_a?(Symbol)
+          foreign_key = { name: foreign_key.to_s }
+        end
+
+        unless foreign_key.is_a?(Hash)
+          raise InvalidOptionError, "invalid foreign key #{foreign_key.inspect}"
+        end
+
+        name = foreign_key.fetch(:name) { "#{assoc_name}_id" }
+        type = foreign_key.fetch(:type) { default_foreign_key_type }
+
+        {
+          foreign_key_name: name,
+          foreign_key_type: type
+        }
+      end
+
+      def parse_options(assoc_name, **options)
+        if options.key?(:foreign_key)
+          options = options.merge(
+            parse_foreign_key_options(assoc_name, options.delete(:foreign_key))
+          )
+        end
+
+        options
+      end
+
       def resolve_association_class(arity)
         return Stannum::Associations::One if arity == :one
 
@@ -122,6 +164,9 @@ module Stannum::Entities
         SleepingKingStudios::Tools::Toolbelt.instance
       end
     end
+
+    # Exception class raised when an invalid option value is set.
+    class InvalidOptionError < StandardError; end
 
     class << self
       # Generates Associations schema for the class.

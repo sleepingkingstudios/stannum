@@ -19,6 +19,12 @@ RSpec.describe Stannum::Entities::Associations do
     mod.include Stannum::Entities::Associations # rubocop:disable RSpec/DescribedClass
   end
 
+  describe '::InvalidOptionError' do
+    include_examples 'should define constant',
+      :InvalidOptionError,
+      -> { be_a(Class).and(be < StandardError) }
+  end
+
   include_context 'with an entity class'
 
   include_examples 'should implement the Associations methods'
