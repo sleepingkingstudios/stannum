@@ -11,15 +11,20 @@ module Stannum::Associations
 
       def define_reader(association)
         entity_class.define_method(association.reader_name) do
-          read_association(association.name, safe: false)
+          association.read_association(self)
         end
       end
 
       def define_writer(association)
         entity_class.define_method(association.writer_name) do |value|
-          write_association(association.name, value, safe: false)
+          association.write_association(self, value)
         end
       end
+    end
+
+    # (see Stannum::Association#clear_association)
+    def clear_association(entity)
+      entity.write_association(name, nil, safe: false)
     end
 
     # @return [Boolean] true if the association has a foreign key; otherwise
@@ -53,6 +58,16 @@ module Stannum::Associations
     #   otherwise false.
     def one?
       true
+    end
+
+    # (see Stannum::Association#read_association)
+    def read_association(entity)
+      entity.read_association(name, safe: false)
+    end
+
+    # (see Stannum::Association#read_association)
+    def write_association(entity, value)
+      entity.write_association(name, value, safe: false)
     end
   end
 end

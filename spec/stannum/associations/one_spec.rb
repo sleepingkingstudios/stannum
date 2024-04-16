@@ -2,6 +2,7 @@
 
 require 'stannum/associations/one'
 require 'stannum/constraints/type'
+require 'stannum/entity'
 
 require 'support/examples/association_examples'
 
@@ -12,6 +13,25 @@ RSpec.describe Stannum::Associations::One do
     described_class.new(name: name, type: type, options: options)
   end
 
+  shared_context 'with an entity' do
+    shared_context 'when the association has a value' do
+      let(:previous_value) do
+        Spec::Reference.new(id: 0, name: 'Previous Reference')
+      end
+      let(:associations) { { 'reference' => previous_value } }
+    end
+
+    let(:attributes)   { {} }
+    let(:associations) { {} }
+    let(:entity)       { Spec::EntityClass.new(**attributes, **associations) }
+
+    example_class 'Spec::EntityClass' do |klass|
+      klass.include Stannum::Entity
+
+      klass.association(:one, name, **options.merge(class_name: type.name))
+    end
+  end
+
   let(:constructor_options) do
     {}
   end
@@ -19,7 +39,13 @@ RSpec.describe Stannum::Associations::One do
   let(:type)    { Spec::Reference }
   let(:options) { constructor_options }
 
-  example_class 'Spec::Reference'
+  example_class 'Spec::Reference' do |klass|
+    klass.include Stannum::Entity
+
+    klass.define_primary_key :id, Integer
+
+    klass.attribute :name, String
+  end
 
   describe '::Builder' do
     subject(:builder) do
@@ -107,6 +133,23 @@ RSpec.describe Stannum::Associations::One do
 
   include_examples 'should implement the Association methods'
 
+  describe '#clear_association' do
+    include_context 'with an entity'
+
+    it 'should not change the association value' do
+      expect { association.clear_association(entity) }
+        .not_to change(entity, name)
+    end
+
+    wrap_context 'when the association has a value' do
+      it 'should clear the association value' do
+        expect { association.clear_association(entity) }
+          .to change(entity, name)
+          .to be nil
+      end
+    end
+  end
+
   describe '#foreign_key?' do
     include_examples 'should define predicate', :foreign_key?, false
 
@@ -174,5 +217,52 @@ RSpec.describe Stannum::Associations::One do
 
   describe '#one?' do
     it { expect(association.one?).to be true }
+  end
+
+  describe '#read_association' do
+    include_context 'with an entity'
+
+    it { expect(association.read_association(entity)).to be nil }
+
+    wrap_context 'when the association has a value' do
+      it { expect(association.read_association(entity)).to be previous_value }
+    end
+  end
+
+  describe '#write_association' do
+    include_context 'with an entity'
+
+    describe 'with nil' do
+      it 'should not change the association value' do
+        expect { association.write_association(entity, nil) }
+          .not_to change(entity, name)
+      end
+
+      wrap_context 'when the association has a value' do
+        it 'should clear the association value' do
+          expect { association.write_association(entity, nil) }
+            .to change(entity, name)
+            .to be nil
+        end
+      end
+    end
+
+    describe 'with a value' do
+      let(:new_value) { Spec::Reference.new(id: 1, name: 'New Reference') }
+
+      it 'should change the association value' do
+        expect { association.write_association(entity, new_value) }
+          .to change(entity, name)
+          .to be new_value
+      end
+
+      wrap_context 'when the association has a value' do
+        it 'should change the association value' do
+          expect { association.write_association(entity, new_value) }
+            .to change(entity, name)
+            .to be new_value
+        end
+      end
+    end
   end
 end

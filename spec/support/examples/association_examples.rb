@@ -112,6 +112,14 @@ module Spec::Support::Examples
         end
       end
 
+      describe '#clear_association' do
+        it 'should define the method' do
+          expect(association)
+            .to respond_to(:clear_association)
+            .with(1).argument
+        end
+      end
+
       describe '#many?' do
         include_examples 'should define predicate', :many?
       end
@@ -147,6 +155,14 @@ module Spec::Support::Examples
           let(:options) { { key: 'value' } }
 
           it { expect(association.options).to be == expected }
+        end
+      end
+
+      describe '#read_association' do
+        it 'should define the method' do
+          expect(association)
+            .to respond_to(:read_association)
+            .with(1).argument
         end
       end
 
@@ -198,6 +214,14 @@ module Spec::Support::Examples
           let(:type) { super().to_s }
 
           it { expect(association.type).to be == type }
+        end
+      end
+
+      describe '#write_association' do
+        it 'should define the method' do
+          expect(association)
+            .to respond_to(:write_association)
+            .with(2).arguments
         end
       end
 

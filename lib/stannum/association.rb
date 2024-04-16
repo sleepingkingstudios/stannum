@@ -5,6 +5,9 @@ require 'stannum'
 module Stannum
   # Data object representing an association on an entity.
   class Association
+    # Exception raised when calling an abstract method.
+    class AbstractAssociationError < StandardError; end
+
     # Builder class for defining association methods on an entity.
     class Builder
       # @param entity_class [Class] the entity class on which to define methods.
@@ -22,6 +25,20 @@ module Stannum
         define_reader(association)
         define_writer(association)
       end
+
+      private
+
+      # :nocov:
+      def define_reader(_)
+        raise AbstractAssociationError,
+          "#{self} is an abstract class - use an association subclass"
+      end
+
+      def define_writer(_)
+        raise AbstractAssociationError,
+          "#{self} is an abstract class - use an association subclass"
+      end
+      # :nocov:
     end
 
     # @param name [String, Symbol] The name of the association. Converted to a
@@ -50,6 +67,14 @@ module Stannum
     # @return [String] the name of the association type Class or Module.
     attr_reader :type
 
+    # Clears the value of the association for the entity.
+    #
+    # @param entity [Stannum::Entity] the entity to update.
+    def clear_association(entity) # rubocop:disable Lint/UnusedMethodArgument
+      raise AbstractAssociationError,
+        "#{self.class} is an abstract class - use an association subclass"
+    end
+
     # @return [false] true if the association is a plural association;
     #   otherwise false.
     def many?
@@ -60,6 +85,14 @@ module Stannum
     #   otherwise false.
     def one?
       false
+    end
+
+    # @param entity [Stannum::Entity] the entity to update.
+    #
+    # @return [Object] the value of the association.
+    def read_association(entity) # rubocop:disable Lint/UnusedMethodArgument
+      raise AbstractAssociationError,
+        "#{self.class} is an abstract class - use an association subclass"
     end
 
     # @return [Symbol] the name of the reader method for the association.
@@ -78,6 +111,13 @@ module Stannum
       end
 
       @resolved_type
+    end
+
+    # @param entity [Stannum::Entity] the entity to update.
+    # @param value [Object] the new value for the association.
+    def write_association(entity, value) # rubocop:disable Lint/UnusedMethodArgument
+      raise AbstractAssociationError,
+        "#{self.class} is an abstract class - use an association subclass"
     end
 
     # @return [Symbol] the name of the writer method for the association.
