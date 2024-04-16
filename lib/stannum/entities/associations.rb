@@ -56,14 +56,14 @@ module Stannum::Entities
         assoc_name, assoc_type, options =
           resolve_parameters(arity, class_or_name, options)
 
-        associations.define(
+        association = associations.define(
           definition_class: assoc_class,
           name:             assoc_name,
           type:             assoc_type,
           options:          parse_options(assoc_name, **options)
         )
 
-        assoc_name.intern
+        association.name.intern
       end
       alias define_association association
 

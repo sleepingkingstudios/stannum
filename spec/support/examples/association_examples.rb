@@ -248,6 +248,12 @@ module Spec::Support::Examples
       describe '#call' do
         it { expect(builder).to respond_to(:call).with(1).argument }
       end
+
+      describe '#schema' do
+        include_examples 'should define reader',
+          :schema,
+          -> { entity_class::Associations }
+      end
     end
   end
 end

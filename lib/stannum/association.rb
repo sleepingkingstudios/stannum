@@ -10,13 +10,15 @@ module Stannum
 
     # Builder class for defining association methods on an entity.
     class Builder
-      # @param entity_class [Class] the entity class on which to define methods.
-      def initialize(entity_class)
-        @entity_class = entity_class
+      # @param schema [Stannum::Schema] the associations schema on which to
+      #   define methods.
+      def initialize(schema)
+        @schema = schema
       end
 
-      # @return [Class] the entity class on which to define methods.
-      attr_reader :entity_class
+      # @return schema [Stannum::Schema] the associations schema on which to
+      #   define methods.
+      attr_reader :schema
 
       # Defines the reader and writer methods for the association.
       #

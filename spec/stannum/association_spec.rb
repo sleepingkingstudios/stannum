@@ -28,7 +28,7 @@ RSpec.describe Stannum::Association do
 
   describe '::Builder' do
     subject(:builder) do
-      described_class::Builder.new(entity_class)
+      described_class::Builder.new(entity_class::Associations)
     end
 
     let(:entity_class) { Spec::Entity }

@@ -40,7 +40,7 @@ RSpec.describe Stannum::Attribute do
 
   describe '::Builder' do
     subject(:builder) do
-      described_class::Builder.new(entity_class)
+      described_class::Builder.new(entity_class::Attributes)
     end
 
     let(:entity_class) { Spec::Entity }
@@ -184,10 +184,10 @@ RSpec.describe Stannum::Attribute do
       end
     end
 
-    describe '#entity_class' do
+    describe '#schema' do
       include_examples 'should define reader',
-        :entity_class,
-        -> { entity_class }
+        :schema,
+        -> { entity_class::Attributes }
     end
   end
 
@@ -348,6 +348,22 @@ RSpec.describe Stannum::Attribute do
 
     wrap_context 'with default: value' do
       it { expect(attribute.default_value_for(context)).to be default }
+    end
+  end
+
+  describe '#foreign_key?' do
+    include_examples 'should define predicate', :foreign_key?, false
+
+    context 'with foreign_key: false' do
+      let(:options) { super().merge(foreign_key: false) }
+
+      it { expect(attribute.foreign_key?).to be false }
+    end
+
+    context 'with foreign_key: true' do
+      let(:options) { super().merge(foreign_key: true) }
+
+      it { expect(attribute.foreign_key?).to be true }
     end
   end
 

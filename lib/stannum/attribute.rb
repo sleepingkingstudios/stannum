@@ -10,13 +10,15 @@ module Stannum
 
     # Builder class for defining attribute methods on an entity.
     class Builder
-      # @param entity_class [Class] the entity class on which to define methods.
-      def initialize(entity_class)
-        @entity_class = entity_class
+      # @param schema [Stannum::Schema] the attributes schema on which to define
+      #   methods.
+      def initialize(schema)
+        @schema = schema
       end
 
-      # @return [Class] the entity class on which to define methods.
-      attr_reader :entity_class
+      # @return [Stannum::Schema] the attributes schema on which to define
+      #   methods.
+      attr_reader :schema
 
       # Defines the reader and writer methods for the attribute.
       #
@@ -29,13 +31,13 @@ module Stannum
       private
 
       def define_reader(attribute)
-        entity_class.define_method(attribute.reader_name) do
+        schema.define_method(attribute.reader_name) do
           read_attribute(attribute.name, safe: false)
         end
       end
 
       def define_writer(attribute)
-        entity_class.define_method(attribute.writer_name) do |value|
+        schema.define_method(attribute.writer_name) do |value|
           write_attribute(
             attribute.name,
             value.nil? ? attribute.default_value_for(self) : value,
@@ -97,6 +99,12 @@ module Stannum
       return default unless default.is_a?(Proc)
 
       default.arity.zero? ? default.call : default.call(context)
+    end
+
+    # @return [Boolean] true if the attribute represents the foreign key for an
+    #   association; otherwise false.
+    def foreign_key?
+      !!@options[:foreign_key]
     end
 
     # @return [Boolean] true if the attribute represents the primary key for the

@@ -3,7 +3,7 @@
 require 'forwardable'
 
 module Stannum
-  # Abstract class for defining property methods for a struct.
+  # Abstract class for defining property methods for an entity.
   #
   # @see Stannum::Attribute.
   class Schema < Module

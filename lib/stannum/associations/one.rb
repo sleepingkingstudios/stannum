@@ -10,13 +10,13 @@ module Stannum::Associations
       private
 
       def define_reader(association)
-        entity_class.define_method(association.reader_name) do
+        schema.define_method(association.reader_name) do
           association.read_association(self)
         end
       end
 
       def define_writer(association)
-        entity_class.define_method(association.writer_name) do |value|
+        schema.define_method(association.writer_name) do |value|
           association.write_association(self, value)
         end
       end
