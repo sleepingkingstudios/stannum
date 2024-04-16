@@ -106,6 +106,76 @@ RSpec.describe Stannum::Associations::One do
 
   include_examples 'should implement the Association methods'
 
+  describe '#foreign_key' do
+    include_examples 'should define reader', :foreign_key, nil
+
+    context 'with options: { foreign_key: a string }' do
+      let(:options)  { { 'foreign_key' => 'reference_uuid' } }
+      let(:expected) { options['foreign_key'] }
+
+      it { expect(association.foreign_key).to be == expected }
+    end
+
+    context 'with options: { foreign_key: a symbol }' do
+      let(:options)  { { 'foreign_key' => :reference_uuid } }
+      let(:expected) { options['foreign_key'].to_s }
+
+      it { expect(association.foreign_key).to be == expected }
+    end
+
+    context 'with options: { foreign_key: false }' do
+      let(:options) { { 'foreign_key' => false } }
+
+      it { expect(association.foreign_key).to be nil }
+    end
+
+    context 'with options: { foreign_key: nil }' do
+      let(:options) { { 'foreign_key' => nil } }
+
+      it { expect(association.foreign_key).to be nil }
+    end
+
+    context 'with options: { foreign_key: true }' do
+      let(:options) { { 'foreign_key' => true } }
+
+      it { expect(association.foreign_key).to be == 'reference_id' }
+    end
+  end
+
+  describe '#foreign_key?' do
+    include_examples 'should define predicate', :foreign_key?, false
+
+    context 'with options: { foreign_key: a string }' do
+      let(:options) { { 'foreign_key' => 'reference_uuid' } }
+
+      it { expect(association.foreign_key?).to be true }
+    end
+
+    context 'with options: { foreign_key: a symbol }' do
+      let(:options) { { 'foreign_key' => :reference_uuid } }
+
+      it { expect(association.foreign_key?).to be true }
+    end
+
+    context 'with options: { foreign_key: false }' do
+      let(:options) { { 'foreign_key' => false } }
+
+      it { expect(association.foreign_key?).to be false }
+    end
+
+    context 'with options: { foreign_key: nil }' do
+      let(:options) { { 'foreign_key' => nil } }
+
+      it { expect(association.foreign_key?).to be false }
+    end
+
+    context 'with options: { foreign_key: true }' do
+      let(:options) { { 'foreign_key' => true } }
+
+      it { expect(association.foreign_key?).to be true }
+    end
+  end
+
   describe '#many?' do
     it { expect(association.many?).to be false }
   end

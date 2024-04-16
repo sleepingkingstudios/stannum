@@ -22,10 +22,39 @@ module Stannum::Associations
       end
     end
 
+    # @return [String?] the name of the foreign key, if any.
+    def foreign_key
+      return @foreign_key if @foreign_key
+
+      return nil unless foreign_key?
+
+      @foreign_key = foreign_key_from_options
+    end
+
+    # @return [Boolean] true if the association has a foreign key; otherwise
+    #   false.
+    def foreign_key?
+      return @has_foreign_key unless @has_foreign_key.nil?
+
+      value = options[:foreign_key]
+
+      return @has_foreign_key = false if value.nil? || value == false
+
+      @has_foreign_key = true
+    end
+
     # @return [true] true if the association is a singular association;
     #   otherwise false.
     def one?
       true
+    end
+
+    private
+
+    def foreign_key_from_options
+      return "#{name}_id" if options[:foreign_key] == true
+
+      options[:foreign_key].to_s
     end
   end
 end
