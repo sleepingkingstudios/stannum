@@ -32,10 +32,4 @@ Gem::Specification.new do |gem|
     Dir['config/locales/*', 'lib/**/*.rb', 'LICENSE', '*.md']
 
   gem.add_runtime_dependency 'sleeping_king_studios-tools', '~> 1.1.0'
-
-  gem.add_development_dependency 'rspec', '~> 3.10'
-  gem.add_development_dependency 'rspec-sleeping_king_studios', '~> 2.6'
-  gem.add_development_dependency 'rubocop', '~> 1.49'
-  gem.add_development_dependency 'rubocop-rspec', '~> 2.19'
-  gem.add_development_dependency 'simplecov', '~> 0.21'
 end

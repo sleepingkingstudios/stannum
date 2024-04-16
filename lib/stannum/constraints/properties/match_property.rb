@@ -107,7 +107,7 @@ module Stannum::Constraints::Properties
 
       return generic_errors(errors) if matching.count.zero?
 
-      matching.each do |property_name, _|
+      matching.each do |property_name, _| # rubocop:disable Style/HashEachMethods
         errors[property_name].add(negated_type, message: negated_message)
       end
 

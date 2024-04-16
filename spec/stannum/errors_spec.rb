@@ -1643,23 +1643,11 @@ RSpec.describe Stannum::Errors do
 
         it { expect(enumerator.size).to be errors.size }
 
-        it 'should yield each error' do
-          yielded = []
-
-          enumerator.each { |error| yielded << error }
-
-          expect(yielded).to match_array(expected_errors)
-        end
+        it { expect(enumerator.map(&:itself)).to match_array(expected_errors) }
       end
 
       describe 'with a block' do
-        it 'should yield each error' do
-          yielded = []
-
-          errors.each { |error| yielded << error }
-
-          expect(yielded).to match_array(expected_errors)
-        end
+        it { expect(errors.map(&:itself)).to match_array(expected_errors) }
       end
     end
 

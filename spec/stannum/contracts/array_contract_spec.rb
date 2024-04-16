@@ -120,8 +120,8 @@ RSpec.describe Stannum::Contracts::ArrayContract do
         { property: index, property_type: :index }
       end
 
-      def define_from_block(**options, &block)
-        builder.item(**options, &block)
+      def define_from_block(...)
+        builder.item(...)
       end
 
       def define_from_constraint(constraint, **options)

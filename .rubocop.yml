@@ -71,6 +71,9 @@ Naming/MethodParameterName:
 RSpec/BeNil:
   Enabled: false
 
+RSpec/Eq:
+  Enabled: false
+
 RSpec/ExampleLength:
   Max: 10
 
@@ -95,6 +98,10 @@ RSpec/MultipleMemoizedHelpers:
 
 RSpec/NestedGroups:
   Max: 5
+
+RSpec/SpecFilePathFormat:
+  Exclude:
+    - spec/integration/**/*
 
 Style/AccessorGrouping:
   EnforcedStyle: separated

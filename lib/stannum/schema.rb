@@ -75,7 +75,7 @@ module Stannum
         raise ArgumentError, message
       end
 
-      (definition_class || property_class)::Builder.new(self).call(property)
+      (definition_class || property_class)::Builder.new(self).call(property) # rubocop:disable Style/RedundantParentheses
 
       @properties[property.name] = property
     end
