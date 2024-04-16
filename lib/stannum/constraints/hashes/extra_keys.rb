@@ -38,12 +38,7 @@ module Stannum::Constraints::Hashes
     def initialize(expected_keys, **options)
       validate_expected_keys(expected_keys)
 
-      expected_keys =
-        if expected_keys.is_a?(Array)
-          Set.new(expected_keys)
-        else
-          expected_keys
-        end
+      expected_keys = Set.new(expected_keys) if expected_keys.is_a?(Array)
 
       super(expected_keys: expected_keys, **options)
     end

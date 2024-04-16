@@ -318,21 +318,11 @@ RSpec.describe Stannum::Constraints::Properties::Matching do
     context 'when Rails.configuration is defined' do
       let(:parameters)    { %i[password secret] }
       let(:configuration) { Struct.new(:filter_parameters).new(parameters) }
-      let(:rails)         { Struct.new(:configuration).new(configuration) }
+      let(:mock_rails)    { Struct.new(:configuration).new(configuration) }
       let(:expected)      { Rails.configuration.filter_parameters }
 
-      around(:example) do |example|
-        return example.call if defined?(Rails)
-
-        stub_rails { example.call }
-      end
-
-      def stub_rails
-        Object.const_set(:Rails, rails)
-
-        yield
-      ensure
-        Object.send(:remove_const, :Rails) if rails == Rails
+      before(:example) do
+        stub_const('Rails', mock_rails) unless defined?(Rails)
       end
 
       it { expect(constraint.send :filtered_parameters).to be == expected }

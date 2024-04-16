@@ -77,8 +77,9 @@ module Stannum::Entities
         assoc_name = tools.string_tools.underscore(
           class_or_name.to_s.split('::').last
         )
+        assoc_name = tools.string_tools.singularize(assoc_name) if arity == :one
 
-        return tools.string_tools.singularize(assoc_name) if arity == :one
+        assoc_name
       end
 
       def included(other)

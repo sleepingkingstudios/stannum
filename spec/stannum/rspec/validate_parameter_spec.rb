@@ -2,7 +2,7 @@
 
 require 'stannum/rspec/validate_parameter'
 
-RSpec.describe RSpec::Matchers do # rubocop:disable RSpec/FilePath
+RSpec.describe RSpec::Matchers do # rubocop:disable RSpec/FilePath, RSpec/SpecFilePathFormat
   let(:example_group) { Object.new.extend(Stannum::RSpec::Matchers) }
 
   describe '#validate_parameter' do
