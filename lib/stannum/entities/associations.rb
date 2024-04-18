@@ -62,6 +62,7 @@ module Stannum::Entities
           type:             assoc_type,
           options:          parse_options(assoc_name, **options)
         )
+        define_foreign_key(association) if association.foreign_key?
 
         association.name.intern
       end
@@ -92,6 +93,16 @@ module Stannum::Entities
         assoc_name = tools.string_tools.singularize(assoc_name) if arity == :one
 
         assoc_name
+      end
+
+      def define_foreign_key(association)
+        define_attribute(
+          association.foreign_key_name,
+          association.foreign_key_type,
+          association_name: association.name,
+          foreign_key:      true,
+          required:         false
+        )
       end
 
       def included(other)

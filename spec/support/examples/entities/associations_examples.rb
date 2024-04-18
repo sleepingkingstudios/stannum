@@ -4,6 +4,8 @@ require 'bigdecimal'
 
 require 'rspec/sleeping_king_studios/concerns/shared_example_group'
 
+require 'stannum/entities/attributes'
+
 require 'support/examples/entities'
 require 'support/examples/entity_examples'
 
@@ -18,9 +20,21 @@ module Spec::Support::Examples::Entities
         defined?(super()) ? super() : Spec::EntityClass
       end
 
-      example_class 'Spec::Parent',  Struct.new(:name)
-      example_class 'Spec::Sibling', Struct.new(:name)
-      example_class 'Spec::Child',   Struct.new(:name)
+      example_class 'Spec::Parent' do |klass|
+        klass.include Stannum::Entity
+
+        klass.define_attribute :name, String
+      end
+      example_class 'Spec::Sibling' do |klass|
+        klass.include Stannum::Entity
+
+        klass.define_attribute :name, String
+      end
+      example_class 'Spec::Child' do |klass|
+        klass.include Stannum::Entity
+
+        klass.define_attribute :name, String
+      end
 
       before(:example) do
         entity_class.instance_eval do
@@ -31,12 +45,58 @@ module Spec::Support::Examples::Entities
       end
     end
 
+    shared_context 'when the entity class defines associations with ' \
+                   'foreign keys' \
+    do
+      let(:entity_class) do
+        defined?(super()) ? super() : Spec::EntityClass
+      end
+
+      before(:example) do
+        unless entity_class < Stannum::Entities::Attributes
+          entity_class.include Stannum::Entities::Attributes
+        end
+      end
+
+      example_class 'Spec::Parent' do |klass|
+        klass.include Stannum::Entity
+
+        klass.define_attribute :name, String
+      end
+
+      before(:example) do
+        entity_class.instance_eval do
+          association :one,
+            'parent',
+            class_name:  'Spec::Parent',
+            foreign_key: true
+        end
+      end
+    end
+
     shared_context 'when the subclass defines associations' do
       example_class 'Spec::Bestie', Struct.new(:name)
 
       before(:example) do
         entity_class.instance_eval do
-          association :one, 'bestie', class_name: 'Spec::BestFriend'
+          association :one, 'bestie', class_name: 'Spec::Bestie'
+        end
+      end
+    end
+
+    shared_context 'when the subclass defines associations with foreign keys' do
+      example_class 'Spec::Bestie', Struct.new(:name)
+
+      before(:example) do
+        unless entity_class < Stannum::Entities::Attributes
+          entity_class.include Stannum::Entities::Attributes
+        end
+
+        entity_class.instance_eval do
+          association :one,
+            'bestie',
+            class_name:  'Spec::Bestie',
+            foreign_key: true
         end
       end
     end
@@ -44,9 +104,9 @@ module Spec::Support::Examples::Entities
     shared_context 'when the entity has association values' do
       let(:associations) do
         {
-          'parent'  => Spec::Parent.new('original parent'),
-          'sibling' => Spec::Sibling.new('original sibling'),
-          'child'   => Spec::Sibling.new('original child')
+          'parent'  => Spec::Parent.new(name: 'original parent'),
+          'sibling' => Spec::Sibling.new(name: 'original sibling'),
+          'child'   => Spec::Sibling.new(name: 'original child')
         }
       end
       let(:properties) do
@@ -138,6 +198,60 @@ module Spec::Support::Examples::Entities
       end
 
       describe '.association' do
+        shared_context 'with an entity class with attributes' do
+          before(:example) do
+            unless entity_class < Stannum::Entities::Attributes
+              entity_class.include Stannum::Entities::Attributes
+            end
+          end
+        end
+
+        shared_examples 'should define a foreign key attribute' \
+        do |**example_options|
+          let(:foreign_key_name) do
+            example_options.fetch(:foreign_key_name) do
+              "#{assoc_name}_id"
+            end
+          end
+          let(:foreign_key_type) do
+            example_options.fetch(:foreign_key_type) do
+              described_class.default_foreign_key_type
+            end
+          end
+          let(:attribute_options) do
+            {
+              association_name: assoc_name.to_s,
+              foreign_key:      true,
+              required:         false
+            }
+          end
+
+          it 'should add the attribute to ::Attributes' do
+            expect { define_association }
+              .to change { described_class.attributes.count }
+              .by(1)
+          end
+
+          it 'should add the attribute key to ::Attributes' do
+            expect { define_association }
+              .to change(described_class.attributes, :each_key)
+              .to include(foreign_key_name.to_s)
+          end
+
+          it 'should add the attribute value to ::Attributes',
+            :aggregate_failures \
+          do
+            define_association
+
+            attribute = described_class.attributes[foreign_key_name]
+
+            expect(attribute).to be_a Stannum::Attribute
+            expect(attribute.name).to be == foreign_key_name
+            expect(attribute.type).to be == foreign_key_type.to_s
+            expect(attribute.options).to deep_match(attribute_options)
+          end
+        end
+
         shared_examples 'should define a singular association' \
         do |**example_options|
           let(:foreign_key_options) do
@@ -161,10 +275,6 @@ module Spec::Support::Examples::Entities
               .tap { |hsh| hsh.delete(:class_name) }
               .tap { |hsh| hsh.delete(:foreign_key) }
               .merge(foreign_key_options)
-          end
-
-          def define_association
-            described_class.association(:one, key, **options)
           end
 
           it 'should add the association to ::Associations' do
@@ -209,6 +319,10 @@ module Spec::Support::Examples::Entities
 
         describe 'with arity: :one' do
           let(:arity) { :one }
+
+          def define_association
+            described_class.association(:one, key, **options)
+          end
 
           describe 'with an association class' do
             let(:key) { assoc_type }
@@ -371,23 +485,26 @@ module Spec::Support::Examples::Entities
           end
 
           describe 'with options: { foreign_key: true }' do
+            include_context 'with an entity class with attributes'
+
             let(:options) { { foreign_key: true } }
+
+            include_examples 'should define a foreign key attribute'
 
             include_examples 'should define a singular association',
               foreign_key: true
 
             context 'when the entity class defines a primary key' do
               before(:example) do
-                unless entity_class < Stannum::Entities::Attributes
-                  entity_class.include Stannum::Entities::Attributes
-                end
-
                 unless entity_class < Stannum::Entities::PrimaryKey
                   entity_class.include Stannum::Entities::PrimaryKey
                 end
 
                 entity_class.define_primary_key(:uuid, String)
               end
+
+              include_examples 'should define a foreign key attribute',
+                foreign_key_type: String
 
               include_examples 'should define a singular association',
                 foreign_key:      true,
@@ -396,22 +513,28 @@ module Spec::Support::Examples::Entities
           end
 
           describe 'with options: { foreign_key: an object }' do
+            include_context 'with an entity class with attributes'
+
             let(:options) { { foreign_key: Object.new.freeze } }
             let(:error_message) do
               "invalid foreign key #{options[:foreign_key].inspect}"
             end
 
             it 'should raise an exception' do
-              expect { described_class.association(:one, key, **options) }
-                .to raise_error(
-                  described_class::InvalidOptionError,
-                  error_message
-                )
+              expect { define_association }.to raise_error(
+                described_class::InvalidOptionError,
+                error_message
+              )
             end
           end
 
           describe 'with options: { foreign_key: a string }' do
+            include_context 'with an entity class with attributes'
+
             let(:options) { { foreign_key: 'reference_fk' } }
+
+            include_examples 'should define a foreign key attribute',
+              foreign_key_name: 'reference_fk'
 
             include_examples 'should define a singular association',
               foreign_key:      true,
@@ -419,16 +542,16 @@ module Spec::Support::Examples::Entities
 
             context 'when the entity class defines a primary key' do
               before(:example) do
-                unless entity_class < Stannum::Entities::Attributes
-                  entity_class.include Stannum::Entities::Attributes
-                end
-
                 unless entity_class < Stannum::Entities::PrimaryKey
                   entity_class.include Stannum::Entities::PrimaryKey
                 end
 
                 entity_class.define_primary_key(:uuid, String)
               end
+
+              include_examples 'should define a foreign key attribute',
+                foreign_key_name: 'reference_fk',
+                foreign_key_type: String
 
               include_examples 'should define a singular association',
                 foreign_key:      true,
@@ -438,7 +561,12 @@ module Spec::Support::Examples::Entities
           end
 
           describe 'with options: { foreign_key: a symbol }' do
+            include_context 'with an entity class with attributes'
+
             let(:options) { { foreign_key: :reference_fk } }
+
+            include_examples 'should define a foreign key attribute',
+              foreign_key_name: 'reference_fk'
 
             include_examples 'should define a singular association',
               foreign_key:      true,
@@ -446,16 +574,16 @@ module Spec::Support::Examples::Entities
 
             context 'when the entity class defines a primary key' do
               before(:example) do
-                unless entity_class < Stannum::Entities::Attributes
-                  entity_class.include Stannum::Entities::Attributes
-                end
-
                 unless entity_class < Stannum::Entities::PrimaryKey
                   entity_class.include Stannum::Entities::PrimaryKey
                 end
 
                 entity_class.define_primary_key(:uuid, String)
               end
+
+              include_examples 'should define a foreign key attribute',
+                foreign_key_name: 'reference_fk',
+                foreign_key_type: String
 
               include_examples 'should define a singular association',
                 foreign_key:      true,
@@ -465,23 +593,26 @@ module Spec::Support::Examples::Entities
           end
 
           describe 'with options: { foreign_key: a hash }' do
+            include_context 'with an entity class with attributes'
+
             let(:options) { { foreign_key: {} } }
+
+            include_examples 'should define a foreign key attribute'
 
             include_examples 'should define a singular association',
               foreign_key: true
 
             context 'when the entity class defines a primary key' do
               before(:example) do
-                unless entity_class < Stannum::Entities::Attributes
-                  entity_class.include Stannum::Entities::Attributes
-                end
-
                 unless entity_class < Stannum::Entities::PrimaryKey
                   entity_class.include Stannum::Entities::PrimaryKey
                 end
 
                 entity_class.define_primary_key(:uuid, String)
               end
+
+              include_examples 'should define a foreign key attribute',
+                foreign_key_type: String
 
               include_examples 'should define a singular association',
                 foreign_key:      true,
@@ -490,6 +621,9 @@ module Spec::Support::Examples::Entities
 
             describe 'with name: value' do
               let(:options) { { foreign_key: { name: 'reference_fk' } } }
+
+              include_examples 'should define a foreign key attribute',
+                foreign_key_name: 'reference_fk'
 
               include_examples 'should define a singular association',
                 foreign_key:      true,
@@ -508,6 +642,10 @@ module Spec::Support::Examples::Entities
                   entity_class.define_primary_key(:uuid, String)
                 end
 
+                include_examples 'should define a foreign key attribute',
+                  foreign_key_name: 'reference_fk',
+                  foreign_key_type: String
+
                 include_examples 'should define a singular association',
                   foreign_key:      true,
                   foreign_key_name: 'reference_fk',
@@ -518,6 +656,9 @@ module Spec::Support::Examples::Entities
             describe 'with type: value' do
               let(:options) { { foreign_key: { type: String } } }
 
+              include_examples 'should define a foreign key attribute',
+                foreign_key_type: String
+
               include_examples 'should define a singular association',
                 foreign_key:      true,
                 foreign_key_type: String
@@ -527,6 +668,10 @@ module Spec::Support::Examples::Entities
               let(:options) do
                 { foreign_key: { name: 'reference_fk', type: String } }
               end
+
+              include_examples 'should define a foreign key attribute',
+                foreign_key_name: 'reference_fk',
+                foreign_key_type: String
 
               include_examples 'should define a singular association',
                 foreign_key:      true,
@@ -555,6 +700,10 @@ module Spec::Support::Examples::Entities
         wrap_context 'when the entity class defines associations' do
           describe 'with arity: :one' do
             let(:arity) { :one }
+
+            def define_association
+              described_class.association(:one, key, **options)
+            end
 
             include_examples 'should define a singular association'
 
@@ -896,139 +1045,6 @@ module Spec::Support::Examples::Entities
         end
       end
 
-      describe '#:association' do
-        it { expect(entity).not_to respond_to(:parent) }
-
-        wrap_context 'when the entity class defines associations' do
-          it { expect(entity).to respond_to(:parent).with(0).arguments }
-
-          it { expect(entity.parent).to be nil }
-
-          wrap_context 'when the entity has association values' do
-            it { expect(entity.parent).to be == associations['parent'] }
-          end
-        end
-
-        wrap_context 'with an entity subclass' do
-          it { expect(entity).not_to respond_to(:parent) }
-
-          it { expect(entity).not_to respond_to(:bestie) }
-
-          wrap_context 'when the entity class defines associations' do
-            it { expect(entity).to respond_to(:parent).with(0).arguments }
-
-            it { expect(entity.parent).to be nil }
-
-            wrap_context 'when the entity has association values' do
-              it { expect(entity.parent).to be == associations['parent'] }
-            end
-          end
-
-          wrap_context 'when the subclass defines associations' do
-            it { expect(entity).to respond_to(:bestie).with(0).arguments }
-
-            it { expect(entity.bestie).to be nil }
-          end
-
-          context 'when the struct and the subclass define associations' do
-            include_context 'when the entity class defines associations'
-            include_context 'when the subclass defines associations'
-
-            it { expect(entity.parent).to be nil }
-
-            it { expect(entity.bestie).to be nil }
-
-            wrap_context 'when the entity has association values' do
-              let(:associations) do
-                {
-                  'parent' => Spec::Parent.new('original parent'),
-                  'bestie' => Spec::Bestie.new('original bestie')
-                }
-              end
-
-              it { expect(entity.parent).to be == associations['parent'] }
-
-              it { expect(entity.bestie).to be == associations['bestie'] }
-            end
-          end
-        end
-      end
-
-      describe '#:association=' do
-        it { expect(entity).not_to respond_to(:parent=) }
-
-        wrap_context 'when the entity class defines associations' do
-          let(:value) { Spec::Parent.new('new parent') }
-
-          it { expect(entity).to respond_to(:parent=).with(1).argument }
-
-          it 'should update the association' do
-            expect { entity.parent = value }
-              .to change(entity, :parent)
-              .to be == value
-          end
-
-          context 'when the association has an existing value' do
-            include_context 'when the entity has association values'
-
-            describe 'with nil' do
-              it 'should clear the association' do
-                expect { entity.parent = nil }
-                  .to change(entity, :parent)
-                  .to be nil
-              end
-            end
-
-            describe 'with a value' do
-              it 'should update the association' do
-                expect { entity.parent = value }
-                  .to change(entity, :parent)
-                  .to be == value
-              end
-            end
-          end
-        end
-
-        wrap_context 'with an entity subclass' do
-          it { expect(entity).not_to respond_to(:parent=) }
-
-          it { expect(entity).not_to respond_to(:bestie=) }
-
-          wrap_context 'when the entity class defines associations' do
-            let(:value) { Spec::Parent.new('new parent') }
-
-            it { expect(entity).to respond_to(:parent=).with(1).argument }
-
-            it 'should update the association' do
-              expect { entity.parent = value }
-                .to change(entity, :parent)
-                .to be == value
-            end
-          end
-
-          wrap_context 'when the subclass defines associations' do
-            let(:value) { Spec::Bestie.new('new bestie') }
-
-            it { expect(entity).to respond_to(:bestie=).with(1).argument }
-
-            it 'should update the attribute' do
-              expect { entity.bestie = value }
-                .to change(entity, :bestie)
-                .to be == value
-            end
-          end
-
-          context 'when the struct and the subclass define associations' do
-            include_context 'when the entity class defines associations'
-            include_context 'when the subclass defines associations'
-
-            it { expect(entity).to respond_to(:parent=).with(1).argument }
-
-            it { expect(entity).to respond_to(:bestie=).with(1).argument }
-          end
-        end
-      end
-
       describe '#==' do
         wrap_context 'when the entity class defines associations' do
           describe 'with an entity with matching associations' do
@@ -1055,7 +1071,7 @@ module Spec::Support::Examples::Entities
 
             describe 'with an entity with non-matching associations' do
               let(:other_properties) do
-                properties.merge(parent: Spec::Parent.new('other parent'))
+                properties.merge(parent: Spec::Parent.new(name: 'other parent'))
               end
               let(:other) { described_class.new(**other_properties) }
 
@@ -1078,7 +1094,7 @@ module Spec::Support::Examples::Entities
             let(:other_properties) do
               properties.merge(
                 amplitude: '1.21 GW',
-                parent:    Spec::Parent.new('other parent')
+                parent:    Spec::Parent.new(name: 'other parent')
               )
             end
             let(:other) { described_class.new(**other_properties) }
@@ -1102,7 +1118,7 @@ module Spec::Support::Examples::Entities
               let(:other_properties) do
                 properties.merge(
                   amplitude: '1.21 GW',
-                  parent:    Spec::Parent.new('other parent')
+                  parent:    Spec::Parent.new(name: 'other parent')
                 )
               end
               let(:other) { described_class.new(**other_properties) }
@@ -1111,6 +1127,178 @@ module Spec::Support::Examples::Entities
             end
           end
         end
+      end
+
+      describe '#:association' do
+        it { expect(entity).not_to respond_to(:bestie) }
+
+        it { expect(entity).not_to respond_to(:parent) }
+
+        wrap_context 'when the entity class defines associations' do
+          it { expect(entity).not_to respond_to(:bestie) }
+
+          it { expect(entity).to respond_to(:parent).with(0).arguments }
+        end
+
+        wrap_context 'with an entity subclass' do
+          it { expect(entity).not_to respond_to(:bestie) }
+
+          it { expect(entity).not_to respond_to(:parent) }
+
+          wrap_context 'when the entity class defines associations' do
+            it { expect(entity).not_to respond_to(:bestie) }
+
+            it { expect(entity).to respond_to(:parent).with(0).arguments }
+          end
+
+          wrap_context 'when the subclass defines associations' do
+            it { expect(entity).to respond_to(:bestie).with(0).arguments }
+
+            it { expect(entity).not_to respond_to(:parent) }
+          end
+
+          context 'when the struct and the subclass define associations' do
+            include_context 'when the entity class defines associations'
+            include_context 'when the subclass defines associations'
+
+            it { expect(entity).to respond_to(:bestie).with(0).arguments }
+
+            it { expect(entity).to respond_to(:parent).with(0).arguments }
+          end
+        end
+      end
+
+      describe '#:association=' do
+        it { expect(entity).not_to respond_to(:bestie=) }
+
+        it { expect(entity).not_to respond_to(:parent=) }
+
+        wrap_context 'when the entity class defines associations' do
+          it { expect(entity).not_to respond_to(:bestie=) }
+
+          it { expect(entity).to respond_to(:parent=).with(1).argument }
+        end
+
+        wrap_context 'with an entity subclass' do
+          it { expect(entity).not_to respond_to(:bestie=) }
+
+          it { expect(entity).not_to respond_to(:parent=) }
+
+          wrap_context 'when the entity class defines associations' do
+            it { expect(entity).not_to respond_to(:bestie=) }
+
+            it { expect(entity).to respond_to(:parent=).with(1).argument }
+          end
+
+          wrap_context 'when the subclass defines associations' do
+            it { expect(entity).to respond_to(:bestie=).with(1).argument }
+
+            it { expect(entity).not_to respond_to(:parent=) }
+          end
+
+          context 'when the struct and the subclass define associations' do
+            include_context 'when the entity class defines associations'
+            include_context 'when the subclass defines associations'
+
+            it { expect(entity).to respond_to(:parent=).with(1).argument }
+
+            it { expect(entity).to respond_to(:bestie=).with(1).argument }
+          end
+        end
+      end
+
+      describe '#:foreign_key' do
+        it { expect(entity).not_to respond_to(:bestie_id) }
+
+        it { expect(entity).not_to respond_to(:parent_id) }
+
+        # rubocop:disable RSpec/RepeatedExampleGroupBody
+        wrap_context 'when the entity class defines associations' do
+          it { expect(entity).not_to respond_to(:bestie_id) }
+
+          it { expect(entity).not_to respond_to(:parent_id) }
+        end
+
+        wrap_context 'when the entity class defines associations with ' \
+                     'foreign keys' \
+        do
+          it { expect(entity).not_to respond_to(:bestie_id) }
+
+          it { expect(entity).to respond_to(:parent_id).with(0).arguments }
+        end
+
+        wrap_context 'when the subclass defines associations' do
+          it { expect(entity).not_to respond_to(:bestie_id) }
+
+          it { expect(entity).not_to respond_to(:parent_id) }
+        end
+
+        wrap_context 'when the subclass defines associations with foreign ' \
+                     'keys' \
+        do
+          it { expect(entity).to respond_to(:bestie_id).with(0).arguments }
+
+          it { expect(entity).not_to respond_to(:parent_id) }
+        end
+
+        context 'when the struct and the subclass define associations' do
+          include_context 'when the entity class defines associations with ' \
+                          'foreign keys'
+          include_context 'when the subclass defines associations with ' \
+                          'foreign keys'
+
+          it { expect(entity).to respond_to(:bestie_id).with(0).arguments }
+
+          it { expect(entity).to respond_to(:parent_id).with(0).arguments }
+        end
+        # rubocop:enable RSpec/RepeatedExampleGroupBody
+      end
+
+      describe '#:foreign_key=' do
+        it { expect(entity).not_to respond_to(:bestie_id=) }
+
+        it { expect(entity).not_to respond_to(:parent_id=) }
+
+        # rubocop:disable RSpec/RepeatedExampleGroupBody
+        wrap_context 'when the entity class defines associations' do
+          it { expect(entity).not_to respond_to(:bestie_id=) }
+
+          it { expect(entity).not_to respond_to(:parent_id=) }
+        end
+
+        wrap_context 'when the entity class defines associations with ' \
+                     'foreign keys' \
+        do
+          it { expect(entity).not_to respond_to(:bestie_id=) }
+
+          it { expect(entity).to respond_to(:parent_id=).with(1).argument }
+        end
+
+        wrap_context 'when the subclass defines associations' do
+          it { expect(entity).not_to respond_to(:bestie_id=) }
+
+          it { expect(entity).not_to respond_to(:parent_id=) }
+        end
+
+        wrap_context 'when the subclass defines associations with foreign ' \
+                     'keys' \
+        do
+          it { expect(entity).to respond_to(:bestie_id=).with(1).argument }
+
+          it { expect(entity).not_to respond_to(:parent_id=) }
+        end
+
+        context 'when the struct and the subclass define associations' do
+          include_context 'when the entity class defines associations with ' \
+                          'foreign keys'
+          include_context 'when the subclass defines associations with ' \
+                          'foreign keys'
+
+          it { expect(entity).to respond_to(:bestie_id=).with(1).argument }
+
+          it { expect(entity).to respond_to(:parent_id=).with(1).argument }
+        end
+        # rubocop:enable RSpec/RepeatedExampleGroupBody
       end
 
       describe '#[]' do
@@ -1242,7 +1430,7 @@ module Spec::Support::Examples::Entities
           end
 
           describe 'with a valid String' do
-            let(:parent) { Spec::Parent.new('new parent') }
+            let(:parent) { Spec::Parent.new(name: 'new parent') }
 
             it 'should call the writer method' do
               allow(entity).to receive(:parent=)
@@ -1262,7 +1450,7 @@ module Spec::Support::Examples::Entities
           end
 
           describe 'with a valid Symbol' do
-            let(:parent) { Spec::Parent.new('new parent') }
+            let(:parent) { Spec::Parent.new(name: 'new parent') }
 
             it 'should call the writer method' do
               allow(entity).to receive(:parent=)
@@ -1283,7 +1471,7 @@ module Spec::Support::Examples::Entities
 
           wrap_context 'when the entity has association values' do
             describe 'with a valid String' do
-              let(:parent) { Spec::Parent.new('new parent') }
+              let(:parent) { Spec::Parent.new(name: 'new parent') }
 
               it 'should change the property value' do
                 expect { entity['parent'] = parent }
@@ -1293,7 +1481,7 @@ module Spec::Support::Examples::Entities
             end
 
             describe 'with a valid Symbol' do
-              let(:parent) { Spec::Parent.new('new parent') }
+              let(:parent) { Spec::Parent.new(name: 'new parent') }
 
               it 'should change the property value' do
                 expect { entity[:parent] = parent }
@@ -1327,7 +1515,7 @@ module Spec::Support::Examples::Entities
           end
 
           describe 'with a valid association String' do
-            let(:parent) { Spec::Parent.new('new parent') }
+            let(:parent) { Spec::Parent.new(name: 'new parent') }
 
             it 'should call the writer method' do
               allow(entity).to receive(:parent=)
@@ -1347,7 +1535,7 @@ module Spec::Support::Examples::Entities
           end
 
           describe 'with a valid association Symbol' do
-            let(:parent) { Spec::Parent.new('new parent') }
+            let(:parent) { Spec::Parent.new(name: 'new parent') }
 
             it 'should call the writer method' do
               allow(entity).to receive(:parent=)
@@ -1389,7 +1577,7 @@ module Spec::Support::Examples::Entities
             let(:properties) { generic_properties.merge(associations) }
 
             describe 'with a valid association String' do
-              let(:parent) { Spec::Parent.new('new parent') }
+              let(:parent) { Spec::Parent.new(name: 'new parent') }
 
               it 'should change the property value' do
                 expect { entity['parent'] = parent }
@@ -1399,7 +1587,7 @@ module Spec::Support::Examples::Entities
             end
 
             describe 'with a valid association Symbol' do
-              let(:parent) { Spec::Parent.new('new parent') }
+              let(:parent) { Spec::Parent.new(name: 'new parent') }
 
               it 'should change the property value' do
                 expect { entity[:parent] = parent }
@@ -1616,7 +1804,7 @@ module Spec::Support::Examples::Entities
           describe 'with mixed valid and invalid String keys' do
             let(:values) do
               {
-                'parent' => Spec::Parent.new('new parent'),
+                'parent' => Spec::Parent.new(name: 'new parent'),
                 'upc'    => '12345'
               }
             end
@@ -1641,7 +1829,7 @@ module Spec::Support::Examples::Entities
           describe 'with mixed valid and invalid Symbol keys' do
             let(:values) do
               {
-                parent: Spec::Parent.new('new parent'),
+                parent: Spec::Parent.new(name: 'new parent'),
                 upc:    '12345'
               }
             end
@@ -1771,8 +1959,8 @@ module Spec::Support::Examples::Entities
             end
 
             describe 'with valid String keys' do
-              let(:parent)  { Spec::Parent.new('new parent') }
-              let(:sibling) { Spec::Sibling.new('new sibling') }
+              let(:parent)  { Spec::Parent.new(name: 'new parent') }
+              let(:sibling) { Spec::Sibling.new(name: 'new sibling') }
               let(:values) do
                 {
                   'parent'  => parent,
@@ -1819,8 +2007,8 @@ module Spec::Support::Examples::Entities
             end
 
             describe 'with valid Symbol keys' do
-              let(:parent)  { Spec::Parent.new('new parent') }
-              let(:sibling) { Spec::Sibling.new('new sibling') }
+              let(:parent)  { Spec::Parent.new(name: 'new parent') }
+              let(:sibling) { Spec::Sibling.new(name: 'new sibling') }
               let(:values) do
                 {
                   parent:  parent,
@@ -2266,7 +2454,7 @@ module Spec::Support::Examples::Entities
           describe 'with mixed valid and invalid String keys' do
             let(:values) do
               {
-                'parent' => Spec::Parent.new('new parent'),
+                'parent' => Spec::Parent.new(name: 'new parent'),
                 'upc'    => '12345'
               }
             end
@@ -2291,7 +2479,7 @@ module Spec::Support::Examples::Entities
           describe 'with mixed valid and invalid Symbol keys' do
             let(:values) do
               {
-                parent: Spec::Parent.new('new parent'),
+                parent: Spec::Parent.new(name: 'new parent'),
                 upc:    '12345'
               }
             end
@@ -2314,8 +2502,8 @@ module Spec::Support::Examples::Entities
           end
 
           describe 'with valid String keys' do
-            let(:parent)  { Spec::Parent.new('new parent') }
-            let(:sibling) { Spec::Sibling.new('new sibling') }
+            let(:parent)  { Spec::Parent.new(name: 'new parent') }
+            let(:sibling) { Spec::Sibling.new(name: 'new sibling') }
             let(:values) do
               {
                 'parent'  => parent,
@@ -2362,8 +2550,8 @@ module Spec::Support::Examples::Entities
           end
 
           describe 'with valid Symbol keys' do
-            let(:parent)  { Spec::Parent.new('new parent') }
-            let(:sibling) { Spec::Sibling.new('new sibling') }
+            let(:parent)  { Spec::Parent.new(name: 'new parent') }
+            let(:sibling) { Spec::Sibling.new(name: 'new sibling') }
             let(:values) do
               {
                 parent:  parent,
@@ -2429,8 +2617,8 @@ module Spec::Support::Examples::Entities
             end
 
             describe 'with valid String keys' do
-              let(:parent)  { Spec::Parent.new('new parent') }
-              let(:sibling) { Spec::Sibling.new('new sibling') }
+              let(:parent)  { Spec::Parent.new(name: 'new parent') }
+              let(:sibling) { Spec::Sibling.new(name: 'new sibling') }
               let(:values) do
                 {
                   'parent'  => parent,
@@ -2477,8 +2665,8 @@ module Spec::Support::Examples::Entities
             end
 
             describe 'with valid Symbol keys' do
-              let(:parent)  { Spec::Parent.new('new parent') }
-              let(:sibling) { Spec::Sibling.new('new sibling') }
+              let(:parent)  { Spec::Parent.new(name: 'new parent') }
+              let(:sibling) { Spec::Sibling.new(name: 'new sibling') }
               let(:values) do
                 {
                   parent:  parent,
@@ -2549,8 +2737,8 @@ module Spec::Support::Examples::Entities
           end
 
           describe 'with valid String keys' do
-            let(:parent)  { Spec::Parent.new('new parent') }
-            let(:sibling) { Spec::Sibling.new('new sibling') }
+            let(:parent)  { Spec::Parent.new(name: 'new parent') }
+            let(:sibling) { Spec::Sibling.new(name: 'new sibling') }
             let(:values) do
               {
                 'amplitude' => '1 TW',
@@ -2605,8 +2793,8 @@ module Spec::Support::Examples::Entities
           end
 
           describe 'with valid Symbol keys' do
-            let(:parent)  { Spec::Parent.new('new parent') }
-            let(:sibling) { Spec::Sibling.new('new sibling') }
+            let(:parent)  { Spec::Parent.new(name: 'new parent') }
+            let(:sibling) { Spec::Sibling.new(name: 'new sibling') }
             let(:values) do
               {
                 amplitude: '1 TW',
@@ -2685,8 +2873,8 @@ module Spec::Support::Examples::Entities
             end
 
             describe 'with valid String keys' do
-              let(:parent)  { Spec::Parent.new('new parent') }
-              let(:sibling) { Spec::Sibling.new('new sibling') }
+              let(:parent)  { Spec::Parent.new(name: 'new parent') }
+              let(:sibling) { Spec::Sibling.new(name: 'new sibling') }
               let(:values) do
                 {
                   'amplitude' => '1 TW',
@@ -2740,8 +2928,8 @@ module Spec::Support::Examples::Entities
             end
 
             describe 'with valid Symbol keys' do
-              let(:parent)  { Spec::Parent.new('new parent') }
-              let(:sibling) { Spec::Sibling.new('new sibling') }
+              let(:parent)  { Spec::Parent.new(name: 'new parent') }
+              let(:sibling) { Spec::Sibling.new(name: 'new sibling') }
               let(:values) do
                 {
                   amplitude: '1 TW',
@@ -2849,7 +3037,7 @@ module Spec::Support::Examples::Entities
 
             wrap_context 'when the entity has association values' do
               let(:associations) do
-                { 'bestie' => Spec::Bestie.new('original bestie') }
+                { 'bestie' => Spec::Bestie.new(name: 'original bestie') }
               end
 
               it { expect(entity.associations).to be == associations }
@@ -2874,10 +3062,10 @@ module Spec::Support::Examples::Entities
             wrap_context 'when the entity has association values' do
               let(:associations) do
                 {
-                  'parent'  => Spec::Parent.new('original parent'),
-                  'sibling' => Spec::Sibling.new('original sibling'),
-                  'child'   => Spec::Child.new('original child'),
-                  'bestie'  => Spec::Bestie.new('original bestie')
+                  'parent'  => Spec::Parent.new(name: 'original parent'),
+                  'sibling' => Spec::Sibling.new(name: 'original sibling'),
+                  'child'   => Spec::Child.new(name: 'original child'),
+                  'bestie'  => Spec::Bestie.new(name: 'original bestie')
                 }
               end
 
@@ -3070,7 +3258,7 @@ module Spec::Support::Examples::Entities
           describe 'with mixed valid and invalid String keys' do
             let(:values) do
               {
-                'parent'  => Spec::Parent.new('new parent'),
+                'parent'  => Spec::Parent.new(name: 'new parent'),
                 'sibling' => nil,
                 'upc'     => '12345'
               }
@@ -3096,7 +3284,7 @@ module Spec::Support::Examples::Entities
           describe 'with mixed valid and invalid Symbol keys' do
             let(:values) do
               {
-                parent:  Spec::Parent.new('new parent'),
+                parent:  Spec::Parent.new(name: 'new parent'),
                 sibling: nil,
                 upc:     '12345'
               }
@@ -3120,7 +3308,7 @@ module Spec::Support::Examples::Entities
           end
 
           describe 'with valid String keys' do
-            let(:parent) { Spec::Parent.new('new parent') }
+            let(:parent) { Spec::Parent.new(name: 'new parent') }
             let(:values) do
               {
                 'parent'  => parent,
@@ -3163,7 +3351,7 @@ module Spec::Support::Examples::Entities
           end
 
           describe 'with valid Symbol keys' do
-            let(:parent) { Spec::Parent.new('new parent') }
+            let(:parent) { Spec::Parent.new(name: 'new parent') }
             let(:values) do
               {
                 parent:  parent,
@@ -3232,7 +3420,7 @@ module Spec::Support::Examples::Entities
             end
 
             describe 'with valid String keys' do
-              let(:parent) { Spec::Parent.new('new parent') }
+              let(:parent) { Spec::Parent.new(name: 'new parent') }
               let(:values) do
                 {
                   'parent'  => parent,
@@ -3275,7 +3463,7 @@ module Spec::Support::Examples::Entities
             end
 
             describe 'with valid Symbol keys' do
-              let(:parent) { Spec::Parent.new('new parent') }
+              let(:parent) { Spec::Parent.new(name: 'new parent') }
               let(:values) do
                 {
                   parent:  parent,
@@ -3422,7 +3610,7 @@ module Spec::Support::Examples::Entities
           end
 
           describe 'with valid String keys' do
-            let(:parent) { Spec::Parent.new('new parent') }
+            let(:parent) { Spec::Parent.new(name: 'new parent') }
             let(:values) do
               {
                 'parent'  => parent,
@@ -3471,7 +3659,7 @@ module Spec::Support::Examples::Entities
           end
 
           describe 'with valid Symbol keys' do
-            let(:parent) { Spec::Parent.new('new parent') }
+            let(:parent) { Spec::Parent.new(name: 'new parent') }
             let(:values) do
               {
                 parent:  parent,
@@ -3556,7 +3744,7 @@ module Spec::Support::Examples::Entities
             end
 
             describe 'with valid String keys' do
-              let(:parent) { Spec::Parent.new('new parent') }
+              let(:parent) { Spec::Parent.new(name: 'new parent') }
               let(:values) do
                 {
                   'parent'  => parent,
@@ -3592,7 +3780,7 @@ module Spec::Support::Examples::Entities
             end
 
             describe 'with valid Symbol keys' do
-              let(:parent) { Spec::Parent.new('new parent') }
+              let(:parent) { Spec::Parent.new(name: 'new parent') }
               let(:values) do
                 {
                   parent:  parent,
@@ -3787,7 +3975,7 @@ module Spec::Support::Examples::Entities
           describe 'with mixed valid and invalid String keys' do
             let(:values) do
               {
-                'parent'  => Spec::Parent.new('new parent'),
+                'parent'  => Spec::Parent.new(name: 'new parent'),
                 'sibling' => nil,
                 'upc'     => '12345'
               }
@@ -3813,7 +4001,7 @@ module Spec::Support::Examples::Entities
           describe 'with mixed valid and invalid Symbol keys' do
             let(:values) do
               {
-                parent:  Spec::Parent.new('new parent'),
+                parent:  Spec::Parent.new(name: 'new parent'),
                 sibling: nil,
                 upc:     '12345'
               }
@@ -3837,7 +4025,7 @@ module Spec::Support::Examples::Entities
           end
 
           describe 'with valid String keys' do
-            let(:parent) { Spec::Parent.new('new parent') }
+            let(:parent) { Spec::Parent.new(name: 'new parent') }
             let(:values) do
               {
                 'parent'  => parent,
@@ -3880,7 +4068,7 @@ module Spec::Support::Examples::Entities
           end
 
           describe 'with valid Symbol keys' do
-            let(:parent) { Spec::Parent.new('new parent') }
+            let(:parent) { Spec::Parent.new(name: 'new parent') }
             let(:values) do
               {
                 parent:  parent,
@@ -3951,7 +4139,7 @@ module Spec::Support::Examples::Entities
             end
 
             describe 'with valid String keys' do
-              let(:parent) { Spec::Parent.new('new parent') }
+              let(:parent) { Spec::Parent.new(name: 'new parent') }
               let(:values) do
                 {
                   'parent'  => parent,
@@ -3994,7 +4182,7 @@ module Spec::Support::Examples::Entities
             end
 
             describe 'with valid Symbol keys' do
-              let(:parent) { Spec::Parent.new('new parent') }
+              let(:parent) { Spec::Parent.new(name: 'new parent') }
               let(:values) do
                 {
                   parent:  parent,
@@ -4104,7 +4292,7 @@ module Spec::Support::Examples::Entities
             let(:values) do
               {
                 'amplitude' => '1.21 GW',
-                'parent'    => Spec::Parent.new('new parent'),
+                'parent'    => Spec::Parent.new(name: 'new parent'),
                 'sibling'   => nil,
                 'upc'       => '12345'
               }
@@ -4131,7 +4319,7 @@ module Spec::Support::Examples::Entities
             let(:values) do
               {
                 amplitude: '1.21 GW',
-                parent:    Spec::Parent.new('new parent'),
+                parent:    Spec::Parent.new(name: 'new parent'),
                 sibling:   nil,
                 upc:       '12345'
               }
@@ -4155,7 +4343,7 @@ module Spec::Support::Examples::Entities
           end
 
           describe 'with valid String keys' do
-            let(:parent) { Spec::Parent.new('new parent') }
+            let(:parent) { Spec::Parent.new(name: 'new parent') }
             let(:values) do
               {
                 'amplitude' => '1.21 GW',
@@ -4205,7 +4393,7 @@ module Spec::Support::Examples::Entities
           end
 
           describe 'with valid Symbol keys' do
-            let(:parent) { Spec::Parent.new('new parent') }
+            let(:parent) { Spec::Parent.new(name: 'new parent') }
             let(:values) do
               {
                 amplitude: '1.21 GW',
@@ -4294,7 +4482,7 @@ module Spec::Support::Examples::Entities
             end
 
             describe 'with valid String keys' do
-              let(:parent) { Spec::Parent.new('new parent') }
+              let(:parent) { Spec::Parent.new(name: 'new parent') }
               let(:values) do
                 {
                   'amplitude' => '1.21 GW',
@@ -4344,7 +4532,7 @@ module Spec::Support::Examples::Entities
             end
 
             describe 'with valid Symbol keys' do
-              let(:parent) { Spec::Parent.new('new parent') }
+              let(:parent) { Spec::Parent.new(name: 'new parent') }
               let(:values) do
                 {
                   amplitude: '1.21 GW',
@@ -4888,7 +5076,7 @@ module Spec::Support::Examples::Entities
             end
 
             describe 'with a value' do
-              let(:value) { Spec::Parent.new('new parent') }
+              let(:value) { Spec::Parent.new(name: 'new parent') }
 
               it 'should set the association' do
                 expect { entity.write_association('parent', value) }
@@ -4907,7 +5095,7 @@ module Spec::Support::Examples::Entities
             end
 
             describe 'with a value' do
-              let(:value) { Spec::Parent.new('new parent') }
+              let(:value) { Spec::Parent.new(name: 'new parent') }
 
               it 'should set the association' do
                 expect { entity.write_association(:parent, value) }
@@ -4928,7 +5116,7 @@ module Spec::Support::Examples::Entities
               end
 
               describe 'with a value' do
-                let(:value) { Spec::Parent.new('new parent') }
+                let(:value) { Spec::Parent.new(name: 'new parent') }
 
                 it 'should set the association' do
                   expect { entity.write_association('parent', value) }
@@ -4948,7 +5136,7 @@ module Spec::Support::Examples::Entities
               end
 
               describe 'with a value' do
-                let(:value) { Spec::Parent.new('new parent') }
+                let(:value) { Spec::Parent.new(name: 'new parent') }
 
                 it 'should set the association' do
                   expect { entity.write_association(:parent, value) }
@@ -5069,7 +5257,7 @@ module Spec::Support::Examples::Entities
               end
 
               describe 'with a value' do
-                let(:value) { Spec::Parent.new('new parent') }
+                let(:value) { Spec::Parent.new(name: 'new parent') }
 
                 it 'should set the association' do
                   expect do
@@ -5092,7 +5280,7 @@ module Spec::Support::Examples::Entities
               end
 
               describe 'with a value' do
-                let(:value) { Spec::Parent.new('new parent') }
+                let(:value) { Spec::Parent.new(name: 'new parent') }
 
                 it 'should set the association' do
                   expect do
@@ -5117,7 +5305,7 @@ module Spec::Support::Examples::Entities
                 end
 
                 describe 'with a value' do
-                  let(:value) { Spec::Parent.new('new parent') }
+                  let(:value) { Spec::Parent.new(name: 'new parent') }
 
                   it 'should set the association' do
                     expect do
@@ -5141,7 +5329,7 @@ module Spec::Support::Examples::Entities
                 end
 
                 describe 'with a value' do
-                  let(:value) { Spec::Parent.new('new parent') }
+                  let(:value) { Spec::Parent.new(name: 'new parent') }
 
                   it 'should set the association' do
                     expect do
@@ -5269,7 +5457,7 @@ module Spec::Support::Examples::Entities
               end
 
               describe 'with a value' do
-                let(:value) { Spec::Parent.new('new parent') }
+                let(:value) { Spec::Parent.new(name: 'new parent') }
 
                 it 'should set the association' do
                   expect do
@@ -5290,7 +5478,7 @@ module Spec::Support::Examples::Entities
               end
 
               describe 'with a value' do
-                let(:value) { Spec::Parent.new('new parent') }
+                let(:value) { Spec::Parent.new(name: 'new parent') }
 
                 it 'should set the association' do
                   expect do
@@ -5315,7 +5503,7 @@ module Spec::Support::Examples::Entities
                 end
 
                 describe 'with a value' do
-                  let(:value) { Spec::Parent.new('new parent') }
+                  let(:value) { Spec::Parent.new(name: 'new parent') }
 
                   it 'should set the association' do
                     expect do
@@ -5339,7 +5527,7 @@ module Spec::Support::Examples::Entities
                 end
 
                 describe 'with a value' do
-                  let(:value) { Spec::Parent.new('new parent') }
+                  let(:value) { Spec::Parent.new(name: 'new parent') }
 
                   it 'should set the association' do
                     expect do
