@@ -26,6 +26,14 @@ module Stannum::Associations
 
     # (see Stannum::Association#add_value)
     def add_value(entity, value)
+      if foreign_key?
+        entity.write_attribute(
+          foreign_key_name,
+          value&.primary_key,
+          safe: false
+        )
+      end
+
       entity.write_association(name, value, safe: false)
     end
 
@@ -64,18 +72,26 @@ module Stannum::Associations
 
     # (see Stannum::Association#remove_value)
     def remove_value(entity, value)
-      previous_value = entity.read_association(name, safe: false)
+      return unless matching_value?(entity, value)
 
-      if previous_value == value
-        entity.write_association(name, nil, safe: false)
-      elsif foreign_key? && previous_value&.primary_key == value # rubocop:disable Lint/DuplicateBranch
-        entity.write_association(name, nil, safe: false)
-      end
+      entity.write_attribute(foreign_key_name, nil, safe: false) if foreign_key?
+
+      entity.write_association(name, nil, safe: false)
     end
 
     # (see Stannum::Association#value)
     def value(entity)
       entity.read_association(name, safe: false)
+    end
+
+    private
+
+    def matching_value?(entity, value)
+      previous_value = entity.read_association(name, safe: false)
+
+      return true if value == previous_value
+
+      foreign_key? && (value == previous_value&.primary_key)
     end
   end
 end

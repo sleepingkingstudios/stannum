@@ -117,7 +117,7 @@ RSpec.describe Stannum::Associations::One do
 
   describe '#dungeon=' do
     describe 'with a value' do
-      let(:value) { { dungeon: Spec::Dungeon.new(name: 'Dread Necropolis') } }
+      let(:value) { Spec::Dungeon.new(name: 'Dread Necropolis') }
 
       it 'should set the association' do
         expect { entity.dungeon = value }
@@ -136,7 +136,7 @@ RSpec.describe Stannum::Associations::One do
       end
 
       describe 'with a value' do
-        let(:value) { { dungeon: Spec::Dungeon.new(name: 'Dread Necropolis') } }
+        let(:value) { Spec::Dungeon.new(name: 'Dread Necropolis') }
 
         it 'should set the association' do
           expect { entity.dungeon = value }
