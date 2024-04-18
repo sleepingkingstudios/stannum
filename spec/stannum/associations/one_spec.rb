@@ -246,6 +246,20 @@ RSpec.describe Stannum::Associations::One do
   describe '#remove_value' do
     include_context 'with an entity'
 
+    describe 'with another foreign key' do
+      let(:options) do
+        super().merge(
+          foreign_key_name: 'reference_id',
+          foreign_key_type: Integer
+        )
+      end
+
+      it 'should not change the association value' do
+        expect { association.remove_value(entity, 65_535) }
+          .not_to change(entity, name)
+      end
+    end
+
     describe 'with another value' do
       let(:value) { Spec::Reference.new(name: 'Other Reference') }
 
@@ -256,11 +270,39 @@ RSpec.describe Stannum::Associations::One do
     end
 
     wrap_context 'when the association has a value' do
+      describe 'with another foreign key' do
+        let(:options) do
+          super().merge(
+            foreign_key_name: 'reference_id',
+            foreign_key_type: Integer
+          )
+        end
+
+        it 'should not change the association value' do
+          expect { association.remove_value(entity, 65_535) }
+            .not_to change(entity, name)
+        end
+      end
+
       describe 'with another value' do
         let(:value) { Spec::Reference.new(name: 'Other Reference') }
 
-        it 'should clear the association value' do
-          expect { association.remove_value(entity, previous_value) }
+        it 'should not change the association value' do
+          expect { association.remove_value(entity, value) }
+            .not_to change(entity, name)
+        end
+      end
+
+      describe 'with the association foreign key' do
+        let(:options) do
+          super().merge(
+            foreign_key_name: 'reference_id',
+            foreign_key_type: Integer
+          )
+        end
+
+        it 'should clear the association foreign key' do
+          expect { association.remove_value(entity, previous_value.id) }
             .to change(entity, name)
             .to be nil
         end

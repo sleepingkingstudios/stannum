@@ -36,13 +36,24 @@ module Stannum
         end
       end
 
-      def define_writer(attribute)
+      def define_writer(attribute) # rubocop:disable Metrics/AbcSize, Metrics/MethodLength
+        assoc_name = attribute.association_name
+
         schema.define_method(attribute.writer_name) do |value|
-          write_attribute(
-            attribute.name,
-            value.nil? ? attribute.default_value_for(self) : value,
-            safe: false
-          )
+          previous_value = read_attribute(attribute.name, safe: false)
+
+          return if previous_value == value
+
+          if attribute.foreign_key? && !previous_value.nil?
+            self
+              .class
+              .associations[assoc_name]
+              .remove_value(self, previous_value)
+          end
+
+          value = attribute.default_value_for(self) if value.nil?
+
+          write_attribute(attribute.name, value, safe: false)
         end
       end
     end
@@ -78,6 +89,12 @@ module Stannum
 
     # @return [String] the name of the attribute type Class or Module.
     attr_reader :type
+
+    # @return [String] the name of the association if the attribute is a foreign
+    #   key; otherwise false.
+    def association_name
+      @options[:association_name]
+    end
 
     # @return [Object] the default value for the attribute, if any.
     def default

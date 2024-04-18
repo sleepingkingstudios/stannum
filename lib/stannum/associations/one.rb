@@ -63,8 +63,14 @@ module Stannum::Associations
     end
 
     # (see Stannum::Association#remove_value)
-    def remove_value(entity, value) # rubocop:disable Lint/UnusedMethodArgument
-      entity.write_association(name, nil, safe: false)
+    def remove_value(entity, value)
+      previous_value = entity.read_association(name, safe: false)
+
+      if previous_value == value
+        entity.write_association(name, nil, safe: false)
+      elsif foreign_key? && previous_value&.primary_key == value # rubocop:disable Lint/DuplicateBranch
+        entity.write_association(name, nil, safe: false)
+      end
     end
 
     # (see Stannum::Association#value)

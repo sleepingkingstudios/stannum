@@ -1,6 +1,7 @@
 # frozen_string_literal: true
 
 require 'stannum/attribute'
+require 'stannum/entity'
 
 require 'support/examples/optional_examples'
 
@@ -49,9 +50,7 @@ RSpec.describe Stannum::Attribute do
       klass.include Stannum::Entities::Properties
       klass.include Stannum::Entities::Attributes
 
-      klass.define_method(:set_properties) do |values, **|
-        @attributes = values
-      end
+      klass.attribute(name, type, **options)
     end
 
     describe '.new' do
@@ -64,8 +63,8 @@ RSpec.describe Stannum::Attribute do
       let(:attribute) do
         described_class.new(name: name, type: type, options: options)
       end
-      let(:values) { {} }
-      let(:entity) { entity_class.new(**values) }
+      let(:properties) { {} }
+      let(:entity)     { entity_class.new(**properties) }
 
       it { expect(builder).to respond_to(:call).with(1).argument }
 
@@ -77,12 +76,13 @@ RSpec.describe Stannum::Attribute do
         it { expect(entity.send(attribute.name)).to be nil }
 
         context 'when the attribute has a value' do
-          let(:values) do
+          let(:properties) do
             { 'description' => 'No one is quite sure what this does.' }
           end
 
           it 'should get the attribute value' do
-            expect(entity.send(attribute.name)).to be == values[attribute.name]
+            expect(entity.send(attribute.name))
+              .to be == properties[attribute.name]
           end
         end
       end
@@ -102,7 +102,7 @@ RSpec.describe Stannum::Attribute do
 
         # rubocop:disable RSpec/NestedGroups
         context 'when the attribute has a value' do
-          let(:values) do
+          let(:properties) do
             { 'description' => 'No one is quite sure what this does.' }
           end
 
@@ -130,7 +130,7 @@ RSpec.describe Stannum::Attribute do
           let(:options) { super().merge(default: default) }
 
           context 'when the attribute has a value' do
-            let(:values) do
+            let(:properties) do
               { 'quantity' => 1_000 }
             end
 
@@ -159,7 +159,7 @@ RSpec.describe Stannum::Attribute do
           let(:options) { super().merge(default: default) }
 
           context 'when the attribute has a value' do
-            let(:values) do
+            let(:properties) do
               { 'quantity' => 1_000 }
             end
 
@@ -172,6 +172,103 @@ RSpec.describe Stannum::Attribute do
             end
 
             describe 'with a value' do
+              it 'should set the attribute value' do
+                expect { entity.send("#{attribute.name}=", value) }
+                  .to change(entity, attribute.name)
+                  .to be == value
+              end
+            end
+          end
+        end
+
+        context 'when the attribute is a foreign key' do
+          let(:mock_association) do
+            instance_double(Stannum::Association, remove_value: nil)
+          end
+          let(:name) { 'reference_id' }
+          let(:type) { Integer }
+          let(:options) do
+            super().merge(
+              association_name: 'reference',
+              foreign_key:      true
+            )
+          end
+
+          before(:example) do
+            Spec::Entity.include Stannum::Entities::Associations
+
+            # Foreign key attribute is defined separately.
+            allow(Spec::Entity.associations)
+              .to receive(:[])
+              .with('reference')
+              .and_return(mock_association)
+          end
+
+          example_class 'Spec::Reference' do |klass|
+            klass.include Stannum::Entity
+
+            klass.define_primary_key :id, Integer
+          end
+
+          describe 'with nil' do
+            it 'should not clear the association' do
+              entity.send("#{attribute.name}=", value)
+
+              expect(mock_association).not_to have_received(:remove_value)
+            end
+
+            it 'should not change the attribute value' do
+              expect { entity.send("#{attribute.name}=", nil) }
+                .not_to change(entity, attribute.name)
+            end
+          end
+
+          describe 'with a value' do
+            let(:value) { 1 }
+
+            it 'should not clear the association' do
+              entity.send("#{attribute.name}=", value)
+
+              expect(mock_association).not_to have_received(:remove_value)
+            end
+
+            it 'should set the attribute value' do
+              expect { entity.send("#{attribute.name}=", value) }
+                .to change(entity, attribute.name)
+                .to be == value
+            end
+          end
+
+          context 'when the attribute has a value' do
+            let(:properties) do
+              { 'reference_id' => 0 }
+            end
+
+            describe 'with nil' do
+              it 'should clear the association' do
+                entity.send("#{attribute.name}=", value)
+
+                expect(mock_association)
+                  .to have_received(:remove_value)
+                  .with(entity, properties['reference_id'])
+              end
+
+              it 'should clear the attribute value' do
+                expect { entity.send("#{attribute.name}=", nil) }
+                  .to change(entity, attribute.name)
+                  .to be nil
+              end
+            end
+
+            describe 'with a value' do
+              it 'should clear the association' do
+                entity.send("#{attribute.name}=", value)
+
+                expect(mock_association)
+                  .to have_received(:remove_value)
+                  .with(entity, properties['reference_id'])
+              end
+
               it 'should set the attribute value' do
                 expect { entity.send("#{attribute.name}=", value) }
                   .to change(entity, attribute.name)
@@ -286,6 +383,20 @@ RSpec.describe Stannum::Attribute do
   include_examples 'should implement the Optional interface'
 
   include_examples 'should implement the Optional methods'
+
+  describe '#association_name' do
+    include_examples 'should define reader', :association_name, nil
+
+    context 'with association_name: value' do
+      let(:name)             { 'reference_id' }
+      let(:association_name) { 'reference' }
+      let(:options) do
+        super().merge('association_name' => association_name)
+      end
+
+      it { expect(attribute.association_name).to be == association_name }
+    end
+  end
 
   describe '#default' do
     it { expect(attribute).to respond_to(:default).with(0).arguments }
