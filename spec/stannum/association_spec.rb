@@ -45,14 +45,15 @@ RSpec.describe Stannum::Association do
 
   include_examples 'should implement the Association methods'
 
-  describe '#clear_association' do
+  describe '#add_value' do
     let(:entity) { Object.new.freeze }
+    let(:value)  { Object.new.freeze }
     let(:error_message) do
       "#{described_class} is an abstract class - use an association subclass"
     end
 
     it 'should raise an exception' do
-      expect { association.clear_association(entity) }.to raise_error(
+      expect { association.add_value(entity, value) }.to raise_error(
         described_class::AbstractAssociationError,
         error_message
       )
@@ -67,28 +68,29 @@ RSpec.describe Stannum::Association do
     it { expect(association.one?).to be false }
   end
 
-  describe '#read_association' do
+  describe '#remove_value' do
     let(:entity) { Object.new.freeze }
+    let(:value)  { Object.new.freeze }
     let(:error_message) do
       "#{described_class} is an abstract class - use an association subclass"
     end
 
     it 'should raise an exception' do
-      expect { association.read_association(entity) }.to raise_error(
+      expect { association.remove_value(entity, value) }.to raise_error(
         described_class::AbstractAssociationError,
         error_message
       )
     end
   end
 
-  describe '#write_association' do
+  describe '#value' do
     let(:entity) { Object.new.freeze }
     let(:error_message) do
       "#{described_class} is an abstract class - use an association subclass"
     end
 
     it 'should raise an exception' do
-      expect { association.write_association(entity, nil) }.to raise_error(
+      expect { association.value(entity) }.to raise_error(
         described_class::AbstractAssociationError,
         error_message
       )

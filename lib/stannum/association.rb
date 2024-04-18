@@ -69,10 +69,11 @@ module Stannum
     # @return [String] the name of the association type Class or Module.
     attr_reader :type
 
-    # Clears the value of the association for the entity.
+    # Adds the given value to the association for the entity.
     #
     # @param entity [Stannum::Entity] the entity to update.
-    def clear_association(entity) # rubocop:disable Lint/UnusedMethodArgument
+    # @param value [Object] the new value for the association.
+    def add_value(entity, value) # rubocop:disable Lint/UnusedMethodArgument
       raise AbstractAssociationError,
         "#{self.class} is an abstract class - use an association subclass"
     end
@@ -89,17 +90,18 @@ module Stannum
       false
     end
 
-    # @param entity [Stannum::Entity] the entity to update.
-    #
-    # @return [Object] the value of the association.
-    def read_association(entity) # rubocop:disable Lint/UnusedMethodArgument
-      raise AbstractAssociationError,
-        "#{self.class} is an abstract class - use an association subclass"
-    end
-
     # @return [Symbol] the name of the reader method for the association.
     def reader_name
       @reader_name ||= name.intern
+    end
+
+    # Removes the given value from the association for the entity.
+    #
+    # @param entity [Stannum::Entity] the entity to update.
+    # @param value [Stannum::Entity] the association value to remove.
+    def remove_value(entity, value) # rubocop:disable Lint/UnusedMethodArgument
+      raise AbstractAssociationError,
+        "#{self.class} is an abstract class - use an association subclass"
     end
 
     # @return [Module] the type of the association.
@@ -115,9 +117,12 @@ module Stannum
       @resolved_type
     end
 
+    # Retrieves the value of the association for the entity.
+    #
     # @param entity [Stannum::Entity] the entity to update.
-    # @param value [Object] the new value for the association.
-    def write_association(entity, value) # rubocop:disable Lint/UnusedMethodArgument
+    #
+    # @return [Object] the value of the association.
+    def value(entity) # rubocop:disable Lint/UnusedMethodArgument
       raise AbstractAssociationError,
         "#{self.class} is an abstract class - use an association subclass"
     end

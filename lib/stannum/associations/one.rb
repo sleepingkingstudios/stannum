@@ -11,20 +11,22 @@ module Stannum::Associations
 
       def define_reader(association)
         schema.define_method(association.reader_name) do
-          association.read_association(self)
+          association.value(self)
         end
       end
 
       def define_writer(association)
         schema.define_method(association.writer_name) do |value|
-          association.write_association(self, value)
+          association.remove_value(self, nil)
+
+          association.add_value(self, value)
         end
       end
     end
 
-    # (see Stannum::Association#clear_association)
-    def clear_association(entity)
-      entity.write_association(name, nil, safe: false)
+    # (see Stannum::Association#add_value)
+    def add_value(entity, value)
+      entity.write_association(name, value, safe: false)
     end
 
     # @return [Boolean] true if the association has a foreign key; otherwise
@@ -60,14 +62,14 @@ module Stannum::Associations
       true
     end
 
-    # (see Stannum::Association#read_association)
-    def read_association(entity)
-      entity.read_association(name, safe: false)
+    # (see Stannum::Association#remove_value)
+    def remove_value(entity, value) # rubocop:disable Lint/UnusedMethodArgument
+      entity.write_association(name, nil, safe: false)
     end
 
-    # (see Stannum::Association#read_association)
-    def write_association(entity, value)
-      entity.write_association(name, value, safe: false)
+    # (see Stannum::Association#value)
+    def value(entity)
+      entity.read_association(name, safe: false)
     end
   end
 end

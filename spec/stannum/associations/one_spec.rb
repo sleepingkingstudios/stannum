@@ -133,19 +133,43 @@ RSpec.describe Stannum::Associations::One do
 
   include_examples 'should implement the Association methods'
 
-  describe '#clear_association' do
+  describe '#add_value' do
     include_context 'with an entity'
 
-    it 'should not change the association value' do
-      expect { association.clear_association(entity) }
-        .not_to change(entity, name)
+    describe 'with nil' do
+      it 'should not change the association value' do
+        expect { association.add_value(entity, nil) }
+          .not_to change(entity, name)
+      end
+    end
+
+    describe 'with a value' do
+      let(:new_value) { Spec::Reference.new(id: 1, name: 'New Reference') }
+
+      it 'should change the association value' do
+        expect { association.add_value(entity, new_value) }
+          .to change(entity, name)
+          .to be new_value
+      end
     end
 
     wrap_context 'when the association has a value' do
-      it 'should clear the association value' do
-        expect { association.clear_association(entity) }
-          .to change(entity, name)
-          .to be nil
+      describe 'with nil' do
+        it 'should clear the association value' do
+          expect { association.add_value(entity, nil) }
+            .to change(entity, name)
+            .to be nil
+        end
+      end
+
+      describe 'with a value' do
+        let(:new_value) { Spec::Reference.new(id: 1, name: 'New Reference') }
+
+        it 'should change the association value' do
+          expect { association.add_value(entity, new_value) }
+            .to change(entity, name)
+            .to be new_value
+        end
       end
     end
   end
@@ -219,50 +243,46 @@ RSpec.describe Stannum::Associations::One do
     it { expect(association.one?).to be true }
   end
 
-  describe '#read_association' do
+  describe '#remove_value' do
     include_context 'with an entity'
 
-    it { expect(association.read_association(entity)).to be nil }
+    describe 'with another value' do
+      let(:value) { Spec::Reference.new(name: 'Other Reference') }
 
-    wrap_context 'when the association has a value' do
-      it { expect(association.read_association(entity)).to be previous_value }
-    end
-  end
-
-  describe '#write_association' do
-    include_context 'with an entity'
-
-    describe 'with nil' do
       it 'should not change the association value' do
-        expect { association.write_association(entity, nil) }
+        expect { association.remove_value(entity, value) }
           .not_to change(entity, name)
       end
+    end
 
-      wrap_context 'when the association has a value' do
+    wrap_context 'when the association has a value' do
+      describe 'with another value' do
+        let(:value) { Spec::Reference.new(name: 'Other Reference') }
+
         it 'should clear the association value' do
-          expect { association.write_association(entity, nil) }
+          expect { association.remove_value(entity, previous_value) }
+            .to change(entity, name)
+            .to be nil
+        end
+      end
+
+      describe 'with the association value' do
+        it 'should clear the association value' do
+          expect { association.remove_value(entity, previous_value) }
             .to change(entity, name)
             .to be nil
         end
       end
     end
+  end
 
-    describe 'with a value' do
-      let(:new_value) { Spec::Reference.new(id: 1, name: 'New Reference') }
+  describe '#value' do
+    include_context 'with an entity'
 
-      it 'should change the association value' do
-        expect { association.write_association(entity, new_value) }
-          .to change(entity, name)
-          .to be new_value
-      end
+    it { expect(association.value(entity)).to be nil }
 
-      wrap_context 'when the association has a value' do
-        it 'should change the association value' do
-          expect { association.write_association(entity, new_value) }
-            .to change(entity, name)
-            .to be new_value
-        end
-      end
+    wrap_context 'when the association has a value' do
+      it { expect(association.value(entity)).to be previous_value }
     end
   end
 end

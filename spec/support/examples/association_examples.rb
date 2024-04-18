@@ -112,11 +112,11 @@ module Spec::Support::Examples
         end
       end
 
-      describe '#clear_association' do
+      describe '#add_value' do
         it 'should define the method' do
           expect(association)
-            .to respond_to(:clear_association)
-            .with(1).argument
+            .to respond_to(:add_value)
+            .with(2).arguments
         end
       end
 
@@ -158,11 +158,11 @@ module Spec::Support::Examples
         end
       end
 
-      describe '#read_association' do
+      describe '#remove_value' do
         it 'should define the method' do
           expect(association)
-            .to respond_to(:read_association)
-            .with(1).argument
+            .to respond_to(:remove_value)
+            .with(2).arguments
         end
       end
 
@@ -217,11 +217,11 @@ module Spec::Support::Examples
         end
       end
 
-      describe '#write_association' do
+      describe '#value' do
         it 'should define the method' do
           expect(association)
-            .to respond_to(:write_association)
-            .with(2).arguments
+            .to respond_to(:value)
+            .with(1).argument
         end
       end
 
