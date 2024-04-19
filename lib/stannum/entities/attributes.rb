@@ -110,6 +110,8 @@ module Stannum::Entities
     def initialize(**properties)
       @attributes = {}
 
+      self.class.attributes.each_key { |key| @attributes[key] = nil }
+
       super
     end
 

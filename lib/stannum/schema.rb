@@ -3,7 +3,7 @@
 require 'forwardable'
 
 module Stannum
-  # Abstract class for defining property methods for a struct.
+  # Abstract class for defining property methods for an entity.
   #
   # @see Stannum::Attribute.
   class Schema < Module
@@ -60,12 +60,10 @@ module Stannum
     # the Struct.property class method.
     #
     # @see Stannum::Struct
-    def define(name:, options:, type:, definition_class: nil) # rubocop:disable Metrics/MethodLength
-      property = (definition_class || property_class).new(
-        name:    name,
-        options: options,
-        type:    type
-      )
+    def define(name:, options:, type:, definition_class: nil)
+      definition_class ||= property_class
+
+      property = definition_class.new(name: name, options: options, type: type)
 
       if @properties.key?(property.name)
         message =
@@ -75,7 +73,7 @@ module Stannum
         raise ArgumentError, message
       end
 
-      (definition_class || property_class)::Builder.new(self).call(property) # rubocop:disable Style/RedundantParentheses
+      definition_class::Builder.new(self).call(property)
 
       @properties[property.name] = property
     end

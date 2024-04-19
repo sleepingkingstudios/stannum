@@ -112,6 +112,14 @@ module Spec::Support::Examples
         end
       end
 
+      describe '#add_value' do
+        it 'should define the method' do
+          expect(association)
+            .to respond_to(:add_value)
+            .with(2).arguments
+        end
+      end
+
       describe '#many?' do
         include_examples 'should define predicate', :many?
       end
@@ -147,6 +155,14 @@ module Spec::Support::Examples
           let(:options) { { key: 'value' } }
 
           it { expect(association.options).to be == expected }
+        end
+      end
+
+      describe '#remove_value' do
+        it 'should define the method' do
+          expect(association)
+            .to respond_to(:remove_value)
+            .with(2).arguments
         end
       end
 
@@ -201,6 +217,14 @@ module Spec::Support::Examples
         end
       end
 
+      describe '#value' do
+        it 'should define the method' do
+          expect(association)
+            .to respond_to(:value)
+            .with(1).argument
+        end
+      end
+
       describe '#writer_name' do
         include_examples 'should define reader',
           :writer_name,
@@ -223,6 +247,12 @@ module Spec::Support::Examples
 
       describe '#call' do
         it { expect(builder).to respond_to(:call).with(1).argument }
+      end
+
+      describe '#schema' do
+        include_examples 'should define reader',
+          :schema,
+          -> { entity_class::Associations }
       end
     end
   end

@@ -20,9 +20,15 @@ RSpec.describe Stannum::Association do
 
   example_class 'Spec::Reference'
 
+  describe '::AbstractAssociationError' do
+    include_examples 'should define constant',
+      :AbstractAssociationError,
+      -> { be_a(Class).and(be < StandardError) }
+  end
+
   describe '::Builder' do
     subject(:builder) do
-      described_class::Builder.new(entity_class)
+      described_class::Builder.new(entity_class::Associations)
     end
 
     let(:entity_class) { Spec::Entity }
@@ -39,11 +45,55 @@ RSpec.describe Stannum::Association do
 
   include_examples 'should implement the Association methods'
 
+  describe '#add_value' do
+    let(:entity) { Object.new.freeze }
+    let(:value)  { Object.new.freeze }
+    let(:error_message) do
+      "#{described_class} is an abstract class - use an association subclass"
+    end
+
+    it 'should raise an exception' do
+      expect { association.add_value(entity, value) }.to raise_error(
+        described_class::AbstractAssociationError,
+        error_message
+      )
+    end
+  end
+
   describe '#many?' do
     it { expect(association.many?).to be false }
   end
 
   describe '#one?' do
     it { expect(association.one?).to be false }
+  end
+
+  describe '#remove_value' do
+    let(:entity) { Object.new.freeze }
+    let(:value)  { Object.new.freeze }
+    let(:error_message) do
+      "#{described_class} is an abstract class - use an association subclass"
+    end
+
+    it 'should raise an exception' do
+      expect { association.remove_value(entity, value) }.to raise_error(
+        described_class::AbstractAssociationError,
+        error_message
+      )
+    end
+  end
+
+  describe '#value' do
+    let(:entity) { Object.new.freeze }
+    let(:error_message) do
+      "#{described_class} is an abstract class - use an association subclass"
+    end
+
+    it 'should raise an exception' do
+      expect { association.value(entity) }.to raise_error(
+        described_class::AbstractAssociationError,
+        error_message
+      )
+    end
   end
 end
