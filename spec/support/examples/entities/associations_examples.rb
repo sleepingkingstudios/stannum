@@ -269,12 +269,26 @@ module Spec::Support::Examples::Entities
               foreign_key_type: type
             }
           end
+          let(:inverse_options) do
+            next { inverse: false } if example_options[:inverse] == false
+
+            hsh = {
+              entity_class_name: entity_class.name,
+              inverse:           true
+            }
+
+            next hsh unless example_options[:inverse_name]
+
+            hsh.merge(inverse_name: example_options[:inverse_name])
+          end
           let(:expected_options) do
             options
               .dup
               .tap { |hsh| hsh.delete(:class_name) }
               .tap { |hsh| hsh.delete(:foreign_key) }
+              .tap { |hsh| hsh.delete(:inverse) }
               .merge(foreign_key_options)
+              .merge(inverse_options)
           end
 
           it 'should add the association to ::Associations' do
@@ -484,6 +498,12 @@ module Spec::Support::Examples::Entities
             include_examples 'should define a singular association'
           end
 
+          describe 'with options: { foreign_key: false }' do
+            let(:options) { { foreign_key: false } }
+
+            include_examples 'should define a singular association'
+          end
+
           describe 'with options: { foreign_key: true }' do
             include_context 'with an entity class with attributes'
 
@@ -631,10 +651,6 @@ module Spec::Support::Examples::Entities
 
               context 'when the entity class defines a primary key' do
                 before(:example) do
-                  unless entity_class < Stannum::Entities::Attributes
-                    entity_class.include Stannum::Entities::Attributes
-                  end
-
                   unless entity_class < Stannum::Entities::PrimaryKey
                     entity_class.include Stannum::Entities::PrimaryKey
                   end
@@ -678,6 +694,33 @@ module Spec::Support::Examples::Entities
                 foreign_key_name: 'reference_fk',
                 foreign_key_type: String
             end
+          end
+
+          describe 'with options: { inverse: false }' do
+            let(:options) { super().merge(inverse: false) }
+
+            include_examples 'should define a singular association',
+              inverse: false
+          end
+
+          describe 'with options: { inverse: true }' do
+            let(:options) { super().merge(inverse: true) }
+
+            include_examples 'should define a singular association'
+          end
+
+          describe 'with options: { inverse: a String }' do
+            let(:options) { super().merge(inverse: 'widget') }
+
+            include_examples 'should define a singular association',
+              inverse_name: 'widget'
+          end
+
+          describe 'with options: { inverse: a Symbol }' do
+            let(:options) { super().merge(inverse: :widget) }
+
+            include_examples 'should define a singular association',
+              inverse_name: 'widget'
           end
 
           describe 'with options: custom value' do

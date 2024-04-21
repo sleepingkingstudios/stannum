@@ -120,6 +120,89 @@ module Spec::Support::Examples
         end
       end
 
+      describe '#entity_class_name' do
+        include_examples 'should define reader', :entity_class_name, nil
+
+        context 'with entity_class_name: value' do
+          let(:options) { super().merge(entity_class_name: 'Spec::Entity') }
+
+          it { expect(association.entity_class_name).to be == 'Spec::Entity' }
+        end
+      end
+
+      describe '#inverse?' do
+        include_examples 'should define predicate', :inverse?, false
+
+        context 'with inverse: false' do
+          let(:options) { super().merge(inverse: false) }
+
+          it { expect(association.inverse?).to be false }
+        end
+
+        context 'with inverse: true' do
+          let(:options) { super().merge(inverse: true) }
+
+          it { expect(association.inverse?).to be true }
+        end
+      end
+
+      describe '#inverse_name' do
+        include_examples 'should define reader', :inverse_name, nil
+
+        context 'when initialized with inverse: true' do
+          let(:options) do
+            super().merge(
+              entity_class_name: 'Spec::Entity',
+              inverse:           true
+            )
+          end
+          let(:error_message) do
+            'unable to resolve inverse association "entity" or "entities"'
+          end
+
+          it 'should raise an exception' do
+            expect { association.inverse_name }.to raise_error(
+              Stannum::Association::InverseAssociationError,
+              error_message
+            )
+          end
+
+          context 'when initialized with inverse_name: value' do
+            let(:options) { super().merge(inverse_name: 'widget') }
+
+            it { expect(association.inverse_name).to be == 'widget' }
+          end
+
+          context 'when the association class defines a plural inverse' do
+            before(:example) do
+              Spec::Reference.define_association :one, :entities
+            end
+
+            it { expect(association.inverse_name).to be == 'entities' }
+
+            context 'when initialized with inverse_name: value' do
+              let(:options) { super().merge(inverse_name: 'widgets') }
+
+              it { expect(association.inverse_name).to be == 'widgets' }
+            end
+          end
+
+          context 'when the association class defines a singular inverse' do
+            before(:example) do
+              Spec::Reference.define_association :one, :entity
+            end
+
+            it { expect(association.inverse_name).to be == 'entity' }
+
+            context 'when initialized with inverse_name: value' do
+              let(:options) { super().merge(inverse_name: 'widget') }
+
+              it { expect(association.inverse_name).to be == 'widget' }
+            end
+          end
+        end
+      end
+
       describe '#many?' do
         include_examples 'should define predicate', :many?
       end
@@ -175,6 +258,85 @@ module Spec::Support::Examples
           let(:name) { :reference }
 
           it { expect(association.reader_name).to be == name }
+        end
+      end
+
+      describe '#resolved_inverse' do
+        include_examples 'should define reader', :resolved_inverse, nil
+
+        context 'when initialized with inverse: true' do
+          let(:options) do
+            super().merge(
+              entity_class_name: 'Spec::Entity',
+              inverse:           true
+            )
+          end
+          let(:error_message) do
+            'unable to resolve inverse association "entity" or "entities"'
+          end
+
+          it 'should raise an exception' do
+            expect { association.resolved_inverse }.to raise_error(
+              Stannum::Association::InverseAssociationError,
+              error_message
+            )
+          end
+
+          context 'when initialized with inverse_name: value' do
+            let(:options) { super().merge(inverse_name: 'widget') }
+            let(:error_message) do
+              'unable to resolve inverse association "widget"'
+            end
+
+            it 'should raise an exception' do
+              expect { association.resolved_inverse }.to raise_error(
+                Stannum::Association::InverseAssociationError,
+                error_message
+              )
+            end
+          end
+
+          context 'when the association class defines a plural inverse' do
+            let(:expected) { Spec::Reference.associations['entities'] }
+
+            before(:example) do
+              Spec::Reference.define_association :one, :entities
+            end
+
+            it { expect(association.resolved_inverse).to be == expected }
+
+            context 'when initialized with inverse_name: value' do
+              let(:options)  { super().merge(inverse_name: 'widgets') }
+              let(:expected) { Spec::Reference.associations['widgets'] }
+
+              before(:example) do
+                Spec::Reference.define_association :one, :widgets
+              end
+
+              it { expect(association.resolved_inverse).to be == expected }
+            end
+          end
+
+          context 'when the association class defines a singular inverse' do
+            let(:expected) { Spec::Reference.associations['entity'] }
+
+            before(:example) do
+              Spec::Reference.define_association :one, :entity
+            end
+
+            it { expect(association.resolved_inverse).to be == expected }
+
+            context 'when initialized with inverse_name: value' do
+              let(:options)  { super().merge(inverse_name: 'widget') }
+              let(:expected) { Spec::Reference.associations['widget'] }
+
+              before(:example) do
+                Spec::Reference.define_association :one, :widget
+              end
+
+              it { expect(association.resolved_inverse).to be == expected }
+            end
+          end
         end
       end
 

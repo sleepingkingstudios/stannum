@@ -19,7 +19,10 @@ RSpec.describe Stannum::Associations::One do
   example_class 'Spec::Boss' do |klass|
     klass.include Stannum::Entity
 
-    klass.association :one, :dungeon, class_name: 'Spec::Dungeon'
+    klass.association :one,
+      :dungeon,
+      class_name: 'Spec::Dungeon',
+      inverse:    false
 
     klass.attribute :challenge, Integer
 

@@ -22,7 +22,8 @@ RSpec.describe Stannum::Associations::One do
     klass.association :one,
       :dungeon,
       class_name:  'Spec::Dungeon',
-      foreign_key: true
+      foreign_key: true,
+      inverse:     false
 
     klass.attribute :challenge, Integer
 
