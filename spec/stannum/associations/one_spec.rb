@@ -24,12 +24,6 @@ RSpec.describe Stannum::Associations::One do
     let(:attributes)   { {} }
     let(:associations) { {} }
     let(:entity)       { Spec::EntityClass.new(**attributes, **associations) }
-
-    example_class 'Spec::EntityClass' do |klass|
-      klass.include Stannum::Entity
-
-      klass.association(:one, name, **options.merge(class_name: type.name))
-    end
   end
 
   let(:constructor_options) do
@@ -38,6 +32,31 @@ RSpec.describe Stannum::Associations::One do
   let(:name)    { 'reference' }
   let(:type)    { Spec::Reference }
   let(:options) { constructor_options }
+  let(:association_options) do
+    hsh = { class_name: 'Spec::Reference', inverse: false }
+
+    if options[:foreign_key_name]
+      (hsh[:foreign_key] ||= {})[:name] = options[:foreign_key_name]
+    end
+
+    if options[:foreign_key_type]
+      (hsh[:foreign_key] ||= {})[:type] = options[:foreign_key_type]
+    end
+
+    if options[:inverse_name]
+      hsh[:inverse] = options[:inverse_name]
+    elsif options[:inverse]
+      hsh[:inverse] = true
+    end
+
+    hsh
+  end
+
+  example_class 'Spec::EntityClass' do |klass|
+    klass.include Stannum::Entity
+
+    klass.association(:one, name, **association_options)
+  end
 
   example_class 'Spec::Reference' do |klass|
     klass.include Stannum::Entity
@@ -135,6 +154,8 @@ RSpec.describe Stannum::Associations::One do
 
   describe '#add_value' do
     include_context 'with an entity'
+
+    let(:options) { super().merge(inverse: false) }
 
     describe 'with nil' do
       it 'should not change the association value' do
@@ -247,13 +268,23 @@ RSpec.describe Stannum::Associations::One do
     include_examples 'should define predicate', :foreign_key?, false
 
     context 'with options: { foreign_key_name: a string }' do
-      let(:options) { { 'foreign_key_name' => 'reference_uuid' } }
+      let(:options) do
+        {
+          'foreign_key_name' => 'reference_uuid',
+          'foreign_key_type' => String
+        }
+      end
 
       it { expect(association.foreign_key?).to be true }
     end
 
     context 'with options: { foreign_key_name: a symbol }' do
-      let(:options) { { 'foreign_key_name' => :reference_uuid } }
+      let(:options) do
+        {
+          'foreign_key_name' => :reference_uuid,
+          'foreign_key_type' => String
+        }
+      end
 
       it { expect(association.foreign_key?).to be true }
     end
@@ -263,14 +294,24 @@ RSpec.describe Stannum::Associations::One do
     include_examples 'should define reader', :foreign_key_name, nil
 
     context 'with options: { foreign_key_name: a string }' do
-      let(:options)  { { 'foreign_key_name' => 'reference_id' } }
+      let(:options) do
+        {
+          'foreign_key_name' => 'reference_id',
+          'foreign_key_type' => String
+        }
+      end
       let(:expected) { options['foreign_key_name'] }
 
       it { expect(association.foreign_key_name).to be == expected }
     end
 
     context 'with options: { foreign_key_name: a symbol }' do
-      let(:options) { { 'foreign_key_name' => :reference_id } }
+      let(:options) do
+        {
+          'foreign_key_name' => :reference_id,
+          'foreign_key_type' => String
+        }
+      end
       let(:expected) { options['foreign_key_name'].to_s }
 
       it { expect(association.foreign_key_name).to be == expected }
@@ -280,7 +321,7 @@ RSpec.describe Stannum::Associations::One do
   describe '#foreign_key_type' do
     include_examples 'should define reader', :foreign_key_type, nil
 
-    context 'with options: { foreign_key_name: a class }' do
+    context 'with options: { foreign_key_type: a class }' do
       let(:options) do
         {
           'foreign_key_name' => 'reference_id',
@@ -291,16 +332,15 @@ RSpec.describe Stannum::Associations::One do
       it { expect(association.foreign_key_type).to be String }
     end
 
-    context 'with options: { foreign_key_name: a constraint }' do
-      let(:constraint) { Stannum::Constraints::Uuid.new }
+    context 'with options: { foreign_key_type: a String }' do
       let(:options) do
         {
           'foreign_key_name' => 'reference_id',
-          'foreign_key_type' => constraint
+          'foreign_key_type' => 'String'
         }
       end
 
-      it { expect(association.foreign_key_type).to be constraint }
+      it { expect(association.foreign_key_type).to be == 'String' }
     end
   end
 
@@ -314,6 +354,8 @@ RSpec.describe Stannum::Associations::One do
 
   describe '#remove_value' do
     include_context 'with an entity'
+
+    let(:options) { super().merge(inverse: false) }
 
     describe 'with another value' do
       let(:value) { Spec::Reference.new(name: 'Other Reference') }
@@ -437,6 +479,8 @@ RSpec.describe Stannum::Associations::One do
 
   describe '#value' do
     include_context 'with an entity'
+
+    let(:options) { super().merge(inverse: false) }
 
     it { expect(association.value(entity)).to be nil }
 

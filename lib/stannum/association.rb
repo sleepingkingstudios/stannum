@@ -76,7 +76,7 @@ module Stannum
     #
     # @param entity [Stannum::Entity] the entity to update.
     # @param value [Object] the new value for the association.
-    def add_value(entity, value) # rubocop:disable Lint/UnusedMethodArgument
+    def add_value(entity, value, update_inverse: true) # rubocop:disable Lint/UnusedMethodArgument
       raise AbstractAssociationError,
         "#{self.class} is an abstract class - use an association subclass"
     end
@@ -118,7 +118,7 @@ module Stannum
     #
     # @param entity [Stannum::Entity] the entity to update.
     # @param value [Stannum::Entity] the association value to remove.
-    def remove_value(entity, value) # rubocop:disable Lint/UnusedMethodArgument
+    def remove_value(entity, value, update_inverse: true) # rubocop:disable Lint/UnusedMethodArgument
       raise AbstractAssociationError,
         "#{self.class} is an abstract class - use an association subclass"
     end

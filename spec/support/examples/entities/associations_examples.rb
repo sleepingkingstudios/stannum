@@ -38,9 +38,18 @@ module Spec::Support::Examples::Entities
 
       before(:example) do
         entity_class.instance_eval do
-          association :one, 'parent',  class_name: 'Spec::Parent'
-          association :one, 'sibling', class_name: 'Spec::Sibling'
-          association :one, 'child',   class_name: 'Spec::Child'
+          association :one,
+            'parent',
+            class_name: 'Spec::Parent',
+            inverse:    false
+          association :one,
+            'sibling',
+            class_name: 'Spec::Sibling',
+            inverse:    false
+          association :one,
+            'child',
+            class_name: 'Spec::Child',
+            inverse:    false
         end
       end
     end
@@ -69,7 +78,8 @@ module Spec::Support::Examples::Entities
           association :one,
             'parent',
             class_name:  'Spec::Parent',
-            foreign_key: true
+            foreign_key: true,
+            inverse:     false
         end
       end
     end
@@ -79,7 +89,7 @@ module Spec::Support::Examples::Entities
 
       before(:example) do
         entity_class.instance_eval do
-          association :one, 'bestie', class_name: 'Spec::Bestie'
+          association :one, 'bestie', class_name: 'Spec::Bestie', inverse: false
         end
       end
     end
@@ -96,7 +106,8 @@ module Spec::Support::Examples::Entities
           association :one,
             'bestie',
             class_name:  'Spec::Bestie',
-            foreign_key: true
+            foreign_key: true,
+            inverse:     false
         end
       end
     end

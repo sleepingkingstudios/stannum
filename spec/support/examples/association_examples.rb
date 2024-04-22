@@ -117,6 +117,7 @@ module Spec::Support::Examples
           expect(association)
             .to respond_to(:add_value)
             .with(2).arguments
+            .and_keywords(:update_inverse)
         end
       end
 
@@ -246,6 +247,7 @@ module Spec::Support::Examples
           expect(association)
             .to respond_to(:remove_value)
             .with(2).arguments
+            .and_keywords(:update_inverse)
         end
       end
 

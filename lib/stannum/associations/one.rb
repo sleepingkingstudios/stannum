@@ -25,7 +25,7 @@ module Stannum::Associations
     end
 
     # (see Stannum::Association#add_value)
-    def add_value(entity, value)
+    def add_value(entity, value, update_inverse: true) # rubocop:disable Lint/UnusedMethodArgument
       if foreign_key?
         entity.write_attribute(
           foreign_key_name,
@@ -71,7 +71,7 @@ module Stannum::Associations
     end
 
     # (see Stannum::Association#remove_value)
-    def remove_value(entity, value)
+    def remove_value(entity, value, update_inverse: true) # rubocop:disable Lint/UnusedMethodArgument
       return unless matching_value?(entity, value)
 
       entity.write_attribute(foreign_key_name, nil, safe: false) if foreign_key?
