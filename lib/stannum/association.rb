@@ -72,10 +72,14 @@ module Stannum
     # @return [String] the name of the association type Class or Module.
     attr_reader :type
 
+    # @api private
+    #
     # Adds the given value to the association for the entity.
     #
     # @param entity [Stannum::Entity] the entity to update.
     # @param value [Object] the new value for the association.
+    # @param update_inverse [Boolean] if true, updates the inverse association
+    #   (if any). Defaults to false.
     def add_value(entity, value, update_inverse: true) # rubocop:disable Lint/UnusedMethodArgument
       raise AbstractAssociationError,
         "#{self.class} is an abstract class - use an association subclass"
@@ -114,10 +118,14 @@ module Stannum
       @reader_name ||= name.intern
     end
 
+    # @api private
+    #
     # Removes the given value from the association for the entity.
     #
     # @param entity [Stannum::Entity] the entity to update.
     # @param value [Stannum::Entity] the association value to remove.
+    # @param update_inverse [Boolean] if true, updates the inverse association
+    #   (if any). Defaults to false.
     def remove_value(entity, value, update_inverse: true) # rubocop:disable Lint/UnusedMethodArgument
       raise AbstractAssociationError,
         "#{self.class} is an abstract class - use an association subclass"
