@@ -368,8 +368,14 @@ module Stannum::Entities
       super
     end
 
-    def inspectable_properties
-      super().merge(associations)
+    def inspect_properties(**options)
+      return super unless options.fetch(:associations, true)
+
+      @associations.reduce(super) do |memo, (key, value)|
+        mapped = value ? value.inspect_with_options(associations: false) : 'nil'
+
+        "#{memo} #{key}: #{mapped}"
+      end
     end
 
     def set_associations(associations, force:)

@@ -8,6 +8,9 @@ module Stannum::Entities
   # This module provides a base for accessing and mutating entity properties
   # such as attributes and associations.
   module Properties
+    MEMORY_ADDRESS_PATTERN = /0x([0-9a-f]+)/.freeze
+    private_constant :MEMORY_ADDRESS_PATTERN
+
     # @param properties [Hash] the properties used to initialize the entity.
     def initialize(**properties)
       set_properties(properties, force: true)
@@ -78,11 +81,22 @@ module Stannum::Entities
 
     # @return [String] a string representation of the entity and its properties.
     def inspect
-      mapped = inspectable_properties.reduce('') do |memo, (key, value)|
-        memo + " #{key}: #{value.inspect}"
-      end
+      inspect_with_options
+    end
 
-      "#<#{self.class.name}#{mapped}>"
+    # @param options [Hash] options for inspecting the entity.
+    #
+    # @option options memory_address [Boolean] if true, displays the memory
+    #   address of the object (as per Object#inspect). Defaults to false.
+    # @option options properties [Boolean] if true, displays the entity
+    #   properties. Defaults to true.
+    #
+    # @return [String] a string representation of the entity and its properties.
+    def inspect_with_options(**options)
+      address = options[:memory_address] ? ":#{memory_address}" : ''
+      mapped  = inspect_properties(**options)
+
+      "#<#{self.class.name}#{address}#{mapped}>"
     end
 
     # Collects the entity properties.
@@ -154,13 +168,21 @@ module Stannum::Entities
       raise ArgumentError, invalid_properties_message(properties, as: as)
     end
 
-    def inspectable_properties
-      {}
+    def inspect_properties(**)
+      ''
     end
 
     def invalid_properties_message(properties, as: 'property')
       "unknown #{tools.int.pluralize(properties.size, as)} " +
         properties.keys.map(&:inspect).join(', ')
+    end
+
+    def memory_address
+      Object
+        .instance_method(:inspect)
+        .bind(self)
+        .call
+        .match(MEMORY_ADDRESS_PATTERN)[1]
     end
 
     def set_property(key, _)

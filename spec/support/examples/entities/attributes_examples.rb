@@ -4158,7 +4158,7 @@ module Spec::Support::Examples::Entities
           end
         end
 
-        context 'when the entity class defines properties' do
+        context 'when the entity class defines attributes and properties' do
           include_context 'when the entity class defines attributes'
           include_context 'when the entity class defines properties'
 
@@ -4181,6 +4181,126 @@ module Spec::Support::Examples::Entities
             let(:properties) { generic_properties.merge(attributes) }
 
             it { expect(entity.inspect).to be == expected }
+          end
+        end
+      end
+
+      describe '#inspect_with_options' do
+        let(:options) { {} }
+
+        wrap_context 'when the entity class defines attributes' do
+          let(:expected) do
+            "#<#{described_class.name} " \
+              "name: #{entity.name.inspect} " \
+              "description: #{entity.description.inspect} " \
+              "quantity: #{entity.quantity.inspect}" \
+              '>'
+          end
+
+          it 'should format the entity' do
+            expect(entity.inspect_with_options(**options)).to be == expected
+          end
+
+          wrap_context 'when the entity has attribute values' do
+            it 'should format the entity' do
+              expect(entity.inspect_with_options(**options)).to be == expected
+            end
+          end
+
+          describe 'with attributes: false' do
+            let(:options)  { super().merge(attributes: false) }
+            let(:expected) { "#<#{described_class.name}>" }
+
+            it 'should format the entity' do
+              expect(entity.inspect_with_options(**options)).to be == expected
+            end
+
+            wrap_context 'when the entity has attribute values' do
+              it 'should format the entity' do
+                expect(entity.inspect_with_options(**options)).to be == expected
+              end
+            end
+          end
+        end
+
+        context 'when the entity class defines attributes and properties' do
+          include_context 'when the entity class defines attributes'
+          include_context 'when the entity class defines properties'
+
+          let(:expected) do
+            "#<#{described_class.name} " \
+              "name: #{entity.name.inspect} " \
+              "description: #{entity.description.inspect} " \
+              "quantity: #{entity.quantity.inspect} " \
+              "amplitude: #{entity['amplitude'].inspect} " \
+              "frequency: #{entity['frequency'].inspect}" \
+              '>'
+          end
+
+          it 'should format the entity' do
+            expect(entity.inspect_with_options(**options)).to be == expected
+          end
+
+          context 'when the entity has attribute values' do
+            include_context 'when the entity has attribute values'
+            include_context 'when the entity has property values'
+
+            let(:properties) { generic_properties.merge(attributes) }
+
+            it 'should format the entity' do
+              expect(entity.inspect_with_options(**options)).to be == expected
+            end
+          end
+
+          describe 'with attributes: false' do
+            let(:options)  { super().merge(attributes: false) }
+            let(:expected) do
+              "#<#{described_class.name} " \
+                "amplitude: #{entity['amplitude'].inspect} " \
+                "frequency: #{entity['frequency'].inspect}" \
+                '>'
+            end
+
+            it 'should format the entity' do
+              expect(entity.inspect_with_options(**options)).to be == expected
+            end
+
+            context 'when the entity has attribute values' do
+              include_context 'when the entity has attribute values'
+              include_context 'when the entity has property values'
+
+              let(:properties) { generic_properties.merge(attributes) }
+
+              it 'should format the entity' do
+                expect(entity.inspect_with_options(**options)).to be == expected
+              end
+            end
+          end
+
+          describe 'with properties: false' do
+            let(:options) { super().merge(properties: false) }
+            let(:expected) do
+              "#<#{described_class.name} " \
+                "name: #{entity.name.inspect} " \
+                "description: #{entity.description.inspect} " \
+                "quantity: #{entity.quantity.inspect}" \
+                '>'
+            end
+
+            it 'should format the entity' do
+              expect(entity.inspect_with_options(**options)).to be == expected
+            end
+
+            context 'when the entity has attribute values' do
+              include_context 'when the entity has attribute values'
+              include_context 'when the entity has property values'
+
+              let(:properties) { generic_properties.merge(attributes) }
+
+              it 'should format the entity' do
+                expect(entity.inspect_with_options(**options)).to be == expected
+              end
+            end
           end
         end
       end

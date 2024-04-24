@@ -810,6 +810,111 @@ module Spec::Support::Examples::Entities
         end
       end
 
+      describe '#inspect_with_options' do
+        let(:options)  { {} }
+        let(:expected) { "#<#{described_class.name}>" }
+
+        it 'should define the method' do
+          expect(entity)
+            .to respond_to(:inspect_with_options)
+            .with(0).arguments
+            .and_any_keywords
+        end
+
+        it 'should format the entity' do
+          expect(entity.inspect_with_options(**options)).to be == expected
+        end
+
+        describe 'with memory_address: true' do
+          let(:options) { super().merge(memory_address: true) }
+          let(:pattern) { /0x([0-9a-f]+)/ }
+          let(:address) do
+            Object.instance_method(:inspect).bind(entity).call.match(pattern)[1]
+          end
+          let(:expected) { "#<#{described_class.name}:#{address}>" }
+
+          it 'should format the entity' do
+            expect(entity.inspect_with_options(**options)).to be == expected
+          end
+        end
+
+        describe 'with properties: false' do
+          let(:options) { super().merge(properties: false) }
+
+          it 'should format the entity' do
+            expect(entity.inspect_with_options(**options)).to be == expected
+          end
+        end
+
+        wrap_context 'when the entity class defines properties' do
+          let(:expected) do
+            "#<#{described_class.name} amplitude: nil frequency: nil>"
+          end
+
+          it 'should format the entity' do
+            expect(entity.inspect_with_options(**options)).to be == expected
+          end
+
+          wrap_context 'when the entity has property values' do
+            let(:expected) do
+              %(#<#{described_class.name} amplitude: "1 TW" frequency: "1 Hz">)
+            end
+
+            it 'should format the entity' do
+              expect(entity.inspect_with_options(**options)).to be == expected
+            end
+          end
+
+          describe 'with memory_address: true' do
+            let(:options) { super().merge(memory_address: true) }
+            let(:pattern) { /0x([0-9a-f]+)/ }
+            let(:address) do
+              Object
+                .instance_method(:inspect)
+                .bind(entity)
+                .call
+                .match(pattern)[1]
+            end
+            let(:expected) do
+              "#<#{described_class.name}" \
+                ":#{address} " \
+                'amplitude: nil frequency: nil>'
+            end
+
+            it 'should format the entity' do
+              expect(entity.inspect_with_options(**options)).to be == expected
+            end
+
+            wrap_context 'when the entity has property values' do
+              let(:expected) do
+                "#<#{described_class.name}" \
+                  ":#{address} " \
+                  'amplitude: "1 TW" frequency: "1 Hz">'
+              end
+
+              it 'should format the entity' do
+                expect(entity.inspect_with_options(**options)).to be == expected
+              end
+            end
+          end
+
+          describe 'with properties: false' do
+            let(:options)  { super().merge(properties: false) }
+            let(:expected) { "#<#{described_class.name}>" }
+
+            it 'should format the entity' do
+              expect(entity.inspect_with_options(**options)).to be == expected
+            end
+
+            wrap_context 'when the entity has property values' do
+              it 'should format the entity' do
+                expect(entity.inspect_with_options(**options)).to be == expected
+              end
+            end
+          end
+        end
+      end
+
       describe '#properties' do
         include_examples 'should define reader', :properties, {}
 

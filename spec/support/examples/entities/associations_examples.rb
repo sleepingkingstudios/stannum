@@ -3873,12 +3873,18 @@ module Spec::Support::Examples::Entities
       end
 
       describe '#inspect' do
+        def inspect_association(associated_entity)
+          return 'nil' if associated_entity.nil?
+
+          associated_entity.inspect_with_options(associations: false)
+        end
+
         wrap_context 'when the entity class defines associations' do
           let(:expected) do
             "#<#{described_class.name} " \
-              "parent: #{entity.parent.inspect} " \
-              "sibling: #{entity.sibling.inspect} " \
-              "child: #{entity.child.inspect}" \
+              "parent: #{inspect_association(entity.parent)} " \
+              "sibling: #{inspect_association(entity.sibling)} " \
+              "child: #{inspect_association(entity.child)}" \
               '>'
           end
 
@@ -3889,15 +3895,54 @@ module Spec::Support::Examples::Entities
           end
         end
 
-        context 'when the entity class defines properties' do
+        context 'when the entity class defines an inverse association' do
+          let(:entity_class) do
+            defined?(super()) ? super() : Spec::EntityClass
+          end
+          let(:expected) do
+            "#<#{described_class.name} " \
+              "reference: #{inspect_association(entity.reference)}" \
+              '>'
+          end
+
+          example_class 'Spec::Reference' do |klass|
+            klass.include Stannum::Entity
+
+            klass.define_association :one,
+              :entity,
+              class_name: entity_class.name
+          end
+
+          before(:example) do
+            entity_class.define_association :one,
+              'reference',
+              class_name: 'Spec::Reference',
+              inverse:    :entity
+          end
+
+          it { expect(entity.inspect).to be == expected }
+
+          context 'when the entity has association values' do
+            let(:associations) do
+              { 'reference' => Spec::Reference.new }
+            end
+            let(:properties) do
+              defined?(super()) ? super().merge(associations) : associations
+            end
+
+            it { expect(entity.inspect).to be == expected }
+          end
+        end
+
+        context 'when the entity class defines associations and properties' do
           include_context 'when the entity class defines associations'
           include_context 'when the entity class defines properties'
 
           let(:expected) do
             "#<#{described_class.name} " \
-              "parent: #{entity.parent.inspect} " \
-              "sibling: #{entity.sibling.inspect} " \
-              "child: #{entity.child.inspect} " \
+              "parent: #{inspect_association(entity.parent)} " \
+              "sibling: #{inspect_association(entity.sibling)} " \
+              "child: #{inspect_association(entity.child)} " \
               "amplitude: #{entity['amplitude'].inspect} " \
               "frequency: #{entity['frequency'].inspect}" \
               '>'
@@ -3912,6 +3957,187 @@ module Spec::Support::Examples::Entities
             let(:properties) { generic_properties.merge(associations) }
 
             it { expect(entity.inspect).to be == expected }
+          end
+        end
+      end
+
+      describe '#inspect_with_options' do
+        let(:options) { {} }
+
+        def inspect_association(associated_entity)
+          return 'nil' if associated_entity.nil?
+
+          associated_entity.inspect_with_options(associations: false)
+        end
+
+        wrap_context 'when the entity class defines associations' do
+          let(:expected) do
+            "#<#{described_class.name} " \
+              "parent: #{inspect_association(entity.parent)} " \
+              "sibling: #{inspect_association(entity.sibling)} " \
+              "child: #{inspect_association(entity.child)}" \
+              '>'
+          end
+
+          it 'should format the entity' do
+            expect(entity.inspect_with_options(**options)).to be == expected
+          end
+
+          wrap_context 'when the entity has association values' do
+            it 'should format the entity' do
+              expect(entity.inspect_with_options(**options)).to be == expected
+            end
+          end
+
+          describe 'with associations: false' do
+            let(:options)  { { associations: false } }
+            let(:expected) { "#<#{described_class.name}>" }
+
+            it 'should format the entity' do
+              expect(entity.inspect_with_options(**options)).to be == expected
+            end
+
+            wrap_context 'when the entity has association values' do
+              it 'should format the entity' do
+                expect(entity.inspect_with_options(**options)).to be == expected
+              end
+            end
+          end
+        end
+
+        context 'when the entity class defines an inverse association' do
+          let(:entity_class) do
+            defined?(super()) ? super() : Spec::EntityClass
+          end
+          let(:expected) do
+            "#<#{described_class.name} " \
+              "reference: #{inspect_association(entity.reference)}" \
+              '>'
+          end
+
+          example_class 'Spec::Reference' do |klass|
+            klass.include Stannum::Entity
+
+            klass.define_association :one,
+              :entity,
+              class_name: entity_class.name
+          end
+
+          before(:example) do
+            entity_class.define_association :one,
+              'reference',
+              class_name: 'Spec::Reference',
+              inverse:    :entity
+          end
+
+          it 'should format the entity' do
+            expect(entity.inspect_with_options(**options)).to be == expected
+          end
+
+          context 'when the entity has association values' do
+            let(:associations) do
+              { 'reference' => Spec::Reference.new }
+            end
+            let(:properties) do
+              defined?(super()) ? super().merge(associations) : associations
+            end
+
+            it 'should format the entity' do
+              expect(entity.inspect_with_options(**options)).to be == expected
+            end
+          end
+
+          describe 'with associations: false' do
+            let(:options)  { { associations: false } }
+            let(:expected) { "#<#{described_class.name}>" }
+
+            it 'should format the entity' do
+              expect(entity.inspect_with_options(**options)).to be == expected
+            end
+
+            context 'when the entity has association values' do
+              let(:associations) do
+                { 'reference' => Spec::Reference.new }
+              end
+              let(:properties) do
+                defined?(super()) ? super().merge(associations) : associations
+              end
+
+              it 'should format the entity' do
+                expect(entity.inspect_with_options(**options)).to be == expected
+              end
+            end
+          end
+        end
+
+        context 'when the entity class defines associations and properties' do
+          include_context 'when the entity class defines associations'
+          include_context 'when the entity class defines properties'
+
+          let(:expected) do
+            "#<#{described_class.name} " \
+              "parent: #{inspect_association(entity.parent)} " \
+              "sibling: #{inspect_association(entity.sibling)} " \
+              "child: #{inspect_association(entity.child)} " \
+              "amplitude: #{entity['amplitude'].inspect} " \
+              "frequency: #{entity['frequency'].inspect}" \
+              '>'
+          end
+
+          it 'should format the entity' do
+            expect(entity.inspect_with_options(**options)).to be == expected
+          end
+
+          wrap_context 'when the entity has association values' do
+            it 'should format the entity' do
+              expect(entity.inspect_with_options(**options)).to be == expected
+            end
+          end
+
+          describe 'with associations: false' do
+            let(:options)  { { associations: false } }
+            let(:expected) do
+              "#<#{described_class.name} " \
+                "amplitude: #{entity['amplitude'].inspect} " \
+                "frequency: #{entity['frequency'].inspect}" \
+                '>'
+            end
+
+            it 'should format the entity' do
+              expect(entity.inspect_with_options(**options)).to be == expected
+            end
+
+            wrap_context 'when the entity has association values' do
+              it 'should format the entity' do
+                expect(entity.inspect_with_options(**options)).to be == expected
+              end
+            end
+          end
+
+          describe 'with properties: false' do
+            let(:options) { super().merge(properties: false) }
+            let(:expected) do
+              "#<#{described_class.name} " \
+                "parent: #{inspect_association(entity.parent)} " \
+                "sibling: #{inspect_association(entity.sibling)} " \
+                "child: #{inspect_association(entity.child)}" \
+                '>'
+            end
+
+            it 'should format the entity' do
+              expect(entity.inspect_with_options(**options)).to be == expected
+            end
+
+            context 'when the entity has association values' do
+              include_context 'when the entity has association values'
+              include_context 'when the entity has property values'
+
+              let(:properties) { generic_properties.merge(associations) }
+
+              it 'should format the entity' do
+                expect(entity.inspect_with_options(**options)).to be == expected
+              end
+            end
           end
         end
       end

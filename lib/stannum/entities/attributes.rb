@@ -265,8 +265,12 @@ module Stannum::Entities
       super
     end
 
-    def inspectable_properties
-      super().merge(attributes)
+    def inspect_properties(**options)
+      return super unless options.fetch(:attributes, true)
+
+      @attributes.reduce(super) do |memo, (key, value)|
+        "#{memo} #{key}: #{value.inspect}"
+      end
     end
 
     def set_attributes(attributes, force:)
