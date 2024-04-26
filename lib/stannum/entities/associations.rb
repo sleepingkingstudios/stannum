@@ -7,7 +7,7 @@ module Stannum::Entities
   # Methods for defining and accessing entity associations.
   module Associations # rubocop:disable Metrics/ModuleLength
     # Class methods to extend the class when including Associations.
-    module ClassMethods
+    module ClassMethods # rubocop:disable Metrics/ModuleLength
       # Defines an association on the entity.
       #
       # When an association is defined, each of the following steps is executed:
@@ -119,7 +119,9 @@ module Stannum::Entities
         Stannum::Entities::Associations.apply(other)
       end
 
-      def parse_foreign_key_options(assoc_name, foreign_key) # rubocop:disable Metrics/MethodLength
+      def parse_foreign_key_options(assoc_name, foreign_key) # rubocop:disable Metrics/CyclomaticComplexity, Metrics/MethodLength
+        return {} if foreign_key == false
+
         foreign_key = {} if foreign_key == true
 
         if foreign_key.is_a?(String) || foreign_key.is_a?(Symbol)
@@ -139,10 +141,29 @@ module Stannum::Entities
         }
       end
 
-      def parse_options(assoc_name, **options)
+      def parse_inverse_options(inverse)
+        hsh = {
+          entity_class_name: name,
+          inverse:           true
+        }
+
+        if inverse.is_a?(String) || inverse.is_a?(Symbol)
+          hsh[:inverse_name] = inverse.to_s
+        end
+
+        hsh
+      end
+
+      def parse_options(assoc_name, **options) # rubocop:disable Metrics/MethodLength
         if options.key?(:foreign_key)
           options = options.merge(
             parse_foreign_key_options(assoc_name, options.delete(:foreign_key))
+          )
+        end
+
+        if options[:inverse] != false
+          options = options.merge(
+            parse_inverse_options(options.delete(:inverse))
           )
         end
 
@@ -347,8 +368,14 @@ module Stannum::Entities
       super
     end
 
-    def inspectable_properties
-      super().merge(associations)
+    def inspect_properties(**options)
+      return super unless options.fetch(:associations, true)
+
+      @associations.reduce(super) do |memo, (key, value)|
+        mapped = value ? value.inspect_with_options(associations: false) : 'nil'
+
+        "#{memo} #{key}: #{mapped}"
+      end
     end
 
     def set_associations(associations, force:)

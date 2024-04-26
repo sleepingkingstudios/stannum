@@ -68,6 +68,9 @@ Naming/MethodParameterName:
   AllowedNames:
     - 'as'
 
+Naming/RescuedExceptionsVariableName:
+  PreferredName: exception
+
 RSpec/BeNil:
   Enabled: false
 

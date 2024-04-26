@@ -4,9 +4,12 @@ require 'stannum'
 
 module Stannum
   # Data object representing an association on an entity.
-  class Association
+  class Association # rubocop:disable Metrics/ClassLength
     # Exception raised when calling an abstract method.
     class AbstractAssociationError < StandardError; end
+
+    # Exception raised when referencing an invalid inverse association..
+    class InverseAssociationError < StandardError; end
 
     # Builder class for defining association methods on an entity.
     class Builder
@@ -69,13 +72,33 @@ module Stannum
     # @return [String] the name of the association type Class or Module.
     attr_reader :type
 
+    # @api private
+    #
     # Adds the given value to the association for the entity.
     #
     # @param entity [Stannum::Entity] the entity to update.
     # @param value [Object] the new value for the association.
-    def add_value(entity, value) # rubocop:disable Lint/UnusedMethodArgument
+    # @param update_inverse [Boolean] if true, updates the inverse association
+    #   (if any). Defaults to false.
+    def add_value(entity, value, update_inverse: true) # rubocop:disable Lint/UnusedMethodArgument
       raise AbstractAssociationError,
         "#{self.class} is an abstract class - use an association subclass"
+    end
+
+    # @return [String, nil] the name of the original entity class.
+    def entity_class_name
+      @options[:entity_class_name]
+    end
+
+    # @return [Boolean] true if the association has an inverse association;
+    #   otherwise false.
+    def inverse?
+      !!@options[:inverse]
+    end
+
+    # @return [String] the name of the inverse association, if any.
+    def inverse_name
+      @inverse_name ||= resolve_inverse_name
     end
 
     # @return [false] true if the association is a plural association;
@@ -95,13 +118,29 @@ module Stannum
       @reader_name ||= name.intern
     end
 
+    # @api private
+    #
     # Removes the given value from the association for the entity.
     #
     # @param entity [Stannum::Entity] the entity to update.
     # @param value [Stannum::Entity] the association value to remove.
-    def remove_value(entity, value) # rubocop:disable Lint/UnusedMethodArgument
+    # @param update_inverse [Boolean] if true, updates the inverse association
+    #   (if any). Defaults to false.
+    def remove_value(entity, value, update_inverse: true) # rubocop:disable Lint/UnusedMethodArgument
       raise AbstractAssociationError,
         "#{self.class} is an abstract class - use an association subclass"
+    end
+
+    # @return [Stannum::Association] the inverse association, if any.
+    def resolved_inverse
+      return @resolved_inverse if @resolved_inverse
+
+      return unless inverse?
+
+      @resolved_inverse = resolved_type.associations[inverse_name]
+    rescue KeyError => exception
+      raise InverseAssociationError,
+        "unable to resolve inverse association #{exception.key.inspect}"
     end
 
     # @return [Module] the type of the association.
@@ -134,10 +173,40 @@ module Stannum
 
     private
 
+    def plural_class_name
+      @plural_class_name ||= tools.string_tools.pluralize(singular_class_name)
+    end
+
+    def resolve_inverse_name # rubocop:disable Metrics/AbcSize, Metrics/MethodLength
+      return unless inverse?
+
+      return options[:inverse_name].to_s if options[:inverse_name]
+
+      if resolved_type.associations.key?(singular_class_name)
+        return singular_class_name
+      end
+
+      if resolved_type.associations.key?(plural_class_name)
+        return plural_class_name
+      end
+
+      raise InverseAssociationError,
+        'unable to resolve inverse association ' \
+        "#{singular_class_name.inspect} or #{plural_class_name.inspect}"
+    end
+
     def resolve_type(type)
       return [type, nil] if type.is_a?(String)
 
       [type.to_s, type]
+    end
+
+    def singular_class_name
+      @singular_class_name ||=
+        entity_class_name
+        .split('::')
+        .last
+        .then { |str| tools.string_tools.underscore(str) }
     end
 
     def tools

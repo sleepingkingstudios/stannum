@@ -8,6 +8,22 @@ require 'support/examples/optional_examples'
 RSpec.describe Stannum::Attribute do
   include Spec::Support::Examples::OptionalExamples
 
+  shared_context 'with an entity' do
+    shared_context 'when the attribute has a value' do
+      let(:previous_value) { 'No one is quite sure what this does.' }
+      let(:attributes)     { super().merge('description' => previous_value) }
+    end
+
+    let(:attributes) { {} }
+    let(:entity)     { Spec::EntityClass.new(**attributes) }
+
+    example_class 'Spec::EntityClass' do |klass|
+      klass.include Stannum::Entity
+
+      klass.attribute(name, type, **options)
+    end
+  end
+
   shared_context 'with default: Proc' do
     let(:default) { -> { 'No one is quite sure what this does.' } }
 
@@ -44,240 +60,29 @@ RSpec.describe Stannum::Attribute do
       described_class::Builder.new(entity_class::Attributes)
     end
 
-    let(:entity_class) { Spec::Entity }
+    let(:entity_class) { Spec::EntityClass }
 
-    example_class 'Spec::Entity' do |klass|
-      klass.include Stannum::Entities::Properties
-      klass.include Stannum::Entities::Attributes
-
-      klass.attribute(name, type, **options)
-    end
-
-    describe '.new' do
-      it 'should be constructible' do
-        expect(described_class::Builder).to be_constructible.with(1).argument
-      end
+    example_class 'Spec::EntityClass' do |klass|
+      klass.include Stannum::Entity
     end
 
     describe '#call' do
       let(:attribute) do
         described_class.new(name: name, type: type, options: options)
       end
-      let(:properties) { {} }
-      let(:entity)     { entity_class.new(**properties) }
 
       it { expect(builder).to respond_to(:call).with(1).argument }
 
-      describe '#:attribute' do
-        before(:example) { builder.call(attribute) }
-
-        it { expect(entity).to define_reader(attribute.name) }
-
-        it { expect(entity.send(attribute.name)).to be nil }
-
-        context 'when the attribute has a value' do
-          let(:properties) do
-            { 'description' => 'No one is quite sure what this does.' }
-          end
-
-          it 'should get the attribute value' do
-            expect(entity.send(attribute.name))
-              .to be == properties[attribute.name]
-          end
-        end
+      it 'should define the reader method' do
+        expect { builder.call(attribute) }
+          .to change(entity_class, :instance_methods)
+          .to include attribute.reader_name
       end
 
-      describe '#:attribute=' do
-        let(:value) { 'A mechanical mystery.' }
-
-        before(:example) { builder.call(attribute) }
-
-        it { expect(entity).to define_writer("#{attribute.name}=") }
-
-        it 'should set the attribute value' do
-          expect { entity.send("#{attribute.name}=", value) }
-            .to change(entity, attribute.name)
-            .to be == value
-        end
-
-        # rubocop:disable RSpec/NestedGroups
-        context 'when the attribute has a value' do
-          let(:properties) do
-            { 'description' => 'No one is quite sure what this does.' }
-          end
-
-          describe 'with nil' do
-            it 'should clear the attribute value' do
-              expect { entity.send("#{attribute.name}=", nil) }
-                .to change(entity, attribute.name)
-                .to be nil
-            end
-          end
-
-          describe 'with a value' do
-            it 'should set the attribute value' do
-              expect { entity.send("#{attribute.name}=", value) }
-                .to change(entity, attribute.name)
-                .to be == value
-            end
-          end
-        end
-
-        context 'when the attribute has a default Proc' do
-          let(:name)    { 'quantity' }
-          let(:default) { -> { 0 } }
-          let(:value)   { 500 }
-          let(:options) { super().merge(default: default) }
-
-          context 'when the attribute has a value' do
-            let(:properties) do
-              { 'quantity' => 1_000 }
-            end
-
-            describe 'with nil' do
-              it 'should set the attribute value to the default' do
-                expect { entity.send("#{attribute.name}=", nil) }
-                  .to change(entity, attribute.name)
-                  .to be == default.call
-              end
-            end
-
-            describe 'with a value' do
-              it 'should set the attribute value' do
-                expect { entity.send("#{attribute.name}=", value) }
-                  .to change(entity, attribute.name)
-                  .to be == value
-              end
-            end
-          end
-        end
-
-        context 'when the attrbute has a default value' do
-          let(:name)    { 'quantity' }
-          let(:default) { 0 }
-          let(:value)   { 500 }
-          let(:options) { super().merge(default: default) }
-
-          context 'when the attribute has a value' do
-            let(:properties) do
-              { 'quantity' => 1_000 }
-            end
-
-            describe 'with nil' do
-              it 'should set the attribute value to the default' do
-                expect { entity.send("#{attribute.name}=", nil) }
-                  .to change(entity, attribute.name)
-                  .to be == default
-              end
-            end
-
-            describe 'with a value' do
-              it 'should set the attribute value' do
-                expect { entity.send("#{attribute.name}=", value) }
-                  .to change(entity, attribute.name)
-                  .to be == value
-              end
-            end
-          end
-        end
-
-        context 'when the attribute is a foreign key' do
-          let(:mock_association) do
-            instance_double(Stannum::Association, remove_value: nil)
-          end
-          let(:name) { 'reference_id' }
-          let(:type) { Integer }
-          let(:options) do
-            super().merge(
-              association_name: 'reference',
-              foreign_key:      true
-            )
-          end
-
-          before(:example) do
-            Spec::Entity.include Stannum::Entities::Associations
-
-            # Foreign key attribute is defined separately.
-            allow(Spec::Entity.associations)
-              .to receive(:[])
-              .with('reference')
-              .and_return(mock_association)
-          end
-
-          example_class 'Spec::Reference' do |klass|
-            klass.include Stannum::Entity
-
-            klass.define_primary_key :id, Integer
-          end
-
-          describe 'with nil' do
-            it 'should not clear the association' do
-              entity.send("#{attribute.name}=", value)
-
-              expect(mock_association).not_to have_received(:remove_value)
-            end
-
-            it 'should not change the attribute value' do
-              expect { entity.send("#{attribute.name}=", nil) }
-                .not_to change(entity, attribute.name)
-            end
-          end
-
-          describe 'with a value' do
-            let(:value) { 1 }
-
-            it 'should not clear the association' do
-              entity.send("#{attribute.name}=", value)
-
-              expect(mock_association).not_to have_received(:remove_value)
-            end
-
-            it 'should set the attribute value' do
-              expect { entity.send("#{attribute.name}=", value) }
-                .to change(entity, attribute.name)
-                .to be == value
-            end
-          end
-
-          context 'when the attribute has a value' do
-            let(:properties) do
-              { 'reference_id' => 0 }
-            end
-
-            describe 'with nil' do
-              it 'should clear the association' do
-                entity.send("#{attribute.name}=", value)
-
-                expect(mock_association)
-                  .to have_received(:remove_value)
-                  .with(entity, properties['reference_id'])
-              end
-
-              it 'should clear the attribute value' do
-                expect { entity.send("#{attribute.name}=", nil) }
-                  .to change(entity, attribute.name)
-                  .to be nil
-              end
-            end
-
-            describe 'with a value' do
-              it 'should clear the association' do
-                entity.send("#{attribute.name}=", value)
-
-                expect(mock_association)
-                  .to have_received(:remove_value)
-                  .with(entity, properties['reference_id'])
-              end
-
-              it 'should set the attribute value' do
-                expect { entity.send("#{attribute.name}=", value) }
-                  .to change(entity, attribute.name)
-                  .to be == value
-              end
-            end
-          end
-        end
-        # rubocop:enable RSpec/NestedGroups
+      it 'should define the writer method' do
+        expect { builder.call(attribute) }
+          .to change(entity_class, :instance_methods)
+          .to include attribute.writer_name
       end
     end
 
@@ -383,6 +188,203 @@ RSpec.describe Stannum::Attribute do
   include_examples 'should implement the Optional interface'
 
   include_examples 'should implement the Optional methods'
+
+  describe '#:attribute' do
+    include_examples 'with an entity'
+
+    it { expect(entity).to define_reader(attribute.name) }
+
+    it { expect(entity.send(attribute.name)).to be nil }
+
+    wrap_context 'when the attribute has a value' do
+      it 'should get the attribute value' do
+        expect(entity.send(attribute.name)).to be == previous_value
+      end
+    end
+  end
+
+  describe '#:attribute=' do
+    include_context 'with an entity'
+
+    let(:value) { 'A mechanical mystery.' }
+
+    it { expect(entity).to define_writer("#{attribute.name}=") }
+
+    it 'should set the attribute value' do
+      expect { entity.send("#{attribute.name}=", value) }
+        .to change(entity, attribute.name)
+        .to be == value
+    end
+
+    wrap_context 'when the attribute has a value' do
+      describe 'with nil' do
+        it 'should clear the attribute value' do
+          expect { entity.send("#{attribute.name}=", nil) }
+            .to change(entity, attribute.name)
+            .to be nil
+        end
+      end
+
+      describe 'with a value' do
+        it 'should set the attribute value' do
+          expect { entity.send("#{attribute.name}=", value) }
+            .to change(entity, attribute.name)
+            .to be == value
+        end
+      end
+    end
+
+    context 'when the attribute has a default Proc' do
+      let(:name)    { 'quantity' }
+      let(:type)    { Integer }
+      let(:default) { -> { 0 } }
+      let(:value)   { 500 }
+      let(:options) { super().merge(default: default) }
+
+      context 'when the attribute has a value' do
+        let(:attributes) { { 'quantity' => 1_000 } }
+
+        describe 'with nil' do
+          it 'should set the attribute value to the default' do
+            expect { entity.send("#{attribute.name}=", nil) }
+              .to change(entity, attribute.name)
+              .to be == default.call
+          end
+        end
+
+        describe 'with a value' do
+          it 'should set the attribute value' do
+            expect { entity.send("#{attribute.name}=", value) }
+              .to change(entity, attribute.name)
+              .to be == value
+          end
+        end
+      end
+    end
+
+    context 'when the attribute has a default value' do
+      let(:name)    { 'quantity' }
+      let(:type)    { Integer }
+      let(:default) { 0 }
+      let(:value)   { 500 }
+      let(:options) { super().merge(default: default) }
+
+      context 'when the attribute has a value' do
+        let(:attributes) { { 'quantity' => 1_000 } }
+
+        describe 'with nil' do
+          it 'should set the attribute value to the default' do
+            expect { entity.send("#{attribute.name}=", nil) }
+              .to change(entity, attribute.name)
+              .to be == default
+          end
+        end
+
+        describe 'with a value' do
+          it 'should set the attribute value' do
+            expect { entity.send("#{attribute.name}=", value) }
+              .to change(entity, attribute.name)
+              .to be == value
+          end
+        end
+      end
+    end
+
+    context 'when the attribute is a foreign key' do
+      let(:mock_association) do
+        instance_double(Stannum::Association, remove_value: nil)
+      end
+      let(:name) { 'reference_id' }
+      let(:type) { Integer }
+      let(:options) do
+        super().merge(
+          association_name: 'reference',
+          foreign_key:      true
+        )
+      end
+
+      before(:example) do
+        Spec::EntityClass.include Stannum::Entities::Associations
+
+        # Foreign key attribute is defined separately.
+        allow(Spec::EntityClass.associations)
+          .to receive(:[])
+          .with('reference')
+          .and_return(mock_association)
+      end
+
+      example_class 'Spec::Reference' do |klass|
+        klass.include Stannum::Entity
+
+        klass.define_primary_key :id, Integer
+      end
+
+      describe 'with nil' do
+        it 'should not clear the association' do
+          entity.send("#{attribute.name}=", value)
+
+          expect(mock_association).not_to have_received(:remove_value)
+        end
+
+        it 'should not change the attribute value' do
+          expect { entity.send("#{attribute.name}=", nil) }
+            .not_to change(entity, attribute.name)
+        end
+      end
+
+      describe 'with a value' do
+        let(:value) { 1 }
+
+        it 'should not clear the association' do
+          entity.send("#{attribute.name}=", value)
+
+          expect(mock_association).not_to have_received(:remove_value)
+        end
+
+        it 'should set the attribute value' do
+          expect { entity.send("#{attribute.name}=", value) }
+            .to change(entity, attribute.name)
+            .to be == value
+        end
+      end
+
+      context 'when the attribute has a value' do
+        let(:attributes) { { 'reference_id' => 0 } }
+
+        describe 'with nil' do
+          it 'should clear the association' do
+            entity.send("#{attribute.name}=", value)
+
+            expect(mock_association)
+              .to have_received(:remove_value)
+              .with(entity, attributes['reference_id'])
+          end
+
+          it 'should clear the attribute value' do
+            expect { entity.send("#{attribute.name}=", nil) }
+              .to change(entity, attribute.name)
+              .to be nil
+          end
+        end
+
+        describe 'with a value' do
+          it 'should clear the association' do
+            entity.send("#{attribute.name}=", value)
+
+            expect(mock_association)
+              .to have_received(:remove_value)
+              .with(entity, attributes['reference_id'])
+          end
+
+          it 'should set the attribute value' do
+            expect { entity.send("#{attribute.name}=", value) }
+              .to change(entity, attribute.name)
+              .to be == value
+          end
+        end
+      end
+    end
+  end
 
   describe '#association_name' do
     include_examples 'should define reader', :association_name, nil

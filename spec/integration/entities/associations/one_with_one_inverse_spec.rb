@@ -3,18 +3,25 @@
 require 'stannum/entity'
 
 # @note Integration spec for Stannum::Entities::Associations.
-#   - Tests a :one association with no foreign key or inverse.
+#   - Tests a :one association with inverse one association.
 RSpec.describe Stannum::Associations::One do
   subject(:entity) { described_class.new(**attributes, **associations) }
 
   shared_context 'when the entity has an association' do
     let(:dungeon)      { Spec::Dungeon.new(name: 'The Crypts') }
     let(:associations) { super().merge(dungeon: dungeon) }
+
+    # Ensure associations are populated before examples.
+    before(:example) { entity }
   end
 
   shared_examples 'should not change the association' do
     it 'should not change the association' do
       expect { update_association }.not_to change(entity, :dungeon)
+    end
+
+    it 'should not change the inverse association' do
+      expect { update_association }.not_to(change { entity.dungeon&.boss })
     end
   end
 
@@ -22,6 +29,14 @@ RSpec.describe Stannum::Associations::One do
     it 'should clear the association' do
       expect { update_association }
         .to change(entity, :dungeon)
+        .to be nil
+    end
+
+    it 'should clear the previous inverse association' do
+      next unless defined?(dungeon)
+
+      expect { update_association }
+        .to change(dungeon, :boss)
         .to be nil
     end
   end
@@ -32,12 +47,40 @@ RSpec.describe Stannum::Associations::One do
         .to change(entity, :dungeon)
         .to be == new_dungeon
     end
+
+    it 'should clear the previous inverse association' do
+      next unless defined?(dungeon)
+
+      expect { update_association }
+        .to change(dungeon, :boss)
+        .to be nil
+    end
+
+    it 'should clear the previous inverse of the new inverse association' do
+      expect { update_association }
+        .to change(new_dungeon_boss, :dungeon)
+        .to be nil
+    end
+
+    it 'should set the new inverse association' do
+      expect { update_association }
+        .to change(new_dungeon, :boss)
+        .to be == entity
+    end
   end
 
   let(:described_class) { Spec::Boss }
   let(:attributes)      { { challenge: 20, name: 'Lich Lord' } }
   let(:associations)    { {} }
-  let(:new_dungeon)     { Spec::Dungeon.new(name: 'Dread Necropolis') }
+  let(:new_dungeon_boss) do
+    Spec::Boss.new(challenge: 1, name: 'Skellington')
+  end
+  let(:new_dungeon) do
+    Spec::Dungeon.new(name: 'Dread Necropolis', boss: new_dungeon_boss)
+  end
+
+  # Ensure associations are populated before examples.
+  before(:example) { new_dungeon }
 
   example_class 'Spec::Boss' do |klass|
     klass.include Stannum::Entity
@@ -46,16 +89,15 @@ RSpec.describe Stannum::Associations::One do
 
     klass.attribute :name, String
 
-    klass.association :one,
-      :dungeon,
-      class_name: 'Spec::Dungeon',
-      inverse:    false
+    klass.association :one, :dungeon, class_name: 'Spec::Dungeon'
   end
 
   example_class 'Spec::Dungeon' do |klass|
     klass.include Stannum::Entity
 
     klass.attribute :name, String
+
+    klass.association :one, :boss, class_name: 'Spec::Boss'
   end
 
   describe '#assign_associations' do

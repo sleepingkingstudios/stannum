@@ -18,11 +18,19 @@ RSpec.describe Stannum::Association do
   let(:type)    { Spec::Reference }
   let(:options) { constructor_options }
 
-  example_class 'Spec::Reference'
+  example_class 'Spec::Reference' do |klass|
+    klass.include Stannum::Entity
+  end
 
   describe '::AbstractAssociationError' do
     include_examples 'should define constant',
       :AbstractAssociationError,
+      -> { be_a(Class).and(be < StandardError) }
+  end
+
+  describe '::InverseAssociationError' do
+    include_examples 'should define constant',
+      :InverseAssociationError,
       -> { be_a(Class).and(be < StandardError) }
   end
 

@@ -3,18 +3,34 @@
 require 'stannum/entity'
 
 # @note Integration spec for Stannum::Entities::Associations.
-#   - Tests a :one association with no foreign key or inverse.
+#   - Tests a :one association with foreign key and inverse one association
+#     with foreign key.
 RSpec.describe Stannum::Associations::One do
   subject(:entity) { described_class.new(**attributes, **associations) }
 
   shared_context 'when the entity has an association' do
-    let(:dungeon)      { Spec::Dungeon.new(name: 'The Crypts') }
+    let(:dungeon)      { Spec::Dungeon.new(id: 0, name: 'The Crypts') }
     let(:associations) { super().merge(dungeon: dungeon) }
+
+    # Ensure associations are populated before examples.
+    before(:example) { entity }
   end
 
   shared_examples 'should not change the association' do
     it 'should not change the association' do
       expect { update_association }.not_to change(entity, :dungeon)
+    end
+
+    it 'should not change the foreign key' do
+      expect { update_association }.not_to change(entity, :dungeon_id)
+    end
+
+    it 'should not change the inverse association' do
+      expect { update_association }.not_to(change { entity.dungeon&.boss })
+    end
+
+    it 'should not change the inverse foreign key' do
+      expect { update_association }.not_to(change { entity.dungeon&.boss_id })
     end
   end
 
@@ -22,6 +38,28 @@ RSpec.describe Stannum::Associations::One do
     it 'should clear the association' do
       expect { update_association }
         .to change(entity, :dungeon)
+        .to be nil
+    end
+
+    it 'should clear the foreign key' do
+      expect { update_association }
+        .to change(entity, :dungeon_id)
+        .to be nil
+    end
+
+    it 'should clear the previous inverse association' do
+      next unless defined?(dungeon)
+
+      expect { update_association }
+        .to change(dungeon, :boss)
+        .to be nil
+    end
+
+    it 'should clear the previous inverse foreign key' do
+      next unless defined?(dungeon)
+
+      expect { update_association }
+        .to change(dungeon, :boss_id)
         .to be nil
     end
   end
@@ -32,15 +70,101 @@ RSpec.describe Stannum::Associations::One do
         .to change(entity, :dungeon)
         .to be == new_dungeon
     end
+
+    it 'should clear the previous inverse association' do
+      next unless defined?(dungeon)
+
+      expect { update_association }
+        .to change(dungeon, :boss)
+        .to be nil
+    end
+
+    it 'should clear the previous inverse association foreign key' do
+      next unless defined?(dungeon)
+
+      expect { update_association }
+        .to change(dungeon, :boss_id)
+        .to be nil
+    end
+
+    it 'should clear the previous inverse of the new inverse association' do
+      expect { update_association }
+        .to change(new_dungeon_boss, :dungeon)
+        .to be nil
+    end
+
+    it 'should clear the previous foreign key of the new inverse association' do
+      expect { update_association }
+        .to change(new_dungeon_boss, :dungeon_id)
+        .to be nil
+    end
+
+    it 'should update the foreign key' do
+      expect { update_association }
+        .to change(entity, :dungeon_id)
+        .to be == new_dungeon.id
+    end
+
+    it 'should set the new inverse association' do
+      expect { update_association }
+        .to change(new_dungeon, :boss)
+        .to be == entity
+    end
+
+    it 'should set the new inverse foreign key' do
+      expect { update_association }
+        .to change(new_dungeon, :boss_id)
+        .to be == entity.id
+    end
+  end
+
+  shared_examples 'should update the foreign key and clear the association' do
+    it 'should clear the association if the association exists' do
+      update_association
+
+      expect(entity.dungeon).to be nil
+    end
+
+    it 'should update the foreign key' do
+      expect { update_association }
+        .to change(entity, :dungeon_id)
+        .to be == new_dungeon.id
+    end
+
+    it 'should clear the previous inverse association' do
+      next unless defined?(dungeon)
+
+      expect { update_association }
+        .to change(dungeon, :boss)
+        .to be nil
+    end
+
+    it 'should clear the previous inverse association foreign key' do
+      next unless defined?(dungeon)
+
+      expect { update_association }
+        .to change(dungeon, :boss_id)
+        .to be nil
+    end
   end
 
   let(:described_class) { Spec::Boss }
-  let(:attributes)      { { challenge: 20, name: 'Lich Lord' } }
+  let(:attributes)      { { id: 0, challenge: 20, name: 'Lich Lord' } }
   let(:associations)    { {} }
-  let(:new_dungeon)     { Spec::Dungeon.new(name: 'Dread Necropolis') }
+  let(:new_dungeon_boss) do
+    Spec::Boss.new(id: 2, challenge: 1, name: 'Skellington')
+  end
+  let(:new_dungeon) do
+    Spec::Dungeon.new(id: 1, name: 'Dread Necropolis', boss: new_dungeon_boss)
+  end
+
+  # Ensure associations are populated before examples.
+  before(:example) { new_dungeon }
 
   example_class 'Spec::Boss' do |klass|
     klass.include Stannum::Entity
+
+    klass.define_primary_key :id, Integer
 
     klass.attribute :challenge, Integer
 
@@ -48,14 +172,18 @@ RSpec.describe Stannum::Associations::One do
 
     klass.association :one,
       :dungeon,
-      class_name: 'Spec::Dungeon',
-      inverse:    false
+      class_name:  'Spec::Dungeon',
+      foreign_key: true
   end
 
   example_class 'Spec::Dungeon' do |klass|
     klass.include Stannum::Entity
 
+    klass.define_primary_key :id, Integer
+
     klass.attribute :name, String
+
+    klass.association :one, :boss, class_name: 'Spec::Boss', foreign_key: true
   end
 
   describe '#assign_associations' do
@@ -135,9 +263,11 @@ RSpec.describe Stannum::Associations::One do
       let(:value) { { dungeon: new_dungeon } }
       let(:expected) do
         {
-          'challenge' => 20,
-          'name'      => 'Lich Lord',
-          'dungeon'   => new_dungeon
+          'id'         => 0,
+          'challenge'  => 20,
+          'name'       => 'Lich Lord',
+          'dungeon'    => new_dungeon,
+          'dungeon_id' => new_dungeon.id
         }
       end
 
@@ -155,9 +285,11 @@ RSpec.describe Stannum::Associations::One do
         let(:value) { { dungeon: nil } }
         let(:expected) do
           {
-            'challenge' => 20,
-            'name'      => 'Lich Lord',
-            'dungeon'   => nil
+            'id'         => 0,
+            'challenge'  => 20,
+            'name'       => 'Lich Lord',
+            'dungeon'    => nil,
+            'dungeon_id' => nil
           }
         end
 
@@ -174,9 +306,11 @@ RSpec.describe Stannum::Associations::One do
         let(:value) { { dungeon: new_dungeon } }
         let(:expected) do
           {
-            'challenge' => 20,
-            'name'      => 'Lich Lord',
-            'dungeon'   => new_dungeon
+            'id'         => 0,
+            'challenge'  => 20,
+            'name'       => 'Lich Lord',
+            'dungeon'    => new_dungeon,
+            'dungeon_id' => new_dungeon.id
           }
         end
 
@@ -297,31 +431,76 @@ RSpec.describe Stannum::Associations::One do
     end
   end
 
+  describe '#dungeon_id' do
+    it { expect(entity.dungeon_id).to be nil }
+
+    wrap_context 'when the entity has an association' do
+      it { expect(entity.dungeon_id).to be dungeon.id }
+    end
+  end
+
+  describe '#dungeon_id=' do
+    let(:new_dungeon_id) { nil }
+
+    def update_association
+      entity.dungeon_id = new_dungeon_id
+    end
+
+    describe 'with nil' do
+      include_examples 'should not change the association'
+    end
+
+    describe 'with a value' do
+      let(:new_dungeon_id) { new_dungeon.id }
+
+      include_examples 'should update the foreign key and clear the association'
+    end
+
+    wrap_context 'when the entity has an association' do
+      describe 'with nil' do
+        include_examples 'should clear the association'
+      end
+
+      describe 'with a value' do
+        let(:new_dungeon_id) { new_dungeon.id }
+
+        include_examples \
+          'should update the foreign key and clear the association'
+      end
+    end
+  end
+
   describe '#properties' do
     let(:expected) do
       {
-        'challenge' => 20,
-        'name'      => 'Lich Lord',
-        'dungeon'   => nil
+        'id'         => 0,
+        'challenge'  => 20,
+        'name'       => 'Lich Lord',
+        'dungeon'    => nil,
+        'dungeon_id' => nil
       }
     end
 
     it { expect(entity.properties).to be == expected }
 
     wrap_context 'when the entity has an association' do
-      let(:expected) { super().merge('dungeon' => dungeon) }
+      let(:expected) do
+        super().merge('dungeon' => dungeon, 'dungeon_id' => dungeon.id)
+      end
 
       it { expect(entity.properties).to be == expected }
     end
   end
 
   describe '#properties=' do
-    let(:value) { { dungeon: new_dungeon } }
+    let(:value) { { id: entity.id, dungeon: new_dungeon } }
     let(:expected) do
       {
-        'challenge' => nil,
-        'name'      => nil,
-        'dungeon'   => new_dungeon
+        'id'         => entity.id,
+        'challenge'  => nil,
+        'name'       => nil,
+        'dungeon'    => new_dungeon,
+        'dungeon_id' => new_dungeon&.id
       }
     end
 

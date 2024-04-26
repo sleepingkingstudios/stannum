@@ -17,7 +17,7 @@ module Stannum::Associations
 
       def define_writer(association)
         schema.define_method(association.writer_name) do |value|
-          association.remove_value(self, nil)
+          association.remove_value(self, association.value(self))
 
           association.add_value(self, value)
         end
@@ -25,7 +25,7 @@ module Stannum::Associations
     end
 
     # (see Stannum::Association#add_value)
-    def add_value(entity, value)
+    def add_value(entity, value, update_inverse: true) # rubocop:disable Metrics/MethodLength
       if foreign_key?
         entity.write_attribute(
           foreign_key_name,
@@ -35,6 +35,14 @@ module Stannum::Associations
       end
 
       entity.write_association(name, value, safe: false)
+
+      return unless update_inverse && value && inverse?
+
+      previous_inverse = resolved_inverse.value(value)
+
+      resolved_inverse.remove_value(value, previous_inverse) if previous_inverse
+
+      resolved_inverse.add_value(value, entity, update_inverse: false)
     end
 
     # @return [Boolean] true if the association has a foreign key; otherwise
@@ -71,8 +79,18 @@ module Stannum::Associations
     end
 
     # (see Stannum::Association#remove_value)
-    def remove_value(entity, value)
-      return unless matching_value?(entity, value)
+    def remove_value(entity, value, update_inverse: true) # rubocop:disable Metrics/MethodLength
+      previous_value = entity.read_association(name, safe: false)
+
+      return unless matching_value?(value, previous_value)
+
+      if update_inverse && value && inverse?
+        resolved_inverse.remove_value(
+          previous_value,
+          entity,
+          update_inverse: false
+        )
+      end
 
       entity.write_attribute(foreign_key_name, nil, safe: false) if foreign_key?
 
@@ -86,9 +104,7 @@ module Stannum::Associations
 
     private
 
-    def matching_value?(entity, value)
-      previous_value = entity.read_association(name, safe: false)
-
+    def matching_value?(value, previous_value)
       return true if value == previous_value
 
       foreign_key? && (value == previous_value&.primary_key)

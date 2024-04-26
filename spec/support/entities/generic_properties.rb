@@ -23,8 +23,12 @@ module Spec::Support::Entities
       @properties.fetch(key.to_s) { super(key) }
     end
 
-    def inspectable_properties
-      super.merge(@properties)
+    def inspect_properties(**options)
+      return super unless options.fetch(:properties, true)
+
+      @properties.reduce(super) do |memo, (key, value)|
+        "#{memo} #{key}: #{value.inspect}"
+      end
     end
 
     def set_properties(properties, force:)
