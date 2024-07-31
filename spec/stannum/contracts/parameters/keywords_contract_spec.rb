@@ -32,7 +32,7 @@ RSpec.describe Stannum::Contracts::Parameters::KeywordsContract do
 
         be_a_constraint_definition(
           constraint: definition[:constraint],
-          contract:   contract,
+          contract:,
           options:    {
             default:       false,
             property_type: :key,
@@ -83,7 +83,7 @@ RSpec.describe Stannum::Contracts::Parameters::KeywordsContract do
 
         be_a_constraint_definition(
           constraint: definition[:constraint],
-          contract:   contract,
+          contract:,
           options:    {
             default:       false,
             property_type: :key,
@@ -170,9 +170,9 @@ RSpec.describe Stannum::Contracts::Parameters::KeywordsContract do
       let(:constraint) { Stannum::Constraints::Presence.new }
       let(:definition) do
         Stannum::Contracts::Definition.new(
-          constraint: constraint,
-          contract:   contract,
-          options:    options
+          constraint:,
+          contract:,
+          options:
         )
       end
 
@@ -188,7 +188,7 @@ RSpec.describe Stannum::Contracts::Parameters::KeywordsContract do
 
         expect(constraint)
           .to have_received(:errors_for)
-          .with(nil, errors: errors)
+          .with(nil, errors:)
       end
     end
   end
@@ -201,9 +201,9 @@ RSpec.describe Stannum::Contracts::Parameters::KeywordsContract do
       let(:constraint) { Stannum::Constraints::Presence.new }
       let(:definition) do
         Stannum::Contracts::Definition.new(
-          constraint: constraint,
-          contract:   contract,
-          options:    options
+          constraint:,
+          contract:,
+          options:
         )
       end
 
@@ -221,7 +221,7 @@ RSpec.describe Stannum::Contracts::Parameters::KeywordsContract do
 
         expect(constraint)
           .to have_received(:negated_errors_for)
-          .with(nil, errors: errors)
+          .with(nil, errors:)
       end
     end
   end
@@ -262,7 +262,7 @@ RSpec.describe Stannum::Contracts::Parameters::KeywordsContract do
 
         expect(definition).to be_a_constraint_definition(
           constraint: expected_constraint,
-          contract:   contract,
+          contract:,
           options:    {
             default:       false,
             property:      keyword,
@@ -293,7 +293,7 @@ RSpec.describe Stannum::Contracts::Parameters::KeywordsContract do
 
         expect(definition).to be_a_constraint_definition(
           constraint: expected_constraint,
-          contract:   contract,
+          contract:,
           options:    {
             default:       true,
             property:      keyword,
@@ -366,7 +366,7 @@ RSpec.describe Stannum::Contracts::Parameters::KeywordsContract do
 
         expect(definition).to be_a_constraint_definition(
           constraint: expected_constraint,
-          contract:   contract,
+          contract:,
           options:    {
             default:       false,
             property:      keyword,
@@ -390,8 +390,8 @@ RSpec.describe Stannum::Contracts::Parameters::KeywordsContract do
         contract.add_keyword_constraint(keyword, constraint)
 
         expect(definition).to be_a_constraint_definition(
-          constraint: constraint,
-          contract:   contract,
+          constraint:,
+          contract:,
           options:    {
             default:       false,
             property:      keyword,
@@ -438,12 +438,12 @@ RSpec.describe Stannum::Contracts::Parameters::KeywordsContract do
                         required:      true,
                         value_type:    nil
                       ),
-          contract:   contract,
+          contract:,
           options:    { property: nil, sanity: true }
         ),
         be_a_constraint_definition(
           constraint: delegator_definition,
-          contract:   contract,
+          contract:,
           options:    { property: nil, sanity: false }
         )
       ]
@@ -543,12 +543,12 @@ RSpec.describe Stannum::Contracts::Parameters::KeywordsContract do
                         required:      true,
                         value_type:    nil
                       ),
-          contract:   contract,
+          contract:,
           options:    { property: nil, sanity: true }
         ),
         be_a_constraint_definition(
           constraint: delegator_definition,
-          contract:   contract,
+          contract:,
           options:    { property: nil, sanity: false }
         )
       ]
@@ -685,7 +685,7 @@ RSpec.describe Stannum::Contracts::Parameters::KeywordsContract do
 
     describe 'with property type: :key' do
       let(:actual)  { { name: 'Self-sealing Stem Bolt' } }
-      let(:options) { { property: property, property_type: :key } }
+      let(:options) { { property:, property_type: :key } }
 
       context 'when the hash does not have the specified key' do
         let(:property) { :mass }
@@ -769,8 +769,8 @@ RSpec.describe Stannum::Contracts::Parameters::KeywordsContract do
       let(:constraint) { Stannum::Constraints::Presence.new }
       let(:definition) do
         Stannum::Contracts::Definition.new(
-          constraint: constraint,
-          options:    options
+          constraint:,
+          options:
         )
       end
 
@@ -815,8 +815,8 @@ RSpec.describe Stannum::Contracts::Parameters::KeywordsContract do
       let(:constraint) { Stannum::Constraints::Presence.new }
       let(:definition) do
         Stannum::Contracts::Definition.new(
-          constraint: constraint,
-          options:    options
+          constraint:,
+          options:
         )
       end
 

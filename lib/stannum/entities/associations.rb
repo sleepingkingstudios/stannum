@@ -386,16 +386,16 @@ module Stannum::Entities
         handle_invalid_properties(non_matching, as: 'association')
       end
 
-      write_associations(associations, force: force)
+      write_associations(associations, force:)
     end
 
     def set_properties(properties, force:)
       associations, non_matching =
         bisect_properties(properties, self.class.associations)
 
-      super(non_matching, force: force)
+      super(non_matching, force:)
 
-      write_associations(associations, force: force)
+      write_associations(associations, force:)
     end
 
     def set_property(key, value)

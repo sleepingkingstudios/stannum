@@ -52,9 +52,9 @@ module Stannum::Contracts
       &block
     )
       super(
-        allow_extra_keys: allow_extra_keys,
+        allow_extra_keys:,
         key_type:         Stannum::Constraints::Hashes::IndifferentKey.new,
-        value_type:       value_type,
+        value_type:,
         **options,
         &block
       )

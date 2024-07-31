@@ -15,8 +15,8 @@ module Stannum::RSpec
     # @return [Stannum::RSpec::ValidateParameterMatcher] the matcher.
     def validate_parameter(method_name, parameter_name)
       Stannum::RSpec::ValidateParameterMatcher.new(
-        method_name:    method_name,
-        parameter_name: parameter_name
+        method_name:,
+        parameter_name:
       )
     end
   end

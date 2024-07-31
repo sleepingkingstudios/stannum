@@ -32,7 +32,7 @@ module Stannum::Entities
         attributes.define(
           name:    attr_name,
           type:    attr_type,
-          options: options
+          options:
         )
 
         attr_name.intern
@@ -281,16 +281,16 @@ module Stannum::Entities
         handle_invalid_properties(non_matching, as: 'attribute')
       end
 
-      write_attributes(attributes, force: force)
+      write_attributes(attributes, force:)
     end
 
     def set_properties(properties, force:)
       attributes, non_matching =
         bisect_properties(properties, self.class.attributes)
 
-      super(non_matching, force: force)
+      super(non_matching, force:)
 
-      write_attributes(attributes, force: force)
+      write_attributes(attributes, force:)
     end
 
     def set_property(key, value)

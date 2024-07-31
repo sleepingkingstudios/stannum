@@ -27,7 +27,7 @@ module Stannum::Constraints
     def initialize(expected_value, **options)
       @expected_value = expected_value
 
-      super(expected_value: expected_value, **options)
+      super(expected_value:, **options)
     end
 
     # @return [Object] the expected object.

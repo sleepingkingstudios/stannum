@@ -10,7 +10,7 @@ RSpec.describe Stannum::Contracts::Definition do
     {
       constraint: Stannum::Constraints::Base.new,
       contract:   Stannum::Contracts::Base.new,
-      options:    options
+      options:
     }
   end
 
@@ -93,14 +93,14 @@ RSpec.describe Stannum::Contracts::Definition do
 
     context 'when property is a Array' do
       let(:property) { %i[factory gadget name] }
-      let(:options)  { super().merge(property: property) }
+      let(:options)  { super().merge(property:) }
 
       it { expect(definition.property).to be property }
     end
 
     context 'when property is a Symbol' do
       let(:property) { :name }
-      let(:options)  { super().merge(property: property) }
+      let(:options)  { super().merge(property:) }
 
       it { expect(definition.property).to be property }
     end
@@ -111,14 +111,14 @@ RSpec.describe Stannum::Contracts::Definition do
 
     context 'when property is a Array' do
       let(:property) { %i[factory gadget name] }
-      let(:options)  { super().merge(property: property) }
+      let(:options)  { super().merge(property:) }
 
       it { expect(definition.property_name).to be property }
     end
 
     context 'when property is a Symbol' do
       let(:property) { :name }
-      let(:options)  { super().merge(property: property) }
+      let(:options)  { super().merge(property:) }
 
       it { expect(definition.property_name).to be property }
     end
@@ -127,7 +127,7 @@ RSpec.describe Stannum::Contracts::Definition do
       let(:property)      { :name }
       let(:property_name) { %i[factory gadget name] }
       let(:options) do
-        super().merge(property: property, property_name: property_name)
+        super().merge(property:, property_name:)
       end
 
       it { expect(definition.property_name).to be property_name }
@@ -137,7 +137,7 @@ RSpec.describe Stannum::Contracts::Definition do
       let(:property)      { %i[factory gadget name] }
       let(:property_name) { :name }
       let(:options) do
-        super().merge(property: property, property_name: property_name)
+        super().merge(property:, property_name:)
       end
 
       it { expect(definition.property_name).to be property_name }

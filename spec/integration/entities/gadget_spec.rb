@@ -322,7 +322,7 @@ RSpec.describe Spec::Gadget do
     it { expect(gadget).to respond_to(:assign_attributes).with(1).argument }
 
     it 'should update the included values' do
-      expect { gadget.assign_attributes(description: description) }
+      expect { gadget.assign_attributes(description:) }
         .to change(gadget, :attributes)
         .to be == expected
     end
@@ -336,7 +336,7 @@ RSpec.describe Spec::Gadget do
       end
 
       it 'should update the included values' do
-        expect { gadget.assign_attributes(description: description) }
+        expect { gadget.assign_attributes(description:) }
           .to change(gadget, :attributes)
           .to be == expected
       end
@@ -369,7 +369,7 @@ RSpec.describe Spec::Gadget do
       'A self-sealing stem bolt is the entrepreneurial opportunity of a ' \
         'lifetime.'
     end
-    let(:hsh) { { description: description, quantity: nil } }
+    let(:hsh) { { description:, quantity: nil } }
     let(:expected) do
       {
         'id'          => nil,

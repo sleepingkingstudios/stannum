@@ -18,7 +18,7 @@ RSpec.describe Stannum::Constraints::Union do
     ]
   end
   let(:constructor_options) { {} }
-  let(:expected_options)    { { expected_constraints: expected_constraints } }
+  let(:expected_options)    { { expected_constraints: } }
 
   describe '::NEGATED_TYPE' do
     include_examples 'should define frozen constant',

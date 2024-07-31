@@ -37,7 +37,7 @@ module Stannum::Constraints::Properties
       super(
         allow_empty:    !!options[:allow_empty],
         allow_nil:      !!options[:allow_nil],
-        property_names: property_names,
+        property_names:,
         **options
       )
     end

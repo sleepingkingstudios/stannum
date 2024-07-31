@@ -26,10 +26,10 @@ Gem::Specification.new do |gem|
     'rubygems_mfa_required' => 'true'
   }
 
-  gem.required_ruby_version = '>= 2.7'
+  gem.required_ruby_version = '>= 3.1'
   gem.require_path          = 'lib'
   gem.files                 =
     Dir['config/locales/*', 'lib/**/*.rb', 'LICENSE', '*.md']
 
-  gem.add_runtime_dependency 'sleeping_king_studios-tools', '~> 1.1.0'
+  gem.add_dependency 'sleeping_king_studios-tools', '~> 1.1'
 end

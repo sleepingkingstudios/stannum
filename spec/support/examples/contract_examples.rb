@@ -46,9 +46,9 @@ module Spec::Support::Examples
 
       def build_definition(constraint, index, **options)
         Stannum::Contracts::Definition.new(
-          constraint: constraint,
+          constraint:,
           contract:   Stannum::Contracts::Base.new,
-          options:    { index: index, **options }
+          options:    { index:, **options }
         )
       end
 

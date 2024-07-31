@@ -40,7 +40,7 @@ module Stannum::Constraints::Hashes
 
       expected_keys = Set.new(expected_keys) if expected_keys.is_a?(Array)
 
-      super(expected_keys: expected_keys, **options)
+      super(expected_keys:, **options)
     end
 
     # @return [true, false] true if the object responds to #[] and #keys and the
@@ -56,13 +56,13 @@ module Stannum::Constraints::Hashes
       errors ||= Stannum::Errors.new
 
       unless actual.respond_to?(:keys)
-        return add_invalid_hash_error(actual: actual, errors: errors)
+        return add_invalid_hash_error(actual:, errors:)
       end
 
       each_extra_key(actual) do |key, value|
         key = Stannum::Support::Coercion.error_key(key)
 
-        errors[key].add(type, value: value)
+        errors[key].add(type, value:)
       end
 
       errors
@@ -91,7 +91,7 @@ module Stannum::Constraints::Hashes
     def add_invalid_hash_error(actual:, errors:)
       Stannum::Constraints::Signature
         .new(:keys)
-        .errors_for(actual, errors: errors)
+        .errors_for(actual, errors:)
     end
 
     def each_extra_key(actual)

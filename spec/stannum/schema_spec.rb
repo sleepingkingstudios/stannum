@@ -50,8 +50,8 @@ RSpec.describe Stannum::Schema do
     let(:parent_properties) do
       described_class
         .new(
-          property_class: property_class,
-          property_name:  property_name
+          property_class:,
+          property_name:
         )
         .tap do |parent_properties|
           if defined?(grandparent_properties)
@@ -81,8 +81,8 @@ RSpec.describe Stannum::Schema do
     end
     let(:grandparent_properties) do
       described_class.new(
-        property_class: property_class,
-        property_name:  property_name
+        property_class:,
+        property_name:
       )
     end
 
@@ -96,8 +96,8 @@ RSpec.describe Stannum::Schema do
   subject(:schema) do
     described_class
       .new(
-        property_class: property_class,
-        property_name:  property_name
+        property_class:,
+        property_name:
       )
       .tap do |schema|
         schema.include(parent_properties) if defined?(parent_properties)
@@ -149,7 +149,7 @@ RSpec.describe Stannum::Schema do
         expect do
           described_class.new(
             property_class: Object.new.freeze,
-            property_name:  property_name
+            property_name:
           )
         end
           .to raise_error ArgumentError, error_message
@@ -162,7 +162,7 @@ RSpec.describe Stannum::Schema do
       it 'should raise an exception' do
         expect do
           described_class.new(
-            property_class: property_class,
+            property_class:,
             property_name:  nil
           )
         end
@@ -176,7 +176,7 @@ RSpec.describe Stannum::Schema do
       it 'should raise an exception' do
         expect do
           described_class.new(
-            property_class: property_class,
+            property_class:,
             property_name:  Object.new.freeze
           )
         end
@@ -190,7 +190,7 @@ RSpec.describe Stannum::Schema do
       it 'should raise an exception' do
         expect do
           described_class.new(
-            property_class: property_class,
+            property_class:,
             property_name:  ''
           )
         end
@@ -204,7 +204,7 @@ RSpec.describe Stannum::Schema do
       it 'should raise an exception' do
         expect do
           described_class.new(
-            property_class: property_class,
+            property_class:,
             property_name:  :''
           )
         end
@@ -355,7 +355,7 @@ RSpec.describe Stannum::Schema do
     let(:name)     { 'price' }
     let(:options)  { { default: BigDecimal('9.99') } }
     let(:type)     { BigDecimal }
-    let(:property) { schema.define(name: name, options: options, type: type) }
+    let(:property) { schema.define(name:, options:, type:) }
     let(:builder)  { instance_double(property_class::Builder, call: nil) }
 
     before(:example) do
@@ -378,13 +378,13 @@ RSpec.describe Stannum::Schema do
     it { expect(property.type).to be == type }
 
     it 'should add the property' do
-      expect { schema.define(name: name, options: options, type: type) }
+      expect { schema.define(name:, options:, type:) }
         .to change(schema.each, :size)
         .by 1
     end
 
     it 'should call the builder', :aggregate_failures do
-      schema.define(name: name, options: options, type: type)
+      schema.define(name:, options:, type:)
 
       property = schema[name]
 
@@ -399,9 +399,9 @@ RSpec.describe Stannum::Schema do
       def define_property
         schema.define(
           definition_class: Spec::CustomProperty,
-          name:             name,
-          options:          options,
-          type:             type
+          name:,
+          options:,
+          type:
         )
       end
 
@@ -453,24 +453,24 @@ RSpec.describe Stannum::Schema do
       end
 
       before(:example) do
-        schema.define(name: name, options: {}, type: 'Object')
+        schema.define(name:, options: {}, type: 'Object')
       end
 
       it 'should raise an error' do
-        expect { schema.define(name: name, options: options, type: type) }
+        expect { schema.define(name:, options:, type:) }
           .to raise_error ArgumentError, error_message
       end
     end
 
     wrap_context 'when there are many defined properties' do
       it 'should add the property' do
-        expect { schema.define(name: name, options: options, type: type) }
+        expect { schema.define(name:, options:, type:) }
           .to change(schema.each, :size)
           .by 1
       end
 
       it 'should call the builder', :aggregate_failures do
-        schema.define(name: name, options: options, type: type)
+        schema.define(name:, options:, type:)
 
         property = schema[name]
 
@@ -488,9 +488,9 @@ RSpec.describe Stannum::Schema do
         def define_property
           schema.define(
             definition_class: Spec::CustomProperty,
-            name:             name,
-            options:          options,
-            type:             type
+            name:,
+            options:,
+            type:
           )
         end
 

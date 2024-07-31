@@ -22,7 +22,7 @@ module Stannum::Constraints::Properties
 
       validate_reference_name
 
-      super(*property_names, reference_name: reference_name, **options)
+      super(*property_names, reference_name:, **options)
     end
 
     # @return [String, Symbol] the name of the reference property to compare to.
@@ -39,9 +39,9 @@ module Stannum::Constraints::Properties
       unless block_given?
         return to_enum(
           __method__,
-          actual:      actual,
-          expected:    expected,
-          include_all: include_all
+          actual:,
+          expected:,
+          include_all:
         )
       end
 
@@ -65,9 +65,9 @@ module Stannum::Constraints::Properties
       unless block_given?
         return to_enum(
           __method__,
-          actual:      actual,
-          expected:    expected,
-          include_all: include_all
+          actual:,
+          expected:,
+          include_all:
         )
       end
 

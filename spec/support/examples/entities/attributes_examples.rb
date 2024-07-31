@@ -257,7 +257,7 @@ module Spec::Support::Examples::Entities
 
         describe 'with options: { default: Proc }' do
           let(:default) { -> { '00000000-0000-0000-0000-000000000000' } }
-          let(:options) { super().merge(default: default) }
+          let(:options) { super().merge(default:) }
 
           include_examples 'should define the attribute'
 
@@ -2101,11 +2101,11 @@ module Spec::Support::Examples::Entities
                 shipping_label = 'Can of Headlight Fluid (1000) [1983-05-23]'
 
                 {
-                  description:    description,
+                  description:,
                   name:           'Can of Headlight Fluid',
                   quantity:       1_000,
                   creation_date:  '1983-05-23',
-                  shipping_label: shipping_label
+                  shipping_label:
                 }
               end
               let(:expected) do
@@ -3793,11 +3793,11 @@ module Spec::Support::Examples::Entities
                 shipping_label = 'Can of Headlight Fluid (1000) [1983-05-23]'
 
                 {
-                  description:    description,
+                  description:,
                   name:           'Can of Headlight Fluid',
                   quantity:       1_000,
                   creation_date:  '1983-05-23',
-                  shipping_label: shipping_label
+                  shipping_label:
                 }
               end
               let(:expected) do

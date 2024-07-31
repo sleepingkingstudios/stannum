@@ -103,7 +103,7 @@ module Stannum::Contracts::Parameters
       type       = coerce_item_type(item_type)
       constraint = Stannum::Constraints::Types::ArrayType.new(item_type: type)
 
-      set_variadic_constraint(constraint, as: as)
+      set_variadic_constraint(constraint, as:)
     end
 
     protected

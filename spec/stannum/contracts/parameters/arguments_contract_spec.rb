@@ -31,7 +31,7 @@ RSpec.describe Stannum::Contracts::Parameters::ArgumentsContract do
 
         be_a_constraint_definition(
           constraint: definition[:constraint].with_options(**options),
-          contract:   contract,
+          contract:,
           options:    {
             default:       false,
             property:      index,
@@ -78,8 +78,8 @@ RSpec.describe Stannum::Contracts::Parameters::ArgumentsContract do
           definition[:constraint].with_options(**constraint_options)
 
         be_a_constraint_definition(
-          constraint: constraint,
-          contract:   contract,
+          constraint:,
+          contract:,
           options:    {
             default:       false,
             property:      index,
@@ -175,7 +175,7 @@ RSpec.describe Stannum::Contracts::Parameters::ArgumentsContract do
 
         expect(definition).to be_a_constraint_definition(
           constraint: expected_constraint,
-          contract:   contract,
+          contract:,
           options:    {
             default:       false,
             property:      0,
@@ -204,7 +204,7 @@ RSpec.describe Stannum::Contracts::Parameters::ArgumentsContract do
 
         expect(definition).to be_a_constraint_definition(
           constraint: expected_constraint,
-          contract:   contract,
+          contract:,
           options:    {
             default:       true,
             property:      0,
@@ -233,7 +233,7 @@ RSpec.describe Stannum::Contracts::Parameters::ArgumentsContract do
 
         expect(definition).to be_a_constraint_definition(
           constraint: expected_constraint,
-          contract:   contract,
+          contract:,
           options:    {
             default:       false,
             property:      0,
@@ -249,7 +249,7 @@ RSpec.describe Stannum::Contracts::Parameters::ArgumentsContract do
 
           expect(definition).to be_a_constraint_definition(
             constraint: expected_constraint,
-            contract:   contract,
+            contract:,
             options:    {
               default:       false,
               property:      constraints.size,
@@ -291,7 +291,7 @@ RSpec.describe Stannum::Contracts::Parameters::ArgumentsContract do
 
         expect(definition).to be_a_constraint_definition(
           constraint: expected_constraint,
-          contract:   contract,
+          contract:,
           options:    {
             default:       false,
             property:      3,
@@ -342,7 +342,7 @@ RSpec.describe Stannum::Contracts::Parameters::ArgumentsContract do
 
         expect(definition).to be_a_constraint_definition(
           constraint: expected_constraint,
-          contract:   contract,
+          contract:,
           options:    {
             default:       false,
             property:      0,
@@ -366,8 +366,8 @@ RSpec.describe Stannum::Contracts::Parameters::ArgumentsContract do
         contract.add_argument_constraint(nil, constraint)
 
         expect(definition).to be_a_constraint_definition(
-          constraint: constraint,
-          contract:   contract,
+          constraint:,
+          contract:,
           options:    {
             default:       false,
             property:      0,
@@ -397,7 +397,7 @@ RSpec.describe Stannum::Contracts::Parameters::ArgumentsContract do
 
         expect(definition).to be_a_constraint_definition(
           constraint: expected_constraint,
-          contract:   contract,
+          contract:,
           options:    {
             default:       false,
             property:      0,
@@ -418,9 +418,9 @@ RSpec.describe Stannum::Contracts::Parameters::ArgumentsContract do
       let(:constraint) { Stannum::Constraints::Presence.new }
       let(:definition) do
         Stannum::Contracts::Definition.new(
-          constraint: constraint,
-          contract:   contract,
-          options:    options
+          constraint:,
+          contract:,
+          options:
         )
       end
 
@@ -436,7 +436,7 @@ RSpec.describe Stannum::Contracts::Parameters::ArgumentsContract do
 
         expect(constraint)
           .to have_received(:errors_for)
-          .with(nil, errors: errors)
+          .with(nil, errors:)
       end
     end
   end
@@ -449,9 +449,9 @@ RSpec.describe Stannum::Contracts::Parameters::ArgumentsContract do
       let(:constraint) { Stannum::Constraints::Presence.new }
       let(:definition) do
         Stannum::Contracts::Definition.new(
-          constraint: constraint,
-          contract:   contract,
-          options:    options
+          constraint:,
+          contract:,
+          options:
         )
       end
 
@@ -469,7 +469,7 @@ RSpec.describe Stannum::Contracts::Parameters::ArgumentsContract do
 
         expect(constraint)
           .to have_received(:negated_errors_for)
-          .with(nil, errors: errors)
+          .with(nil, errors:)
       end
     end
   end
@@ -499,12 +499,12 @@ RSpec.describe Stannum::Contracts::Parameters::ArgumentsContract do
       [
         be_a_constraint_definition(
           constraint: be_a_constraint(Stannum::Constraints::Signatures::Tuple),
-          contract:   contract,
+          contract:,
           options:    { property: nil, sanity: true }
         ),
         be_a_constraint_definition(
           constraint: delegator_definition,
-          contract:   contract,
+          contract:,
           options:    { property: nil, sanity: false }
         )
       ]
@@ -588,12 +588,12 @@ RSpec.describe Stannum::Contracts::Parameters::ArgumentsContract do
       [
         be_a_constraint_definition(
           constraint: be_a_constraint(Stannum::Constraints::Signatures::Tuple),
-          contract:   contract,
+          contract:,
           options:    { property: nil, sanity: true }
         ),
         be_a_constraint_definition(
           constraint: delegator_definition,
-          contract:   contract,
+          contract:,
           options:    { property: nil, sanity: false }
         )
       ]
@@ -803,8 +803,8 @@ RSpec.describe Stannum::Contracts::Parameters::ArgumentsContract do
       let(:constraint) { Stannum::Constraints::Presence.new }
       let(:definition) do
         Stannum::Contracts::Definition.new(
-          constraint: constraint,
-          options:    options
+          constraint:,
+          options:
         )
       end
 
@@ -849,8 +849,8 @@ RSpec.describe Stannum::Contracts::Parameters::ArgumentsContract do
       let(:constraint) { Stannum::Constraints::Presence.new }
       let(:definition) do
         Stannum::Contracts::Definition.new(
-          constraint: constraint,
-          options:    options
+          constraint:,
+          options:
         )
       end
 

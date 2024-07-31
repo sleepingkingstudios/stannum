@@ -27,13 +27,13 @@ RSpec.describe Stannum::Attribute do
   shared_context 'with default: Proc' do
     let(:default) { -> { 'No one is quite sure what this does.' } }
 
-    before(:example) { options.update(default: default) }
+    before(:example) { options.update(default:) }
   end
 
   shared_context 'with default: value' do
     let(:default) { 'No one is quite sure what this does.' }
 
-    before(:example) { options.update(default: default) }
+    before(:example) { options.update(default:) }
   end
 
   shared_context 'with primary_key: false' do
@@ -45,7 +45,7 @@ RSpec.describe Stannum::Attribute do
   end
 
   subject(:attribute) do
-    described_class.new(name: name, type: type, options: options)
+    described_class.new(name:, type:, options:)
   end
 
   let(:constructor_options) do
@@ -68,7 +68,7 @@ RSpec.describe Stannum::Attribute do
 
     describe '#call' do
       let(:attribute) do
-        described_class.new(name: name, type: type, options: options)
+        described_class.new(name:, type:, options:)
       end
 
       it { expect(builder).to respond_to(:call).with(1).argument }
@@ -103,7 +103,7 @@ RSpec.describe Stannum::Attribute do
 
     describe 'with name: nil' do
       it 'should raise an error' do
-        expect { described_class.new(name: nil, type: type, options: options) }
+        expect { described_class.new(name: nil, type:, options:) }
           .to raise_error ArgumentError, "name can't be blank"
       end
     end
@@ -113,8 +113,8 @@ RSpec.describe Stannum::Attribute do
         expect do
           described_class.new(
             name:    Object.new.freeze,
-            type:    type,
-            options: options
+            type:,
+            options:
           )
         end
           .to raise_error ArgumentError, 'name is not a String or a Symbol'
@@ -123,14 +123,14 @@ RSpec.describe Stannum::Attribute do
 
     describe 'with name: empty String' do
       it 'should raise an error' do
-        expect { described_class.new(name: '', type: type, options: options) }
+        expect { described_class.new(name: '', type:, options:) }
           .to raise_error ArgumentError, "name can't be blank"
       end
     end
 
     describe 'with name: empty Symbol' do
       it 'should raise an error' do
-        expect { described_class.new(name: :'', type: type, options: options) }
+        expect { described_class.new(name: :'', type:, options:) }
           .to raise_error ArgumentError, "name can't be blank"
       end
     end
@@ -138,7 +138,7 @@ RSpec.describe Stannum::Attribute do
     describe 'with options: nil' do
       it 'should set the options to a default hash' do
         expect(
-          described_class.new(name: name, type: type, options: nil).options
+          described_class.new(name:, type:, options: nil).options
         ).to be == { required: true }
       end
     end
@@ -147,8 +147,8 @@ RSpec.describe Stannum::Attribute do
       it 'should raise an error' do
         expect do
           described_class.new(
-            name:    name,
-            type:    type,
+            name:,
+            type:,
             options: Object.new.freeze
           )
         end
@@ -158,7 +158,7 @@ RSpec.describe Stannum::Attribute do
 
     describe 'with type: nil' do
       it 'should raise an error' do
-        expect { described_class.new(name: name, type: nil, options: options) }
+        expect { described_class.new(name:, type: nil, options:) }
           .to raise_error ArgumentError, "type can't be blank"
       end
     end
@@ -167,9 +167,9 @@ RSpec.describe Stannum::Attribute do
       it 'should raise an error' do
         expect do
           described_class.new(
-            name:    name,
+            name:,
             type:    Object.new.freeze,
-            options: options
+            options:
           )
         end
           .to raise_error ArgumentError,
@@ -179,7 +179,7 @@ RSpec.describe Stannum::Attribute do
 
     describe 'with type: an empty String' do
       it 'should raise an error' do
-        expect { described_class.new(name: name, type: '', options: options) }
+        expect { described_class.new(name:, type: '', options:) }
           .to raise_error ArgumentError, "type can't be blank"
       end
     end
@@ -239,7 +239,7 @@ RSpec.describe Stannum::Attribute do
       let(:type)    { Integer }
       let(:default) { -> { 0 } }
       let(:value)   { 500 }
-      let(:options) { super().merge(default: default) }
+      let(:options) { super().merge(default:) }
 
       context 'when the attribute has a value' do
         let(:attributes) { { 'quantity' => 1_000 } }
@@ -267,7 +267,7 @@ RSpec.describe Stannum::Attribute do
       let(:type)    { Integer }
       let(:default) { 0 }
       let(:value)   { 500 }
-      let(:options) { super().merge(default: default) }
+      let(:options) { super().merge(default:) }
 
       context 'when the attribute has a value' do
         let(:attributes) { { 'quantity' => 1_000 } }

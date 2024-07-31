@@ -49,8 +49,8 @@ module Stannum::Constraints::Properties
       return false if skip_property?(expected)
 
       each_non_matching_property(
-        actual:      actual,
-        expected:    expected,
+        actual:,
+        expected:,
         include_all: true
       )
         .none?
@@ -63,12 +63,12 @@ module Stannum::Constraints::Properties
       return invalid_object_errors(errors) unless can_match_properties?(actual)
 
       expected = expected_value(actual)
-      matching = each_matching_property(actual: actual, expected: expected)
+      matching = each_matching_property(actual:, expected:)
 
       return generic_errors(errors) if matching.count.zero?
 
       matching.each do |property_name, _| # rubocop:disable Style/HashEachMethods
-        errors[property_name].add(type, message: message)
+        errors[property_name].add(type, message:)
       end
 
       errors
@@ -83,7 +83,7 @@ module Stannum::Constraints::Properties
 
       return true if skip_property?(expected)
 
-      each_matching_property(actual: actual, expected: expected).none?
+      each_matching_property(actual:, expected:).none?
     end
     alias match? matches?
 
@@ -95,8 +95,8 @@ module Stannum::Constraints::Properties
 
       expected = expected_value(actual)
       matching = each_non_matching_property(
-        actual:      actual,
-        expected:    expected,
+        actual:,
+        expected:,
         include_all: true
       )
 

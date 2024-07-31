@@ -8,7 +8,7 @@ RSpec.describe Stannum::Association do
   include Spec::Support::Examples::AssociationExamples
 
   subject(:association) do
-    described_class.new(name: name, type: type, options: options)
+    described_class.new(name:, type:, options:)
   end
 
   let(:constructor_options) do

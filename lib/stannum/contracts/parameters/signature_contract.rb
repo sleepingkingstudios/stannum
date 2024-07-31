@@ -13,7 +13,7 @@ module Stannum::Contracts::Parameters
 
     private
 
-    def define_constraints(&block)
+    def define_constraints(&)
       super
 
       add_key_constraint :arguments,

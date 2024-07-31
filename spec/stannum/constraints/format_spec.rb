@@ -17,7 +17,7 @@ RSpec.describe Stannum::Constraints::Format do
 
   let(:expected_format)     { 'Greetings' }
   let(:constructor_options) { {} }
-  let(:expected_options)    { { expected_format: expected_format } }
+  let(:expected_options)    { { expected_format: } }
 
   describe '::NEGATED_TYPE' do
     include_examples 'should define frozen constant',

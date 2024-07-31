@@ -12,7 +12,7 @@ require 'support/entities/gizmo'
 RSpec.describe Spec::BuildGadget do
   include Stannum::RSpec::Matchers
 
-  subject(:command) { described_class.new(factory: factory) }
+  subject(:command) { described_class.new(factory:) }
 
   let(:factory) { Spec::Factory.new }
 
@@ -67,11 +67,11 @@ RSpec.describe Spec::BuildGadget do
 
     describe 'with factory: a factory instance' do
       it 'should initialize the command' do
-        expect(described_class.new(factory: factory)).to be_a described_class
+        expect(described_class.new(factory:)).to be_a described_class
       end
 
       it 'should call the constructor' do
-        expect(described_class.new(factory: factory).factory).to be factory
+        expect(described_class.new(factory:).factory).to be factory
       end
     end
   end
@@ -88,7 +88,7 @@ RSpec.describe Spec::BuildGadget do
       contract.errors_for(
         {
           arguments: [],
-          keywords:  keywords,
+          keywords:,
           block:     nil
         }
       )

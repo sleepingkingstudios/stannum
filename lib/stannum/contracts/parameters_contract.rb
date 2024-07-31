@@ -320,8 +320,8 @@ module Stannum::Contracts
       #     constraint, otherwise false.
       #
       #   @return [Stannum::Contracts::ParametersContract::Builder] the builder.
-      def keyword(name, type = nil, **options, &block)
-        type = resolve_constraint_or_type(type, **options, &block)
+      def keyword(name, type = nil, **options, &)
+        type = resolve_constraint_or_type(type, **options, &)
 
         contract.add_keyword_constraint(
           name,
@@ -515,8 +515,8 @@ module Stannum::Contracts
       end
     end
 
-    def define_constraints(&block)
-      super(&block)
+    def define_constraints(&)
+      super
 
       add_key_constraint :arguments, arguments_contract
       add_key_constraint :keywords,  keywords_contract

@@ -70,7 +70,7 @@ RSpec.describe Spec::LengthConstraint do
 
   describe '#errors_for' do
     let(:errors) do
-      constraint.errors_for(actual).with_messages(strategy: strategy)
+      constraint.errors_for(actual).with_messages(strategy:)
     end
     let(:expected_errors) do
       [
@@ -127,7 +127,7 @@ RSpec.describe Spec::LengthConstraint do
   describe '#match' do
     let(:status) { Array(constraint.match(actual))[0] }
     let(:errors) do
-      Array(constraint.match(actual))[1].with_messages(strategy: strategy)
+      Array(constraint.match(actual))[1].with_messages(strategy:)
     end
     let(:expected_errors) do
       [
@@ -231,7 +231,7 @@ RSpec.describe Spec::LengthConstraint do
 
   describe '#negated_errors_for' do
     let(:errors) do
-      constraint.negated_errors_for(actual).with_messages(strategy: strategy)
+      constraint.negated_errors_for(actual).with_messages(strategy:)
     end
     let(:expected_errors) do
       [
@@ -285,7 +285,7 @@ RSpec.describe Spec::LengthConstraint do
     let(:status) { Array(constraint.negated_match(actual))[0] }
     let(:errors) do
       Array(constraint.negated_match(actual))[1]
-        .with_messages(strategy: strategy)
+        .with_messages(strategy:)
     end
     let(:expected_errors) do
       [

@@ -326,7 +326,7 @@ module Stannum
     #     .add(:not_integer, message: 'is outside the range')
     #     .add(:not_in_range)
     def add(type, message: nil, **data)
-      error  = build_error(data: data, message: message, type: type)
+      error  = build_error(data:, message:, type:)
       hashed = error.hash
 
       return self if @cache.include?(hashed)
@@ -592,14 +592,12 @@ module Stannum
 
     protected
 
-    def each_error(&block)
+    def each_error(&)
       return enum_for(:each_error) unless block_given?
 
-      @errors.each(&block)
+      @errors.each(&)
 
-      @children.each_value do |child|
-        child.each_error(&block)
-      end
+      @children.each_value { |child| child.each_error(&) }
     end
 
     def update_errors(other_errors)
@@ -621,7 +619,7 @@ module Stannum
       type = normalize_type(type)
       msg  = normalize_message(message)
 
-      { data: data, message: msg, type: type }
+      { data:, message: msg, type: }
     end
 
     def compare_hashed_errors(other_errors)
@@ -669,7 +667,7 @@ module Stannum
       child = self.class.new
 
       ary.each do |item|
-        err  = normalize_array_item(item, allow_nil: allow_nil)
+        err  = normalize_array_item(item, allow_nil:)
         data = err.fetch(:data, {})
         path = err.fetch(:path, [])
 
@@ -708,9 +706,7 @@ module Stannum
 
       return value.dup if value.is_a?(self.class)
 
-      if value.is_a?(Array)
-        return normalize_array_value(value, allow_nil: allow_nil)
-      end
+      return normalize_array_value(value, allow_nil:) if value.is_a?(Array)
 
       raise ArgumentError, invalid_value_error(allow_nil)
     end

@@ -154,7 +154,7 @@ RSpec.describe Stannum::Messages::DefaultStrategy do
 
     context 'when initialized with locale: value' do
       let(:locale)              { 'en-gb' }
-      let(:constructor_options) { super().merge(locale: locale) }
+      let(:constructor_options) { super().merge(locale:) }
       let(:configuration) do
         super().merge(
           {
@@ -303,7 +303,7 @@ RSpec.describe Stannum::Messages::DefaultStrategy do
 
     context 'when initialized with locale: value' do
       let(:locale)              { 'en-gb' }
-      let(:constructor_options) { super().merge(locale: locale) }
+      let(:constructor_options) { super().merge(locale:) }
 
       include_examples 'should delegate to a loader'
     end
@@ -314,7 +314,7 @@ RSpec.describe Stannum::Messages::DefaultStrategy do
 
     context 'when initialized with locale: value' do
       let(:locale)              { 'en-gb' }
-      let(:constructor_options) { super().merge(locale: locale) }
+      let(:constructor_options) { super().merge(locale:) }
 
       it { expect(strategy.locale).to be == locale }
     end
@@ -328,7 +328,7 @@ RSpec.describe Stannum::Messages::DefaultStrategy do
     context 'when initialized with load_paths: an empty Array' do
       let(:load_paths) { [] }
       let(:constructor_options) do
-        super().merge(load_paths: load_paths)
+        super().merge(load_paths:)
       end
 
       it { expect(strategy.load_paths).to be == load_paths }
@@ -337,7 +337,7 @@ RSpec.describe Stannum::Messages::DefaultStrategy do
     context 'when initialized with load_paths: a filename' do
       let(:load_paths) { '/path/to/config/locales.rb' }
       let(:constructor_options) do
-        super().merge(load_paths: load_paths)
+        super().merge(load_paths:)
       end
 
       it { expect(strategy.load_paths).to be == [load_paths] }
@@ -352,7 +352,7 @@ RSpec.describe Stannum::Messages::DefaultStrategy do
         ]
       end
       let(:constructor_options) do
-        super().merge(load_paths: load_paths)
+        super().merge(load_paths:)
       end
 
       it { expect(strategy.load_paths).to be == load_paths }
@@ -461,7 +461,7 @@ RSpec.describe Stannum::Messages::DefaultStrategy do
 
     context 'when initialized with locale: value' do
       let(:locale)              { 'en-gb' }
-      let(:constructor_options) { super().merge(locale: locale) }
+      let(:constructor_options) { super().merge(locale:) }
 
       include_examples 'should delegate to a loader'
     end

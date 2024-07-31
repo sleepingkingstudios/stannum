@@ -57,7 +57,7 @@ RSpec.describe Spec::UuidContract do
 
   describe '#errors_for' do
     let(:errors) do
-      contract.errors_for(actual).with_messages(strategy: strategy)
+      contract.errors_for(actual).with_messages(strategy:)
     end
 
     describe 'with an object that does not match any constraints' do
@@ -124,7 +124,7 @@ RSpec.describe Spec::UuidContract do
   describe '#match' do
     let(:status) { Array(contract.match(actual))[0] }
     let(:errors) do
-      Array(contract.match(actual))[1].with_messages(strategy: strategy)
+      Array(contract.match(actual))[1].with_messages(strategy:)
     end
 
     describe 'with an object that does not match any constraints' do
@@ -220,7 +220,7 @@ RSpec.describe Spec::UuidContract do
 
   describe '#negated_errors_for' do
     let(:errors) do
-      contract.negated_errors_for(actual).with_messages(strategy: strategy)
+      contract.negated_errors_for(actual).with_messages(strategy:)
     end
 
     describe 'with an object that does not match any constraints' do
@@ -283,7 +283,7 @@ RSpec.describe Spec::UuidContract do
   describe '#negated_match' do
     let(:status) { Array(contract.negated_match(actual))[0] }
     let(:errors) do
-      Array(contract.negated_match(actual))[1].with_messages(strategy: strategy)
+      Array(contract.negated_match(actual))[1].with_messages(strategy:)
     end
 
     describe 'with an object that does not match any constraints' do

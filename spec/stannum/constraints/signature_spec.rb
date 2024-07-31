@@ -13,7 +13,7 @@ RSpec.describe Stannum::Constraints::Signature do
 
   let(:expected_methods)    { %i[[] each size] }
   let(:constructor_options) { {} }
-  let(:expected_options)    { { expected_methods: expected_methods } }
+  let(:expected_options)    { { expected_methods: } }
 
   describe '::NEGATED_TYPE' do
     include_examples 'should define frozen constant',

@@ -126,11 +126,11 @@ module Stannum
         self::MethodValidations.define_method(method_name) \
         do |*arguments, **keywords, &block|
           result = match_parameters_to_contract(
-            arguments:   arguments,
-            block:       block,
-            contract:    contract,
-            keywords:    keywords,
-            method_name: method_name
+            arguments:,
+            block:,
+            contract:,
+            keywords:,
+            method_name:
           )
 
           return result unless result == VALIDATION_SUCCESS
@@ -199,17 +199,17 @@ module Stannum
     )
       match, errors = contract.match(
         {
-          arguments: arguments,
-          keywords:  keywords,
-          block:     block
+          arguments:,
+          keywords:,
+          block:
         }
       )
 
       return VALIDATION_SUCCESS if match
 
       handle_invalid_parameters(
-        errors:      errors,
-        method_name: method_name
+        errors:,
+        method_name:
       )
     end
   end

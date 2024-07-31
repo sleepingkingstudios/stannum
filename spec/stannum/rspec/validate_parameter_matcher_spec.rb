@@ -5,8 +5,8 @@ require 'stannum/rspec/validate_parameter_matcher'
 RSpec.describe Stannum::RSpec::ValidateParameterMatcher do
   subject(:matcher) do
     described_class.new(
-      method_name:    method_name,
-      parameter_name: parameter_name
+      method_name:,
+      parameter_name:
     )
   end
 
@@ -100,7 +100,7 @@ RSpec.describe Stannum::RSpec::ValidateParameterMatcher do
   describe '.map_parameters' do
     let(:actual) { Spec::ExampleCommand.new }
     let(:parameters) do
-      described_class.map_parameters(actual: actual, method_name: method_name)
+      described_class.map_parameters(actual:, method_name:)
     end
     let(:expected) do
       [
@@ -581,7 +581,7 @@ RSpec.describe Stannum::RSpec::ValidateParameterMatcher do
 
         expect(described_class)
           .to have_received(:map_parameters)
-          .with(actual: actual, method_name: method_name)
+          .with(actual:, method_name:)
           .at_least(1).times
           .at_most(2).times
       end
@@ -743,7 +743,7 @@ RSpec.describe Stannum::RSpec::ValidateParameterMatcher do
               do |klass|
                 klass.define_method :errors_for do |actual, errors: nil|
                   (errors || Stannum::Errors.new)
-                    .add(type, message: message, value: actual.class.name)
+                    .add(type, message:, value: actual.class.name)
                 end
               end
 
@@ -846,7 +846,7 @@ RSpec.describe Stannum::RSpec::ValidateParameterMatcher do
               do |klass|
                 klass.define_method :errors_for do |actual, errors: nil|
                   (errors || Stannum::Errors.new)
-                    .add(type, message: message, value: actual.class.name)
+                    .add(type, message:, value: actual.class.name)
                 end
               end
 
@@ -1276,7 +1276,7 @@ RSpec.describe Stannum::RSpec::ValidateParameterMatcher do
 
           match_parameters_to_contract(
             arguments:   [value],
-            contract:    contract,
+            contract:,
             method_name: :call
           )
 
@@ -1297,7 +1297,7 @@ RSpec.describe Stannum::RSpec::ValidateParameterMatcher do
 
         expect(described_class)
           .to have_received(:map_parameters)
-          .with(actual: actual, method_name: method_name)
+          .with(actual:, method_name:)
           .at_least(1).times
           .at_most(2).times
       end

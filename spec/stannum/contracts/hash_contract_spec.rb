@@ -31,7 +31,7 @@ RSpec.describe Stannum::Contracts::HashContract do
       constraints.map do |definition|
         Stannum::Contracts::Definition.new(
           constraint: definition[:constraint],
-          contract:   contract,
+          contract:,
           options:    { property_type: :key, sanity: false }
             .merge(definition.fetch(:options, {}))
         )
@@ -91,11 +91,11 @@ RSpec.describe Stannum::Contracts::HashContract do
     describe '#key' do
       let(:property) { :name }
       let(:custom_options) do
-        { property: property, property_type: :key }
+        { property:, property_type: :key }
       end
 
-      def define_from_block(**options, &block)
-        builder.key(property, **options, &block)
+      def define_from_block(...)
+        builder.key(property, ...)
       end
 
       def define_from_constraint(constraint, **options)
@@ -187,8 +187,8 @@ RSpec.describe Stannum::Contracts::HashContract do
         )
 
         expect(definition).to be_a_constraint_definition(
-          constraint: constraint,
-          contract:   contract,
+          constraint:,
+          contract:,
           options:    {
             property:      :name,
             property_type: :key,
@@ -237,8 +237,8 @@ RSpec.describe Stannum::Contracts::HashContract do
         )
 
         expect(definition).to be_a_constraint_definition(
-          constraint: constraint,
-          contract:   contract,
+          constraint:,
+          contract:,
           options:    {
             property:      :name,
             property_type: :key,
@@ -278,8 +278,8 @@ RSpec.describe Stannum::Contracts::HashContract do
         contract.add_key_constraint(:name, constraint)
 
         expect(definition).to be_a_constraint_definition(
-          constraint: constraint,
-          contract:   contract,
+          constraint:,
+          contract:,
           options:    {
             property:      :name,
             property_type: :key,
@@ -309,8 +309,8 @@ RSpec.describe Stannum::Contracts::HashContract do
         contract.add_key_constraint(:name, constraint, **options)
 
         expect(definition).to be_a_constraint_definition(
-          constraint: constraint,
-          contract:   contract,
+          constraint:,
+          contract:,
           options:    {
             property:      :name,
             property_type: :key,

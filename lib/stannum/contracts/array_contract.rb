@@ -75,12 +75,7 @@ module Stannum::Contracts
     # @param options [Hash<Symbol, Object>] Configuration options for the
     #   contract. Defaults to an empty Hash.
     def initialize(allow_extra_items: false, item_type: nil, **options, &block)
-      super(
-        allow_extra_items: allow_extra_items,
-        item_type:         item_type,
-        **options,
-        &block
-      )
+      super
     end
 
     # @return [Stannum::Constraints::Base, nil] the expected type for the items
@@ -100,7 +95,7 @@ module Stannum::Contracts
 
     def add_type_constraint
       add_constraint(
-        Stannum::Constraints::Types::ArrayType.new(item_type: item_type),
+        Stannum::Constraints::Types::ArrayType.new(item_type:),
         sanity: true
       )
     end

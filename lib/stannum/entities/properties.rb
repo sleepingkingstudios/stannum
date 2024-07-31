@@ -8,7 +8,7 @@ module Stannum::Entities
   # This module provides a base for accessing and mutating entity properties
   # such as attributes and associations.
   module Properties
-    MEMORY_ADDRESS_PATTERN = /0x([0-9a-f]+)/.freeze
+    MEMORY_ADDRESS_PATTERN = /0x([0-9a-f]+)/
     private_constant :MEMORY_ADDRESS_PATTERN
 
     # @param properties [Hash] the properties used to initialize the entity.
@@ -162,10 +162,10 @@ module Stannum::Entities
 
     def handle_invalid_properties(properties, as: 'property')
       properties.each_key do |key|
-        tools.assertions.assert_name(key, as: as, error_class: ArgumentError)
+        tools.assertions.assert_name(key, as:, error_class: ArgumentError)
       end
 
-      raise ArgumentError, invalid_properties_message(properties, as: as)
+      raise ArgumentError, invalid_properties_message(properties, as:)
     end
 
     def inspect_properties(**)

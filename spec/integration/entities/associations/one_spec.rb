@@ -9,7 +9,7 @@ RSpec.describe Stannum::Associations::One do
 
   shared_context 'when the entity has an association' do
     let(:dungeon)      { Spec::Dungeon.new(name: 'The Crypts') }
-    let(:associations) { super().merge(dungeon: dungeon) }
+    let(:associations) { super().merge(dungeon:) }
   end
 
   shared_examples 'should not change the association' do

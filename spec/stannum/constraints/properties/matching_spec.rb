@@ -22,8 +22,8 @@ RSpec.describe Stannum::Constraints::Properties::Matching do
     {
       allow_empty:    false,
       allow_nil:      false,
-      property_names: property_names,
-      reference_name: reference_name
+      property_names:,
+      reference_name:
     }
   end
 

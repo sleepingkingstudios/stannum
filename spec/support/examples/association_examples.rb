@@ -20,7 +20,7 @@ module Spec::Support::Examples
         describe 'with name: nil' do
           it 'should raise an error' do
             expect do
-              described_class.new(name: nil, type: type, options: options)
+              described_class.new(name: nil, type:, options:)
             end
               .to raise_error ArgumentError, "name can't be blank"
           end
@@ -31,8 +31,8 @@ module Spec::Support::Examples
             expect do
               described_class.new(
                 name:    Object.new.freeze,
-                type:    type,
-                options: options
+                type:,
+                options:
               )
             end
               .to raise_error ArgumentError, 'name is not a String or a Symbol'
@@ -42,7 +42,7 @@ module Spec::Support::Examples
         describe 'with name: empty String' do
           it 'should raise an error' do
             expect do
-              described_class.new(name: '', type: type, options: options)
+              described_class.new(name: '', type:, options:)
             end
               .to raise_error ArgumentError, "name can't be blank"
           end
@@ -51,7 +51,7 @@ module Spec::Support::Examples
         describe 'with name: empty Symbol' do
           it 'should raise an error' do
             expect do
-              described_class.new(name: :'', type: type, options: options)
+              described_class.new(name: :'', type:, options:)
             end
               .to raise_error ArgumentError, "name can't be blank"
           end
@@ -60,7 +60,7 @@ module Spec::Support::Examples
         describe 'with options: nil' do
           it 'should set the options to a default hash' do
             expect(
-              described_class.new(name: name, type: type, options: nil).options
+              described_class.new(name:, type:, options: nil).options
             ).to be == {}
           end
         end
@@ -69,8 +69,8 @@ module Spec::Support::Examples
           it 'should raise an error' do
             expect do
               described_class.new(
-                name:    name,
-                type:    type,
+                name:,
+                type:,
                 options: Object.new.freeze
               )
             end
@@ -81,7 +81,7 @@ module Spec::Support::Examples
         describe 'with type: nil' do
           it 'should raise an error' do
             expect do
-              described_class.new(name: name, type: nil, options: options)
+              described_class.new(name:, type: nil, options:)
             end
               .to raise_error ArgumentError, "type can't be blank"
           end
@@ -91,9 +91,9 @@ module Spec::Support::Examples
           it 'should raise an error' do
             expect do
               described_class.new(
-                name:    name,
+                name:,
                 type:    Object.new.freeze,
-                options: options
+                options:
               )
             end
               .to raise_error ArgumentError,
@@ -105,7 +105,7 @@ module Spec::Support::Examples
         describe 'with type: an empty String' do
           it 'should raise an error' do
             expect do
-              described_class.new(name: name, type: '', options: options)
+              described_class.new(name:, type: '', options:)
             end
               .to raise_error ArgumentError, "type can't be blank"
           end

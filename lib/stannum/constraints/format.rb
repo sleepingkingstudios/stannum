@@ -33,7 +33,7 @@ module Stannum::Constraints
     def initialize(expected_format, **options)
       @expected_format = expected_format
 
-      super(expected_format: expected_format, **options)
+      super(expected_format:, **options)
     end
 
     # @return [Regex, String] the expected format.
@@ -43,7 +43,7 @@ module Stannum::Constraints
     def errors_for(actual, errors: nil)
       return super if type_constraint.matches?(actual)
 
-      type_constraint.errors_for(actual, errors: errors)
+      type_constraint.errors_for(actual, errors:)
     end
 
     # Checks that the object is a string with the expected format.

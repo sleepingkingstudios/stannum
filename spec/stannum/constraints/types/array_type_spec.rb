@@ -87,7 +87,7 @@ RSpec.describe Stannum::Constraints::Types::ArrayType do
 
     context 'when initialized with item_type: a Class' do
       let(:item_type)           { String }
-      let(:constructor_options) { super().merge(item_type: item_type) }
+      let(:constructor_options) { super().merge(item_type:) }
 
       it { expect(constraint.item_type).to be_a Stannum::Constraints::Type }
 
@@ -96,7 +96,7 @@ RSpec.describe Stannum::Constraints::Types::ArrayType do
 
     context 'when initialized with item_type: a constraint' do
       let(:item_type)           { Stannum::Constraint.new }
-      let(:constructor_options) { super().merge(item_type: item_type) }
+      let(:constructor_options) { super().merge(item_type:) }
 
       it { expect(constraint.item_type).to be_a item_type.class }
 
@@ -125,7 +125,7 @@ RSpec.describe Stannum::Constraints::Types::ArrayType do
           'is not a Array or nil'
         end
 
-      expected_errors.merge(message: message)
+      expected_errors.merge(message:)
     end
 
     include_examples 'should match the type constraint'
@@ -161,7 +161,7 @@ RSpec.describe Stannum::Constraints::Types::ArrayType do
 
     context 'when item_type is set' do
       let(:item_type)           { String }
-      let(:constructor_options) { super().merge(item_type: item_type) }
+      let(:constructor_options) { super().merge(item_type:) }
 
       describe 'with an empty array' do
         let(:actual) { [] }
@@ -254,7 +254,7 @@ RSpec.describe Stannum::Constraints::Types::ArrayType do
           'is a Array or nil'
         end
 
-      expected_errors.merge(message: message)
+      expected_errors.merge(message:)
     end
 
     include_examples 'should match the negated type constraint'
@@ -277,7 +277,7 @@ RSpec.describe Stannum::Constraints::Types::ArrayType do
 
     context 'when item_type is set' do
       let(:item_type)           { String }
-      let(:constructor_options) { super().merge(item_type: item_type) }
+      let(:constructor_options) { super().merge(item_type:) }
 
       describe 'with an empty array' do
         let(:actual) { [] }
@@ -341,7 +341,7 @@ RSpec.describe Stannum::Constraints::Types::ArrayType do
 
     context 'when initialized with item_type: a Class' do
       let(:item_type)           { String }
-      let(:constructor_options) { super().merge(item_type: item_type) }
+      let(:constructor_options) { super().merge(item_type:) }
       let(:expected) do
         super().merge(item_type: be_a_constraint(Stannum::Constraints::Type))
       end
@@ -355,7 +355,7 @@ RSpec.describe Stannum::Constraints::Types::ArrayType do
 
     context 'when initialized with item_type: a constraint' do
       let(:item_type)           { Stannum::Constraint.new }
-      let(:constructor_options) { super().merge(item_type: item_type) }
+      let(:constructor_options) { super().merge(item_type:) }
       let(:expected) do
         super().merge(item_type: be_a_constraint(Stannum::Constraint))
       end

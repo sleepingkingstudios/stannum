@@ -231,7 +231,7 @@ RSpec.describe Spec::Item do
     it { expect(item).to respond_to(:assign_attributes).with(1).argument }
 
     it 'should update the included values' do
-      expect { item.assign_attributes(price: price) }
+      expect { item.assign_attributes(price:) }
         .to change(item, :attributes)
         .to be == expected
     end
@@ -245,7 +245,7 @@ RSpec.describe Spec::Item do
       end
 
       it 'should update the included values' do
-        expect { item.assign_attributes(price: price) }
+        expect { item.assign_attributes(price:) }
           .to change(item, :attributes)
           .to be == expected
       end
@@ -274,7 +274,7 @@ RSpec.describe Spec::Item do
 
   describe '#attributes=' do
     let(:price) { 100_000 }
-    let(:hsh)   { { price: price } }
+    let(:hsh)   { { price: } }
     let(:expected) do
       {
         'uuid'  => nil,

@@ -22,7 +22,7 @@ RSpec.describe Stannum::Contracts::Base do
       constraints.map do |definition|
         Stannum::Contracts::Definition.new(
           constraint: definition[:constraint],
-          contract:   contract,
+          contract:,
           options:    { sanity: false }.merge(definition.fetch(:options, {}))
         )
       end
@@ -58,7 +58,7 @@ RSpec.describe Stannum::Contracts::Base do
       constraints.map do |definition|
         Stannum::Contracts::Definition.new(
           constraint: definition[:constraint],
-          contract:   contract,
+          contract:,
           options:    { sanity: false }.merge(definition.fetch(:options, {}))
         )
       end
@@ -91,7 +91,7 @@ RSpec.describe Stannum::Contracts::Base do
         },
         {
           constraint: Stannum::Constraints::Base.new,
-          contract:   contract,
+          contract:,
           options:    { metadata: :self }
         }
       ]
@@ -142,7 +142,7 @@ RSpec.describe Stannum::Contracts::Base do
         },
         {
           constraint: Stannum::Constraints::Base.new,
-          contract:   contract,
+          contract:,
           options:    { metadata: :self }
         },
         {
@@ -157,7 +157,7 @@ RSpec.describe Stannum::Contracts::Base do
         },
         {
           constraint: Stannum::Constraints::Base.new,
-          contract:   contract,
+          contract:,
           options:    { sanity: true, metadata: :self }
         }
       ]
@@ -269,7 +269,7 @@ RSpec.describe Stannum::Contracts::Base do
       end
 
       describe 'with a block' do
-        let(:block)  { ->(actual) { actual.nil? } }
+        let(:block)  { lambda(&:nil?) }
         let(:actual) { Object.new.freeze }
 
         it 'should return the builder' do
@@ -300,7 +300,7 @@ RSpec.describe Stannum::Contracts::Base do
       end
 
       describe 'with a block and options' do
-        let(:block)  { ->(actual) { actual.nil? } }
+        let(:block)  { lambda(&:nil?) }
         let(:actual) { Object.new.freeze }
         let(:options) do
           {
@@ -339,7 +339,7 @@ RSpec.describe Stannum::Contracts::Base do
       end
 
       describe 'with a block and a constraint' do
-        let(:block)      { ->(actual) { actual.nil? } }
+        let(:block)      { lambda(&:nil?) }
         let(:constraint) { Stannum::Constraint.new }
         let(:error_message) do
           'expected either a block or a constraint instance, but received ' \
@@ -572,8 +572,8 @@ RSpec.describe Stannum::Contracts::Base do
         contract.add_constraint(constraint)
 
         expect(definition).to be_a_constraint_definition(
-          constraint: constraint,
-          contract:   contract,
+          constraint:,
+          contract:,
           options:    { sanity: false }
         )
       end
@@ -598,8 +598,8 @@ RSpec.describe Stannum::Contracts::Base do
         contract.add_constraint(constraint, **options)
 
         expect(definition).to be_a_constraint_definition(
-          constraint: constraint,
-          contract:   contract,
+          constraint:,
+          contract:,
           options:    { sanity: false }.merge(options)
         )
       end
@@ -622,8 +622,8 @@ RSpec.describe Stannum::Contracts::Base do
           contract.add_constraint(constraint)
 
           expect(definition).to be_a_constraint_definition(
-            constraint: constraint,
-            contract:   contract,
+            constraint:,
+            contract:,
             options:    { sanity: false }
           )
         end
@@ -648,8 +648,8 @@ RSpec.describe Stannum::Contracts::Base do
           contract.add_constraint(constraint, **options)
 
           expect(definition).to be_a_constraint_definition(
-            constraint: constraint,
-            contract:   contract,
+            constraint:,
+            contract:,
             options:    { sanity: false }.merge(options)
           )
         end
@@ -699,7 +699,7 @@ RSpec.describe Stannum::Contracts::Base do
         let(:constraint) { Stannum::Constraints::Base.new }
         let(:expected) do
           Stannum::Contracts::Definition.new(
-            constraint: constraint,
+            constraint:,
             contract:   other,
             options:    { sanity: false }
           )
@@ -720,7 +720,7 @@ RSpec.describe Stannum::Contracts::Base do
       let(:other)      { described_class.new }
       let(:expected) do
         Stannum::Contracts::Definition.new(
-          constraint: constraint,
+          constraint:,
           contract:   other,
           options:    { sanity: false }
         )
@@ -741,7 +741,7 @@ RSpec.describe Stannum::Contracts::Base do
         let(:other)      { described_class.new }
         let(:expected) do
           Stannum::Contracts::Definition.new(
-            constraint: constraint,
+            constraint:,
             contract:   other,
             options:    { sanity: false }
           )

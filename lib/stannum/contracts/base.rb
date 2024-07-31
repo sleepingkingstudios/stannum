@@ -104,13 +104,13 @@ module Stannum::Contracts
 
     # @param options [Hash<Symbol, Object>] Configuration options for the
     #   contract. Defaults to an empty Hash.
-    def initialize(**options, &block)
+    def initialize(**options, &)
       @constraints  = []
       @concatenated = []
 
       super(**options)
 
-      define_constraints(&block)
+      define_constraints(&)
     end
 
     # Performs an equality comparison.
@@ -141,9 +141,9 @@ module Stannum::Contracts
       validate_constraint(constraint)
 
       @constraints << Stannum::Contracts::Definition.new(
-        constraint: constraint,
+        constraint:,
         contract:   self,
-        options:    options.merge(sanity: sanity)
+        options:    options.merge(sanity:)
       )
 
       self
@@ -518,7 +518,7 @@ module Stannum::Contracts
       self
     end
 
-    def each_unscoped_constraint(&block)
+    def each_unscoped_constraint(&)
       return enum_for(:each_unscoped_constraint) unless block_given?
 
       each_concatenated_contract do |contract|
@@ -527,7 +527,7 @@ module Stannum::Contracts
         end
       end
 
-      @constraints.each(&block)
+      @constraints.each(&)
     end
 
     def match_constraint(definition, value)
@@ -548,14 +548,14 @@ module Stannum::Contracts
 
     private
 
-    def define_constraints(&block)
-      self.class::Builder.new(self).instance_exec(&block) if block_given?
+    def define_constraints(&)
+      self.class::Builder.new(self).instance_exec(&) if block_given?
     end
 
-    def each_concatenated_contract(&block)
+    def each_concatenated_contract(&)
       return enum_for(:each_concatenated_contract) unless block_given?
 
-      @concatenated.each(&block)
+      @concatenated.each(&)
     end
 
     def equal_definitions?(other) # rubocop:disable Metrics/AbcSize, Metrics/CyclomaticComplexity, Metrics/MethodLength, Metrics/PerceivedComplexity

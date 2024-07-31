@@ -100,13 +100,7 @@ module Stannum::Contracts
       **options,
       &block
     )
-      super(
-        allow_extra_keys: allow_extra_keys,
-        key_type:         key_type,
-        value_type:       value_type,
-        **options,
-        &block
-      )
+      super
     end
 
     # @return [Stannum::Constraints::Base, Class, nil] the expected type for the
@@ -140,8 +134,8 @@ module Stannum::Contracts
     def add_type_constraint
       add_constraint(
         Stannum::Constraints::Types::HashType.new(
-          key_type:   key_type,
-          value_type: value_type
+          key_type:,
+          value_type:
         ),
         sanity: true
       )

@@ -10,7 +10,7 @@ RSpec.describe Stannum::Associations::One do
   include Spec::Support::Examples::AssociationExamples
 
   subject(:association) do
-    described_class.new(name: name, type: type, options: options)
+    described_class.new(name:, type:, options:)
   end
 
   shared_context 'with an entity' do
@@ -84,7 +84,7 @@ RSpec.describe Stannum::Associations::One do
 
     describe '#call' do
       let(:association) do
-        described_class.new(name: name, type: type, options: options)
+        described_class.new(name:, type:, options:)
       end
 
       it { expect(builder).to respond_to(:call).with(1).argument }

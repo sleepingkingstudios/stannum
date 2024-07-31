@@ -55,9 +55,7 @@ module Stannum::Constraints
     #
     # @return [Stannum::Constraints::Base] the cloned constraint.
     def clone(freeze: nil)
-      freeze = true if freeze.nil? && RUBY_VERSION <= '3.0.0'
-
-      super(freeze: freeze).copy_properties(self)
+      super.copy_properties(self)
     end
 
     # Checks that the given object does not match the constraint.
@@ -118,7 +116,7 @@ module Stannum::Constraints
     # @see #matches?
     # @see #negated_errors_for
     def errors_for(actual, errors: nil) # rubocop:disable Lint/UnusedMethodArgument
-      (errors || Stannum::Errors.new).add(type, message: message)
+      (errors || Stannum::Errors.new).add(type, message:)
     end
 
     # Checks the given object against the constraint and returns errors, if any.

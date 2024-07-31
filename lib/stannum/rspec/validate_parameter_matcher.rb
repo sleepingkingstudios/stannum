@@ -24,7 +24,7 @@ module Stannum::RSpec
         raise ArgumentError, 'map must be a Proc'   unless map.is_a?(Proc)
         raise ArgumentError, 'match must be a Proc' unless match.is_a?(Proc)
 
-        parameter_mappings << { match: match, map: map }
+        parameter_mappings << { match:, map: }
       end
 
       # @private
@@ -33,12 +33,12 @@ module Stannum::RSpec
           match = keywords.fetch(:match)
           map   = keywords.fetch(:map)
 
-          next unless match.call(actual: actual, method_name: method_name)
+          next unless match.call(actual:, method_name:)
 
-          return map.call(actual: actual, method_name: method_name)
+          return map.call(actual:, method_name:)
         end
 
-        unwrapped_method(actual: actual, method_name: method_name).parameters
+        unwrapped_method(actual:, method_name:).parameters
       end
 
       private
@@ -372,7 +372,7 @@ module Stannum::RSpec
 
     def method_parameters
       @method_parameters ||=
-        self.class.map_parameters(actual: actual, method_name: method_name)
+        self.class.map_parameters(actual:, method_name:)
     end
 
     def mock_validation_handler
