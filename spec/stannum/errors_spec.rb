@@ -1007,13 +1007,13 @@ RSpec.describe Stannum::Errors do
     describe 'with message: a string' do
       let(:message) { 'something went wrong' }
       let(:expected) do
-        { data: {}, message: message, path: [], type: 'some_error' }
+        { data: {}, message:, path: [], type: 'some_error' }
       end
 
-      it { expect(errors.add 'some_error', message: message).to be errors }
+      it { expect(errors.add 'some_error', message:).to be errors }
 
       it 'should add the error' do
-        expect { errors.add 'some_error', message: message }
+        expect { errors.add 'some_error', message: }
           .to change(errors, :to_a).to include expected
       end
     end
@@ -1053,13 +1053,13 @@ RSpec.describe Stannum::Errors do
       describe 'with message: a string' do
         let(:message) { 'something went wrong' }
         let(:expected) do
-          { data: {}, message: message, path: [], type: 'some_error' }
+          { data: {}, message:, path: [], type: 'some_error' }
         end
 
-        it { expect(errors.add 'some_error', message: message).to be errors }
+        it { expect(errors.add 'some_error', message:).to be errors }
 
         it 'should add the error' do
-          expect { errors.add 'some_error', message: message }
+          expect { errors.add 'some_error', message: }
             .to change(errors, :to_a).to include expected
         end
       end
@@ -2182,7 +2182,7 @@ RSpec.describe Stannum::Errors do
 
           message = strategy.call(error[:type], **error.fetch(:data, {}))
 
-          error.merge(message: message)
+          error.merge(message:)
         end
       end
 
@@ -2199,7 +2199,7 @@ RSpec.describe Stannum::Errors do
         end
 
         it 'should generate the error messages' do
-          expect(errors.with_messages(strategy: strategy, **options).to_a)
+          expect(errors.with_messages(strategy:, **options).to_a)
             .to match_array(errors_with_messages)
         end
       end

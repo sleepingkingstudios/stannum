@@ -20,7 +20,7 @@ module Stannum::Support
 
         options.merge(
           required: required?(
-            default:  default,
+            default:,
             optional: validate_option(optional, as: :optional),
             required: validate_option(required, as: :required)
           )

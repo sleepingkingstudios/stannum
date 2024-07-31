@@ -117,12 +117,12 @@ module Stannum
       # @overload property(**options) { |value| }
       #   Creates a new Stannum::Constraint object with the given block, and
       #   adds that constraint to the contract for the property.
-      def property(property, constraint = nil, **options, &block)
+      def property(property, constraint = nil, **options, &)
         self.constraint(
           constraint,
-          property: property,
+          property:,
           **options,
-          &block
+          &
         )
       end
     end
@@ -138,12 +138,12 @@ module Stannum
     # @see #add_property_constraint.
     def add_constraint(constraint, property: nil, sanity: false, **options)
       validate_constraint(constraint)
-      validate_property(property: property, **options)
+      validate_property(property:, **options)
 
       @constraints << Stannum::Contracts::Definition.new(
-        constraint: constraint,
+        constraint:,
         contract:   self,
-        options:    options.merge(property: property, sanity: sanity)
+        options:    options.merge(property:, sanity:)
       )
 
       self
@@ -179,7 +179,7 @@ module Stannum
     #
     # @see #add_constraint.
     def add_property_constraint(property, constraint, sanity: false, **options)
-      add_constraint(constraint, property: property, sanity: sanity, **options)
+      add_constraint(constraint, property:, sanity:, **options)
     end
 
     protected

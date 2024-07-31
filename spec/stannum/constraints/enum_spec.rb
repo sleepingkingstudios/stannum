@@ -13,7 +13,7 @@ RSpec.describe Stannum::Constraints::Enum do
 
   let(:expected_values)     { ['Alan Bradley', 'Kevin Flynn'] }
   let(:constructor_options) { {} }
-  let(:expected_options)    { { expected_values: expected_values } }
+  let(:expected_options)    { { expected_values: } }
 
   describe '::NEGATED_TYPE' do
     include_examples 'should define frozen constant',

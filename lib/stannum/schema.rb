@@ -63,7 +63,7 @@ module Stannum
     def define(name:, options:, type:, definition_class: nil)
       definition_class ||= property_class
 
-      property = definition_class.new(name: name, options: options, type: type)
+      property = definition_class.new(name:, options:, type:)
 
       if @properties.key?(property.name)
         message =

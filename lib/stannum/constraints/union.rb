@@ -31,7 +31,7 @@ module Stannum::Constraints
     def initialize(first, *rest, **options)
       expected_constraints = rest.unshift(first)
 
-      super(expected_constraints: expected_constraints, **options)
+      super(expected_constraints:, **options)
 
       @expected_constraints = expected_constraints
     end

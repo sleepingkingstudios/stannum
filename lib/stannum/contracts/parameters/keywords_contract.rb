@@ -105,7 +105,7 @@ module Stannum::Contracts::Parameters
         value_type: type
       )
 
-      set_variadic_constraint(constraint, as: as)
+      set_variadic_constraint(constraint, as:)
     end
 
     protected

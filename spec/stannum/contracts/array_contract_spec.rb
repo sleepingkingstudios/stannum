@@ -30,7 +30,7 @@ RSpec.describe Stannum::Contracts::ArrayContract do
       constraints.map.with_index do |definition, index|
         Stannum::Contracts::Definition.new(
           constraint: definition[:constraint],
-          contract:   contract,
+          contract:,
           options:    { property: index, property_type: :index, sanity: false }
             .merge(definition.fetch(:options, {}))
         )
@@ -68,7 +68,7 @@ RSpec.describe Stannum::Contracts::ArrayContract do
       constraints.map.with_index do |definition, index|
         Stannum::Contracts::Definition.new(
           constraint: definition[:constraint],
-          contract:   contract,
+          contract:,
           options:    { property: index, property_type: :index, sanity: false }
             .merge(definition.fetch(:options, {}))
         )
@@ -205,7 +205,7 @@ RSpec.describe Stannum::Contracts::ArrayContract do
         expect do
           contract.add_constraint(
             constraint,
-            property:      property,
+            property:,
             property_type: :index
           )
         end
@@ -248,8 +248,8 @@ RSpec.describe Stannum::Contracts::ArrayContract do
         )
 
         expect(definition).to be_a_constraint_definition(
-          constraint: constraint,
-          contract:   contract,
+          constraint:,
+          contract:,
           options:    {
             property:      0,
             property_type: :index,
@@ -298,8 +298,8 @@ RSpec.describe Stannum::Contracts::ArrayContract do
         )
 
         expect(definition).to be_a_constraint_definition(
-          constraint: constraint,
-          contract:   contract,
+          constraint:,
+          contract:,
           options:    {
             property:      0,
             property_type: :index,
@@ -352,8 +352,8 @@ RSpec.describe Stannum::Contracts::ArrayContract do
         contract.add_index_constraint(0, constraint)
 
         expect(definition).to be_a_constraint_definition(
-          constraint: constraint,
-          contract:   contract,
+          constraint:,
+          contract:,
           options:    {
             property:      0,
             property_type: :index,
@@ -383,8 +383,8 @@ RSpec.describe Stannum::Contracts::ArrayContract do
         contract.add_index_constraint(0, constraint, **options)
 
         expect(definition).to be_a_constraint_definition(
-          constraint: constraint,
-          contract:   contract,
+          constraint:,
+          contract:,
           options:    {
             property:      0,
             property_type: :index,
@@ -746,14 +746,14 @@ RSpec.describe Stannum::Contracts::ArrayContract do
 
     context 'when initialized with item_type: a Class' do
       let(:item_type)           { String }
-      let(:constructor_options) { super().merge(item_type: item_type) }
+      let(:constructor_options) { super().merge(item_type:) }
 
       it { expect(contract.item_type).to be item_type }
     end
 
     context 'when initialized with item_type: a constraint' do
       let(:item_type)           { Stannum::Constraint.new }
-      let(:constructor_options) { super().merge(item_type: item_type) }
+      let(:constructor_options) { super().merge(item_type:) }
 
       it { expect(contract.item_type).to be_a item_type.class }
 

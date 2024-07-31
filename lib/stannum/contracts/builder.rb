@@ -47,8 +47,8 @@ module Stannum::Contracts
     #     matching object.
     #   @option options type [String] The error type generated for a
     #     non-matching object.
-    def constraint(constraint = nil, **options, &block)
-      constraint = resolve_constraint(constraint, **options, &block)
+    def constraint(constraint = nil, **options, &)
+      constraint = resolve_constraint(constraint, **options, &)
 
       contract.add_constraint(constraint, **options)
 

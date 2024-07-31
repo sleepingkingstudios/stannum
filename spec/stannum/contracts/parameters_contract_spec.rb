@@ -348,9 +348,7 @@ RSpec.describe Stannum::Contracts::ParametersContract do
       describe 'with a block' do
         let(:implementation) { -> {} }
         let(:expected) do
-          ary = [name, an_instance_of(Stannum::Constraint)]
-
-          RUBY_VERSION < '3.0' ? ary << {} : ary
+          [name, an_instance_of(Stannum::Constraint)]
         end
 
         it 'should delegate to #add_keyword_constraint' do
@@ -405,9 +403,7 @@ RSpec.describe Stannum::Contracts::ParametersContract do
       describe 'with a class' do
         let(:type) { String }
         let(:expected) do
-          ary = [name, type]
-
-          RUBY_VERSION < '3.0' ? ary << {} : ary
+          [name, type]
         end
 
         it 'should delegate to #add_keyword_constraint' do
@@ -435,9 +431,7 @@ RSpec.describe Stannum::Contracts::ParametersContract do
       describe 'with a constraint' do
         let(:constraint) { Stannum::Constraints::Type.new(String) }
         let(:expected) do
-          ary = [name, constraint]
-
-          RUBY_VERSION < '3.0' ? ary << {} : ary
+          [name, constraint]
         end
 
         it 'should delegate to #add_keyword_constraint' do
@@ -532,9 +526,7 @@ RSpec.describe Stannum::Contracts::ParametersContract do
   describe '#add_argument_constraint' do
     let(:arguments_contract) { contract.send(:arguments_contract) }
     let(:expected) do
-      ary = [nil, String]
-
-      RUBY_VERSION < '3.0' ? ary << {} : ary
+      [nil, String]
     end
 
     before(:example) do
@@ -576,9 +568,7 @@ RSpec.describe Stannum::Contracts::ParametersContract do
     let(:keyword)           { :option }
     let(:keywords_contract) { contract.send(:keywords_contract) }
     let(:expected) do
-      ary = [keyword, String]
-
-      RUBY_VERSION < '3.0' ? ary << {} : ary
+      [keyword, String]
     end
 
     before(:example) do
@@ -640,14 +630,14 @@ RSpec.describe Stannum::Contracts::ParametersContract do
           constraint: be_a_constraint(
             Stannum::Contracts::Parameters::SignatureContract
           ),
-          contract:   contract,
+          contract:,
           options:    { property: nil, sanity: true }
         ),
         be_a_constraint_definition(
           constraint: be_a_constraint(
             Stannum::Contracts::Parameters::ArgumentsContract
           ),
-          contract:   contract,
+          contract:,
           options:    {
             property:      :arguments,
             property_type: :key,
@@ -658,7 +648,7 @@ RSpec.describe Stannum::Contracts::ParametersContract do
           constraint: be_a_constraint(
             Stannum::Contracts::Parameters::KeywordsContract
           ),
-          contract:   contract,
+          contract:,
           options:    {
             property:      :keywords,
             property_type: :key,
@@ -684,7 +674,7 @@ RSpec.describe Stannum::Contracts::ParametersContract do
       let(:block_definition) do
         be_a_constraint_definition(
           constraint: be_a_constraint(Stannum::Constraints::Types::ProcType),
-          contract:   contract,
+          contract:,
           options:    {
             property:      :block,
             property_type: :key,
@@ -717,14 +707,14 @@ RSpec.describe Stannum::Contracts::ParametersContract do
           constraint: be_a_constraint(
             Stannum::Contracts::Parameters::SignatureContract
           ),
-          contract:   contract,
+          contract:,
           options:    { property: nil, sanity: true }
         ),
         be_a_constraint_definition(
           constraint: be_a_constraint(
             Stannum::Contracts::Parameters::ArgumentsContract
           ),
-          contract:   contract,
+          contract:,
           options:    {
             property:      :arguments,
             property_type: :key,
@@ -735,7 +725,7 @@ RSpec.describe Stannum::Contracts::ParametersContract do
           constraint: be_a_constraint(
             Stannum::Contracts::Parameters::KeywordsContract
           ),
-          contract:   contract,
+          contract:,
           options:    {
             property:      :keywords,
             property_type: :key,
@@ -762,7 +752,7 @@ RSpec.describe Stannum::Contracts::ParametersContract do
       let(:block_definition) do
         be_a_constraint_definition(
           constraint: be_a_constraint(Stannum::Constraints::Types::ProcType),
-          contract:   contract,
+          contract:,
           options:    {
             property:      :block,
             property_type: :key,

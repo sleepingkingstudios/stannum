@@ -33,7 +33,7 @@ RSpec.describe Stannum::Contract do
       constraints.map do |definition|
         Stannum::Contracts::Definition.new(
           constraint: definition[:constraint],
-          contract:   contract,
+          contract:,
           options:    { property: nil, sanity: false }
             .merge(definition.fetch(:options, {}))
         )
@@ -77,7 +77,7 @@ RSpec.describe Stannum::Contract do
       constraints.map do |definition|
         Stannum::Contracts::Definition.new(
           constraint: definition[:constraint],
-          contract:   contract,
+          contract:,
           options:    { property: nil, sanity: false }
             .merge(definition.fetch(:options, {}))
         )
@@ -131,11 +131,11 @@ RSpec.describe Stannum::Contract do
     describe '#property' do
       let(:property) { :foo }
       let(:custom_options) do
-        { property: property }
+        { property: }
       end
 
-      def define_from_block(**options, &block)
-        builder.property(property, **options, &block)
+      def define_from_block(...)
+        builder.property(property, ...)
       end
 
       def define_from_constraint(constraint, **options)
@@ -205,7 +205,7 @@ RSpec.describe Stannum::Contract do
       end
 
       it 'should raise an error' do
-        expect { contract.add_constraint(constraint, property: property) }
+        expect { contract.add_constraint(constraint, property:) }
           .to raise_error ArgumentError, error_message
       end
     end
@@ -216,23 +216,23 @@ RSpec.describe Stannum::Contract do
       let(:definition) { contract.each_constraint.to_a.last }
 
       it 'should return the contract' do
-        expect(contract.add_constraint constraint, property: property)
+        expect(contract.add_constraint constraint, property:)
           .to be contract
       end
 
       it 'should add the constraint to the contract' do
-        expect { contract.add_constraint(constraint, property: property) }
+        expect { contract.add_constraint(constraint, property:) }
           .to change { contract.each_constraint.count }
           .by(1)
       end
 
       it 'should store the contract and property' do
-        contract.add_constraint(constraint, property: property)
+        contract.add_constraint(constraint, property:)
 
         expect(definition).to be_a_constraint_definition(
-          constraint: constraint,
-          contract:   contract,
-          options:    { property: property, sanity: false }
+          constraint:,
+          contract:,
+          options:    { property:, sanity: false }
         )
       end
     end
@@ -245,26 +245,26 @@ RSpec.describe Stannum::Contract do
 
       it 'should return the contract' do
         expect(
-          contract.add_constraint constraint, property: property, **options
+          contract.add_constraint constraint, property:, **options
         )
           .to be contract
       end
 
       it 'should add the constraint to the contract' do
         expect do
-          contract.add_constraint(constraint, property: property, **options)
+          contract.add_constraint(constraint, property:, **options)
         end
           .to change { contract.each_constraint.count }
           .by(1)
       end
 
       it 'should store the contract and property' do
-        contract.add_constraint(constraint, property: property, **options)
+        contract.add_constraint(constraint, property:, **options)
 
         expect(definition).to be_a_constraint_definition(
-          constraint: constraint,
-          contract:   contract,
-          options:    options.merge(property: property, sanity: false)
+          constraint:,
+          contract:,
+          options:    options.merge(property:, sanity: false)
         )
       end
     end
@@ -275,23 +275,23 @@ RSpec.describe Stannum::Contract do
       let(:definition) { contract.each_constraint.to_a.last }
 
       it 'should return the contract' do
-        expect(contract.add_constraint constraint, property: property)
+        expect(contract.add_constraint constraint, property:)
           .to be contract
       end
 
       it 'should add the constraint to the contract' do
-        expect { contract.add_constraint(constraint, property: property) }
+        expect { contract.add_constraint(constraint, property:) }
           .to change { contract.each_constraint.count }
           .by(1)
       end
 
       it 'should store the contract and property' do
-        contract.add_constraint(constraint, property: property)
+        contract.add_constraint(constraint, property:)
 
         expect(definition).to be_a_constraint_definition(
-          constraint: constraint,
-          contract:   contract,
-          options:    { property: property, sanity: false }
+          constraint:,
+          contract:,
+          options:    { property:, sanity: false }
         )
       end
     end
@@ -341,9 +341,9 @@ RSpec.describe Stannum::Contract do
         contract.add_property_constraint(property, constraint)
 
         expect(definition).to be_a_constraint_definition(
-          constraint: constraint,
-          contract:   contract,
-          options:    { property: property, sanity: false }
+          constraint:,
+          contract:,
+          options:    { property:, sanity: false }
         )
       end
     end
@@ -373,9 +373,9 @@ RSpec.describe Stannum::Contract do
         contract.add_property_constraint(property, constraint, **options)
 
         expect(definition).to be_a_constraint_definition(
-          constraint: constraint,
-          contract:   contract,
-          options:    options.merge(property: property, sanity: false)
+          constraint:,
+          contract:,
+          options:    options.merge(property:, sanity: false)
         )
       end
     end
@@ -400,9 +400,9 @@ RSpec.describe Stannum::Contract do
         contract.add_property_constraint(property, constraint)
 
         expect(definition).to be_a_constraint_definition(
-          constraint: constraint,
-          contract:   contract,
-          options:    { property: property, sanity: false }
+          constraint:,
+          contract:,
+          options:    { property:, sanity: false }
         )
       end
     end
@@ -551,7 +551,7 @@ RSpec.describe Stannum::Contract do
       end
 
       it 'should return the errors for the property' do
-        expect(contract.send :map_errors, errors, property: property)
+        expect(contract.send :map_errors, errors, property:)
           .to be == errors[:name]
       end
     end
@@ -564,7 +564,7 @@ RSpec.describe Stannum::Contract do
       end
 
       it 'should return the errors for the property' do
-        expect(contract.send :map_errors, errors, property: property)
+        expect(contract.send :map_errors, errors, property:)
           .to be == errors[:manufacturer][:address][:street]
       end
     end
@@ -579,7 +579,7 @@ RSpec.describe Stannum::Contract do
       let(:property) { :name }
 
       it 'should return the property value' do
-        expect(contract.send :map_value, value, property: property)
+        expect(contract.send :map_value, value, property:)
           .to be value.name
       end
     end
@@ -596,7 +596,7 @@ RSpec.describe Stannum::Contract do
         end
 
         it 'should return nil' do
-          expect(contract.send :map_value, value, property: property).to be nil
+          expect(contract.send :map_value, value, property:).to be nil
         end
       end
 
@@ -614,7 +614,7 @@ RSpec.describe Stannum::Contract do
         end
 
         it 'should return the property value' do
-          expect(contract.send :map_value, value, property: property)
+          expect(contract.send :map_value, value, property:)
             .to be value.factory.gadget.name
         end
       end

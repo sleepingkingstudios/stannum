@@ -449,7 +449,7 @@ module Spec::Support::Examples::Entities
 
           context 'when the entity has a non-empty primary key value' do
             let(:uuid)       { '00000000-0000-0000-0000-000000000000' }
-            let(:properties) { super().merge(uuid: uuid) }
+            let(:properties) { super().merge(uuid:) }
 
             it { expect(entity.primary_key?).to be true }
           end
@@ -668,7 +668,7 @@ module Spec::Support::Examples::Entities
 
           context 'when the entity has a non-empty primary key value' do
             let(:uuid)       { '00000000-0000-0000-0000-000000000000' }
-            let(:properties) { super().merge(uuid: uuid) }
+            let(:properties) { super().merge(uuid:) }
 
             it { expect(entity.primary_key_value).to be == uuid }
           end
@@ -715,7 +715,7 @@ module Spec::Support::Examples::Entities
 
             context 'when the entity has a non-empty primary key value' do
               let(:uuid)       { '00000000-0000-0000-0000-000000000000' }
-              let(:properties) { super().merge(uuid: uuid) }
+              let(:properties) { super().merge(uuid:) }
 
               it { expect(entity.primary_key_value).to be == uuid }
             end

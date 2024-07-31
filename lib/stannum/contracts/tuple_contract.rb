@@ -99,7 +99,7 @@ module Stannum::Contracts
       #
       #   @param options [Hash<Symbol, Object>] Options for the constraint.
       #   @yieldparam value [Object] The value of the property when called.
-      def item(constraint = nil, **options, &block)
+      def item(constraint = nil, **options, &)
         index = (@current_index += 1)
 
         self.constraint(
@@ -107,7 +107,7 @@ module Stannum::Contracts
           property:      index,
           property_type: :index,
           **options,
-          &block
+          &
         )
       end
     end
@@ -142,7 +142,7 @@ module Stannum::Contracts
         constraint,
         property:      index,
         property_type: :index,
-        sanity:        sanity,
+        sanity:,
         **options
       )
     end
@@ -202,7 +202,7 @@ module Stannum::Contracts
       add_constraint Stannum::Constraints::Signatures::Tuple.new, sanity: true
     end
 
-    def define_constraints(&block)
+    def define_constraints(&)
       add_type_constraint
 
       add_extra_items_constraint

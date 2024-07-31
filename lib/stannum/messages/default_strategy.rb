@@ -97,7 +97,7 @@ module Stannum::Messages
       Stannum::Messages::DefaultLoader
         .new(
           file_paths: load_paths,
-          locale:     locale
+          locale:
         )
         .call
     end

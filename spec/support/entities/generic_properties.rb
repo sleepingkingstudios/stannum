@@ -34,7 +34,7 @@ module Spec::Support::Entities
     def set_properties(properties, force:)
       matching, non_matching = bisect_properties(properties, @properties)
 
-      super(non_matching, force: force)
+      super(non_matching, force:)
 
       defaults = {
         'amplitude' => nil,

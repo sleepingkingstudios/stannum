@@ -26,7 +26,7 @@ module Stannum::Constraints
     def initialize(first, *rest, **options)
       expected_values = rest.unshift(first)
 
-      super(expected_values: expected_values, **options)
+      super(expected_values:, **options)
 
       @matching_values = Set.new(expected_values)
     end

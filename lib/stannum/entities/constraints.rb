@@ -77,11 +77,11 @@ module Stannum::Entities
       #   @param attr_name [String, Symbol] The name of the attribute or
       #     property to constrain.
       #   @param constraint [Stannum::Constraints::Base] The constraint to add.
-      def constraint(attr_name = nil, constraint = nil, &block)
+      def constraint(attr_name = nil, constraint = nil, &)
         attr_name, constraint = resolve_constraint(attr_name, constraint)
 
         if block_given?
-          constraint = Stannum::Constraint.new(&block)
+          constraint = Stannum::Constraint.new(&)
         else
           validate_constraint(constraint)
         end

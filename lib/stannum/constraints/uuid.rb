@@ -19,7 +19,7 @@ module Stannum::Constraints
     TYPE = 'stannum.constraints.is_not_a_uuid'
 
     # Regular expression describing a valid upper- or lower-case UUID.
-    UUID_FORMAT = /\A\h{8}-\h{4}-\h{4}-\h{4}-\h{12}\z/.freeze
+    UUID_FORMAT = /\A\h{8}-\h{4}-\h{4}-\h{4}-\h{12}\z/
 
     # @param options [Hash<Symbol, Object>] Configuration options for the
     #   constraint. Defaults to an empty Hash.

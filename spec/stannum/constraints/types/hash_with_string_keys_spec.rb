@@ -104,7 +104,7 @@ RSpec.describe Stannum::Constraints::Types::HashWithStringKeys do
           'is not a Hash or nil'
         end
 
-      expected_errors.merge(message: message)
+      expected_errors.merge(message:)
     end
 
     include_examples 'should match the type constraint'
@@ -212,7 +212,7 @@ RSpec.describe Stannum::Constraints::Types::HashWithStringKeys do
 
     context 'when value_type is set' do
       let(:value_type)          { String }
-      let(:constructor_options) { super().merge(value_type: value_type) }
+      let(:constructor_options) { super().merge(value_type:) }
 
       describe 'with an empty hash' do
         let(:actual) { {} }
@@ -309,7 +309,7 @@ RSpec.describe Stannum::Constraints::Types::HashWithStringKeys do
           'is a Hash or nil'
         end
 
-      expected_errors.merge(message: message)
+      expected_errors.merge(message:)
     end
 
     include_examples 'should match the negated type constraint'
@@ -360,7 +360,7 @@ RSpec.describe Stannum::Constraints::Types::HashWithStringKeys do
 
     context 'when value_type is set' do
       let(:value_type)          { String }
-      let(:constructor_options) { super().merge(value_type: value_type) }
+      let(:constructor_options) { super().merge(value_type:) }
 
       describe 'with an empty hash' do
         let(:actual) { {} }
@@ -419,7 +419,7 @@ RSpec.describe Stannum::Constraints::Types::HashWithStringKeys do
 
     context 'when initialized with value_type: a Class' do
       let(:value_type)          { String }
-      let(:constructor_options) { super().merge(value_type: value_type) }
+      let(:constructor_options) { super().merge(value_type:) }
       let(:expected) do
         super().merge(value_type: be_a_constraint(Stannum::Constraints::Type))
       end
@@ -433,7 +433,7 @@ RSpec.describe Stannum::Constraints::Types::HashWithStringKeys do
 
     context 'when initialized with value_type: a constraint' do
       let(:value_type)          { Stannum::Constraint.new }
-      let(:constructor_options) { super().merge(value_type: value_type) }
+      let(:constructor_options) { super().merge(value_type:) }
       let(:expected) do
         super().merge(value_type: be_a_constraint(Stannum::Constraint))
       end
@@ -458,7 +458,7 @@ RSpec.describe Stannum::Constraints::Types::HashWithStringKeys do
 
     context 'when initialized with value_type: a Class' do
       let(:value_type)          { String }
-      let(:constructor_options) { super().merge(value_type: value_type) }
+      let(:constructor_options) { super().merge(value_type:) }
 
       it { expect(constraint.value_type).to be_a Stannum::Constraints::Type }
 
@@ -467,7 +467,7 @@ RSpec.describe Stannum::Constraints::Types::HashWithStringKeys do
 
     context 'when initialized with value_type: a constraint' do
       let(:value_type)          { Stannum::Constraint.new }
-      let(:constructor_options) { super().merge(value_type: value_type) }
+      let(:constructor_options) { super().merge(value_type:) }
 
       it { expect(constraint.value_type).to be_a Stannum::Constraint }
 

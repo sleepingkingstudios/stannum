@@ -555,7 +555,7 @@ module Spec::Support::Examples::Entities
               .to change { constraints }
               .to include(
                 have_attributes(
-                  constraint: constraint,
+                  constraint:,
                   property:   :name
                 )
               )
@@ -568,7 +568,7 @@ module Spec::Support::Examples::Entities
               .to change { constraints }
               .to include(
                 have_attributes(
-                  constraint: constraint,
+                  constraint:,
                   property:   :name
                 )
               )
@@ -581,7 +581,7 @@ module Spec::Support::Examples::Entities
               .to change { constraints }
               .to include(
                 have_attributes(
-                  constraint: constraint,
+                  constraint:,
                   property:   nil
                 )
               )

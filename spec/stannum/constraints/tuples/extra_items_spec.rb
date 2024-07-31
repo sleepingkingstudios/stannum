@@ -13,7 +13,7 @@ RSpec.describe Stannum::Constraints::Tuples::ExtraItems do
 
   let(:expected_count)      { 3 }
   let(:constructor_options) { {} }
-  let(:expected_options)    { { expected_count: expected_count } }
+  let(:expected_options)    { { expected_count: } }
 
   describe '::NEGATED_TYPE' do
     include_examples 'should define frozen constant',

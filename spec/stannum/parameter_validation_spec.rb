@@ -244,7 +244,7 @@ RSpec.describe Stannum::ParameterValidation do
 
         expect(contract)
           .to have_received(:match)
-          .with(arguments: arguments, block: block, keywords: keywords)
+          .with(arguments:, block:, keywords:)
       end
 
       context 'when the parameters do not match the contract' do
@@ -253,9 +253,9 @@ RSpec.describe Stannum::ParameterValidation do
             .new(&validations)
             .errors_for(
               {
-                arguments: arguments,
-                keywords:  keywords,
-                block:     block
+                arguments:,
+                keywords:,
+                block:
               }
             )
         end
@@ -268,7 +268,7 @@ RSpec.describe Stannum::ParameterValidation do
 
           expect(instance)
             .to have_received(:handle_invalid_parameters)
-            .with(errors: expected_errors, method_name: method_name)
+            .with(errors: expected_errors, method_name:)
         end
 
         it 'should not call the method implementation' do
@@ -358,7 +358,7 @@ RSpec.describe Stannum::ParameterValidation do
 
             expect(contract)
               .to have_received(:match)
-              .with(arguments: arguments, block: block, keywords: keywords)
+              .with(arguments:, block:, keywords:)
           end
 
           context 'when the parameters do not match the contract' do
@@ -367,9 +367,9 @@ RSpec.describe Stannum::ParameterValidation do
                 .new(&validations)
                 .errors_for(
                   {
-                    arguments: arguments,
-                    keywords:  keywords,
-                    block:     block
+                    arguments:,
+                    keywords:,
+                    block:
                   }
                 )
             end
@@ -382,7 +382,7 @@ RSpec.describe Stannum::ParameterValidation do
 
               expect(instance)
                 .to have_received(:handle_invalid_parameters)
-                .with(errors: expected_errors, method_name: method_name)
+                .with(errors: expected_errors, method_name:)
             end
 
             it 'should not call the method implementation' do
@@ -471,7 +471,7 @@ RSpec.describe Stannum::ParameterValidation do
 
             expect(contract)
               .to have_received(:match)
-              .with(arguments: arguments, block: block, keywords: keywords)
+              .with(arguments:, block:, keywords:)
           end
 
           context 'when the parameters do not match the contract' do
@@ -480,9 +480,9 @@ RSpec.describe Stannum::ParameterValidation do
                 .new(&validations)
                 .errors_for(
                   {
-                    arguments: arguments,
-                    keywords:  keywords,
-                    block:     block
+                    arguments:,
+                    keywords:,
+                    block:
                   }
                 )
             end
@@ -495,7 +495,7 @@ RSpec.describe Stannum::ParameterValidation do
 
               expect(instance)
                 .to have_received(:handle_invalid_parameters)
-                .with(errors: expected_errors, method_name: method_name)
+                .with(errors: expected_errors, method_name:)
             end
 
             it 'should not call the method implementation' do
@@ -585,7 +585,7 @@ RSpec.describe Stannum::ParameterValidation do
 
             expect(contract)
               .to have_received(:match)
-              .with(arguments: arguments, block: block, keywords: keywords)
+              .with(arguments:, block:, keywords:)
           end
 
           context 'when the parameters do not match the contract' do
@@ -594,9 +594,9 @@ RSpec.describe Stannum::ParameterValidation do
                 .new(&validations)
                 .errors_for(
                   {
-                    arguments: arguments,
-                    keywords:  keywords,
-                    block:     block
+                    arguments:,
+                    keywords:,
+                    block:
                   }
                 )
             end
@@ -609,7 +609,7 @@ RSpec.describe Stannum::ParameterValidation do
 
               expect(instance)
                 .to have_received(:handle_invalid_parameters)
-                .with(errors: expected_errors, method_name: method_name)
+                .with(errors: expected_errors, method_name:)
             end
 
             it 'should not call the method implementation' do
@@ -684,8 +684,8 @@ RSpec.describe Stannum::ParameterValidation do
       expect do
         instance.send(
           :handle_invalid_parameters,
-          errors:      errors,
-          method_name: method_name
+          errors:,
+          method_name:
         )
       end
         .to raise_error ArgumentError, error_message
@@ -703,8 +703,8 @@ RSpec.describe Stannum::ParameterValidation do
         expect do
           instance.send(
             :handle_invalid_parameters,
-            errors:      errors,
-            method_name: method_name
+            errors:,
+            method_name:
           )
         end
           .to raise_error ArgumentError, error_message
@@ -729,8 +729,8 @@ RSpec.describe Stannum::ParameterValidation do
     def match_parameters
       instance.send(
         :match_parameters_to_contract,
-        contract:    contract,
-        method_name: method_name,
+        contract:,
+        method_name:,
         **parameters
       )
     end
@@ -756,7 +756,7 @@ RSpec.describe Stannum::ParameterValidation do
 
     describe 'with arguments: an array' do
       let(:arguments)  { %w[ichi ni san] }
-      let(:parameters) { super().merge(arguments: arguments) }
+      let(:parameters) { super().merge(arguments:) }
 
       it 'should call the contract with the parameters' do
         allow(contract).to receive(:match)
@@ -769,7 +769,7 @@ RSpec.describe Stannum::ParameterValidation do
 
     describe 'with block: a proc' do
       let(:block)      { -> {} }
-      let(:parameters) { super().merge(block: block) }
+      let(:parameters) { super().merge(block:) }
 
       it 'should call the contract with the parameters' do
         allow(contract).to receive(:match)
@@ -789,7 +789,7 @@ RSpec.describe Stannum::ParameterValidation do
 
         expect(instance) # rubocop:disable RSpec/SubjectStub
           .to have_received(:handle_invalid_parameters)
-          .with(errors: errors, method_name: method_name)
+          .with(errors:, method_name:)
       end
     end
 
@@ -810,7 +810,7 @@ RSpec.describe Stannum::ParameterValidation do
 
     describe 'with keywords: a hash' do
       let(:keywords)   { { key: :value } }
-      let(:parameters) { super().merge(keywords: keywords) }
+      let(:parameters) { super().merge(keywords:) }
 
       it 'should call the contract with the parameters' do
         allow(contract).to receive(:match)

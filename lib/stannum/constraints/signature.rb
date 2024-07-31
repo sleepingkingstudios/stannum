@@ -27,7 +27,7 @@ module Stannum::Constraints
 
       @expected_methods = expected_methods
 
-      super(expected_methods: expected_methods, **options)
+      super(expected_methods:, **options)
     end
 
     # @return [Array<String, Symbol>] the methods the object is expected to

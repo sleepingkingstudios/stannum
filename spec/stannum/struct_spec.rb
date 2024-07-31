@@ -921,7 +921,7 @@ RSpec.describe Stannum::Struct do
           .to change { constraints }
           .to include(
             have_attributes(
-              constraint: constraint,
+              constraint:,
               property:   :name
             )
           )
@@ -934,7 +934,7 @@ RSpec.describe Stannum::Struct do
           .to change { constraints }
           .to include(
             have_attributes(
-              constraint: constraint,
+              constraint:,
               property:   :name
             )
           )
@@ -947,7 +947,7 @@ RSpec.describe Stannum::Struct do
           .to change { constraints }
           .to include(
             have_attributes(
-              constraint: constraint,
+              constraint:,
               property:   nil
             )
           )
@@ -1022,7 +1022,7 @@ RSpec.describe Stannum::Struct do
             .to change { constraints }
             .to include(
               have_attributes(
-                constraint: constraint,
+                constraint:,
                 property:   :name
               )
             )
@@ -1035,7 +1035,7 @@ RSpec.describe Stannum::Struct do
             .to change { constraints }
             .to include(
               have_attributes(
-                constraint: constraint,
+                constraint:,
                 property:   :name
               )
             )
@@ -1048,7 +1048,7 @@ RSpec.describe Stannum::Struct do
             .to change { constraints }
             .to include(
               have_attributes(
-                constraint: constraint,
+                constraint:,
                 property:   nil
               )
             )

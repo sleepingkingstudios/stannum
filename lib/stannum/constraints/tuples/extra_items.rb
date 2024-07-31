@@ -24,7 +24,7 @@ module Stannum::Constraints::Tuples
     # @param options [Hash<Symbol, Object>] Configuration options for the
     #   constraint. Defaults to an empty Hash.
     def initialize(expected_count, **options)
-      super(expected_count: expected_count, **options)
+      super(expected_count:, **options)
     end
 
     # @return [true, false] true if the object responds to #size and the object
@@ -40,7 +40,7 @@ module Stannum::Constraints::Tuples
       errors ||= Stannum::Errors.new
 
       unless actual.respond_to?(:size)
-        return add_invalid_tuple_error(actual: actual, errors: errors)
+        return add_invalid_tuple_error(actual:, errors:)
       end
 
       each_extra_item(actual) do |item, index|
@@ -72,13 +72,13 @@ module Stannum::Constraints::Tuples
     def add_invalid_tuple_error(actual:, errors:)
       Stannum::Constraints::Signature
         .new(:size)
-        .errors_for(actual, errors: errors)
+        .errors_for(actual, errors:)
     end
 
-    def each_extra_item(actual, &block)
+    def each_extra_item(actual, &)
       return if matches?(actual)
 
-      actual[expected_count..].each.with_index(expected_count, &block)
+      actual[expected_count..].each.with_index(expected_count, &)
     end
   end
 end

@@ -361,7 +361,7 @@ module Spec::Support::Examples::Entities
 
             describe 'with options: { class_name: value }' do
               let(:class_name) { 'Spec::OtherReference' }
-              let(:options)    { super().merge(class_name: class_name) }
+              let(:options)    { super().merge(class_name:) }
               let(:error_message) do
                 'ambiguous class name "Reference" or "Spec::OtherReference" ' \
                   '- do not provide both a class and a :class_name keyword'
@@ -388,7 +388,7 @@ module Spec::Support::Examples::Entities
 
               describe 'with options: { class_name: value }' do
                 let(:class_name) { 'Spec::OtherReference' }
-                let(:options)    { super().merge(class_name: class_name) }
+                let(:options)    { super().merge(class_name:) }
                 let(:error_message) do
                   'ambiguous class name "Spec::CustomReference" or ' \
                     '"Spec::OtherReference" - do not provide both a class ' \
@@ -417,7 +417,7 @@ module Spec::Support::Examples::Entities
               let(:key)        { 'Reference' }
               let(:assoc_type) { Spec::OtherReference }
               let(:class_name) { 'Spec::OtherReference' }
-              let(:options)    { super().merge(class_name: class_name) }
+              let(:options)    { super().merge(class_name:) }
 
               example_class 'Spec::OtherReference'
 
@@ -444,7 +444,7 @@ module Spec::Support::Examples::Entities
 
               describe 'with options: { class_name: value }' do
                 let(:class_name) { 'Spec::OtherReference' }
-                let(:options)    { super().merge(class_name: class_name) }
+                let(:options)    { super().merge(class_name:) }
                 let(:error_message) do
                   'ambiguous class name "Spec::CustomReference" or ' \
                     '"Spec::OtherReference" - do not provide both a class ' \
@@ -985,8 +985,8 @@ module Spec::Support::Examples::Entities
             let(:sibling) { Spec::Sibling.new }
             let(:properties) do
               {
-                parent:  parent,
-                sibling: sibling
+                parent:,
+                sibling:
               }
             end
             let(:expected) do
@@ -1064,8 +1064,8 @@ module Spec::Support::Examples::Entities
               {
                 amplitude: '1 TW',
                 frequency: '1 Hz',
-                parent:    parent,
-                sibling:   sibling
+                parent:,
+                sibling:
               }
             end
             let(:expected_associations) do
@@ -1954,8 +1954,8 @@ module Spec::Support::Examples::Entities
             let(:sibling) { Spec::Sibling.new }
             let(:values) do
               {
-                parent:  parent,
-                sibling: sibling
+                parent:,
+                sibling:
               }
             end
             let(:expected) do
@@ -2065,8 +2065,8 @@ module Spec::Support::Examples::Entities
               let(:sibling) { Spec::Sibling.new(name: 'new sibling') }
               let(:values) do
                 {
-                  parent:  parent,
-                  sibling: sibling
+                  parent:,
+                  sibling:
                 }
               end
               let(:expected) do
@@ -2267,8 +2267,8 @@ module Spec::Support::Examples::Entities
             let(:sibling) { Spec::Sibling.new }
             let(:values) do
               {
-                parent:  parent,
-                sibling: sibling
+                parent:,
+                sibling:
               }
             end
             let(:expected_associations) do
@@ -2391,8 +2391,8 @@ module Spec::Support::Examples::Entities
               let(:sibling) { Spec::Sibling.new }
               let(:values) do
                 {
-                  parent:  parent,
-                  sibling: sibling
+                  parent:,
+                  sibling:
                 }
               end
               let(:expected_associations) do
@@ -2608,8 +2608,8 @@ module Spec::Support::Examples::Entities
             let(:sibling) { Spec::Sibling.new(name: 'new sibling') }
             let(:values) do
               {
-                parent:  parent,
-                sibling: sibling
+                parent:,
+                sibling:
               }
             end
             let(:expected) do
@@ -2723,8 +2723,8 @@ module Spec::Support::Examples::Entities
               let(:sibling) { Spec::Sibling.new(name: 'new sibling') }
               let(:values) do
                 {
-                  parent:  parent,
-                  sibling: sibling
+                  parent:,
+                  sibling:
                 }
               end
               let(:expected) do
@@ -2853,8 +2853,8 @@ module Spec::Support::Examples::Entities
               {
                 amplitude: '1 TW',
                 frequency: '1 Hz',
-                parent:    parent,
-                sibling:   sibling
+                parent:,
+                sibling:
               }
             end
             let(:expected_associations) do
@@ -2987,8 +2987,8 @@ module Spec::Support::Examples::Entities
               let(:values) do
                 {
                   amplitude: '1 TW',
-                  parent:    parent,
-                  sibling:   sibling
+                  parent:,
+                  sibling:
                 }
               end
               let(:expected_associations) do
@@ -3408,7 +3408,7 @@ module Spec::Support::Examples::Entities
             let(:parent) { Spec::Parent.new(name: 'new parent') }
             let(:values) do
               {
-                parent:  parent,
+                parent:,
                 sibling: nil
               }
             end
@@ -3520,7 +3520,7 @@ module Spec::Support::Examples::Entities
               let(:parent) { Spec::Parent.new(name: 'new parent') }
               let(:values) do
                 {
-                  parent:  parent,
+                  parent:,
                   sibling: nil
                 }
               end
@@ -3716,7 +3716,7 @@ module Spec::Support::Examples::Entities
             let(:parent) { Spec::Parent.new(name: 'new parent') }
             let(:values) do
               {
-                parent:  parent,
+                parent:,
                 sibling: nil
               }
             end
@@ -3837,7 +3837,7 @@ module Spec::Support::Examples::Entities
               let(:parent) { Spec::Parent.new(name: 'new parent') }
               let(:values) do
                 {
-                  parent:  parent,
+                  parent:,
                   sibling: nil
                 }
               end
@@ -4351,7 +4351,7 @@ module Spec::Support::Examples::Entities
             let(:parent) { Spec::Parent.new(name: 'new parent') }
             let(:values) do
               {
-                parent:  parent,
+                parent:,
                 sibling: nil
               }
             end
@@ -4465,7 +4465,7 @@ module Spec::Support::Examples::Entities
               let(:parent) { Spec::Parent.new(name: 'new parent') }
               let(:values) do
                 {
-                  parent:  parent,
+                  parent:,
                   sibling: nil
                 }
               end
@@ -4677,7 +4677,7 @@ module Spec::Support::Examples::Entities
             let(:values) do
               {
                 amplitude: '1.21 GW',
-                parent:    parent,
+                parent:,
                 sibling:   nil
               }
             end
@@ -4816,7 +4816,7 @@ module Spec::Support::Examples::Entities
               let(:values) do
                 {
                   amplitude: '1.21 GW',
-                  parent:    parent,
+                  parent:,
                   sibling:   nil
                 }
               end

@@ -21,7 +21,7 @@ RSpec.describe Stannum::Constraints::Properties::Base do
     {
       allow_empty:    false,
       allow_nil:      false,
-      property_names: property_names
+      property_names:
     }
   end
 

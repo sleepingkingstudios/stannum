@@ -95,7 +95,7 @@ module Stannum::Contracts
 
     def add_type_constraint
       add_constraint(
-        Stannum::Constraints::Types::ArrayType.new(item_type: item_type),
+        Stannum::Constraints::Types::ArrayType.new(item_type:),
         sanity: true
       )
     end

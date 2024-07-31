@@ -15,7 +15,7 @@ RSpec.describe Stannum::Constraints::Type do
 
   let(:expected_type)       { String }
   let(:constructor_options) { {} }
-  let(:expected_options)    { { expected_type: expected_type, required: true } }
+  let(:expected_options)    { { expected_type:, required: true } }
 
   describe '::NEGATED_TYPE' do
     include_examples 'should define frozen constant',
@@ -118,7 +118,7 @@ RSpec.describe Stannum::Constraints::Type do
           "is not a #{expected_type} or nil"
         end
 
-      expected_errors.merge(message: message)
+      expected_errors.merge(message:)
     end
 
     context 'when expected_type is a Class' do
@@ -174,7 +174,7 @@ RSpec.describe Stannum::Constraints::Type do
           "is a #{expected_type} or nil"
         end
 
-      expected_errors.merge(message: message)
+      expected_errors.merge(message:)
     end
 
     context 'when expected_type is a Class' do

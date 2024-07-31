@@ -118,7 +118,7 @@ RSpec.describe Stannum::Constraints::Base do
       let(:expected_errors) { super().add('spec.prior_error') }
 
       it 'should add the errors to the given errors object' do
-        expect(constraint.errors_for nil, errors: errors)
+        expect(constraint.errors_for nil, errors:)
           .to be == expected_errors
       end
     end
@@ -126,10 +126,10 @@ RSpec.describe Stannum::Constraints::Base do
     context 'when initialized with message: value' do
       let(:message) { 'is invalid' }
       let(:constructor_options) do
-        super().merge(message: message)
+        super().merge(message:)
       end
       let(:expected_errors) do
-        Stannum::Errors.new.add(constraint.type, message: message)
+        Stannum::Errors.new.add(constraint.type, message:)
       end
 
       it { expect(constraint.errors_for nil).to be == expected_errors }
@@ -139,7 +139,7 @@ RSpec.describe Stannum::Constraints::Base do
         let(:expected_errors) { super().add('spec.prior_error') }
 
         it 'should add the errors to the given errors object' do
-          expect(constraint.errors_for nil, errors: errors)
+          expect(constraint.errors_for nil, errors:)
             .to be == expected_errors
         end
       end
@@ -185,7 +185,7 @@ RSpec.describe Stannum::Constraints::Base do
     context 'when initialized with message: value' do
       let(:message) { 'is invalid' }
       let(:constructor_options) do
-        super().merge(message: message)
+        super().merge(message:)
       end
 
       it { expect(constraint.message).to be == message }
@@ -206,7 +206,7 @@ RSpec.describe Stannum::Constraints::Base do
       let(:negated_errors) { super().add('spec.prior_error') }
 
       it 'should add the errors to the given errors object' do
-        expect(constraint.negated_errors_for nil, errors: errors)
+        expect(constraint.negated_errors_for nil, errors:)
           .to be == negated_errors
       end
     end
@@ -214,7 +214,7 @@ RSpec.describe Stannum::Constraints::Base do
     context 'when initialized with message: value' do
       let(:negated_message) { 'is valid' }
       let(:constructor_options) do
-        super().merge(negated_message: negated_message)
+        super().merge(negated_message:)
       end
       let(:negated_errors) do
         Stannum::Errors.new.add(
@@ -230,7 +230,7 @@ RSpec.describe Stannum::Constraints::Base do
         let(:negated_errors) { super().add('spec.prior_error') }
 
         it 'should add the errors to the given errors object' do
-          expect(constraint.negated_errors_for nil, errors: errors)
+          expect(constraint.negated_errors_for nil, errors:)
             .to be == negated_errors
         end
       end
@@ -272,7 +272,7 @@ RSpec.describe Stannum::Constraints::Base do
     context 'when initialized with negated_message: value' do
       let(:negated_message) { 'is valid' }
       let(:constructor_options) do
-        super().merge(negated_message: negated_message)
+        super().merge(negated_message:)
       end
 
       it { expect(constraint.negated_message).to be == negated_message }
@@ -287,7 +287,7 @@ RSpec.describe Stannum::Constraints::Base do
     context 'when initialized with type: value' do
       let(:negated_type) { 'spec.custom_negated_type' }
       let(:constructor_options) do
-        super().merge(negated_type: negated_type)
+        super().merge(negated_type:)
       end
 
       it { expect(constraint.negated_type).to be == negated_type }
@@ -302,7 +302,7 @@ RSpec.describe Stannum::Constraints::Base do
     context 'when initialized with type: value' do
       let(:type) { 'spec.custom_type' }
       let(:constructor_options) do
-        super().merge(type: type)
+        super().merge(type:)
       end
 
       it { expect(constraint.type).to be == type }

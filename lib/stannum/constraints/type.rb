@@ -47,10 +47,10 @@ module Stannum::Constraints
       expected_type = resolve_expected_type(expected_type)
 
       super(
-        expected_type: expected_type,
+        expected_type:,
         **resolve_required_option(
-          optional: optional,
-          required: required,
+          optional:,
+          required:,
           **options
         )
       )

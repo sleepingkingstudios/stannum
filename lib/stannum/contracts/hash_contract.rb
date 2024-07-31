@@ -134,8 +134,8 @@ module Stannum::Contracts
     def add_type_constraint
       add_constraint(
         Stannum::Constraints::Types::HashType.new(
-          key_type:   key_type,
-          value_type: value_type
+          key_type:,
+          value_type:
         ),
         sanity: true
       )

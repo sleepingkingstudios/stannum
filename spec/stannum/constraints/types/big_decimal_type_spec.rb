@@ -58,7 +58,7 @@ RSpec.describe Stannum::Constraints::Types::BigDecimalType do
           'is not a BigDecimal or nil'
         end
 
-      expected_errors.merge(message: message)
+      expected_errors.merge(message:)
     end
 
     include_examples 'should match the type constraint'
@@ -81,7 +81,7 @@ RSpec.describe Stannum::Constraints::Types::BigDecimalType do
           'is a BigDecimal or nil'
         end
 
-      expected_errors.merge(message: message)
+      expected_errors.merge(message:)
     end
 
     include_examples 'should match the negated type constraint'

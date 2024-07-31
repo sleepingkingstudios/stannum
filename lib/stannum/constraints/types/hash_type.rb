@@ -85,9 +85,9 @@ module Stannum::Constraints::Types
 
       return add_presence_error(errors) unless presence_matches?(actual)
 
-      update_key_errors_for(actual: actual, errors: errors)
+      update_key_errors_for(actual:, errors:)
 
-      update_value_errors_for(actual: actual, errors: errors)
+      update_value_errors_for(actual:, errors:)
 
       errors
     end

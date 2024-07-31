@@ -26,7 +26,7 @@ RSpec.describe Stannum::Contracts::TupleContract do
       constraints.map.with_index do |definition, index|
         Stannum::Contracts::Definition.new(
           constraint: definition[:constraint],
-          contract:   contract,
+          contract:,
           options:    { property: index, property_type: :index, sanity: false }
             .merge(definition.fetch(:options, {}))
         )
@@ -64,7 +64,7 @@ RSpec.describe Stannum::Contracts::TupleContract do
       constraints.map.with_index do |definition, index|
         Stannum::Contracts::Definition.new(
           constraint: definition[:constraint],
-          contract:   contract,
+          contract:,
           options:    { property: index, property_type: :index, sanity: false }
             .merge(definition.fetch(:options, {}))
         )
@@ -201,7 +201,7 @@ RSpec.describe Stannum::Contracts::TupleContract do
         expect do
           contract.add_constraint(
             constraint,
-            property:      property,
+            property:,
             property_type: :index
           )
         end
@@ -244,8 +244,8 @@ RSpec.describe Stannum::Contracts::TupleContract do
         )
 
         expect(definition).to be_a_constraint_definition(
-          constraint: constraint,
-          contract:   contract,
+          constraint:,
+          contract:,
           options:    {
             property:      0,
             property_type: :index,
@@ -294,8 +294,8 @@ RSpec.describe Stannum::Contracts::TupleContract do
         )
 
         expect(definition).to be_a_constraint_definition(
-          constraint: constraint,
-          contract:   contract,
+          constraint:,
+          contract:,
           options:    {
             property:      0,
             property_type: :index,
@@ -348,8 +348,8 @@ RSpec.describe Stannum::Contracts::TupleContract do
         contract.add_index_constraint(0, constraint)
 
         expect(definition).to be_a_constraint_definition(
-          constraint: constraint,
-          contract:   contract,
+          constraint:,
+          contract:,
           options:    {
             property:      0,
             property_type: :index,
@@ -379,8 +379,8 @@ RSpec.describe Stannum::Contracts::TupleContract do
         contract.add_index_constraint(0, constraint, **options)
 
         expect(definition).to be_a_constraint_definition(
-          constraint: constraint,
-          contract:   contract,
+          constraint:,
+          contract:,
           options:    {
             property:      0,
             property_type: :index,

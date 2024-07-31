@@ -7,7 +7,7 @@ RSpec.describe Stannum::Messages::DefaultLoader do
 
   let(:file_paths)          { %w[/path/to/configuration] }
   let(:locale)              { 'en' }
-  let(:constructor_options) { { file_paths: file_paths } }
+  let(:constructor_options) { { file_paths: } }
 
   describe '#initialize' do
     it 'should define the constructor' do
@@ -134,7 +134,7 @@ RSpec.describe Stannum::Messages::DefaultLoader do
 
         context 'when initialized with locale: value' do
           let(:locale)              { 'en-gb' }
-          let(:constructor_options) { super().merge(locale: locale) }
+          let(:constructor_options) { super().merge(locale:) }
 
           it 'should check if the Ruby file exists' do
             loader.call
@@ -202,7 +202,7 @@ RSpec.describe Stannum::Messages::DefaultLoader do
 
         context 'when initialized with locale: value' do
           let(:locale)              { 'en-gb' }
-          let(:constructor_options) { super().merge(locale: locale) }
+          let(:constructor_options) { super().merge(locale:) }
 
           it 'should check if the Ruby file exists' do
             loader.call
@@ -365,7 +365,7 @@ RSpec.describe Stannum::Messages::DefaultLoader do
 
     context 'when initialized with locale: value' do
       let(:locale)              { 'en-gb' }
-      let(:constructor_options) { super().merge(locale: locale) }
+      let(:constructor_options) { super().merge(locale:) }
 
       it { expect(loader.locale).to be == locale }
     end

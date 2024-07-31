@@ -13,7 +13,7 @@ RSpec.describe Stannum::Constraints::Equality do
 
   let(:expected_value)      { 'a string' }
   let(:constructor_options) { {} }
-  let(:expected_options)    { { expected_value: expected_value } }
+  let(:expected_options)    { { expected_value: } }
 
   describe '::NEGATED_TYPE' do
     include_examples 'should define frozen constant',

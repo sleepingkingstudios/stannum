@@ -42,7 +42,7 @@ RSpec.describe Stannum::Contracts::Builder do
       let(:other)      { Stannum::Contract.new }
       let(:expected) do
         Stannum::Contracts::Definition.new(
-          constraint: constraint,
+          constraint:,
           contract:   other,
           options:    { property: nil, sanity: false }
         )

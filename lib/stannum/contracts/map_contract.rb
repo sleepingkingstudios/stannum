@@ -87,13 +87,13 @@ module Stannum::Contracts
       # @overload key(**options) { |value| }
       #   Creates a new Stannum::Constraint object with the given block, and
       #   adds that constraint to the contract for the value at the given key.
-      def key(property, constraint = nil, **options, &block)
+      def key(property, constraint = nil, **options, &)
         self.constraint(
           constraint,
-          property:      property,
+          property:,
           property_type: :key,
           **options,
-          &block
+          &
         )
       end
     end
@@ -132,7 +132,7 @@ module Stannum::Contracts
         constraint,
         property:      key,
         property_type: :key,
-        sanity:        sanity,
+        sanity:,
         **options
       )
     end
@@ -184,7 +184,7 @@ module Stannum::Contracts
       add_constraint Stannum::Constraints::Signatures::Map.new, sanity: true
     end
 
-    def define_constraints(&block)
+    def define_constraints(&)
       add_type_constraint
 
       add_extra_keys_constraint
