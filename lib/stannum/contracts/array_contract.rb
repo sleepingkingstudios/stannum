@@ -75,12 +75,7 @@ module Stannum::Contracts
     # @param options [Hash<Symbol, Object>] Configuration options for the
     #   contract. Defaults to an empty Hash.
     def initialize(allow_extra_items: false, item_type: nil, **options, &block)
-      super(
-        allow_extra_items: allow_extra_items,
-        item_type:         item_type,
-        **options,
-        &block
-      )
+      super
     end
 
     # @return [Stannum::Constraints::Base, nil] the expected type for the items

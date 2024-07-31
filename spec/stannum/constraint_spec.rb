@@ -114,7 +114,7 @@ RSpec.describe Stannum::Constraint do
         described_class.new(**constructor_options, &constructor_block)
       end
 
-      let(:constructor_block) { ->(actual) { actual.nil? } }
+      let(:constructor_block) { lambda(&:nil?) }
 
       describe 'with an object that does not match the block' do
         let(:actual) { Object.new.freeze }
@@ -218,7 +218,7 @@ RSpec.describe Stannum::Constraint do
         described_class.new(**constructor_options, &constructor_block)
       end
 
-      let(:constructor_block) { ->(actual) { actual.nil? } }
+      let(:constructor_block) { lambda(&:nil?) }
 
       describe 'with an object that does not match the block' do
         let(:actual) { Object.new.freeze }

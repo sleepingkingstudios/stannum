@@ -516,7 +516,7 @@ module Stannum::Contracts
     end
 
     def define_constraints(&block)
-      super(&block)
+      super
 
       add_key_constraint :arguments, arguments_contract
       add_key_constraint :keywords,  keywords_contract

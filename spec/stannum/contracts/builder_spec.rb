@@ -134,7 +134,7 @@ RSpec.describe Stannum::Contracts::Builder do
     end
 
     describe 'with a block' do
-      let(:block)  { ->(actual) { actual.nil? } }
+      let(:block)  { lambda(&:nil?) }
       let(:actual) { Object.new.freeze }
 
       it 'should return the builder' do
@@ -165,7 +165,7 @@ RSpec.describe Stannum::Contracts::Builder do
     end
 
     describe 'with a block and options' do
-      let(:block)  { ->(actual) { actual.nil? } }
+      let(:block)  { lambda(&:nil?) }
       let(:actual) { Object.new.freeze }
       let(:options) do
         {
@@ -204,7 +204,7 @@ RSpec.describe Stannum::Contracts::Builder do
     end
 
     describe 'with a block and a constraint' do
-      let(:block)      { ->(actual) { actual.nil? } }
+      let(:block)      { lambda(&:nil?) }
       let(:constraint) { Stannum::Constraint.new }
       let(:error_message) do
         'expected either a block or a constraint instance, but received ' \

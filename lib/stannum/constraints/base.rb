@@ -57,7 +57,7 @@ module Stannum::Constraints
     def clone(freeze: nil)
       freeze = true if freeze.nil? && RUBY_VERSION <= '3.0.0'
 
-      super(freeze: freeze).copy_properties(self)
+      super.copy_properties(self)
     end
 
     # Checks that the given object does not match the constraint.

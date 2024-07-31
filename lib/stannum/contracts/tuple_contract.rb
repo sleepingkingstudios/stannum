@@ -117,7 +117,7 @@ module Stannum::Contracts
     # @param options [Hash<Symbol, Object>] Configuration options for the
     #   contract. Defaults to an empty Hash.
     def initialize(allow_extra_items: false, **options, &block)
-      super(allow_extra_items: allow_extra_items, **options, &block)
+      super
     end
 
     # Adds an index constraint to the contract.

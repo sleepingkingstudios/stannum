@@ -10,7 +10,7 @@ module Spec::Support::Entities
         'frequency' => nil
       }
 
-      super(**properties)
+      super
     end
 
     def properties
@@ -46,7 +46,7 @@ module Spec::Support::Entities
     end
 
     def set_property(key, value)
-      super(key, value) unless @properties.key?(key.to_s)
+      super unless @properties.key?(key.to_s)
 
       @properties[key.to_s] = value
     end

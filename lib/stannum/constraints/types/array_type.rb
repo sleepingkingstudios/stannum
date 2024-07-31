@@ -126,7 +126,7 @@ module Stannum::Constraints::Types
     end
 
     def error_properties
-      super().merge(allow_empty: allow_empty?)
+      super.merge(allow_empty: allow_empty?)
     end
 
     def item_type_matches?(actual)

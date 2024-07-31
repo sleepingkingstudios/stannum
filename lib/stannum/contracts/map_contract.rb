@@ -107,11 +107,7 @@ module Stannum::Contracts
       **options,
       &block
     )
-      super(
-        allow_extra_keys: allow_extra_keys,
-        **options,
-        &block
-      )
+      super
     end
 
     # Adds a key constraint to the contract.

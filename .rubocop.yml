@@ -1,6 +1,9 @@
 require:
   - rubocop-rspec
 
+inherit_gem:
+  rspec-sleeping_king_studios: config/rubocop-rspec.yml
+
 AllCops:
   TargetRubyVersion: 2.7
   NewCops: enable
@@ -10,33 +13,6 @@ AllCops:
   Exclude:
     - 'tmp/**/*'
     - 'vendor/**/*'
-
-RSpec:
-  Language:
-    ExampleGroups:
-      Regular:
-        - context
-        - describe
-        - wrap_context
-      Skipped:
-        - xcontext
-        - xdescribe
-        - xwrap_context
-      Focused:
-        - fcontext
-        - fdescribe
-        - fwrap_context
-    Includes:
-      Examples:
-        - finclude_contract
-        - finclude_examples
-        - fwrap_examples
-        - include_contract
-        - include_examples
-        - wrap_examples
-        - xinclude_contract
-        - xinclude_examples
-        - xwrap_examples
 
 Layout/ArgumentAlignment:
   EnforcedStyle: with_fixed_indentation
@@ -86,9 +62,9 @@ RSpec/ExampleWithoutDescription:
 RSpec/ExampleWording:
   Enabled: false
 
-RSpec/FilePath:
-  Exclude:
-    - spec/integration/**/*
+RSpec/ExpectInLet:
+  # This is used extensively for generating expectations.
+  Enabled: false
 
 RSpec/HookArgument:
   EnforcedStyle: example
