@@ -368,11 +368,26 @@ module Stannum::Entities
       super
     end
 
+    def inspect_association(value, **options) # rubocop:disable Metrics/MethodLength
+      if value.nil?
+        'nil'
+      elsif value.is_a?(Array)
+        value
+          .map { |item| inspect_association(item, **options) }
+          .join(', ')
+          .then { |str| "[#{str}]" }
+      elsif value.respond_to?(:inspect_with_options)
+        value.inspect_with_options(**options)
+      else
+        value.inspect
+      end
+    end
+
     def inspect_properties(**options)
       return super unless options.fetch(:associations, true)
 
       @associations.reduce(super) do |memo, (key, value)|
-        mapped = value ? value.inspect_with_options(associations: false) : 'nil'
+        mapped = inspect_association(value, **options, associations: false)
 
         "#{memo} #{key}: #{mapped}"
       end

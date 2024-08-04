@@ -52,11 +52,7 @@ RSpec.describe Stannum::Associations::One do
       (hsh[:foreign_key] ||= {})[:type] = options[:foreign_key_type]
     end
 
-    if options[:inverse_name]
-      hsh[:inverse] = options[:inverse_name]
-    elsif options[:inverse]
-      hsh[:inverse] = true
-    end
+    hsh[:inverse] = options[:inverse_name] if options[:inverse_name]
 
     hsh
   end
