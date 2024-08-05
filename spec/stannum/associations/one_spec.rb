@@ -236,8 +236,8 @@ RSpec.describe Stannum::Associations::One do
         instance_double(
           Stannum::Association,
           add_value:    nil,
-          remove_value: nil,
-          value:        nil
+          get_value:    nil,
+          remove_value: nil
         )
       end
       let(:options) do
@@ -262,7 +262,7 @@ RSpec.describe Stannum::Associations::One do
         allow(mock_association).to receive(:add_value)
         allow(mock_association).to receive(:remove_value)
         allow(mock_association)
-          .to receive(:value)
+          .to receive(:get_value)
           .and_return(previous_inverse)
       end
 
@@ -378,8 +378,8 @@ RSpec.describe Stannum::Associations::One do
         instance_double(
           Stannum::Association,
           add_value:    nil,
-          remove_value: nil,
-          value:        nil
+          get_value:    nil,
+          remove_value: nil
         )
       end
       let(:options) do
@@ -402,7 +402,7 @@ RSpec.describe Stannum::Associations::One do
         allow(mock_association).to receive(:add_value)
         allow(mock_association).to receive(:remove_value)
         allow(mock_association)
-          .to receive(:value)
+          .to receive(:get_value)
           .and_return(previous_inverse)
       end
 
@@ -607,8 +607,8 @@ RSpec.describe Stannum::Associations::One do
         instance_double(
           Stannum::Association,
           add_value:    nil,
-          remove_value: nil,
-          value:        nil
+          get_value:    nil,
+          remove_value: nil
         )
       end
       let(:options) do
@@ -633,7 +633,7 @@ RSpec.describe Stannum::Associations::One do
         allow(mock_association).to receive(:add_value)
         allow(mock_association).to receive(:remove_value)
         allow(mock_association)
-          .to receive(:value)
+          .to receive(:get_value)
           .and_return(previous_inverse)
       end
 
@@ -781,8 +781,8 @@ RSpec.describe Stannum::Associations::One do
         instance_double(
           Stannum::Association,
           add_value:    nil,
-          remove_value: nil,
-          value:        nil
+          get_value:    nil,
+          remove_value: nil
         )
       end
       let(:options) do
@@ -805,7 +805,7 @@ RSpec.describe Stannum::Associations::One do
         allow(mock_association).to receive(:add_value)
         allow(mock_association).to receive(:remove_value)
         allow(mock_association)
-          .to receive(:value)
+          .to receive(:get_value)
           .and_return(previous_inverse)
       end
 
@@ -999,6 +999,18 @@ RSpec.describe Stannum::Associations::One do
     end
   end
 
+  describe '#get_value' do
+    include_context 'with an entity'
+
+    let(:options) { super().merge(inverse: false) }
+
+    it { expect(association.get_value(entity)).to be nil }
+
+    wrap_context 'when the association has a value' do
+      it { expect(association.get_value(entity)).to be previous_value }
+    end
+  end
+
   describe '#many?' do
     it { expect(association.many?).to be false }
   end
@@ -1136,8 +1148,8 @@ RSpec.describe Stannum::Associations::One do
         instance_double(
           Stannum::Association,
           add_value:    nil,
-          remove_value: nil,
-          value:        nil
+          get_value:    nil,
+          remove_value: nil
         )
       end
       let(:options) do
@@ -1340,8 +1352,8 @@ RSpec.describe Stannum::Associations::One do
         instance_double(
           Stannum::Association,
           add_value:    nil,
-          remove_value: nil,
-          value:        nil
+          get_value:    nil,
+          remove_value: nil
         )
       end
       let(:options) do
@@ -1427,18 +1439,6 @@ RSpec.describe Stannum::Associations::One do
           end
         end
       end
-    end
-  end
-
-  describe '#value' do
-    include_context 'with an entity'
-
-    let(:options) { super().merge(inverse: false) }
-
-    it { expect(association.value(entity)).to be nil }
-
-    wrap_context 'when the association has a value' do
-      it { expect(association.value(entity)).to be previous_value }
     end
   end
 end

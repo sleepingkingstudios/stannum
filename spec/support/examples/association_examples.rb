@@ -143,6 +143,14 @@ module Spec::Support::Examples
         include_examples 'should define reader', :foreign_key_type
       end
 
+      describe '#get_value' do
+        it 'should define the method' do
+          expect(association)
+            .to respond_to(:get_value)
+            .with(1).argument
+        end
+      end
+
       describe '#inverse?' do
         include_examples 'should define predicate', :inverse?, false
 
@@ -390,14 +398,6 @@ module Spec::Support::Examples
           let(:type) { super().to_s }
 
           it { expect(association.type).to be == type }
-        end
-      end
-
-      describe '#value' do
-        it 'should define the method' do
-          expect(association)
-            .to respond_to(:value)
-            .with(1).argument
         end
       end
 

@@ -11,13 +11,13 @@ module Stannum::Associations
 
       def define_reader(association)
         schema.define_method(association.reader_name) do
-          association.value(self)
+          association.get_value(self)
         end
       end
 
       def define_writer(association)
         schema.define_method(association.writer_name) do |value|
-          association.remove_value(self, association.value(self))
+          association.remove_value(self, association.get_value(self))
 
           association.add_value(self, value)
         end
@@ -38,7 +38,7 @@ module Stannum::Associations
 
       return unless update_inverse && value && inverse?
 
-      previous_inverse = resolved_inverse.value(value)
+      previous_inverse = resolved_inverse.get_value(value)
 
       resolved_inverse.remove_value(value, previous_inverse) if previous_inverse
 
@@ -72,6 +72,11 @@ module Stannum::Associations
       @foreign_key_type ||= options[:foreign_key_type]
     end
 
+    # (see Stannum::Association#get_value)
+    def get_value(entity)
+      entity.read_association(name, safe: false)
+    end
+
     # @return [true] true if the association is a singular association;
     #   otherwise false.
     def one?
@@ -95,11 +100,6 @@ module Stannum::Associations
       entity.write_attribute(foreign_key_name, nil, safe: false) if foreign_key?
 
       entity.write_association(name, nil, safe: false)
-    end
-
-    # (see Stannum::Association#value)
-    def value(entity)
-      entity.read_association(name, safe: false)
     end
 
     private

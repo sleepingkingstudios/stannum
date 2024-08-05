@@ -107,6 +107,16 @@ module Stannum
       nil
     end
 
+    # Retrieves the value of the association for the entity.
+    #
+    # @param entity [Stannum::Entity] the entity to update.
+    #
+    # @return [Object] the value of the association.
+    def get_value(entity) # rubocop:disable Lint/UnusedMethodArgument
+      raise AbstractAssociationError,
+        "#{self.class} is an abstract class - use an association subclass"
+    end
+
     # @return [Boolean] true if the association has an inverse association;
     #   otherwise false.
     def inverse?
@@ -171,16 +181,6 @@ module Stannum
       end
 
       @resolved_type
-    end
-
-    # Retrieves the value of the association for the entity.
-    #
-    # @param entity [Stannum::Entity] the entity to update.
-    #
-    # @return [Object] the value of the association.
-    def value(entity) # rubocop:disable Lint/UnusedMethodArgument
-      raise AbstractAssociationError,
-        "#{self.class} is an abstract class - use an association subclass"
     end
 
     # @return [Symbol] the name of the writer method for the association.
