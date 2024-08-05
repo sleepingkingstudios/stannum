@@ -48,7 +48,37 @@ RSpec.describe Stannum::Association do
       klass.define_method(:set_properties) { |values, **| @attributes = values }
     end
 
-    include_examples 'should implement the Association::Builder methods'
+    describe '.new' do
+      it 'should be constructible' do
+        expect(described_class::Builder).to be_constructible.with(1).argument
+      end
+    end
+
+    describe '#call' do
+      let(:association) do
+        described_class.new(name:, type:, options:)
+      end
+
+      it { expect(builder).to respond_to(:call).with(1).argument }
+
+      it 'should define the reader method' do
+        expect { builder.call(association) }
+          .to change(entity_class, :instance_methods)
+          .to include association.reader_name
+      end
+
+      it 'should define the writer method' do
+        expect { builder.call(association) }
+          .to change(entity_class, :instance_methods)
+          .to include association.writer_name
+      end
+    end
+
+    describe '#schema' do
+      include_examples 'should define reader',
+        :schema,
+        -> { entity_class::Associations }
+    end
   end
 
   include_examples 'should implement the Association methods'
@@ -62,6 +92,46 @@ RSpec.describe Stannum::Association do
 
     it 'should raise an exception' do
       expect { association.add_value(entity, value) }.to raise_error(
+        described_class::AbstractAssociationError,
+        error_message
+      )
+    end
+  end
+
+  describe '#clear_value' do
+    let(:entity) { Object.new.freeze }
+    let(:error_message) do
+      "#{described_class} is an abstract class - use an association subclass"
+    end
+
+    it 'should raise an exception' do
+      expect { association.clear_value(entity) }.to raise_error(
+        described_class::AbstractAssociationError,
+        error_message
+      )
+    end
+  end
+
+  describe '#foreign_key?' do
+    it { expect(association.foreign_key?).to be false }
+  end
+
+  describe '#foreign_key_name' do
+    it { expect(association.foreign_key_name).to be nil }
+  end
+
+  describe '#foreign_key_type' do
+    it { expect(association.foreign_key_type).to be nil }
+  end
+
+  describe '#get_value' do
+    let(:entity) { Object.new.freeze }
+    let(:error_message) do
+      "#{described_class} is an abstract class - use an association subclass"
+    end
+
+    it 'should raise an exception' do
+      expect { association.get_value(entity) }.to raise_error(
         described_class::AbstractAssociationError,
         error_message
       )
@@ -91,14 +161,15 @@ RSpec.describe Stannum::Association do
     end
   end
 
-  describe '#value' do
+  describe '#set_value' do
     let(:entity) { Object.new.freeze }
+    let(:value)  { Object.new.freeze }
     let(:error_message) do
       "#{described_class} is an abstract class - use an association subclass"
     end
 
     it 'should raise an exception' do
-      expect { association.value(entity) }.to raise_error(
+      expect { association.set_value(entity, value) }.to raise_error(
         described_class::AbstractAssociationError,
         error_message
       )

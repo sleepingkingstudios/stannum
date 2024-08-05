@@ -5,44 +5,26 @@ require 'stannum/associations'
 module Stannum::Associations
   # Data object representing a singular association.
   class One < Stannum::Association
-    # Builder class for defining association methods on an entity.
-    class Builder < Stannum::Association::Builder
-      private
-
-      def define_reader(association)
-        schema.define_method(association.reader_name) do
-          association.value(self)
-        end
-      end
-
-      def define_writer(association)
-        schema.define_method(association.writer_name) do |value|
-          association.remove_value(self, association.value(self))
-
-          association.add_value(self, value)
-        end
-      end
+    # (see Stannum::Association#add_value)
+    def add_value(entity, value, update_inverse: true)
+      set_value(entity, value, update_inverse:)
     end
 
     # (see Stannum::Association#add_value)
-    def add_value(entity, value, update_inverse: true) # rubocop:disable Metrics/MethodLength
-      if foreign_key?
-        entity.write_attribute(
-          foreign_key_name,
-          value&.primary_key,
-          safe: false
+    def clear_value(entity, update_inverse: true)
+      previous_value = entity.read_association(name, safe: false)
+
+      if update_inverse && previous_value && inverse?
+        resolved_inverse.remove_value(
+          previous_value,
+          entity,
+          update_inverse: false
         )
       end
 
-      entity.write_association(name, value, safe: false)
+      entity.write_attribute(foreign_key_name, nil, safe: false) if foreign_key?
 
-      return unless update_inverse && value && inverse?
-
-      previous_inverse = resolved_inverse.value(value)
-
-      resolved_inverse.remove_value(value, previous_inverse) if previous_inverse
-
-      resolved_inverse.add_value(value, entity, update_inverse: false)
+      entity.write_association(name, nil, safe: false)
     end
 
     # @return [Boolean] true if the association has a foreign key; otherwise
@@ -72,6 +54,11 @@ module Stannum::Associations
       @foreign_key_type ||= options[:foreign_key_type]
     end
 
+    # (see Stannum::Association#get_value)
+    def get_value(entity)
+      entity.read_association(name, safe: false)
+    end
+
     # @return [true] true if the association is a singular association;
     #   otherwise false.
     def one?
@@ -79,27 +66,33 @@ module Stannum::Associations
     end
 
     # (see Stannum::Association#remove_value)
-    def remove_value(entity, value, update_inverse: true) # rubocop:disable Metrics/MethodLength
+    def remove_value(entity, value, update_inverse: true)
       previous_value = entity.read_association(name, safe: false)
 
       return unless matching_value?(value, previous_value)
 
-      if update_inverse && value && inverse?
-        resolved_inverse.remove_value(
-          previous_value,
-          entity,
-          update_inverse: false
+      clear_value(entity, update_inverse:)
+    end
+
+    # (see Stannum::Association#set_value)
+    def set_value(entity, value, update_inverse: true) # rubocop:disable Metrics/MethodLength
+      if foreign_key?
+        entity.write_attribute(
+          foreign_key_name,
+          value&.primary_key,
+          safe: false
         )
       end
 
-      entity.write_attribute(foreign_key_name, nil, safe: false) if foreign_key?
+      entity.write_association(name, value, safe: false)
 
-      entity.write_association(name, nil, safe: false)
-    end
+      return unless update_inverse && value && inverse?
 
-    # (see Stannum::Association#value)
-    def value(entity)
-      entity.read_association(name, safe: false)
+      previous_inverse = resolved_inverse.get_value(value)
+
+      resolved_inverse.remove_value(value, previous_inverse) if previous_inverse
+
+      resolved_inverse.add_value(value, entity, update_inverse: false)
     end
 
     private

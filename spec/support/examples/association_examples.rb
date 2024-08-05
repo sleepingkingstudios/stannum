@@ -121,6 +121,15 @@ module Spec::Support::Examples
         end
       end
 
+      describe '#clear_value' do
+        it 'should define the method' do
+          expect(association)
+            .to respond_to(:clear_value)
+            .with(1).argument
+            .and_keywords(:update_inverse)
+        end
+      end
+
       describe '#entity_class_name' do
         include_examples 'should define reader', :entity_class_name, nil
 
@@ -128,6 +137,26 @@ module Spec::Support::Examples
           let(:options) { super().merge(entity_class_name: 'Spec::Entity') }
 
           it { expect(association.entity_class_name).to be == 'Spec::Entity' }
+        end
+      end
+
+      describe '#foreign_key?' do
+        include_examples 'should define predicate', :foreign_key?
+      end
+
+      describe '#foreign_key_name' do
+        include_examples 'should define reader', :foreign_key_name
+      end
+
+      describe '#foreign_key_type' do
+        include_examples 'should define reader', :foreign_key_type
+      end
+
+      describe '#get_value' do
+        it 'should define the method' do
+          expect(association)
+            .to respond_to(:get_value)
+            .with(1).argument
         end
       end
 
@@ -371,6 +400,15 @@ module Spec::Support::Examples
         end
       end
 
+      describe '#set_value' do
+        it 'should define the method' do
+          expect(association)
+            .to respond_to(:set_value)
+            .with(2).arguments
+            .and_keywords(:update_inverse)
+        end
+      end
+
       describe '#type' do
         include_examples 'should define reader', :type, -> { type.to_s }
 
@@ -378,14 +416,6 @@ module Spec::Support::Examples
           let(:type) { super().to_s }
 
           it { expect(association.type).to be == type }
-        end
-      end
-
-      describe '#value' do
-        it 'should define the method' do
-          expect(association)
-            .to respond_to(:value)
-            .with(1).argument
         end
       end
 
@@ -399,24 +429,6 @@ module Spec::Support::Examples
 
           it { expect(association.writer_name).to be == :"#{name}=" }
         end
-      end
-    end
-
-    shared_examples 'should implement the Association::Builder methods' do
-      describe '.new' do
-        it 'should be constructible' do
-          expect(described_class::Builder).to be_constructible.with(1).argument
-        end
-      end
-
-      describe '#call' do
-        it { expect(builder).to respond_to(:call).with(1).argument }
-      end
-
-      describe '#schema' do
-        include_examples 'should define reader',
-          :schema,
-          -> { entity_class::Associations }
       end
     end
   end

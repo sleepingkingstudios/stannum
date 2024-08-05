@@ -83,7 +83,7 @@ RSpec.describe Stannum::Entity do
     def inspect_association(associated_entity)
       return 'nil' if associated_entity.nil?
 
-      associated_entity.inspect_with_options(associations: false)
+      associated_entity.inspect_with_options(**options, associations: false)
     end
 
     context 'when the entity class defines properties' do

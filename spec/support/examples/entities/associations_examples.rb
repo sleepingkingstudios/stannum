@@ -3873,10 +3873,19 @@ module Spec::Support::Examples::Entities
       end
 
       describe '#inspect' do
-        def inspect_association(associated_entity)
-          return 'nil' if associated_entity.nil?
-
-          associated_entity.inspect_with_options(associations: false)
+        def inspect_association(associated_entity) # rubocop:disable Metrics/MethodLength
+          if associated_entity.nil?
+            'nil'
+          elsif associated_entity.is_a?(Array)
+            associated_entity
+              .map { |item| inspect_association(item) }
+              .join(', ')
+              .then { |str| "[#{str}]" }
+          elsif associated_entity.respond_to?(:inspect_with_options)
+            associated_entity.inspect_with_options(associations: false)
+          else
+            associated_entity.inspect
+          end
         end
 
         wrap_context 'when the entity class defines associations' do
@@ -3891,6 +3900,25 @@ module Spec::Support::Examples::Entities
           it { expect(entity.inspect).to be == expected }
 
           wrap_context 'when the entity has association values' do
+            it { expect(entity.inspect).to be == expected }
+          end
+
+          context 'when the entity has invalid association values' do
+            let(:associations) do
+              {
+                'parent'  => nil,
+                'sibling' => Struct.new(:inspect).new('"invalid sibling"'), # rubocop:disable Lint/StructNewOverride
+                'child'   => [
+                  Spec::Sibling.new(name: 'first child'),
+                  Spec::Sibling.new(name: 'second child'),
+                  Spec::Sibling.new(name: 'third child')
+                ]
+              }
+            end
+            let(:properties) do
+              defined?(super()) ? super().merge(associations) : associations
+            end
+
             it { expect(entity.inspect).to be == expected }
           end
         end

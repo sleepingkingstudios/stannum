@@ -33,17 +33,19 @@ module Stannum
 
       private
 
-      # :nocov:
-      def define_reader(_)
-        raise AbstractAssociationError,
-          "#{self} is an abstract class - use an association subclass"
+      def define_reader(association)
+        schema.define_method(association.reader_name) do
+          association.get_value(self)
+        end
       end
 
-      def define_writer(_)
-        raise AbstractAssociationError,
-          "#{self} is an abstract class - use an association subclass"
+      def define_writer(association)
+        schema.define_method(association.writer_name) do |value|
+          association.clear_value(self)
+
+          association.set_value(self, value)
+        end
       end
-      # :nocov:
     end
 
     # @param name [String, Symbol] The name of the association. Converted to a
@@ -80,7 +82,21 @@ module Stannum
     # @param value [Object] the new value for the association.
     # @param update_inverse [Boolean] if true, updates the inverse association
     #   (if any). Defaults to false.
+    #
+    # @return [void]
     def add_value(entity, value, update_inverse: true) # rubocop:disable Lint/UnusedMethodArgument
+      raise AbstractAssociationError,
+        "#{self.class} is an abstract class - use an association subclass"
+    end
+
+    # @api private
+    #
+    # Removes the value of the association for the entity.
+    #
+    # @param entity [Stannum::Entity] the entity to update.
+    #
+    # @return [void]
+    def clear_value(entity, update_inverse: true) # rubocop:disable Lint/UnusedMethodArgument
       raise AbstractAssociationError,
         "#{self.class} is an abstract class - use an association subclass"
     end
@@ -88,6 +104,35 @@ module Stannum
     # @return [String, nil] the name of the original entity class.
     def entity_class_name
       @options[:entity_class_name]
+    end
+
+    # @return [true, false] true if the association has defines a foreign key;
+    #   otherwise false.
+    def foreign_key?
+      false
+    end
+
+    # @return [String?] the name of the foreign key, if any.
+    def foreign_key_name
+      nil
+    end
+
+    # @return [Class, Stannum::Constraint, nil] the type of the foreign key, if
+    #   any.
+    def foreign_key_type
+      nil
+    end
+
+    # @api private
+    #
+    # Retrieves the value of the association for the entity.
+    #
+    # @param entity [Stannum::Entity] the entity to update.
+    #
+    # @return [Object] the value of the association.
+    def get_value(entity) # rubocop:disable Lint/UnusedMethodArgument
+      raise AbstractAssociationError,
+        "#{self.class} is an abstract class - use an association subclass"
     end
 
     # @return [Boolean] true if the association has an inverse association;
@@ -126,6 +171,8 @@ module Stannum
     # @param value [Stannum::Entity] the association value to remove.
     # @param update_inverse [Boolean] if true, updates the inverse association
     #   (if any). Defaults to false.
+    #
+    # @return [void]
     def remove_value(entity, value, update_inverse: true) # rubocop:disable Lint/UnusedMethodArgument
       raise AbstractAssociationError,
         "#{self.class} is an abstract class - use an association subclass"
@@ -156,12 +203,17 @@ module Stannum
       @resolved_type
     end
 
-    # Retrieves the value of the association for the entity.
+    # @api private
+    #
+    # Replaces the association for the entity with the given value.
     #
     # @param entity [Stannum::Entity] the entity to update.
+    # @param value [Object] the new value for the association.
+    # @param update_inverse [Boolean] if true, updates the inverse association
+    #   (if any). Defaults to false.
     #
-    # @return [Object] the value of the association.
-    def value(entity) # rubocop:disable Lint/UnusedMethodArgument
+    # @return [void]
+    def set_value(entity, value, update_inverse: true) # rubocop:disable Lint/UnusedMethodArgument
       raise AbstractAssociationError,
         "#{self.class} is an abstract class - use an association subclass"
     end
