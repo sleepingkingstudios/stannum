@@ -920,7 +920,7 @@ RSpec.describe Stannum::Associations::One do
   end
 
   describe '#foreign_key?' do
-    include_examples 'should define predicate', :foreign_key?, false
+    it { expect(association.foreign_key?).to be false }
 
     context 'with options: { foreign_key_name: a string }' do
       let(:options) do
@@ -946,7 +946,7 @@ RSpec.describe Stannum::Associations::One do
   end
 
   describe '#foreign_key_name' do
-    include_examples 'should define reader', :foreign_key_name, nil
+    it { expect(association.foreign_key_name).to be nil }
 
     context 'with options: { foreign_key_name: a string }' do
       let(:options) do
@@ -974,7 +974,7 @@ RSpec.describe Stannum::Associations::One do
   end
 
   describe '#foreign_key_type' do
-    include_examples 'should define reader', :foreign_key_type, nil
+    it { expect(association.foreign_key_type).to be nil }
 
     context 'with options: { foreign_key_type: a class }' do
       let(:options) do

@@ -131,6 +131,18 @@ module Spec::Support::Examples
         end
       end
 
+      describe '#foreign_key?' do
+        include_examples 'should define predicate', :foreign_key?
+      end
+
+      describe '#foreign_key_name' do
+        include_examples 'should define reader', :foreign_key_name
+      end
+
+      describe '#foreign_key_type' do
+        include_examples 'should define reader', :foreign_key_type
+      end
+
       describe '#inverse?' do
         include_examples 'should define predicate', :inverse?, false
 

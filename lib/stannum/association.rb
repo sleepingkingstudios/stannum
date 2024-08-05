@@ -90,6 +90,23 @@ module Stannum
       @options[:entity_class_name]
     end
 
+    # @return [true, false] true if the association has defines a foreign key;
+    #   otherwise false.
+    def foreign_key?
+      false
+    end
+
+    # @return [String?] the name of the foreign key, if any.
+    def foreign_key_name
+      nil
+    end
+
+    # @return [Class, Stannum::Constraint, nil] the type of the foreign key, if
+    #   any.
+    def foreign_key_type
+      nil
+    end
+
     # @return [Boolean] true if the association has an inverse association;
     #   otherwise false.
     def inverse?

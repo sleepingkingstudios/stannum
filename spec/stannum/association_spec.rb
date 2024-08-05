@@ -68,6 +68,18 @@ RSpec.describe Stannum::Association do
     end
   end
 
+  describe '#foreign_key?' do
+    it { expect(association.foreign_key?).to be false }
+  end
+
+  describe '#foreign_key_name' do
+    it { expect(association.foreign_key_name).to be nil }
+  end
+
+  describe '#foreign_key_type' do
+    it { expect(association.foreign_key_type).to be nil }
+  end
+
   describe '#many?' do
     it { expect(association.many?).to be false }
   end
