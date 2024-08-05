@@ -5,25 +5,6 @@ require 'stannum/associations'
 module Stannum::Associations
   # Data object representing a singular association.
   class One < Stannum::Association
-    # Builder class for defining association methods on an entity.
-    class Builder < Stannum::Association::Builder
-      private
-
-      def define_reader(association)
-        schema.define_method(association.reader_name) do
-          association.get_value(self)
-        end
-      end
-
-      def define_writer(association)
-        schema.define_method(association.writer_name) do |value|
-          association.remove_value(self, association.get_value(self))
-
-          association.add_value(self, value)
-        end
-      end
-    end
-
     # (see Stannum::Association#add_value)
     def add_value(entity, value, update_inverse: true)
       set_value(entity, value, update_inverse:)

@@ -65,46 +65,6 @@ RSpec.describe Stannum::Associations::One do
     klass.attribute :name, String
   end
 
-  describe '::Builder' do
-    subject(:builder) do
-      described_class::Builder.new(entity_class::Associations)
-    end
-
-    let(:entity_class) { Spec::EntityClass }
-
-    example_class 'Spec::EntityClass' do |klass|
-      klass.include Stannum::Entity
-    end
-
-    include_examples 'should implement the Association::Builder methods'
-
-    describe '#call' do
-      let(:association) do
-        described_class.new(name:, type:, options:)
-      end
-
-      it { expect(builder).to respond_to(:call).with(1).argument }
-
-      it 'should define the reader method' do
-        expect { builder.call(association) }
-          .to change(entity_class, :instance_methods)
-          .to include association.reader_name
-      end
-
-      it 'should define the writer method' do
-        expect { builder.call(association) }
-          .to change(entity_class, :instance_methods)
-          .to include association.writer_name
-      end
-    end
-
-    describe '#schema' do
-      include_examples 'should define reader',
-        :schema,
-        -> { entity_class::Associations }
-    end
-  end
-
   include_examples 'should implement the Association methods'
 
   describe '#:association' do

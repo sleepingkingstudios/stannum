@@ -431,23 +431,5 @@ module Spec::Support::Examples
         end
       end
     end
-
-    shared_examples 'should implement the Association::Builder methods' do
-      describe '.new' do
-        it 'should be constructible' do
-          expect(described_class::Builder).to be_constructible.with(1).argument
-        end
-      end
-
-      describe '#call' do
-        it { expect(builder).to respond_to(:call).with(1).argument }
-      end
-
-      describe '#schema' do
-        include_examples 'should define reader',
-          :schema,
-          -> { entity_class::Associations }
-      end
-    end
   end
 end

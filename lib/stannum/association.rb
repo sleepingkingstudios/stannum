@@ -33,17 +33,19 @@ module Stannum
 
       private
 
-      # :nocov:
-      def define_reader(_)
-        raise AbstractAssociationError,
-          "#{self} is an abstract class - use an association subclass"
+      def define_reader(association)
+        schema.define_method(association.reader_name) do
+          association.get_value(self)
+        end
       end
 
-      def define_writer(_)
-        raise AbstractAssociationError,
-          "#{self} is an abstract class - use an association subclass"
+      def define_writer(association)
+        schema.define_method(association.writer_name) do |value|
+          association.clear_value(self)
+
+          association.set_value(self, value)
+        end
       end
-      # :nocov:
     end
 
     # @param name [String, Symbol] The name of the association. Converted to a

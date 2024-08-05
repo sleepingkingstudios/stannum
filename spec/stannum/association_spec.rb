@@ -48,7 +48,37 @@ RSpec.describe Stannum::Association do
       klass.define_method(:set_properties) { |values, **| @attributes = values }
     end
 
-    include_examples 'should implement the Association::Builder methods'
+    describe '.new' do
+      it 'should be constructible' do
+        expect(described_class::Builder).to be_constructible.with(1).argument
+      end
+    end
+
+    describe '#call' do
+      let(:association) do
+        described_class.new(name:, type:, options:)
+      end
+
+      it { expect(builder).to respond_to(:call).with(1).argument }
+
+      it 'should define the reader method' do
+        expect { builder.call(association) }
+          .to change(entity_class, :instance_methods)
+          .to include association.reader_name
+      end
+
+      it 'should define the writer method' do
+        expect { builder.call(association) }
+          .to change(entity_class, :instance_methods)
+          .to include association.writer_name
+      end
+    end
+
+    describe '#schema' do
+      include_examples 'should define reader',
+        :schema,
+        -> { entity_class::Associations }
+    end
   end
 
   include_examples 'should implement the Association methods'
