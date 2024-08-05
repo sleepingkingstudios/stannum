@@ -80,7 +80,21 @@ module Stannum
     # @param value [Object] the new value for the association.
     # @param update_inverse [Boolean] if true, updates the inverse association
     #   (if any). Defaults to false.
+    #
+    # @return [void]
     def add_value(entity, value, update_inverse: true) # rubocop:disable Lint/UnusedMethodArgument
+      raise AbstractAssociationError,
+        "#{self.class} is an abstract class - use an association subclass"
+    end
+
+    # @api private
+    #
+    # Removes the value of the association for the entity.
+    #
+    # @param entity [Stannum::Entity] the entity to update.
+    #
+    # @return [void]
+    def clear_value(entity, update_inverse: true) # rubocop:disable Lint/UnusedMethodArgument
       raise AbstractAssociationError,
         "#{self.class} is an abstract class - use an association subclass"
     end
@@ -107,6 +121,8 @@ module Stannum
       nil
     end
 
+    # @api private
+    #
     # Retrieves the value of the association for the entity.
     #
     # @param entity [Stannum::Entity] the entity to update.
@@ -153,6 +169,8 @@ module Stannum
     # @param value [Stannum::Entity] the association value to remove.
     # @param update_inverse [Boolean] if true, updates the inverse association
     #   (if any). Defaults to false.
+    #
+    # @return [void]
     def remove_value(entity, value, update_inverse: true) # rubocop:disable Lint/UnusedMethodArgument
       raise AbstractAssociationError,
         "#{self.class} is an abstract class - use an association subclass"
@@ -181,6 +199,21 @@ module Stannum
       end
 
       @resolved_type
+    end
+
+    # @api private
+    #
+    # Replaces the association for the entity with the given value.
+    #
+    # @param entity [Stannum::Entity] the entity to update.
+    # @param value [Object] the new value for the association.
+    # @param update_inverse [Boolean] if true, updates the inverse association
+    #   (if any). Defaults to false.
+    #
+    # @return [void]
+    def set_value(entity, value, update_inverse: true) # rubocop:disable Lint/UnusedMethodArgument
+      raise AbstractAssociationError,
+        "#{self.class} is an abstract class - use an association subclass"
     end
 
     # @return [Symbol] the name of the writer method for the association.

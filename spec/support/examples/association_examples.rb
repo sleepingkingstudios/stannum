@@ -121,6 +121,15 @@ module Spec::Support::Examples
         end
       end
 
+      describe '#clear_value' do
+        it 'should define the method' do
+          expect(association)
+            .to respond_to(:clear_value)
+            .with(1).argument
+            .and_keywords(:update_inverse)
+        end
+      end
+
       describe '#entity_class_name' do
         include_examples 'should define reader', :entity_class_name, nil
 
@@ -388,6 +397,15 @@ module Spec::Support::Examples
           let(:type) { super().to_s }
 
           it { expect(association.resolved_type).to be Object.const_get(type) }
+        end
+      end
+
+      describe '#set_value' do
+        it 'should define the method' do
+          expect(association)
+            .to respond_to(:set_value)
+            .with(2).arguments
+            .and_keywords(:update_inverse)
         end
       end
 

@@ -25,24 +25,25 @@ module Stannum::Associations
     end
 
     # (see Stannum::Association#add_value)
-    def add_value(entity, value, update_inverse: true) # rubocop:disable Metrics/MethodLength
-      if foreign_key?
-        entity.write_attribute(
-          foreign_key_name,
-          value&.primary_key,
-          safe: false
+    def add_value(entity, value, update_inverse: true)
+      set_value(entity, value, update_inverse:)
+    end
+
+    # (see Stannum::Association#add_value)
+    def clear_value(entity, update_inverse: true)
+      previous_value = entity.read_association(name, safe: false)
+
+      if update_inverse && previous_value && inverse?
+        resolved_inverse.remove_value(
+          previous_value,
+          entity,
+          update_inverse: false
         )
       end
 
-      entity.write_association(name, value, safe: false)
+      entity.write_attribute(foreign_key_name, nil, safe: false) if foreign_key?
 
-      return unless update_inverse && value && inverse?
-
-      previous_inverse = resolved_inverse.get_value(value)
-
-      resolved_inverse.remove_value(value, previous_inverse) if previous_inverse
-
-      resolved_inverse.add_value(value, entity, update_inverse: false)
+      entity.write_association(name, nil, safe: false)
     end
 
     # @return [Boolean] true if the association has a foreign key; otherwise
@@ -84,22 +85,33 @@ module Stannum::Associations
     end
 
     # (see Stannum::Association#remove_value)
-    def remove_value(entity, value, update_inverse: true) # rubocop:disable Metrics/MethodLength
+    def remove_value(entity, value, update_inverse: true)
       previous_value = entity.read_association(name, safe: false)
 
       return unless matching_value?(value, previous_value)
 
-      if update_inverse && value && inverse?
-        resolved_inverse.remove_value(
-          previous_value,
-          entity,
-          update_inverse: false
+      clear_value(entity, update_inverse:)
+    end
+
+    # (see Stannum::Association#set_value)
+    def set_value(entity, value, update_inverse: true) # rubocop:disable Metrics/MethodLength
+      if foreign_key?
+        entity.write_attribute(
+          foreign_key_name,
+          value&.primary_key,
+          safe: false
         )
       end
 
-      entity.write_attribute(foreign_key_name, nil, safe: false) if foreign_key?
+      entity.write_association(name, value, safe: false)
 
-      entity.write_association(name, nil, safe: false)
+      return unless update_inverse && value && inverse?
+
+      previous_inverse = resolved_inverse.get_value(value)
+
+      resolved_inverse.remove_value(value, previous_inverse) if previous_inverse
+
+      resolved_inverse.add_value(value, entity, update_inverse: false)
     end
 
     private

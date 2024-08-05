@@ -919,6 +919,202 @@ RSpec.describe Stannum::Associations::One do
     end
   end
 
+  describe '#clear_value' do
+    include_context 'with an entity'
+
+    let(:options) { super().merge(inverse: false) }
+
+    it 'should not change the association value' do
+      expect { association.clear_value(entity) }
+        .not_to change(entity, name)
+    end
+
+    wrap_context 'when the association has a value' do
+      it 'should clear the association value' do
+        expect { association.clear_value(entity) }
+          .to change(entity, name)
+          .to be nil
+      end
+    end
+
+    context 'when the association has a foreign key' do
+      let(:options) do
+        super().merge(
+          foreign_key_name: 'reference_id',
+          foreign_key_type: Integer
+        )
+      end
+
+      it 'should not change the association value' do
+        expect { association.clear_value(entity) }
+          .not_to change(entity, name)
+      end
+
+      wrap_context 'when the association has a value' do
+        it 'should clear the association value' do
+          expect { association.clear_value(entity) }
+            .to change(entity, name)
+            .to be nil
+        end
+
+        it 'should clear the association foreign key value' do
+          expect { association.clear_value(entity) }
+            .to change(entity, 'reference_id')
+            .to be nil
+        end
+      end
+    end
+
+    context 'when the association has a foreign key and an inverse' do
+      let(:mock_association) do
+        instance_double(
+          Stannum::Association,
+          add_value:    nil,
+          get_value:    nil,
+          remove_value: nil
+        )
+      end
+      let(:options) do
+        super().merge(
+          foreign_key_name: 'reference_id',
+          foreign_key_type: Integer,
+          inverse:          true,
+          inverse_name:     'entity'
+        )
+      end
+
+      before(:example) do
+        allow(Spec::Reference.associations)
+          .to receive(:[])
+          .with('entity')
+          .and_return(mock_association)
+      end
+
+      it 'should not change the association value' do
+        expect { association.clear_value(entity) }
+          .not_to change(entity, name)
+      end
+
+      it 'should not change the foreign key value' do
+        expect { association.clear_value(entity) }
+          .not_to change(entity, 'reference_id')
+      end
+
+      it 'should not update the inverse association' do
+        association.clear_value(entity)
+
+        expect(mock_association).not_to have_received(:remove_value)
+      end
+
+      wrap_context 'when the association has a value' do
+        it 'should clear the association value' do
+          expect { association.clear_value(entity) }
+            .to change(entity, name)
+            .to be nil
+        end
+
+        it 'should clear the association foreign key value' do
+          expect { association.clear_value(entity) }
+            .to change(entity, 'reference_id')
+            .to be nil
+        end
+
+        it 'should update the inverse association' do
+          association.clear_value(entity)
+
+          expect(mock_association)
+            .to have_received(:remove_value)
+            .with(previous_value, entity, update_inverse: false)
+        end
+
+        describe 'with update_inverse: false' do
+          it 'should clear the association value' do
+            expect { association.clear_value(entity, update_inverse: false) }
+              .to change(entity, name)
+              .to be nil
+          end
+
+          it 'should clear the association foreign key value' do
+            expect { association.clear_value(entity, update_inverse: false) }
+              .to change(entity, 'reference_id')
+              .to be nil
+          end
+
+          it 'should not update the inverse association' do
+            association.clear_value(entity, update_inverse: false)
+
+            expect(mock_association).not_to have_received(:remove_value)
+          end
+        end
+      end
+    end
+
+    context 'when the association has an inverse' do
+      let(:mock_association) do
+        instance_double(
+          Stannum::Association,
+          add_value:    nil,
+          get_value:    nil,
+          remove_value: nil
+        )
+      end
+      let(:options) do
+        super().merge(
+          inverse:      true,
+          inverse_name: 'entity'
+        )
+      end
+
+      before(:example) do
+        allow(Spec::Reference.associations)
+          .to receive(:[])
+          .with('entity')
+          .and_return(mock_association)
+      end
+
+      it 'should not change the association value' do
+        expect { association.clear_value(entity) }
+          .not_to change(entity, name)
+      end
+
+      it 'should not update the inverse association' do
+        association.clear_value(entity)
+
+        expect(mock_association).not_to have_received(:remove_value)
+      end
+
+      wrap_context 'when the association has a value' do
+        it 'should clear the association value' do
+          expect { association.clear_value(entity) }
+            .to change(entity, name)
+            .to be nil
+        end
+
+        it 'should update the inverse association' do
+          association.clear_value(entity)
+
+          expect(mock_association)
+            .to have_received(:remove_value)
+            .with(previous_value, entity, update_inverse: false)
+        end
+
+        describe 'with update_inverse: false' do
+          it 'should clear the association value' do
+            expect { association.clear_value(entity, update_inverse: false) }
+              .to change(entity, name)
+              .to be nil
+          end
+
+          it 'should not update the inverse association' do
+            association.clear_value(entity, update_inverse: false)
+
+            expect(mock_association).not_to have_received(:remove_value)
+          end
+        end
+      end
+    end
+  end
+
   describe '#foreign_key?' do
     it { expect(association.foreign_key?).to be false }
 
@@ -1282,7 +1478,7 @@ RSpec.describe Stannum::Associations::One do
             end
 
             it 'should clear the association foreign key value' do
-              expect { association.remove_value(entity, previous_value.id) }
+              expect { remove_value }
                 .to change(entity, 'reference_id')
                 .to be nil
             end
@@ -1332,7 +1528,7 @@ RSpec.describe Stannum::Associations::One do
             end
 
             it 'should clear the association foreign key value' do
-              expect { association.remove_value(entity, previous_value.id) }
+              expect { remove_value }
                 .to change(entity, 'reference_id')
                 .to be nil
             end
@@ -1434,6 +1630,435 @@ RSpec.describe Stannum::Associations::One do
             it 'should not update the inverse association' do
               remove_value
 
+              expect(mock_association).not_to have_received(:remove_value)
+            end
+          end
+        end
+      end
+    end
+  end
+
+  describe '#set_value' do
+    include_context 'with an entity'
+
+    let(:options) { super().merge(inverse: false) }
+
+    describe 'with nil' do
+      it 'should not change the association value' do
+        expect { association.set_value(entity, nil) }
+          .not_to change(entity, name)
+      end
+    end
+
+    describe 'with a value' do
+      let(:new_value) { Spec::Reference.new(id: 1, name: 'New Reference') }
+
+      it 'should change the association value' do
+        expect { association.set_value(entity, new_value) }
+          .to change(entity, name)
+          .to be new_value
+      end
+    end
+
+    wrap_context 'when the association has a value' do
+      describe 'with nil' do
+        it 'should clear the association value' do
+          expect { association.set_value(entity, nil) }
+            .to change(entity, name)
+            .to be nil
+        end
+      end
+
+      describe 'with a value' do
+        let(:new_value) { Spec::Reference.new(id: 1, name: 'New Reference') }
+
+        it 'should change the association value' do
+          expect { association.set_value(entity, new_value) }
+            .to change(entity, name)
+            .to be new_value
+        end
+      end
+    end
+
+    context 'when the association has a foreign key' do
+      let(:options) do
+        super().merge(
+          foreign_key_name: 'reference_id',
+          foreign_key_type: Integer
+        )
+      end
+
+      describe 'with nil' do
+        it 'should not change the association value' do
+          expect { association.set_value(entity, nil) }
+            .not_to change(entity, name)
+        end
+
+        it 'should not change the foreign key value' do
+          expect { association.set_value(entity, nil) }
+            .not_to change(entity, 'reference_id')
+        end
+      end
+
+      describe 'with a value' do
+        let(:new_value) { Spec::Reference.new(id: 1, name: 'New Reference') }
+
+        it 'should change the association value' do
+          expect { association.set_value(entity, new_value) }
+            .to change(entity, name)
+            .to be new_value
+        end
+
+        it 'should change the foreign key value' do
+          expect { association.set_value(entity, new_value) }
+            .to change(entity, 'reference_id')
+            .to be == new_value.primary_key
+        end
+      end
+
+      wrap_context 'when the association has a value' do
+        describe 'with nil' do
+          it 'should clear the association value' do
+            expect { association.set_value(entity, nil) }
+              .to change(entity, name)
+              .to be nil
+          end
+
+          it 'should clear the foreign key value' do
+            expect { association.set_value(entity, nil) }
+              .to change(entity, 'reference_id')
+              .to be nil
+          end
+        end
+
+        describe 'with a value' do
+          let(:new_value) { Spec::Reference.new(id: 1, name: 'New Reference') }
+
+          it 'should change the association value' do
+            expect { association.set_value(entity, new_value) }
+              .to change(entity, name)
+              .to be new_value
+          end
+
+          it 'should change the foreign key value' do
+            expect { association.set_value(entity, new_value) }
+              .to change(entity, 'reference_id')
+              .to be == new_value.primary_key
+          end
+        end
+      end
+    end
+
+    context 'when the association has a foreign key and an inverse' do
+      let(:previous_inverse) { Spec::EntityClass.new }
+      let(:mock_association) do
+        instance_double(
+          Stannum::Association,
+          add_value:    nil,
+          get_value:    nil,
+          remove_value: nil
+        )
+      end
+      let(:options) do
+        super().merge(
+          foreign_key_name: 'reference_id',
+          foreign_key_type: Integer,
+          inverse:          true,
+          inverse_name:     'entity'
+        )
+      end
+
+      before(:example) do
+        allow(Spec::Reference.associations)
+          .to receive(:[])
+          .with('entity')
+          .and_return(mock_association)
+      end
+
+      def reset_mocks! # rubocop:disable Metrics/AbcSize
+        RSpec::Mocks.space.proxy_for(mock_association).reset
+
+        allow(mock_association).to receive(:add_value)
+        allow(mock_association).to receive(:remove_value)
+        allow(mock_association)
+          .to receive(:get_value)
+          .and_return(previous_inverse)
+      end
+
+      describe 'with nil' do
+        it 'should not change the association value' do
+          expect { association.set_value(entity, nil) }
+            .not_to change(entity, name)
+        end
+
+        it 'should not change the foreign key value' do
+          expect { association.set_value(entity, nil) }
+            .not_to change(entity, 'reference_id')
+        end
+
+        it 'should not update the inverse association', :aggregate_failures do
+          association.remove_value(entity, nil)
+
+          expect(mock_association).not_to have_received(:add_value)
+          expect(mock_association).not_to have_received(:remove_value)
+        end
+      end
+
+      describe 'with a value' do
+        let(:new_value) { Spec::Reference.new(id: 1, name: 'New Reference') }
+
+        it 'should change the association value' do
+          expect { association.set_value(entity, new_value) }
+            .to change(entity, name)
+            .to be new_value
+        end
+
+        it 'should change the foreign key value' do
+          expect { association.set_value(entity, new_value) }
+            .to change(entity, 'reference_id')
+            .to be == new_value.primary_key
+        end
+
+        it 'should set the inverse association' do
+          association.set_value(entity, new_value)
+
+          expect(mock_association)
+            .to have_received(:add_value)
+            .with(new_value, entity, update_inverse: false)
+        end
+      end
+
+      wrap_context 'when the association has a value' do
+        describe 'with nil' do
+          it 'should clear the association value' do
+            expect { association.set_value(entity, nil) }
+              .to change(entity, name)
+              .to be nil
+          end
+
+          it 'should clear the foreign key value' do
+            expect { association.set_value(entity, nil) }
+              .to change(entity, 'reference_id')
+              .to be nil
+          end
+
+          it 'should not update the inverse association', :aggregate_failures do
+            reset_mocks!
+
+            association.set_value(entity, nil)
+
+            expect(mock_association).not_to have_received(:add_value)
+            expect(mock_association).not_to have_received(:remove_value)
+          end
+        end
+
+        describe 'with a value' do
+          let(:new_value) { Spec::Reference.new(id: 1, name: 'New Reference') }
+
+          it 'should change the association value' do
+            expect { association.set_value(entity, new_value) }
+              .to change(entity, name)
+              .to be new_value
+          end
+
+          it 'should change the foreign key value' do
+            expect { association.set_value(entity, new_value) }
+              .to change(entity, 'reference_id')
+              .to be == new_value.primary_key
+          end
+
+          it 'should clear the previous inverse association' do
+            reset_mocks!
+
+            association.set_value(entity, new_value)
+
+            expect(mock_association)
+              .to have_received(:remove_value)
+              .with(new_value, previous_inverse)
+          end
+
+          it 'should set the inverse association' do
+            reset_mocks!
+
+            association.set_value(entity, new_value)
+
+            expect(mock_association)
+              .to have_received(:add_value)
+              .with(new_value, entity, update_inverse: false)
+          end
+
+          describe 'with update_inverse: false' do # rubocop:disable RSpec/NestedGroups
+            def set_value
+              association.set_value(
+                entity,
+                new_value,
+                update_inverse: false
+              )
+            end
+
+            it 'should change the association value' do
+              expect { set_value }
+                .to change(entity, name)
+                .to be new_value
+            end
+
+            it 'should change the foreign key value' do
+              expect { association.set_value(entity, new_value) }
+                .to change(entity, 'reference_id')
+                .to be == new_value.primary_key
+            end
+
+            it 'should not update the inverse association', \
+              :aggregate_failures \
+            do
+              reset_mocks!
+
+              set_value
+
+              expect(mock_association).not_to have_received(:add_value)
+              expect(mock_association).not_to have_received(:remove_value)
+            end
+          end
+        end
+      end
+    end
+
+    context 'when the association has an inverse' do
+      let(:previous_inverse) { Spec::EntityClass.new }
+      let(:mock_association) do
+        instance_double(
+          Stannum::Association,
+          add_value:    nil,
+          get_value:    nil,
+          remove_value: nil
+        )
+      end
+      let(:options) do
+        super().merge(
+          inverse:      true,
+          inverse_name: 'entity'
+        )
+      end
+
+      before(:example) do
+        allow(Spec::Reference.associations)
+          .to receive(:[])
+          .with('entity')
+          .and_return(mock_association)
+      end
+
+      def reset_mocks! # rubocop:disable Metrics/AbcSize
+        RSpec::Mocks.space.proxy_for(mock_association).reset
+
+        allow(mock_association).to receive(:add_value)
+        allow(mock_association).to receive(:remove_value)
+        allow(mock_association)
+          .to receive(:get_value)
+          .and_return(previous_inverse)
+      end
+
+      describe 'with nil' do
+        it 'should not change the association value' do
+          expect { association.set_value(entity, nil) }
+            .not_to change(entity, name)
+        end
+
+        it 'should not update the inverse association', :aggregate_failures do
+          association.remove_value(entity, nil)
+
+          expect(mock_association).not_to have_received(:add_value)
+          expect(mock_association).not_to have_received(:remove_value)
+        end
+      end
+
+      describe 'with a value' do
+        let(:new_value) { Spec::Reference.new(id: 1, name: 'New Reference') }
+
+        it 'should change the association value' do
+          expect { association.set_value(entity, new_value) }
+            .to change(entity, name)
+            .to be new_value
+        end
+
+        it 'should set the inverse association' do
+          association.set_value(entity, new_value)
+
+          expect(mock_association)
+            .to have_received(:add_value)
+            .with(new_value, entity, update_inverse: false)
+        end
+      end
+
+      wrap_context 'when the association has a value' do
+        describe 'with nil' do
+          it 'should clear the association value' do
+            expect { association.set_value(entity, nil) }
+              .to change(entity, name)
+              .to be nil
+          end
+
+          it 'should not update the inverse association', :aggregate_failures do
+            reset_mocks!
+
+            association.set_value(entity, nil)
+
+            expect(mock_association).not_to have_received(:add_value)
+            expect(mock_association).not_to have_received(:remove_value)
+          end
+        end
+
+        describe 'with a value' do
+          let(:new_value) { Spec::Reference.new(id: 1, name: 'New Reference') }
+
+          it 'should change the association value' do
+            expect { association.set_value(entity, new_value) }
+              .to change(entity, name)
+              .to be new_value
+          end
+
+          it 'should clear the previous inverse association' do
+            reset_mocks!
+
+            association.set_value(entity, new_value)
+
+            expect(mock_association)
+              .to have_received(:remove_value)
+              .with(new_value, previous_inverse)
+          end
+
+          it 'should set the inverse association' do
+            reset_mocks!
+
+            association.set_value(entity, new_value)
+
+            expect(mock_association)
+              .to have_received(:add_value)
+              .with(new_value, entity, update_inverse: false)
+          end
+
+          describe 'with update_inverse: false' do # rubocop:disable RSpec/NestedGroups
+            def set_value
+              association.set_value(
+                entity,
+                new_value,
+                update_inverse: false
+              )
+            end
+
+            it 'should change the association value' do
+              expect { set_value }
+                .to change(entity, name)
+                .to be new_value
+            end
+
+            it 'should not update the inverse association', \
+              :aggregate_failures \
+            do
+              reset_mocks!
+
+              set_value
+
+              expect(mock_association).not_to have_received(:add_value)
               expect(mock_association).not_to have_received(:remove_value)
             end
           end
