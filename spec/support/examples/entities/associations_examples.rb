@@ -263,6 +263,54 @@ module Spec::Support::Examples::Entities
           end
         end
 
+        shared_examples 'should define a plural association' \
+        do |**example_options|
+          let(:inverse_options) do
+            next { inverse: false } if example_options[:inverse] == false
+
+            hsh = {
+              entity_class_name: entity_class.name,
+              inverse:           true
+            }
+
+            next hsh unless example_options[:inverse_name]
+
+            hsh.merge(inverse_name: example_options[:inverse_name])
+          end
+          let(:expected_options) do
+            options
+              .dup
+              .tap { |hsh| hsh.delete(:class_name) }
+              .tap { |hsh| hsh.delete(:inverse) }
+              .merge(inverse_options)
+          end
+
+          it 'should add the association to ::Associations' do
+            expect { define_association }
+              .to change { described_class.associations.count }
+              .by(1)
+          end
+
+          it 'should add the association key to ::Associations' do
+            expect { define_association }
+              .to change(described_class.associations, :each_key)
+              .to include(assoc_name.to_s)
+          end
+
+          it 'should add the association value to ::Associations',
+            :aggregate_failures \
+          do
+            define_association
+
+            association = described_class.associations[assoc_name.to_s]
+
+            expect(association).to be_a Stannum::Associations::Many
+            expect(association.name).to be == assoc_name.to_s
+            expect(association.type).to be == assoc_type.to_s
+            expect(association.options).to deep_match(expected_options)
+          end
+        end
+
         shared_examples 'should define a singular association' \
         do |**example_options|
           let(:foreign_key_options) do
@@ -418,15 +466,17 @@ module Spec::Support::Examples::Entities
               let(:assoc_type) { Spec::OtherReference }
               let(:class_name) { 'Spec::OtherReference' }
               let(:options)    { super().merge(class_name:) }
+              let(:error_message) do
+                'ambiguous class name "Reference" or "Spec::OtherReference" ' \
+                  '- do not provide both a class and a :class_name keyword'
+              end
 
               example_class 'Spec::OtherReference'
 
-              it 'should return the association name as a Symbol' do
-                expect(described_class.association(arity, key, **options))
-                  .to be :reference
+              it 'should raise an exception' do
+                expect { described_class.association(:one, key, **options) }
+                  .to raise_error ArgumentError, error_message
               end
-
-              include_examples 'should define a singular association'
             end
 
             describe 'with a scoped class' do
@@ -741,9 +791,213 @@ module Spec::Support::Examples::Entities
           end
         end
 
+        describe 'with arity: :many' do
+          let(:arity)      { :many }
+          let(:assoc_name) { :references }
+
+          def define_association
+            described_class.association(:many, key, **options)
+          end
+
+          describe 'with an association class' do
+            let(:key) { assoc_type }
+
+            it 'should return the association name as a Symbol' do
+              expect(described_class.association(arity, key, **options))
+                .to be :references
+            end
+
+            include_examples 'should define a plural association'
+
+            describe 'with options: { class_name: value }' do
+              let(:class_name) { 'Spec::OtherReference' }
+              let(:options)    { super().merge(class_name:) }
+              let(:error_message) do
+                'ambiguous class name "Reference" or "Spec::OtherReference" ' \
+                  '- do not provide both a class and a :class_name keyword'
+              end
+
+              it 'should raise an exception' do
+                expect { described_class.association(:one, key, **options) }
+                  .to raise_error ArgumentError, error_message
+              end
+            end
+
+            describe 'with a scoped class' do
+              let(:assoc_name) { :custom_references }
+              let(:assoc_type) { Spec::CustomReference }
+
+              example_class 'Spec::CustomReference'
+
+              it 'should return the association name as a Symbol' do
+                expect(described_class.association(arity, key, **options))
+                  .to be :custom_references
+              end
+
+              include_examples 'should define a plural association'
+
+              describe 'with options: { class_name: value }' do
+                let(:class_name) { 'Spec::OtherReference' }
+                let(:options)    { super().merge(class_name:) }
+                let(:error_message) do
+                  'ambiguous class name "Spec::CustomReference" or ' \
+                    '"Spec::OtherReference" - do not provide both a class ' \
+                    'and a :class_name keyword'
+                end
+
+                it 'should raise an exception' do
+                  expect { described_class.association(arity, key, **options) }
+                    .to raise_error ArgumentError, error_message
+                end
+              end
+            end
+          end
+
+          describe 'with an association class name' do
+            let(:key) { assoc_type.to_s }
+
+            it 'should return the association name as a Symbol' do
+              expect(described_class.association(arity, key, **options))
+                .to be :references
+            end
+
+            include_examples 'should define a plural association'
+
+            describe 'with options: { class_name: value }' do
+              let(:key)        { 'Reference' }
+              let(:assoc_type) { Spec::OtherReference }
+              let(:class_name) { 'Spec::OtherReference' }
+              let(:options)    { super().merge(class_name:) }
+              let(:error_message) do
+                'ambiguous class name "Reference" or "Spec::OtherReference" ' \
+                  '- do not provide both a class and a :class_name keyword'
+              end
+
+              example_class 'Spec::OtherReference'
+
+              it 'should raise an exception' do
+                expect { described_class.association(:one, key, **options) }
+                  .to raise_error ArgumentError, error_message
+              end
+            end
+
+            describe 'with a scoped class' do
+              let(:assoc_name) { :custom_references }
+              let(:assoc_type) { Spec::CustomReference }
+
+              example_class 'Spec::CustomReference'
+
+              it 'should return the association name as a Symbol' do
+                expect(described_class.association(arity, key, **options))
+                  .to be :custom_references
+              end
+
+              include_examples 'should define a plural association'
+
+              describe 'with options: { class_name: value }' do
+                let(:class_name) { 'Spec::OtherReference' }
+                let(:options)    { super().merge(class_name:) }
+                let(:error_message) do
+                  'ambiguous class name "Spec::CustomReference" or ' \
+                    '"Spec::OtherReference" - do not provide both a class ' \
+                    'and a :class_name keyword'
+                end
+
+                it 'should raise an exception' do
+                  expect { described_class.association(:one, key, **options) }
+                    .to raise_error ArgumentError, error_message
+                end
+              end
+            end
+          end
+
+          describe 'with an association name as a String' do
+            let(:assoc_name) { 'references' }
+
+            it 'should return the association name as a Symbol' do
+              expect(described_class.association(arity, key, **options))
+                .to be :references
+            end
+
+            include_examples 'should define a plural association'
+          end
+
+          describe 'with an association name as a Symbol' do
+            let(:assoc_name) { :references }
+
+            it 'should return the association name as a Symbol' do
+              expect(described_class.association(arity, key, **options))
+                .to be :references
+            end
+
+            include_examples 'should define a plural association'
+          end
+
+          describe 'with options: { class_name: a Class }' do
+            let(:assoc_type) { Spec::OtherReference }
+            let(:options)    { super().merge(class_name: assoc_type) }
+
+            example_class 'Spec::OtherReference'
+
+            it 'should return the association name as a Symbol' do
+              expect(described_class.association(arity, key, **options))
+                .to be :references
+            end
+
+            include_examples 'should define a plural association'
+          end
+
+          describe 'with options: { class_name: a String }' do
+            let(:assoc_type) { 'Spec::OtherReference' }
+            let(:options)    { super().merge(class_name: assoc_type) }
+
+            example_class 'Spec::OtherReference'
+
+            it 'should return the association name as a Symbol' do
+              expect(described_class.association(arity, key, **options))
+                .to be :references
+            end
+
+            include_examples 'should define a plural association'
+          end
+
+          describe 'with options: { inverse: false }' do
+            let(:options) { super().merge(inverse: false) }
+
+            include_examples 'should define a plural association',
+              inverse: false
+          end
+
+          describe 'with options: { inverse: true }' do
+            let(:options) { super().merge(inverse: true) }
+
+            include_examples 'should define a plural association'
+          end
+
+          describe 'with options: { inverse: a String }' do
+            let(:options) { super().merge(inverse: 'widget') }
+
+            include_examples 'should define a plural association',
+              inverse_name: 'widget'
+          end
+
+          describe 'with options: { inverse: a Symbol }' do
+            let(:options) { super().merge(inverse: :widget) }
+
+            include_examples 'should define a plural association',
+              inverse_name: 'widget'
+          end
+
+          describe 'with options: custom value' do
+            let(:options) { { key: 'value' } }
+
+            include_examples 'should define a plural association'
+          end
+        end
+
         describe 'with arity: other value' do
           let(:arity)         { :none }
-          let(:error_message) { 'association arity must be :one' }
+          let(:error_message) { 'association arity must be :one or :many' }
 
           it 'should raise an exception' do
             expect { described_class.association(arity, key, **options) }
@@ -765,6 +1019,23 @@ module Spec::Support::Examples::Entities
               let(:options) { { key: 'value' } }
 
               include_examples 'should define a singular association'
+            end
+          end
+
+          describe 'with arity: :many' do
+            let(:arity)      { :many }
+            let(:assoc_name) { :references }
+
+            def define_association
+              described_class.association(:many, key, **options)
+            end
+
+            include_examples 'should define a plural association'
+
+            describe 'with options: value' do
+              let(:options) { { key: 'value' } }
+
+              include_examples 'should define a plural association'
             end
           end
         end

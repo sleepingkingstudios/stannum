@@ -205,7 +205,7 @@ module Spec::Support::Examples
 
           context 'when the association class defines a plural inverse' do
             before(:example) do
-              Spec::Reference.define_association :one, :entities
+              Spec::Reference.define_association :many, :entities
             end
 
             it { expect(association.inverse_name).to be == 'entities' }
@@ -331,7 +331,7 @@ module Spec::Support::Examples
             let(:expected) { Spec::Reference.associations['entities'] }
 
             before(:example) do
-              Spec::Reference.define_association :one, :entities
+              Spec::Reference.define_association :many, :entities
             end
 
             it { expect(association.resolved_inverse).to be == expected }
@@ -341,7 +341,7 @@ module Spec::Support::Examples
               let(:expected) { Spec::Reference.associations['widgets'] }
 
               before(:example) do
-                Spec::Reference.define_association :one, :widgets
+                Spec::Reference.define_association :many, :widgets
               end
 
               it { expect(association.resolved_inverse).to be == expected }
