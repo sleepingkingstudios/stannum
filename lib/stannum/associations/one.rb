@@ -10,7 +10,7 @@ module Stannum::Associations
       set_value(entity, value, update_inverse:)
     end
 
-    # (see Stannum::Association#add_value)
+    # (see Stannum::Association#clear_value)
     def clear_value(entity, update_inverse: true)
       previous_value = entity.read_association(name, safe: false)
 
