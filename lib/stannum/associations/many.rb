@@ -18,6 +18,39 @@ module Stannum::Associations
         @entity      = entity
       end
 
+      # @param other [Object] the object to compare.
+      #
+      # @return [true, false] true if the object has matching data; otherwise
+      #   false.
+      def ==(other)
+        return false if other.nil?
+
+        return false unless other.respond_to?(:to_a)
+
+        to_a == other.to_a
+      end
+
+      # Appends the entity to the association.
+      #
+      # @param value [Stannum::Entity] the entity to add.
+      #
+      # @return [self] the association proxy.
+      def add(value)
+        unless value.is_a?(association.resolved_type)
+          message =
+            'invalid association item - must be an instance of ' \
+            "#{association.resolved_type.name}"
+
+          raise ArgumentError, message
+        end
+
+        association.add_value(entity, value)
+
+        self
+      end
+      alias << add
+      alias push add
+
       # @overload each
       #   @return [Enumerator] an enumerator over each item in the entity's
       #     association data.
@@ -30,6 +63,31 @@ module Stannum::Associations
 
         (entity.read_association(association.name, safe: false) || []).each(&)
       end
+
+      # @return [String] a human-readable string representation of the object.
+      def inspect
+        "#{super[...55]} data=[#{each.map(&:inspect).join(', ')}]>"
+      end
+
+      # Removes the entity from the association.
+      #
+      # @param value [Stannum::Entity] the entity to remove.
+      #
+      # @return [self] the association proxy.
+      def remove(value)
+        unless value.is_a?(association.resolved_type)
+          message =
+            'invalid association item - must be an instance of ' \
+            "#{association.resolved_type.name}"
+
+          raise ArgumentError, message
+        end
+
+        association.remove_value(entity, value)
+
+        self
+      end
+      alias delete remove
 
       private
 

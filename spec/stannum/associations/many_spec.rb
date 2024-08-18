@@ -82,6 +82,184 @@ RSpec.describe Stannum::Associations::Many do
       end
     end
 
+    describe '#==' do
+      shared_context 'when the proxy has a non-matching association' do
+        let(:other_association) do
+          Stannum::Associations::Many.new(name: 'criticisms', type:, options:) # rubocop:disable RSpec/DescribedClass
+        end
+        let(:other_entity) { Spec::EntityClass.new(criticisms: other_value) }
+        let(:other) do
+          described_class.new(
+            association: other_association,
+            entity:      other_entity
+          )
+        end
+
+        before(:example) do
+          Spec::EntityClass.define_association(
+            :many,
+            'criticisms',
+            class_name: 'Spec::Reference',
+            inverse:    false
+          )
+        end
+      end
+
+      let(:other_value)  { [] }
+      let(:other_entity) { Spec::EntityClass.new(references: other_value) }
+      let(:other) do
+        described_class.new(
+          association:,
+          entity:      other_entity
+        )
+      end
+
+      describe 'with nil' do
+        it { expect(proxy == nil).to be false } # rubocop:disable Style/NilComparison
+      end
+
+      describe 'with an Object' do
+        it { expect(proxy == Object.new.freeze).to be false }
+      end
+
+      describe 'with an empty Array' do
+        it { expect(proxy == []).to be true }
+      end
+
+      describe 'with a non-empty Array' do
+        let(:other_value) do
+          [
+            Spec::Reference.new(id: 3, name: 'Other Reference 0'),
+            Spec::Reference.new(id: 4, name: 'Other Reference 1'),
+            Spec::Reference.new(id: 5, name: 'Other Reference 2')
+          ]
+        end
+
+        it { expect(proxy == other_value).to be false }
+      end
+
+      describe 'with an empty Proxy with non-matching association' do
+        include_context 'when the proxy has a non-matching association'
+
+        it { expect(proxy == other).to be true }
+      end
+
+      describe 'with an empty Proxy with matching association' do
+        it { expect(proxy == other).to be true }
+      end
+
+      describe 'with a non-empty Proxy' do
+        let(:other_value) do
+          [
+            Spec::Reference.new(id: 3, name: 'Other Reference 0'),
+            Spec::Reference.new(id: 4, name: 'Other Reference 1'),
+            Spec::Reference.new(id: 5, name: 'Other Reference 2')
+          ]
+        end
+
+        it { expect(proxy == other).to be false }
+      end
+
+      wrap_context 'when the association has a value' do
+        describe 'with an empty Array' do
+          it { expect(proxy == []).to be false }
+        end
+
+        describe 'with a non-matching Array' do
+          it { expect(proxy == other_value).to be false }
+        end
+
+        describe 'with a matching Array' do
+          it { expect(proxy == previous_value).to be true }
+        end
+
+        describe 'with an empty Proxy' do
+          it { expect(proxy == other).to be false }
+        end
+
+        describe 'with a non-matching Proxy' do
+          let(:other_value) do
+            [
+              Spec::Reference.new(id: 3, name: 'Other Reference 0'),
+              Spec::Reference.new(id: 4, name: 'Other Reference 1'),
+              Spec::Reference.new(id: 5, name: 'Other Reference 2')
+            ]
+          end
+
+          it { expect(proxy == other).to be false }
+        end
+
+        describe 'with a matching Proxy with non-matching association' do
+          include_context 'when the proxy has a non-matching association'
+
+          let(:other_value) { previous_value }
+
+          it { expect(proxy == other).to be true }
+        end
+
+        describe 'with a matching Proxy with matching association' do
+          let(:other_value) { previous_value }
+
+          it { expect(proxy == other).to be true }
+        end
+      end
+    end
+
+    describe '#add' do
+      let(:error_message) do
+        'invalid association item - must be an instance of Spec::Reference'
+      end
+
+      before(:example) do
+        allow(association).to receive(:add_value)
+      end
+
+      it { expect(proxy).to respond_to(:add).with(1).argument }
+
+      it { expect(proxy).to have_aliased_method(:add).as(:<<) }
+
+      it { expect(proxy).to have_aliased_method(:add).as(:push) }
+
+      describe 'with nil' do
+        it 'should raise an exception' do
+          expect { proxy.add(nil) }
+            .to raise_error ArgumentError, error_message
+        end
+      end
+
+      describe 'with an Object' do
+        it 'should raise an exception' do
+          expect { proxy.add(Object.new.freeze) }
+            .to raise_error ArgumentError, error_message
+        end
+      end
+
+      describe 'with an Entity' do
+        example_class 'Spec::OtherEntity' do |klass|
+          klass.include Stannum::Entity
+        end
+
+        let(:value) { Spec::OtherEntity.new }
+
+        it 'should raise an exception' do
+          expect { proxy.add(value) }
+            .to raise_error ArgumentError, error_message
+        end
+      end
+
+      describe 'with an instance of the associated class' do
+        let(:value) { Spec::Reference.new(id: 0, name: 'New Reference') }
+
+        it 'should delegate to the association' do
+          proxy.add(value)
+
+          expect(association).to have_received(:add_value).with(entity, value)
+        end
+
+        it { expect(proxy.add(value)).to be proxy }
+      end
+    end
+
     describe '#each' do
       it { expect(proxy).to respond_to(:each).with(0).arguments.and_a_block }
 
@@ -98,6 +276,81 @@ RSpec.describe Stannum::Associations::Many do
           expect { |block| proxy.each(&block) }
             .to yield_successive_args(*previous_value)
         end
+      end
+    end
+
+    describe '#inspect' do
+      let(:object_id) do
+        Object.instance_method(:inspect).bind(proxy).call[39...55]
+      end
+      let(:expected_items) { '' }
+      let(:expected) do
+        "#<#{described_class.name}:0x#{object_id} data=[#{expected_items}]>"
+      end
+
+      it { expect(proxy.inspect).to be == expected }
+
+      wrap_context 'when the association has a value' do
+        let(:expected_items) do
+          proxy.map(&:inspect).join(', ')
+        end
+
+        it { expect(proxy.inspect).to be == expected }
+      end
+    end
+
+    describe '#remove' do
+      let(:error_message) do
+        'invalid association item - must be an instance of Spec::Reference'
+      end
+
+      before(:example) do
+        allow(association).to receive(:remove_value)
+      end
+
+      it { expect(proxy).to respond_to(:remove).with(1).argument }
+
+      it { expect(proxy).to have_aliased_method(:remove).as(:delete) }
+
+      describe 'with nil' do
+        it 'should raise an exception' do
+          expect { proxy.remove(nil) }
+            .to raise_error ArgumentError, error_message
+        end
+      end
+
+      describe 'with an Object' do
+        it 'should raise an exception' do
+          expect { proxy.remove(Object.new.freeze) }
+            .to raise_error ArgumentError, error_message
+        end
+      end
+
+      describe 'with an Entity' do
+        example_class 'Spec::OtherEntity' do |klass|
+          klass.include Stannum::Entity
+        end
+
+        let(:value) { Spec::OtherEntity.new }
+
+        it 'should raise an exception' do
+          expect { proxy.remove(value) }
+            .to raise_error ArgumentError, error_message
+        end
+      end
+
+      describe 'with an instance of the associated class' do
+        let(:value) { Spec::Reference.new(id: 0, name: 'New Reference') }
+
+        it 'should delegate to the association' do
+          proxy.remove(value)
+
+          expect(association)
+            .to have_received(:remove_value)
+            .with(entity, value)
+        end
+
+        it { expect(proxy.remove(value)).to be proxy }
       end
     end
   end
