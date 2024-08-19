@@ -46,8 +46,8 @@ module Spec::Support::Examples::Entities
             'sibling',
             class_name: 'Spec::Sibling',
             inverse:    false
-          association :one,
-            'child',
+          association :many,
+            'children',
             class_name: 'Spec::Child',
             inverse:    false
         end
@@ -115,9 +115,13 @@ module Spec::Support::Examples::Entities
     shared_context 'when the entity has association values' do
       let(:associations) do
         {
-          'parent'  => Spec::Parent.new(name: 'original parent'),
-          'sibling' => Spec::Sibling.new(name: 'original sibling'),
-          'child'   => Spec::Sibling.new(name: 'original child')
+          'parent'   => Spec::Parent.new(name: 'original parent'),
+          'sibling'  => Spec::Sibling.new(name: 'original sibling'),
+          'children' => [
+            Spec::Child.new(name: 'original first child'),
+            Spec::Child.new(name: 'original second child'),
+            Spec::Child.new(name: 'original third child')
+          ]
         }
       end
       let(:properties) do
@@ -141,7 +145,7 @@ module Spec::Support::Examples::Entities
         wrap_context 'when the entity class defines associations' do
           it 'should define associations for the entity class' do
             expect(described_class::Associations.keys)
-              .to contain_exactly('parent', 'sibling', 'child')
+              .to contain_exactly('parent', 'sibling', 'children')
           end
         end
 
@@ -155,7 +159,7 @@ module Spec::Support::Examples::Entities
 
             it 'should define associations for the entity class' do
               expect(described_class::Associations.keys)
-                .to contain_exactly('parent', 'sibling', 'child')
+                .to contain_exactly('parent', 'sibling', 'children')
             end
           end
         end
@@ -166,7 +170,7 @@ module Spec::Support::Examples::Entities
           wrap_context 'when the entity class defines associations' do
             it 'should define associations for the entity class' do
               expect(described_class::Associations.keys)
-                .to contain_exactly('parent', 'sibling', 'child')
+                .to contain_exactly('parent', 'sibling', 'children')
             end
           end
         end
@@ -185,7 +189,7 @@ module Spec::Support::Examples::Entities
           wrap_context 'when the entity class defines associations' do
             it 'should define associations for the entity class' do
               expect(described_class::Associations.keys)
-                .to contain_exactly('parent', 'sibling', 'child')
+                .to contain_exactly('parent', 'sibling', 'children')
             end
           end
 
@@ -202,7 +206,7 @@ module Spec::Support::Examples::Entities
 
             it 'should define associations for the entity class' do
               expect(described_class::Associations.keys)
-                .to contain_exactly('parent', 'sibling', 'child', 'bestie')
+                .to contain_exactly('parent', 'sibling', 'children', 'bestie')
             end
           end
         end
@@ -1051,7 +1055,7 @@ module Spec::Support::Examples::Entities
         wrap_context 'when the entity class defines associations' do
           it 'should define associations for the entity class' do
             expect(described_class.associations.keys)
-              .to contain_exactly('parent', 'sibling', 'child')
+              .to contain_exactly('parent', 'sibling', 'children')
           end
         end
 
@@ -1065,7 +1069,7 @@ module Spec::Support::Examples::Entities
 
             it 'should define associations for the entity class' do
               expect(described_class.associations.keys)
-                .to contain_exactly('parent', 'sibling', 'child')
+                .to contain_exactly('parent', 'sibling', 'children')
             end
           end
         end
@@ -1076,7 +1080,7 @@ module Spec::Support::Examples::Entities
           wrap_context 'when the entity class defines associations' do
             it 'should define associations for the entity class' do
               expect(described_class.associations.keys)
-                .to contain_exactly('parent', 'sibling', 'child')
+                .to contain_exactly('parent', 'sibling', 'children')
             end
           end
         end
@@ -1095,7 +1099,7 @@ module Spec::Support::Examples::Entities
           wrap_context 'when the entity class defines associations' do
             it 'should define associations for the entity class' do
               expect(described_class.associations.keys)
-                .to contain_exactly('parent', 'sibling', 'child')
+                .to contain_exactly('parent', 'sibling', 'children')
             end
           end
 
@@ -1112,7 +1116,7 @@ module Spec::Support::Examples::Entities
 
             it 'should define associations for the entity class' do
               expect(described_class.associations.keys)
-                .to contain_exactly('parent', 'sibling', 'child', 'bestie')
+                .to contain_exactly('parent', 'sibling', 'children', 'bestie')
             end
           end
         end
@@ -1148,9 +1152,9 @@ module Spec::Support::Examples::Entities
           describe 'with no parameters' do
             let(:expected) do
               {
-                'parent'  => nil,
-                'sibling' => nil,
-                'child'   => nil
+                'parent'   => nil,
+                'sibling'  => nil,
+                'children' => []
               }
             end
 
@@ -1222,17 +1226,21 @@ module Spec::Support::Examples::Entities
           describe 'with valid String keys' do
             let(:parent)  { Spec::Parent.new }
             let(:sibling) { Spec::Sibling.new }
+            let(:children) do
+              Array.new(3) { |i| Spec::Child.new(name: "Child #{i}") }
+            end
             let(:properties) do
               {
-                'parent'  => parent,
-                'sibling' => sibling
+                'parent'   => parent,
+                'sibling'  => sibling,
+                'children' => children
               }
             end
             let(:expected) do
               {
-                'parent'  => parent,
-                'sibling' => sibling,
-                'child'   => nil
+                'parent'   => parent,
+                'sibling'  => sibling,
+                'children' => children
               }
             end
 
@@ -1254,17 +1262,21 @@ module Spec::Support::Examples::Entities
           describe 'with valid Symbol keys' do
             let(:parent)  { Spec::Parent.new }
             let(:sibling) { Spec::Sibling.new }
+            let(:children) do
+              Array.new(3) { |i| Spec::Child.new(name: "Child #{i}") }
+            end
             let(:properties) do
               {
                 parent:,
-                sibling:
+                sibling:,
+                children:
               }
             end
             let(:expected) do
               {
-                'parent'  => parent,
-                'sibling' => sibling,
-                'child'   => nil
+                'parent'   => parent,
+                'sibling'  => sibling,
+                'children' => children
               }
             end
 
@@ -1291,19 +1303,23 @@ module Spec::Support::Examples::Entities
           describe 'with valid String keys' do
             let(:parent)  { Spec::Parent.new }
             let(:sibling) { Spec::Sibling.new }
+            let(:children) do
+              Array.new(3) { |i| Spec::Child.new(name: "Child #{i}") }
+            end
             let(:properties) do
               {
                 'amplitude' => '1 TW',
                 'frequency' => '1 Hz',
                 'parent'    => parent,
-                'sibling'   => sibling
+                'sibling'   => sibling,
+                'children'  => children
               }
             end
             let(:expected_associations) do
               {
-                'parent'  => parent,
-                'sibling' => sibling,
-                'child'   => nil
+                'parent'   => parent,
+                'sibling'  => sibling,
+                'children' => children
               }
             end
             let(:expected_properties) do
@@ -1331,19 +1347,23 @@ module Spec::Support::Examples::Entities
           describe 'with valid Symbol keys' do
             let(:parent)  { Spec::Parent.new }
             let(:sibling) { Spec::Sibling.new }
+            let(:children) do
+              Array.new(3) { |i| Spec::Child.new(name: "Child #{i}") }
+            end
             let(:properties) do
               {
                 amplitude: '1 TW',
                 frequency: '1 Hz',
                 parent:,
-                sibling:
+                sibling:,
+                children:
               }
             end
             let(:expected_associations) do
               {
-                'parent'  => parent,
-                'sibling' => sibling,
-                'child'   => nil
+                'parent'   => parent,
+                'sibling'  => sibling,
+                'children' => children
               }
             end
             let(:expected_properties) do
@@ -2177,19 +2197,21 @@ module Spec::Support::Examples::Entities
           end
 
           describe 'with valid String keys' do
-            let(:parent)  { Spec::Parent.new }
-            let(:sibling) { Spec::Sibling.new }
+            let(:parent) { Spec::Parent.new }
+            let(:children) do
+              Array.new(3) { |i| Spec::Child.new(name: "Child #{i}") }
+            end
             let(:values) do
               {
-                'parent'  => parent,
-                'sibling' => sibling
+                'parent'   => parent,
+                'children' => children
               }
             end
             let(:expected) do
               {
-                'parent'  => parent,
-                'sibling' => sibling,
-                'child'   => nil
+                'parent'   => parent,
+                'sibling'  => nil,
+                'children' => children
               }
             end
 
@@ -2199,12 +2221,12 @@ module Spec::Support::Examples::Entities
 
             it 'should call the writer methods', :aggregate_failures do
               allow(entity).to receive(:parent=)
-              allow(entity).to receive(:sibling=)
+              allow(entity).to receive(:children=)
 
               entity.assign_associations(values)
 
               expect(entity).to have_received(:parent=).with(parent)
-              expect(entity).to have_received(:sibling=).with(sibling)
+              expect(entity).to have_received(:children=).with(children)
             end
 
             it 'should change the entity associations' do
@@ -2221,19 +2243,21 @@ module Spec::Support::Examples::Entities
           end
 
           describe 'with valid Symbol keys' do
-            let(:parent)  { Spec::Parent.new }
-            let(:sibling) { Spec::Sibling.new }
+            let(:parent) { Spec::Parent.new }
+            let(:children) do
+              Array.new(3) { |i| Spec::Child.new(name: "Child #{i}") }
+            end
             let(:values) do
               {
                 parent:,
-                sibling:
+                children:
               }
             end
             let(:expected) do
               {
-                'parent'  => parent,
-                'sibling' => sibling,
-                'child'   => nil
+                'parent'   => parent,
+                'sibling'  => nil,
+                'children' => children
               }
             end
 
@@ -2243,12 +2267,12 @@ module Spec::Support::Examples::Entities
 
             it 'should call the writer methods', :aggregate_failures do
               allow(entity).to receive(:parent=)
-              allow(entity).to receive(:sibling=)
+              allow(entity).to receive(:children=)
 
               entity.assign_associations(values)
 
               expect(entity).to have_received(:parent=).with(parent)
-              expect(entity).to have_received(:sibling=).with(sibling)
+              expect(entity).to have_received(:children=).with(children)
             end
 
             it 'should change the entity associations' do
@@ -2284,19 +2308,21 @@ module Spec::Support::Examples::Entities
             end
 
             describe 'with valid String keys' do
-              let(:parent)  { Spec::Parent.new(name: 'new parent') }
-              let(:sibling) { Spec::Sibling.new(name: 'new sibling') }
+              let(:parent) { Spec::Parent.new(name: 'new parent') }
+              let(:children) do
+                Array.new(3) { |i| Spec::Child.new(name: "Child #{i}") }
+              end
               let(:values) do
                 {
-                  'parent'  => parent,
-                  'sibling' => sibling
+                  'parent'   => parent,
+                  'children' => children
                 }
               end
               let(:expected) do
                 {
-                  'parent'  => parent,
-                  'sibling' => sibling,
-                  'child'   => associations['child']
+                  'parent'   => parent,
+                  'sibling'  => associations['sibling'],
+                  'children' => children
                 }
               end
 
@@ -2306,12 +2332,12 @@ module Spec::Support::Examples::Entities
 
               it 'should call the writer methods', :aggregate_failures do
                 allow(entity).to receive(:parent=)
-                allow(entity).to receive(:sibling=)
+                allow(entity).to receive(:children=)
 
                 entity.assign_associations(values)
 
                 expect(entity).to have_received(:parent=).with(parent)
-                expect(entity).to have_received(:sibling=).with(sibling)
+                expect(entity).to have_received(:children=).with(children)
               end
 
               it 'should change the entity associations' do
@@ -2332,19 +2358,21 @@ module Spec::Support::Examples::Entities
             end
 
             describe 'with valid Symbol keys' do
-              let(:parent)  { Spec::Parent.new(name: 'new parent') }
-              let(:sibling) { Spec::Sibling.new(name: 'new sibling') }
+              let(:parent) { Spec::Parent.new(name: 'new parent') }
+              let(:children) do
+                Array.new(3) { |i| Spec::Child.new(name: "Child #{i}") }
+              end
               let(:values) do
                 {
                   parent:,
-                  sibling:
+                  children:
                 }
               end
               let(:expected) do
                 {
-                  'parent'  => parent,
-                  'sibling' => sibling,
-                  'child'   => associations['child']
+                  'parent'   => parent,
+                  'sibling'  => associations['sibling'],
+                  'children' => children
                 }
               end
 
@@ -2354,12 +2382,12 @@ module Spec::Support::Examples::Entities
 
               it 'should call the writer methods', :aggregate_failures do
                 allow(entity).to receive(:parent=)
-                allow(entity).to receive(:sibling=)
+                allow(entity).to receive(:children=)
 
                 entity.assign_associations(values)
 
                 expect(entity).to have_received(:parent=).with(parent)
-                expect(entity).to have_received(:sibling=).with(sibling)
+                expect(entity).to have_received(:children=).with(children)
               end
 
               it 'should change the entity associations' do
@@ -2484,19 +2512,21 @@ module Spec::Support::Examples::Entities
           end
 
           describe 'with valid String keys' do
-            let(:parent)  { Spec::Parent.new }
-            let(:sibling) { Spec::Sibling.new }
+            let(:parent) { Spec::Parent.new }
+            let(:children) do
+              Array.new(3) { |i| Spec::Child.new(name: "Child #{i}") }
+            end
             let(:values) do
               {
-                'parent'  => parent,
-                'sibling' => sibling
+                'parent'   => parent,
+                'children' => children
               }
             end
             let(:expected_associations) do
               {
-                'parent'  => parent,
-                'sibling' => sibling,
-                'child'   => nil
+                'parent'   => parent,
+                'sibling'  => nil,
+                'children' => children
               }
             end
             let(:expected_properties) do
@@ -2512,12 +2542,12 @@ module Spec::Support::Examples::Entities
 
             it 'should call the writer methods', :aggregate_failures do
               allow(entity).to receive(:parent=)
-              allow(entity).to receive(:sibling=)
+              allow(entity).to receive(:children=)
 
               entity.assign_associations(values)
 
               expect(entity).to have_received(:parent=).with(parent)
-              expect(entity).to have_received(:sibling=).with(sibling)
+              expect(entity).to have_received(:children=).with(children)
             end
 
             it 'should change the entity associations' do
@@ -2534,19 +2564,21 @@ module Spec::Support::Examples::Entities
           end
 
           describe 'with valid Symbol keys' do
-            let(:parent)  { Spec::Parent.new }
-            let(:sibling) { Spec::Sibling.new }
+            let(:parent) { Spec::Parent.new }
+            let(:children) do
+              Array.new(3) { |i| Spec::Child.new(name: "Child #{i}") }
+            end
             let(:values) do
               {
                 parent:,
-                sibling:
+                children:
               }
             end
             let(:expected_associations) do
               {
-                'parent'  => parent,
-                'sibling' => sibling,
-                'child'   => nil
+                'parent'   => parent,
+                'sibling'  => nil,
+                'children' => children
               }
             end
             let(:expected_properties) do
@@ -2562,12 +2594,12 @@ module Spec::Support::Examples::Entities
 
             it 'should call the writer methods', :aggregate_failures do
               allow(entity).to receive(:parent=)
-              allow(entity).to receive(:sibling=)
+              allow(entity).to receive(:children=)
 
               entity.assign_associations(values)
 
               expect(entity).to have_received(:parent=).with(parent)
-              expect(entity).to have_received(:sibling=).with(sibling)
+              expect(entity).to have_received(:children=).with(children)
             end
 
             it 'should change the entity associations' do
@@ -2608,19 +2640,21 @@ module Spec::Support::Examples::Entities
             end
 
             describe 'with valid String keys' do
-              let(:parent)  { Spec::Parent.new }
-              let(:sibling) { Spec::Sibling.new }
+              let(:parent) { Spec::Parent.new }
+              let(:children) do
+                Array.new(3) { |i| Spec::Child.new(name: "Child #{i}") }
+              end
               let(:values) do
                 {
-                  'parent'  => parent,
-                  'sibling' => sibling
+                  'parent'   => parent,
+                  'children' => children
                 }
               end
               let(:expected_associations) do
                 {
-                  'parent'  => parent,
-                  'sibling' => sibling,
-                  'child'   => associations['child']
+                  'parent'   => parent,
+                  'sibling'  => associations['sibling'],
+                  'children' => children
                 }
               end
               let(:expected_properties) do
@@ -2636,12 +2670,12 @@ module Spec::Support::Examples::Entities
 
               it 'should call the writer methods', :aggregate_failures do
                 allow(entity).to receive(:parent=)
-                allow(entity).to receive(:sibling=)
+                allow(entity).to receive(:children=)
 
                 entity.assign_associations(values)
 
                 expect(entity).to have_received(:parent=).with(parent)
-                expect(entity).to have_received(:sibling=).with(sibling)
+                expect(entity).to have_received(:children=).with(children)
               end
 
               it 'should change the entity associations' do
@@ -2658,19 +2692,21 @@ module Spec::Support::Examples::Entities
             end
 
             describe 'with valid Symbol keys' do
-              let(:parent)  { Spec::Parent.new }
-              let(:sibling) { Spec::Sibling.new }
+              let(:parent) { Spec::Parent.new }
+              let(:children) do
+                Array.new(3) { |i| Spec::Child.new(name: "Child #{i}") }
+              end
               let(:values) do
                 {
                   parent:,
-                  sibling:
+                  children:
                 }
               end
               let(:expected_associations) do
                 {
-                  'parent'  => parent,
-                  'sibling' => sibling,
-                  'child'   => associations['child']
+                  'parent'   => parent,
+                  'sibling'  => associations['sibling'],
+                  'children' => children
                 }
               end
               let(:expected_properties) do
@@ -2686,12 +2722,12 @@ module Spec::Support::Examples::Entities
 
               it 'should call the writer methods', :aggregate_failures do
                 allow(entity).to receive(:parent=)
-                allow(entity).to receive(:sibling=)
+                allow(entity).to receive(:children=)
 
                 entity.assign_associations(values)
 
                 expect(entity).to have_received(:parent=).with(parent)
-                expect(entity).to have_received(:sibling=).with(sibling)
+                expect(entity).to have_received(:children=).with(children)
               end
 
               it 'should change the entity associations' do
@@ -2827,19 +2863,21 @@ module Spec::Support::Examples::Entities
           end
 
           describe 'with valid String keys' do
-            let(:parent)  { Spec::Parent.new(name: 'new parent') }
-            let(:sibling) { Spec::Sibling.new(name: 'new sibling') }
+            let(:parent) { Spec::Parent.new(name: 'new parent') }
+            let(:children) do
+              Array.new(3) { |i| Spec::Child.new(name: "Child #{i}") }
+            end
             let(:values) do
               {
-                'parent'  => parent,
-                'sibling' => sibling
+                'parent'   => parent,
+                'children' => children
               }
             end
             let(:expected) do
               {
-                'parent'  => parent,
-                'sibling' => sibling,
-                'child'   => nil
+                'parent'   => parent,
+                'sibling'  => nil,
+                'children' => children
               }
             end
 
@@ -2849,16 +2887,12 @@ module Spec::Support::Examples::Entities
 
             it 'should call the writer methods', :aggregate_failures do
               allow(entity).to receive(:parent=)
-              allow(entity).to receive(:sibling=)
+              allow(entity).to receive(:children=)
 
               entity.assign_properties(values)
 
-              expect(entity)
-                .to have_received(:parent=)
-                .with(parent)
-              expect(entity)
-                .to have_received(:sibling=)
-                .with(sibling)
+              expect(entity).to have_received(:parent=).with(parent)
+              expect(entity).to have_received(:children=).with(children)
             end
 
             it 'should change the entity associations' do
@@ -2875,19 +2909,21 @@ module Spec::Support::Examples::Entities
           end
 
           describe 'with valid Symbol keys' do
-            let(:parent)  { Spec::Parent.new(name: 'new parent') }
-            let(:sibling) { Spec::Sibling.new(name: 'new sibling') }
+            let(:parent) { Spec::Parent.new(name: 'new parent') }
+            let(:children) do
+              Array.new(3) { |i| Spec::Child.new(name: "Child #{i}") }
+            end
             let(:values) do
               {
                 parent:,
-                sibling:
+                children:
               }
             end
             let(:expected) do
               {
-                'parent'  => parent,
-                'sibling' => sibling,
-                'child'   => nil
+                'parent'   => parent,
+                'sibling'  => nil,
+                'children' => children
               }
             end
 
@@ -2897,16 +2933,12 @@ module Spec::Support::Examples::Entities
 
             it 'should call the writer methods', :aggregate_failures do
               allow(entity).to receive(:parent=)
-              allow(entity).to receive(:sibling=)
+              allow(entity).to receive(:children=)
 
               entity.assign_properties(values)
 
-              expect(entity)
-                .to have_received(:parent=)
-                .with(parent)
-              expect(entity)
-                .to have_received(:sibling=)
-                .with(sibling)
+              expect(entity).to have_received(:parent=).with(parent)
+              expect(entity).to have_received(:children=).with(children)
             end
 
             it 'should change the entity associations' do
@@ -2942,19 +2974,21 @@ module Spec::Support::Examples::Entities
             end
 
             describe 'with valid String keys' do
-              let(:parent)  { Spec::Parent.new(name: 'new parent') }
-              let(:sibling) { Spec::Sibling.new(name: 'new sibling') }
+              let(:parent) { Spec::Parent.new(name: 'new parent') }
+              let(:children) do
+                Array.new(3) { |i| Spec::Child.new(name: "Child #{i}") }
+              end
               let(:values) do
                 {
-                  'parent'  => parent,
-                  'sibling' => sibling
+                  'parent'   => parent,
+                  'children' => children
                 }
               end
               let(:expected) do
                 {
-                  'parent'  => parent,
-                  'sibling' => sibling,
-                  'child'   => associations['child']
+                  'parent'   => parent,
+                  'sibling'  => associations['sibling'],
+                  'children' => children
                 }
               end
 
@@ -2964,16 +2998,12 @@ module Spec::Support::Examples::Entities
 
               it 'should call the writer methods', :aggregate_failures do
                 allow(entity).to receive(:parent=)
-                allow(entity).to receive(:sibling=)
+                allow(entity).to receive(:children=)
 
                 entity.assign_properties(values)
 
-                expect(entity)
-                  .to have_received(:parent=)
-                  .with(parent)
-                expect(entity)
-                  .to have_received(:sibling=)
-                  .with(sibling)
+                expect(entity).to have_received(:parent=).with(parent)
+                expect(entity).to have_received(:children=).with(children)
               end
 
               it 'should change the entity associations' do
@@ -2990,19 +3020,21 @@ module Spec::Support::Examples::Entities
             end
 
             describe 'with valid Symbol keys' do
-              let(:parent)  { Spec::Parent.new(name: 'new parent') }
-              let(:sibling) { Spec::Sibling.new(name: 'new sibling') }
+              let(:parent) { Spec::Parent.new(name: 'new parent') }
+              let(:children) do
+                Array.new(3) { |i| Spec::Child.new(name: "Child #{i}") }
+              end
               let(:values) do
                 {
                   parent:,
-                  sibling:
+                  children:
                 }
               end
               let(:expected) do
                 {
-                  'parent'  => parent,
-                  'sibling' => sibling,
-                  'child'   => associations['child']
+                  'parent'   => parent,
+                  'sibling'  => associations['sibling'],
+                  'children' => children
                 }
               end
 
@@ -3012,16 +3044,12 @@ module Spec::Support::Examples::Entities
 
               it 'should call the writer methods', :aggregate_failures do
                 allow(entity).to receive(:parent=)
-                allow(entity).to receive(:sibling=)
+                allow(entity).to receive(:children=)
 
                 entity.assign_properties(values)
 
-                expect(entity)
-                  .to have_received(:parent=)
-                  .with(parent)
-                expect(entity)
-                  .to have_received(:sibling=)
-                  .with(sibling)
+                expect(entity).to have_received(:parent=).with(parent)
+                expect(entity).to have_received(:children=).with(children)
               end
 
               it 'should change the entity associations' do
@@ -3062,21 +3090,23 @@ module Spec::Support::Examples::Entities
           end
 
           describe 'with valid String keys' do
-            let(:parent)  { Spec::Parent.new(name: 'new parent') }
-            let(:sibling) { Spec::Sibling.new(name: 'new sibling') }
+            let(:parent) { Spec::Parent.new(name: 'new parent') }
+            let(:children) do
+              Array.new(3) { |i| Spec::Child.new(name: "Child #{i}") }
+            end
             let(:values) do
               {
                 'amplitude' => '1 TW',
                 'frequency' => '1 Hz',
                 'parent'    => parent,
-                'sibling'   => sibling
+                'children'  => children
               }
             end
             let(:expected_associations) do
               {
-                'parent'  => parent,
-                'sibling' => sibling,
-                'child'   => nil
+                'parent'   => parent,
+                'sibling'  => nil,
+                'children' => children
               }
             end
             let(:expected_properties) do
@@ -3092,16 +3122,12 @@ module Spec::Support::Examples::Entities
 
             it 'should call the writer methods', :aggregate_failures do
               allow(entity).to receive(:parent=)
-              allow(entity).to receive(:sibling=)
+              allow(entity).to receive(:children=)
 
               entity.assign_properties(values)
 
-              expect(entity)
-                .to have_received(:parent=)
-                .with(parent)
-              expect(entity)
-                .to have_received(:sibling=)
-                .with(sibling)
+              expect(entity).to have_received(:parent=).with(parent)
+              expect(entity).to have_received(:children=).with(children)
             end
 
             it 'should change the entity associations' do
@@ -3118,21 +3144,23 @@ module Spec::Support::Examples::Entities
           end
 
           describe 'with valid Symbol keys' do
-            let(:parent)  { Spec::Parent.new(name: 'new parent') }
-            let(:sibling) { Spec::Sibling.new(name: 'new sibling') }
+            let(:parent) { Spec::Parent.new(name: 'new parent') }
+            let(:children) do
+              Array.new(3) { |i| Spec::Child.new(name: "Child #{i}") }
+            end
             let(:values) do
               {
                 amplitude: '1 TW',
                 frequency: '1 Hz',
                 parent:,
-                sibling:
+                children:
               }
             end
             let(:expected_associations) do
               {
-                'parent'  => parent,
-                'sibling' => sibling,
-                'child'   => nil
+                'parent'   => parent,
+                'sibling'  => nil,
+                'children' => children
               }
             end
             let(:expected_properties) do
@@ -3148,16 +3176,12 @@ module Spec::Support::Examples::Entities
 
             it 'should call the writer methods', :aggregate_failures do
               allow(entity).to receive(:parent=)
-              allow(entity).to receive(:sibling=)
+              allow(entity).to receive(:children=)
 
               entity.assign_properties(values)
 
-              expect(entity)
-                .to have_received(:parent=)
-                .with(parent)
-              expect(entity)
-                .to have_received(:sibling=)
-                .with(sibling)
+              expect(entity).to have_received(:parent=).with(parent)
+              expect(entity).to have_received(:children=).with(children)
             end
 
             it 'should change the entity associations' do
@@ -3198,20 +3222,22 @@ module Spec::Support::Examples::Entities
             end
 
             describe 'with valid String keys' do
-              let(:parent)  { Spec::Parent.new(name: 'new parent') }
-              let(:sibling) { Spec::Sibling.new(name: 'new sibling') }
+              let(:parent) { Spec::Parent.new(name: 'new parent') }
+              let(:children) do
+                Array.new(3) { |i| Spec::Child.new(name: "Child #{i}") }
+              end
               let(:values) do
                 {
                   'amplitude' => '1 TW',
                   'parent'    => parent,
-                  'sibling'   => sibling
+                  'children'  => children
                 }
               end
               let(:expected_associations) do
                 {
-                  'parent'  => parent,
-                  'sibling' => sibling,
-                  'child'   => associations['child']
+                  'parent'   => parent,
+                  'sibling'  => associations['sibling'],
+                  'children' => children
                 }
               end
               let(:expected_properties) do
@@ -3227,16 +3253,12 @@ module Spec::Support::Examples::Entities
 
               it 'should call the writer methods', :aggregate_failures do
                 allow(entity).to receive(:parent=)
-                allow(entity).to receive(:sibling=)
+                allow(entity).to receive(:children=)
 
                 entity.assign_properties(values)
 
-                expect(entity)
-                  .to have_received(:parent=)
-                  .with(parent)
-                expect(entity)
-                  .to have_received(:sibling=)
-                  .with(sibling)
+                expect(entity).to have_received(:parent=).with(parent)
+                expect(entity).to have_received(:children=).with(children)
               end
 
               it 'should change the entity associations' do
@@ -3253,20 +3275,22 @@ module Spec::Support::Examples::Entities
             end
 
             describe 'with valid Symbol keys' do
-              let(:parent)  { Spec::Parent.new(name: 'new parent') }
-              let(:sibling) { Spec::Sibling.new(name: 'new sibling') }
+              let(:parent) { Spec::Parent.new(name: 'new parent') }
+              let(:children) do
+                Array.new(3) { |i| Spec::Child.new(name: "Child #{i}") }
+              end
               let(:values) do
                 {
                   amplitude: '1 TW',
                   parent:,
-                  sibling:
+                  children:
                 }
               end
               let(:expected_associations) do
                 {
-                  'parent'  => parent,
-                  'sibling' => sibling,
-                  'child'   => associations['child']
+                  'parent'   => parent,
+                  'sibling'  => associations['sibling'],
+                  'children' => children
                 }
               end
               let(:expected_properties) do
@@ -3282,16 +3306,12 @@ module Spec::Support::Examples::Entities
 
               it 'should call the writer methods', :aggregate_failures do
                 allow(entity).to receive(:parent=)
-                allow(entity).to receive(:sibling=)
+                allow(entity).to receive(:children=)
 
                 entity.assign_properties(values)
 
-                expect(entity)
-                  .to have_received(:parent=)
-                  .with(parent)
-                expect(entity)
-                  .to have_received(:sibling=)
-                  .with(sibling)
+                expect(entity).to have_received(:parent=).with(parent)
+                expect(entity).to have_received(:children=).with(children)
               end
 
               it 'should change the entity associations' do
@@ -3321,9 +3341,9 @@ module Spec::Support::Examples::Entities
         wrap_context 'when the entity class defines associations' do
           let(:expected) do
             {
-              'parent'  => nil,
-              'sibling' => nil,
-              'child'   => nil
+              'parent'   => nil,
+              'sibling'  => nil,
+              'children' => []
             }
           end
 
@@ -3340,9 +3360,9 @@ module Spec::Support::Examples::Entities
           wrap_context 'when the entity class defines associations' do
             let(:expected) do
               {
-                'parent'  => nil,
-                'sibling' => nil,
-                'child'   => nil
+                'parent'   => nil,
+                'sibling'  => nil,
+                'children' => []
               }
             end
 
@@ -3375,10 +3395,10 @@ module Spec::Support::Examples::Entities
 
             let(:expected) do
               {
-                'parent'  => nil,
-                'sibling' => nil,
-                'child'   => nil,
-                'bestie'  => nil
+                'parent'   => nil,
+                'sibling'  => nil,
+                'children' => [],
+                'bestie'   => nil
               }
             end
 
@@ -3387,10 +3407,12 @@ module Spec::Support::Examples::Entities
             wrap_context 'when the entity has association values' do
               let(:associations) do
                 {
-                  'parent'  => Spec::Parent.new(name: 'original parent'),
-                  'sibling' => Spec::Sibling.new(name: 'original sibling'),
-                  'child'   => Spec::Child.new(name: 'original child'),
-                  'bestie'  => Spec::Bestie.new(name: 'original bestie')
+                  'parent'   => Spec::Parent.new(name: 'original parent'),
+                  'sibling'  => Spec::Sibling.new(name: 'original sibling'),
+                  'children' => Array.new(3) do |i|
+                    Spec::Child.new(name: "Child #{i}")
+                  end,
+                  'bestie'   => Spec::Bestie.new(name: 'original bestie')
                 }
               end
 
@@ -3634,17 +3656,20 @@ module Spec::Support::Examples::Entities
 
           describe 'with valid String keys' do
             let(:parent) { Spec::Parent.new(name: 'new parent') }
+            let(:children) do
+              Array.new(3) { |i| Spec::Child.new(name: "Child #{i}") }
+            end
             let(:values) do
               {
-                'parent'  => parent,
-                'sibling' => nil
+                'parent'   => parent,
+                'children' => children
               }
             end
             let(:expected) do
               {
-                'parent'  => parent,
-                'sibling' => nil,
-                'child'   => nil
+                'parent'   => parent,
+                'sibling'  => nil,
+                'children' => children
               }
             end
 
@@ -3655,11 +3680,13 @@ module Spec::Support::Examples::Entities
             it 'should call the writer methods', :aggregate_failures do
               allow(entity).to receive(:parent=)
               allow(entity).to receive(:sibling=)
+              allow(entity).to receive(:children=)
 
               entity.associations = values
 
               expect(entity).to have_received(:parent=).with(parent)
               expect(entity).to have_received(:sibling=).with(nil)
+              expect(entity).to have_received(:children=).with(children)
             end
 
             it 'should change the entity associations' do
@@ -3677,17 +3704,20 @@ module Spec::Support::Examples::Entities
 
           describe 'with valid Symbol keys' do
             let(:parent) { Spec::Parent.new(name: 'new parent') }
+            let(:children) do
+              Array.new(3) { |i| Spec::Child.new(name: "Child #{i}") }
+            end
             let(:values) do
               {
                 parent:,
-                sibling: nil
+                children:
               }
             end
             let(:expected) do
               {
-                'parent'  => parent,
-                'sibling' => nil,
-                'child'   => nil
+                'parent'   => parent,
+                'sibling'  => nil,
+                'children' => children
               }
             end
 
@@ -3698,11 +3728,13 @@ module Spec::Support::Examples::Entities
             it 'should call the writer methods', :aggregate_failures do
               allow(entity).to receive(:parent=)
               allow(entity).to receive(:sibling=)
+              allow(entity).to receive(:children=)
 
               entity.associations = values
 
               expect(entity).to have_received(:parent=).with(parent)
               expect(entity).to have_received(:sibling=).with(nil)
+              expect(entity).to have_received(:children=).with(children)
             end
 
             it 'should change the entity associations' do
@@ -3723,9 +3755,9 @@ module Spec::Support::Examples::Entities
               let(:values) { {} }
               let(:expected) do
                 {
-                  'parent'  => nil,
-                  'sibling' => nil,
-                  'child'   => nil
+                  'parent'   => nil,
+                  'sibling'  => nil,
+                  'children' => []
                 }
               end
 
@@ -3746,17 +3778,20 @@ module Spec::Support::Examples::Entities
 
             describe 'with valid String keys' do
               let(:parent) { Spec::Parent.new(name: 'new parent') }
+              let(:children) do
+                Array.new(3) { |i| Spec::Child.new(name: "Child #{i}") }
+              end
               let(:values) do
                 {
-                  'parent'  => parent,
-                  'sibling' => nil
+                  'parent'   => parent,
+                  'children' => children
                 }
               end
               let(:expected) do
                 {
-                  'parent'  => parent,
-                  'sibling' => nil,
-                  'child'   => nil
+                  'parent'   => parent,
+                  'sibling'  => nil,
+                  'children' => children
                 }
               end
 
@@ -3767,11 +3802,13 @@ module Spec::Support::Examples::Entities
               it 'should call the writer methods', :aggregate_failures do
                 allow(entity).to receive(:parent=)
                 allow(entity).to receive(:sibling=)
+                allow(entity).to receive(:children=)
 
                 entity.associations = values
 
                 expect(entity).to have_received(:parent=).with(parent)
                 expect(entity).to have_received(:sibling=).with(nil)
+                expect(entity).to have_received(:children=).with(children)
               end
 
               it 'should change the entity associations' do
@@ -3789,17 +3826,20 @@ module Spec::Support::Examples::Entities
 
             describe 'with valid Symbol keys' do
               let(:parent) { Spec::Parent.new(name: 'new parent') }
+              let(:children) do
+                Array.new(3) { |i| Spec::Child.new(name: "Child #{i}") }
+              end
               let(:values) do
                 {
                   parent:,
-                  sibling: nil
+                  children:
                 }
               end
               let(:expected) do
                 {
-                  'parent'  => parent,
-                  'sibling' => nil,
-                  'child'   => nil
+                  'parent'   => parent,
+                  'sibling'  => nil,
+                  'children' => children
                 }
               end
 
@@ -3810,11 +3850,13 @@ module Spec::Support::Examples::Entities
               it 'should call the writer methods', :aggregate_failures do
                 allow(entity).to receive(:parent=)
                 allow(entity).to receive(:sibling=)
+                allow(entity).to receive(:children=)
 
                 entity.associations = values
 
                 expect(entity).to have_received(:parent=).with(parent)
                 expect(entity).to have_received(:sibling=).with(nil)
+                expect(entity).to have_received(:children=).with(children)
               end
 
               it 'should change the entity associations' do
@@ -3936,17 +3978,20 @@ module Spec::Support::Examples::Entities
 
           describe 'with valid String keys' do
             let(:parent) { Spec::Parent.new(name: 'new parent') }
+            let(:children) do
+              Array.new(3) { |i| Spec::Child.new(name: "Child #{i}") }
+            end
             let(:values) do
               {
-                'parent'  => parent,
-                'sibling' => nil
+                'parent'   => parent,
+                'children' => children
               }
             end
             let(:expected_associations) do
               {
-                'parent'  => parent,
-                'sibling' => nil,
-                'child'   => nil
+                'parent'   => parent,
+                'sibling'  => nil,
+                'children' => children
               }
             end
             let(:expected_properties) do
@@ -3963,11 +4008,13 @@ module Spec::Support::Examples::Entities
             it 'should call the writer methods', :aggregate_failures do
               allow(entity).to receive(:parent=)
               allow(entity).to receive(:sibling=)
+              allow(entity).to receive(:children=)
 
               entity.associations = values
 
               expect(entity).to have_received(:parent=).with(parent)
               expect(entity).to have_received(:sibling=).with(nil)
+              expect(entity).to have_received(:children=).with(children)
             end
 
             it 'should change the entity associations' do
@@ -3985,17 +4032,20 @@ module Spec::Support::Examples::Entities
 
           describe 'with valid Symbol keys' do
             let(:parent) { Spec::Parent.new(name: 'new parent') }
+            let(:children) do
+              Array.new(3) { |i| Spec::Child.new(name: "Child #{i}") }
+            end
             let(:values) do
               {
                 parent:,
-                sibling: nil
+                children:
               }
             end
             let(:expected_associations) do
               {
-                'parent'  => parent,
-                'sibling' => nil,
-                'child'   => nil
+                'parent'   => parent,
+                'sibling'  => nil,
+                'children' => children
               }
             end
             let(:expected_properties) do
@@ -4012,11 +4062,13 @@ module Spec::Support::Examples::Entities
             it 'should call the writer methods', :aggregate_failures do
               allow(entity).to receive(:parent=)
               allow(entity).to receive(:sibling=)
+              allow(entity).to receive(:children=)
 
               entity.associations = values
 
               expect(entity).to have_received(:parent=).with(parent)
               expect(entity).to have_received(:sibling=).with(nil)
+              expect(entity).to have_received(:children=).with(children)
             end
 
             it 'should change the entity associations' do
@@ -4042,9 +4094,9 @@ module Spec::Support::Examples::Entities
               let(:values) { {} }
               let(:expected_associations) do
                 {
-                  'parent'  => nil,
-                  'sibling' => nil,
-                  'child'   => nil
+                  'parent'   => nil,
+                  'sibling'  => nil,
+                  'children' => []
                 }
               end
               let(:expected_properties) do
@@ -4070,17 +4122,20 @@ module Spec::Support::Examples::Entities
 
             describe 'with valid String keys' do
               let(:parent) { Spec::Parent.new(name: 'new parent') }
+              let(:children) do
+                Array.new(3) { |i| Spec::Child.new(name: "Child #{i}") }
+              end
               let(:values) do
                 {
-                  'parent'  => parent,
-                  'sibling' => nil
+                  'parent'   => parent,
+                  'children' => children
                 }
               end
               let(:expected_associations) do
                 {
-                  'parent'  => parent,
-                  'sibling' => nil,
-                  'child'   => nil
+                  'parent'   => parent,
+                  'sibling'  => nil,
+                  'children' => children
                 }
               end
               let(:expected_properties) do
@@ -4106,17 +4161,20 @@ module Spec::Support::Examples::Entities
 
             describe 'with valid Symbol keys' do
               let(:parent) { Spec::Parent.new(name: 'new parent') }
+              let(:children) do
+                Array.new(3) { |i| Spec::Child.new(name: "Child #{i}") }
+              end
               let(:values) do
                 {
                   parent:,
-                  sibling: nil
+                  children:
                 }
               end
               let(:expected_associations) do
                 {
-                  'parent'  => parent,
-                  'sibling' => nil,
-                  'child'   => nil
+                  'parent'   => parent,
+                  'sibling'  => nil,
+                  'children' => children
                 }
               end
               let(:expected_properties) do
@@ -4147,7 +4205,7 @@ module Spec::Support::Examples::Entities
         def inspect_association(associated_entity) # rubocop:disable Metrics/MethodLength
           if associated_entity.nil?
             'nil'
-          elsif associated_entity.is_a?(Array)
+          elsif associated_entity.is_a?(Stannum::Associations::Many::Proxy)
             associated_entity
               .map { |item| inspect_association(item) }
               .join(', ')
@@ -4164,7 +4222,7 @@ module Spec::Support::Examples::Entities
             "#<#{described_class.name} " \
               "parent: #{inspect_association(entity.parent)} " \
               "sibling: #{inspect_association(entity.sibling)} " \
-              "child: #{inspect_association(entity.child)}" \
+              "children: #{inspect_association(entity.children)}" \
               '>'
           end
 
@@ -4177,9 +4235,9 @@ module Spec::Support::Examples::Entities
           context 'when the entity has invalid association values' do
             let(:associations) do
               {
-                'parent'  => nil,
-                'sibling' => Struct.new(:inspect).new('"invalid sibling"'), # rubocop:disable Lint/StructNewOverride
-                'child'   => [
+                'parent'   => nil,
+                'sibling'  => Struct.new(:inspect).new('"invalid sibling"'), # rubocop:disable Lint/StructNewOverride
+                'children' => [
                   Spec::Sibling.new(name: 'first child'),
                   Spec::Sibling.new(name: 'second child'),
                   Spec::Sibling.new(name: 'third child')
@@ -4241,7 +4299,7 @@ module Spec::Support::Examples::Entities
             "#<#{described_class.name} " \
               "parent: #{inspect_association(entity.parent)} " \
               "sibling: #{inspect_association(entity.sibling)} " \
-              "child: #{inspect_association(entity.child)} " \
+              "children: #{inspect_association(entity.children)} " \
               "amplitude: #{entity['amplitude'].inspect} " \
               "frequency: #{entity['frequency'].inspect}" \
               '>'
@@ -4263,10 +4321,21 @@ module Spec::Support::Examples::Entities
       describe '#inspect_with_options' do
         let(:options) { {} }
 
-        def inspect_association(associated_entity)
-          return 'nil' if associated_entity.nil?
-
-          associated_entity.inspect_with_options(associations: false)
+        def inspect_association(associated_entity) # rubocop:disable Metrics/MethodLength
+          # :nocov:
+          if associated_entity.nil?
+            'nil'
+          elsif associated_entity.is_a?(Stannum::Associations::Many::Proxy)
+            associated_entity
+              .map { |item| inspect_association(item) }
+              .join(', ')
+              .then { |str| "[#{str}]" }
+          elsif associated_entity.respond_to?(:inspect_with_options)
+            associated_entity.inspect_with_options(associations: false)
+          else
+            associated_entity.inspect
+          end
+          # :nocov:
         end
 
         wrap_context 'when the entity class defines associations' do
@@ -4274,7 +4343,7 @@ module Spec::Support::Examples::Entities
             "#<#{described_class.name} " \
               "parent: #{inspect_association(entity.parent)} " \
               "sibling: #{inspect_association(entity.sibling)} " \
-              "child: #{inspect_association(entity.child)}" \
+              "children: #{inspect_association(entity.children)}" \
               '>'
           end
 
@@ -4377,7 +4446,7 @@ module Spec::Support::Examples::Entities
             "#<#{described_class.name} " \
               "parent: #{inspect_association(entity.parent)} " \
               "sibling: #{inspect_association(entity.sibling)} " \
-              "child: #{inspect_association(entity.child)} " \
+              "children: #{inspect_association(entity.children)} " \
               "amplitude: #{entity['amplitude'].inspect} " \
               "frequency: #{entity['frequency'].inspect}" \
               '>'
@@ -4419,7 +4488,7 @@ module Spec::Support::Examples::Entities
               "#<#{described_class.name} " \
                 "parent: #{inspect_association(entity.parent)} " \
                 "sibling: #{inspect_association(entity.sibling)} " \
-                "child: #{inspect_association(entity.child)}" \
+                "children: #{inspect_association(entity.children)}" \
                 '>'
             end
 
@@ -4445,9 +4514,9 @@ module Spec::Support::Examples::Entities
         wrap_context 'when the entity class defines associations' do
           let(:expected) do
             {
-              'parent'  => nil,
-              'sibling' => nil,
-              'child'   => nil
+              'parent'   => nil,
+              'sibling'  => nil,
+              'children' => []
             }
           end
 
@@ -4466,7 +4535,7 @@ module Spec::Support::Examples::Entities
             {
               'parent'    => nil,
               'sibling'   => nil,
-              'child'     => nil,
+              'children'  => [],
               'amplitude' => nil,
               'frequency' => nil
             }
@@ -4605,17 +4674,20 @@ module Spec::Support::Examples::Entities
 
           describe 'with valid String keys' do
             let(:parent) { Spec::Parent.new(name: 'new parent') }
+            let(:children) do
+              Array.new(3) { |i| Spec::Child.new(name: "Child #{i}") }
+            end
             let(:values) do
               {
-                'parent'  => parent,
-                'sibling' => nil
+                'parent'   => parent,
+                'children' => children
               }
             end
             let(:expected) do
               {
-                'parent'  => parent,
-                'sibling' => nil,
-                'child'   => nil
+                'parent'   => parent,
+                'sibling'  => nil,
+                'children' => children
               }
             end
 
@@ -4626,11 +4698,13 @@ module Spec::Support::Examples::Entities
             it 'should call the writer methods', :aggregate_failures do
               allow(entity).to receive(:parent=)
               allow(entity).to receive(:sibling=)
+              allow(entity).to receive(:children=)
 
               entity.properties = values
 
               expect(entity).to have_received(:parent=).with(parent)
               expect(entity).to have_received(:sibling=).with(nil)
+              expect(entity).to have_received(:children=).with(children)
             end
 
             it 'should change the entity associations' do
@@ -4648,17 +4722,20 @@ module Spec::Support::Examples::Entities
 
           describe 'with valid Symbol keys' do
             let(:parent) { Spec::Parent.new(name: 'new parent') }
+            let(:children) do
+              Array.new(3) { |i| Spec::Child.new(name: "Child #{i}") }
+            end
             let(:values) do
               {
                 parent:,
-                sibling: nil
+                children:
               }
             end
             let(:expected) do
               {
-                'parent'  => parent,
-                'sibling' => nil,
-                'child'   => nil
+                'parent'   => parent,
+                'sibling'  => nil,
+                'children' => children
               }
             end
 
@@ -4669,11 +4746,13 @@ module Spec::Support::Examples::Entities
             it 'should call the writer methods', :aggregate_failures do
               allow(entity).to receive(:parent=)
               allow(entity).to receive(:sibling=)
+              allow(entity).to receive(:children=)
 
               entity.properties = values
 
               expect(entity).to have_received(:parent=).with(parent)
               expect(entity).to have_received(:sibling=).with(nil)
+              expect(entity).to have_received(:children=).with(children)
             end
 
             it 'should change the entity associations' do
@@ -4694,9 +4773,9 @@ module Spec::Support::Examples::Entities
               let(:values) { {} }
               let(:expected) do
                 {
-                  'parent'  => nil,
-                  'sibling' => nil,
-                  'child'   => nil
+                  'parent'   => nil,
+                  'sibling'  => nil,
+                  'children' => []
                 }
               end
 
@@ -4719,17 +4798,20 @@ module Spec::Support::Examples::Entities
 
             describe 'with valid String keys' do
               let(:parent) { Spec::Parent.new(name: 'new parent') }
+              let(:children) do
+                Array.new(3) { |i| Spec::Child.new(name: "Child #{i}") }
+              end
               let(:values) do
                 {
-                  'parent'  => parent,
-                  'sibling' => nil
+                  'parent'   => parent,
+                  'children' => children
                 }
               end
               let(:expected) do
                 {
-                  'parent'  => parent,
-                  'sibling' => nil,
-                  'child'   => nil
+                  'parent'   => parent,
+                  'sibling'  => nil,
+                  'children' => children
                 }
               end
 
@@ -4740,11 +4822,13 @@ module Spec::Support::Examples::Entities
               it 'should call the writer methods', :aggregate_failures do
                 allow(entity).to receive(:parent=)
                 allow(entity).to receive(:sibling=)
+                allow(entity).to receive(:children=)
 
                 entity.properties = values
 
                 expect(entity).to have_received(:parent=).with(parent)
                 expect(entity).to have_received(:sibling=).with(nil)
+                expect(entity).to have_received(:children=).with(children)
               end
 
               it 'should change the entity associations' do
@@ -4762,17 +4846,20 @@ module Spec::Support::Examples::Entities
 
             describe 'with valid Symbol keys' do
               let(:parent) { Spec::Parent.new(name: 'new parent') }
+              let(:children) do
+                Array.new(3) { |i| Spec::Child.new(name: "Child #{i}") }
+              end
               let(:values) do
                 {
                   parent:,
-                  sibling: nil
+                  children:
                 }
               end
               let(:expected) do
                 {
-                  'parent'  => parent,
-                  'sibling' => nil,
-                  'child'   => nil
+                  'parent'   => parent,
+                  'sibling'  => nil,
+                  'children' => children
                 }
               end
 
@@ -4783,11 +4870,13 @@ module Spec::Support::Examples::Entities
               it 'should call the writer methods', :aggregate_failures do
                 allow(entity).to receive(:parent=)
                 allow(entity).to receive(:sibling=)
+                allow(entity).to receive(:children=)
 
                 entity.properties = values
 
                 expect(entity).to have_received(:parent=).with(parent)
                 expect(entity).to have_received(:sibling=).with(nil)
+                expect(entity).to have_received(:children=).with(children)
               end
 
               it 'should change the entity associations' do
@@ -4923,18 +5012,21 @@ module Spec::Support::Examples::Entities
 
           describe 'with valid String keys' do
             let(:parent) { Spec::Parent.new(name: 'new parent') }
+            let(:children) do
+              Array.new(3) { |i| Spec::Child.new(name: "Child #{i}") }
+            end
             let(:values) do
               {
                 'amplitude' => '1.21 GW',
                 'parent'    => parent,
-                'sibling'   => nil
+                'children'  => children
               }
             end
             let(:expected_associations) do
               {
-                'parent'  => parent,
-                'sibling' => nil,
-                'child'   => nil
+                'parent'   => parent,
+                'sibling'  => nil,
+                'children' => children
               }
             end
             let(:expected_properties) do
@@ -4951,11 +5043,13 @@ module Spec::Support::Examples::Entities
             it 'should call the writer methods', :aggregate_failures do
               allow(entity).to receive(:parent=)
               allow(entity).to receive(:sibling=)
+              allow(entity).to receive(:children=)
 
               entity.properties = values
 
               expect(entity).to have_received(:parent=).with(parent)
               expect(entity).to have_received(:sibling=).with(nil)
+              expect(entity).to have_received(:children=).with(children)
             end
 
             it 'should change the entity associations' do
@@ -4973,18 +5067,21 @@ module Spec::Support::Examples::Entities
 
           describe 'with valid Symbol keys' do
             let(:parent) { Spec::Parent.new(name: 'new parent') }
+            let(:children) do
+              Array.new(3) { |i| Spec::Child.new(name: "Child #{i}") }
+            end
             let(:values) do
               {
                 amplitude: '1.21 GW',
                 parent:,
-                sibling:   nil
+                children:
               }
             end
             let(:expected_associations) do
               {
-                'parent'  => parent,
-                'sibling' => nil,
-                'child'   => nil
+                'parent'   => parent,
+                'sibling'  => nil,
+                'children' => children
               }
             end
             let(:expected_properties) do
@@ -5001,11 +5098,13 @@ module Spec::Support::Examples::Entities
             it 'should call the writer methods', :aggregate_failures do
               allow(entity).to receive(:parent=)
               allow(entity).to receive(:sibling=)
+              allow(entity).to receive(:children=)
 
               entity.properties = values
 
               expect(entity).to have_received(:parent=).with(parent)
               expect(entity).to have_received(:sibling=).with(nil)
+              expect(entity).to have_received(:children=).with(children)
             end
 
             it 'should change the entity associations' do
@@ -5031,9 +5130,9 @@ module Spec::Support::Examples::Entities
               let(:values) { {} }
               let(:expected_associations) do
                 {
-                  'parent'  => nil,
-                  'sibling' => nil,
-                  'child'   => nil
+                  'parent'   => nil,
+                  'sibling'  => nil,
+                  'children' => []
                 }
               end
               let(:expected_properties) do
@@ -5062,18 +5161,21 @@ module Spec::Support::Examples::Entities
 
             describe 'with valid String keys' do
               let(:parent) { Spec::Parent.new(name: 'new parent') }
+              let(:children) do
+                Array.new(3) { |i| Spec::Child.new(name: "Child #{i}") }
+              end
               let(:values) do
                 {
                   'amplitude' => '1.21 GW',
                   'parent'    => parent,
-                  'sibling'   => nil
+                  'children'  => children
                 }
               end
               let(:expected_associations) do
                 {
-                  'parent'  => parent,
-                  'sibling' => nil,
-                  'child'   => nil
+                  'parent'   => parent,
+                  'sibling'  => nil,
+                  'children' => children
                 }
               end
               let(:expected_properties) do
@@ -5090,11 +5192,13 @@ module Spec::Support::Examples::Entities
               it 'should call the writer methods', :aggregate_failures do
                 allow(entity).to receive(:parent=)
                 allow(entity).to receive(:sibling=)
+                allow(entity).to receive(:children=)
 
                 entity.properties = values
 
                 expect(entity).to have_received(:parent=).with(parent)
                 expect(entity).to have_received(:sibling=).with(nil)
+                expect(entity).to have_received(:children=).with(children)
               end
 
               it 'should change the entity associations' do
@@ -5112,18 +5216,21 @@ module Spec::Support::Examples::Entities
 
             describe 'with valid Symbol keys' do
               let(:parent) { Spec::Parent.new(name: 'new parent') }
+              let(:children) do
+                Array.new(3) { |i| Spec::Child.new(name: "Child #{i}") }
+              end
               let(:values) do
                 {
                   amplitude: '1.21 GW',
                   parent:,
-                  sibling:   nil
+                  children:
                 }
               end
               let(:expected_associations) do
                 {
-                  'parent'  => parent,
-                  'sibling' => nil,
-                  'child'   => nil
+                  'parent'   => parent,
+                  'sibling'  => nil,
+                  'children' => children
                 }
               end
               let(:expected_properties) do
@@ -5140,11 +5247,13 @@ module Spec::Support::Examples::Entities
               it 'should call the writer methods', :aggregate_failures do
                 allow(entity).to receive(:parent=)
                 allow(entity).to receive(:sibling=)
+                allow(entity).to receive(:children=)
 
                 entity.properties = values
 
                 expect(entity).to have_received(:parent=).with(parent)
                 expect(entity).to have_received(:sibling=).with(nil)
+                expect(entity).to have_received(:children=).with(children)
               end
 
               it 'should change the entity associations' do
@@ -5525,9 +5634,9 @@ module Spec::Support::Examples::Entities
         wrap_context 'when the entity class defines associations' do
           let(:expected) do
             {
-              'parent'  => nil,
-              'sibling' => nil,
-              'child'   => nil
+              'parent'   => nil,
+              'sibling'  => nil,
+              'children' => []
             }
           end
 
@@ -5546,7 +5655,7 @@ module Spec::Support::Examples::Entities
             {
               'parent'    => nil,
               'sibling'   => nil,
-              'child'     => nil,
+              'children'  => [],
               'amplitude' => nil,
               'frequency' => nil
             }

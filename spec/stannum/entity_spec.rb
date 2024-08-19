@@ -37,10 +37,21 @@ RSpec.describe Stannum::Entity do
   include_examples 'should implement the Properties methods'
 
   describe '#inspect' do
-    def inspect_association(associated_entity)
-      return 'nil' if associated_entity.nil?
-
-      associated_entity.inspect_with_options(associations: false)
+    def inspect_association(associated_entity) # rubocop:disable Metrics/MethodLength
+      # :nocov:
+      if associated_entity.nil?
+        'nil'
+      elsif associated_entity.is_a?(Stannum::Associations::Many::Proxy)
+        associated_entity
+          .map { |item| inspect_association(item) }
+          .join(', ')
+          .then { |str| "[#{str}]" }
+      elsif associated_entity.respond_to?(:inspect_with_options)
+        associated_entity.inspect_with_options(associations: false)
+      else
+        associated_entity.inspect
+      end
+      # :nocov:
     end
 
     context 'when the entity class defines properties' do
@@ -55,7 +66,7 @@ RSpec.describe Stannum::Entity do
           "quantity: #{entity.quantity.inspect} " \
           "parent: #{inspect_association(entity.parent)} " \
           "sibling: #{inspect_association(entity.sibling)} " \
-          "child: #{inspect_association(entity.child)} " \
+          "children: #{inspect_association(entity.children)} " \
           "amplitude: #{entity['amplitude'].inspect} " \
           "frequency: #{entity['frequency'].inspect}" \
           '>'
@@ -80,10 +91,21 @@ RSpec.describe Stannum::Entity do
   describe '#inspect_with_options' do
     let(:options) { {} }
 
-    def inspect_association(associated_entity)
-      return 'nil' if associated_entity.nil?
-
-      associated_entity.inspect_with_options(**options, associations: false)
+    def inspect_association(associated_entity) # rubocop:disable Metrics/MethodLength
+      # :nocov:
+      if associated_entity.nil?
+        'nil'
+      elsif associated_entity.is_a?(Stannum::Associations::Many::Proxy)
+        associated_entity
+          .map { |item| inspect_association(item) }
+          .join(', ')
+          .then { |str| "[#{str}]" }
+      elsif associated_entity.respond_to?(:inspect_with_options)
+        associated_entity.inspect_with_options(associations: false, **options)
+      else
+        associated_entity.inspect
+      end
+      # :nocov:
     end
 
     context 'when the entity class defines properties' do
@@ -98,7 +120,7 @@ RSpec.describe Stannum::Entity do
           "quantity: #{entity.quantity.inspect} " \
           "parent: #{inspect_association(entity.parent)} " \
           "sibling: #{inspect_association(entity.sibling)} " \
-          "child: #{inspect_association(entity.child)} " \
+          "children: #{inspect_association(entity.children)} " \
           "amplitude: #{entity['amplitude'].inspect} " \
           "frequency: #{entity['frequency'].inspect}" \
           '>'
@@ -128,7 +150,7 @@ RSpec.describe Stannum::Entity do
           "#<#{described_class.name} " \
             "parent: #{inspect_association(entity.parent)} " \
             "sibling: #{inspect_association(entity.sibling)} " \
-            "child: #{inspect_association(entity.child)} " \
+            "children: #{inspect_association(entity.children)} " \
             "amplitude: #{entity['amplitude'].inspect} " \
             "frequency: #{entity['frequency'].inspect}" \
             '>'
@@ -193,7 +215,7 @@ RSpec.describe Stannum::Entity do
             "quantity: #{entity.quantity.inspect} " \
             "parent: #{inspect_association(entity.parent)} " \
             "sibling: #{inspect_association(entity.sibling)} " \
-            "child: #{inspect_association(entity.child)}" \
+            "children: #{inspect_association(entity.children)}" \
             '>'
         end
 
