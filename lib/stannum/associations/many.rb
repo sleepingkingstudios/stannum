@@ -126,7 +126,7 @@ module Stannum::Associations
 
     # (see Stannum::Association#get_value)
     def get_value(entity)
-      @proxy ||= Proxy.new(association: self, entity:) # rubocop:disable Naming/MemoizedInstanceVariableName
+      entity.association_proxy_for(self)
     end
 
     # @return [true] true if the association is a plural association; otherwise

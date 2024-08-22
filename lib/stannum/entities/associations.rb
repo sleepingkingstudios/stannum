@@ -261,7 +261,8 @@ module Stannum::Entities
 
     # @param properties [Hash] the properties used to initialize the entity.
     def initialize(**properties)
-      @associations = {}
+      @associations        = {}
+      @association_proxies = {}
 
       super
     end
@@ -289,6 +290,12 @@ module Stannum::Entities
       end
 
       set_associations(associations, force: false)
+    end
+
+    # @api private
+    def association_proxy_for(association)
+      @association_proxies[association.name] ||=
+        Stannum::Associations::Many::Proxy.new(association:, entity: self)
     end
 
     # Collects the entity associations.

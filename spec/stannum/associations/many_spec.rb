@@ -279,6 +279,26 @@ RSpec.describe Stannum::Associations::Many do
       end
     end
 
+    describe '#entity' do
+      include_examples 'should define private reader', :entity, -> { entity }
+
+      context 'when there are many entities' do
+        let(:entities) do
+          [
+            Spec::EntityClass.new(name: 'Entity 0'),
+            Spec::EntityClass.new(name: 'Entity 1'),
+            Spec::EntityClass.new(name: 'Entity 2')
+          ]
+        end
+
+        it 'should return the corresponding entity' do
+          expect(entities).to all(
+            satisfy { |entity| entity.send(name).send(:entity) == entity }
+          )
+        end
+      end
+    end
+
     describe '#inspect' do
       let(:object_id) do
         Object.instance_method(:inspect).bind(proxy).call[39...55]

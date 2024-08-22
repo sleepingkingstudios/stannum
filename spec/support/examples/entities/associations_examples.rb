@@ -3330,6 +3330,29 @@ module Spec::Support::Examples::Entities
         end
       end
 
+      describe '#association_proxy_for' do
+        let(:association) { described_class.associations['widgets'] }
+        let(:proxy)       { entity.association_proxy_for(association) }
+
+        before(:example) do
+          described_class.define_association :many, :widgets
+        end
+
+        it 'should define the method' do
+          expect(entity).to respond_to(:association_proxy_for).with(1).argument
+        end
+
+        it { expect(proxy).to be_a Stannum::Associations::Many::Proxy }
+
+        it { expect(proxy.send(:association)).to be association }
+
+        it { expect(proxy.send(:entity)).to be entity }
+
+        it 'should memoize the proxy' do
+          expect(entity.association_proxy_for(association)).to be proxy
+        end
+      end
+
       describe '#associations' do
         include_examples 'should define reader', :associations, {}
 
