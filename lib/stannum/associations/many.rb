@@ -152,6 +152,19 @@ module Stannum::Associations
       nil
     end
 
+    # (see Stannum::Association#resolved_inverse)
+    def resolved_inverse
+      return @resolved_inverse if @resolved_inverse
+
+      inverse = super
+
+      return inverse unless inverse&.many?
+
+      raise InverseAssociationError,
+        "invalid inverse association #{inverse_name.inspect} - :many to " \
+        ':many associations are not currently supported'
+    end
+
     # (see Stannum::Association#set_value)
     def set_value(entity, value, update_inverse: true)
       data = entity.read_association(name, safe: false) || []

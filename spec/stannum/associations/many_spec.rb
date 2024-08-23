@@ -375,7 +375,7 @@ RSpec.describe Stannum::Associations::Many do
     end
   end
 
-  include_examples 'should implement the Association methods'
+  include_examples 'should implement the Association methods', plural: true
 
   describe '#:association' do
     include_context 'with an entity'
@@ -500,6 +500,7 @@ RSpec.describe Stannum::Associations::Many do
           Stannum::Association,
           add_value:    nil,
           get_value:    nil,
+          many?:        false,
           remove_value: nil
         )
       end
@@ -517,14 +518,15 @@ RSpec.describe Stannum::Associations::Many do
           .and_return(mock_association)
       end
 
-      def reset_mocks! # rubocop:disable Metrics/AbcSize
+      def reset_mocks!
         RSpec::Mocks.space.proxy_for(mock_association).reset
 
-        allow(mock_association).to receive(:add_value)
-        allow(mock_association).to receive(:remove_value)
-        allow(mock_association)
-          .to receive(:get_value)
-          .and_return(previous_inverse)
+        allow(mock_association).to receive_messages(
+          add_value:    nil,
+          get_value:    previous_inverse,
+          many?:        false,
+          remove_value: nil
+        )
       end
 
       describe 'with nil' do
@@ -841,6 +843,7 @@ RSpec.describe Stannum::Associations::Many do
           Stannum::Association,
           add_value:    nil,
           get_value:    nil,
+          many?:        false,
           remove_value: nil
         )
       end
@@ -858,14 +861,15 @@ RSpec.describe Stannum::Associations::Many do
           .and_return(mock_association)
       end
 
-      def reset_mocks! # rubocop:disable Metrics/AbcSize
+      def reset_mocks!
         RSpec::Mocks.space.proxy_for(mock_association).reset
 
-        allow(mock_association).to receive(:add_value)
-        allow(mock_association).to receive(:remove_value)
-        allow(mock_association)
-          .to receive(:get_value)
-          .and_return(previous_inverse)
+        allow(mock_association).to receive_messages(
+          add_value:    nil,
+          get_value:    previous_inverse,
+          many?:        false,
+          remove_value: nil
+        )
       end
 
       describe 'with nil' do
@@ -1074,6 +1078,7 @@ RSpec.describe Stannum::Associations::Many do
           Stannum::Association,
           add_value:    nil,
           get_value:    nil,
+          many?:        false,
           remove_value: nil
         )
       end
@@ -1091,14 +1096,15 @@ RSpec.describe Stannum::Associations::Many do
           .and_return(mock_association)
       end
 
-      def reset_mocks! # rubocop:disable Metrics/AbcSize
+      def reset_mocks!
         RSpec::Mocks.space.proxy_for(mock_association).reset
 
-        allow(mock_association).to receive(:add_value)
-        allow(mock_association).to receive(:remove_value)
-        allow(mock_association)
-          .to receive(:get_value)
-          .and_return(previous_inverse)
+        allow(mock_association).to receive_messages(
+          add_value:    nil,
+          get_value:    previous_inverse,
+          many?:        false,
+          remove_value: nil
+        )
       end
 
       it 'should not change the association value' do
@@ -1236,6 +1242,7 @@ RSpec.describe Stannum::Associations::Many do
           Stannum::Association,
           add_value:    nil,
           get_value:    nil,
+          many?:        false,
           remove_value: nil
         )
       end
@@ -1253,14 +1260,15 @@ RSpec.describe Stannum::Associations::Many do
           .and_return(mock_association)
       end
 
-      def reset_mocks! # rubocop:disable Metrics/AbcSize
+      def reset_mocks!
         RSpec::Mocks.space.proxy_for(mock_association).reset
 
-        allow(mock_association).to receive(:add_value)
-        allow(mock_association).to receive(:remove_value)
-        allow(mock_association)
-          .to receive(:get_value)
-          .and_return(previous_inverse)
+        allow(mock_association).to receive_messages(
+          add_value:    nil,
+          get_value:    previous_inverse,
+          many?:        false,
+          remove_value: nil
+        )
       end
 
       describe 'with nil' do
@@ -1493,6 +1501,7 @@ RSpec.describe Stannum::Associations::Many do
           Stannum::Association,
           add_value:    nil,
           get_value:    nil,
+          many?:        false,
           remove_value: nil
         )
       end
@@ -1510,14 +1519,15 @@ RSpec.describe Stannum::Associations::Many do
           .and_return(mock_association)
       end
 
-      def reset_mocks! # rubocop:disable Metrics/AbcSize
+      def reset_mocks!
         RSpec::Mocks.space.proxy_for(mock_association).reset
 
-        allow(mock_association).to receive(:add_value)
-        allow(mock_association).to receive(:remove_value)
-        allow(mock_association)
-          .to receive(:get_value)
-          .and_return(previous_inverse)
+        allow(mock_association).to receive_messages(
+          add_value:    nil,
+          get_value:    previous_inverse,
+          many?:        false,
+          remove_value: nil
+        )
       end
 
       describe 'with nil' do

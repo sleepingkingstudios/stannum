@@ -8,7 +8,8 @@ module Spec::Support::Examples
   module AssociationExamples
     extend RSpec::SleepingKingStudios::Concerns::SharedExampleGroup
 
-    shared_examples 'should implement the Association methods' do
+    shared_examples 'should implement the Association methods' \
+    do |plural: false|
       describe '.new' do
         it 'should define the constructor' do
           expect(described_class)
@@ -271,15 +272,6 @@ module Spec::Support::Examples
         end
       end
 
-      describe '#remove_value' do
-        it 'should define the method' do
-          expect(association)
-            .to respond_to(:remove_value)
-            .with(2).arguments
-            .and_keywords(:update_inverse)
-        end
-      end
-
       describe '#reader_name' do
         include_examples 'should define reader',
           :reader_name,
@@ -289,6 +281,15 @@ module Spec::Support::Examples
           let(:name) { :reference }
 
           it { expect(association.reader_name).to be == name }
+        end
+      end
+
+      describe '#remove_value' do
+        it 'should define the method' do
+          expect(association)
+            .to respond_to(:remove_value)
+            .with(2).arguments
+            .and_keywords(:update_inverse)
         end
       end
 
@@ -329,22 +330,48 @@ module Spec::Support::Examples
 
           context 'when the association class defines a plural inverse' do
             let(:expected) { Spec::Reference.associations['entities'] }
+            let(:error_message) do
+              'invalid inverse association "entities" - :many to :many ' \
+                'associations are not currently supported'
+            end
 
             before(:example) do
               Spec::Reference.define_association :many, :entities
             end
 
-            it { expect(association.resolved_inverse).to be == expected }
+            if plural
+              it 'should raise an exception' do
+                expect { association.resolved_inverse }.to raise_error(
+                  Stannum::Association::InverseAssociationError,
+                  error_message
+                )
+              end
+            else
+              it { expect(association.resolved_inverse).to be == expected }
+            end
 
             context 'when initialized with inverse_name: value' do
               let(:options)  { super().merge(inverse_name: 'widgets') }
               let(:expected) { Spec::Reference.associations['widgets'] }
+              let(:error_message) do
+                'invalid inverse association "widgets" - :many to :many ' \
+                  'associations are not currently supported'
+              end
 
               before(:example) do
                 Spec::Reference.define_association :many, :widgets
               end
 
-              it { expect(association.resolved_inverse).to be == expected }
+              if plural
+                it 'should raise an exception' do
+                  expect { association.resolved_inverse }.to raise_error(
+                    Stannum::Association::InverseAssociationError,
+                    error_message
+                  )
+                end
+              else
+                it { expect(association.resolved_inverse).to be == expected }
+              end
             end
           end
 
