@@ -5,6 +5,7 @@ require 'stannum'
 module Stannum
   # Namespace for modules implementing Association functionality.
   module Associations
-    autoload :One, 'stannum/associations/one'
+    autoload :Many, 'stannum/associations/many'
+    autoload :One,  'stannum/associations/one'
   end
 end

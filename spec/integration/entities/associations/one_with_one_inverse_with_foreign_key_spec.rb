@@ -3,7 +3,7 @@
 require 'stannum/entity'
 
 # @note Integration spec for Stannum::Entities::Associations.
-#   - Tests a :one association with inverse one association with foreign key.
+#   - Tests a :one association with inverse :one association with foreign key.
 RSpec.describe Stannum::Associations::One do
   subject(:entity) { described_class.new(**attributes, **associations) }
 

@@ -776,7 +776,7 @@ RSpec.describe Stannum::Associations::One do
         end
 
         it 'should not update the inverse association', :aggregate_failures do
-          association.remove_value(entity, nil)
+          association.add_value(entity, nil)
 
           expect(mock_association).not_to have_received(:add_value)
           expect(mock_association).not_to have_received(:remove_value)

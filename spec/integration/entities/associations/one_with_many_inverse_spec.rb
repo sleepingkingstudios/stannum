@@ -3,12 +3,12 @@
 require 'stannum/entity'
 
 # @note Integration spec for Stannum::Entities::Associations.
-#   - Tests a :one association with inverse :one association.
+#   - Tests a :one association with inverse :many association.
 RSpec.describe Stannum::Associations::One do
   subject(:entity) { described_class.new(**attributes, **associations) }
 
   shared_context 'when the entity has an association' do
-    let(:dungeon)      { Spec::Dungeon.new(name: 'The Crypts') }
+    let(:dungeon)      { Spec::Dungeon.new(id: 0, name: 'Goblin Camp') }
     let(:associations) { super().merge(dungeon:) }
 
     # Ensure associations are populated before examples.
@@ -21,7 +21,8 @@ RSpec.describe Stannum::Associations::One do
     end
 
     it 'should not change the inverse association' do
-      expect { update_association }.not_to(change { entity.dungeon&.boss })
+      expect { update_association }
+        .not_to(change { entity.dungeon&.monsters&.to_a })
     end
   end
 
@@ -36,8 +37,11 @@ RSpec.describe Stannum::Associations::One do
       next unless defined?(dungeon)
 
       expect { update_association }
-        .to change(dungeon, :boss)
-        .to be nil
+        .to(
+          change { dungeon.monsters.to_a }.to(
+            satisfy { |proxy| !proxy.include?(entity) }
+          )
+        )
     end
   end
 
@@ -52,52 +56,63 @@ RSpec.describe Stannum::Associations::One do
       next unless defined?(dungeon)
 
       expect { update_association }
-        .to change(dungeon, :boss)
-        .to be nil
-    end
-
-    it 'should clear the previous inverse of the new inverse association' do
-      expect { update_association }
-        .to change(new_dungeon_boss, :dungeon)
-        .to be nil
+        .to(
+          change { dungeon.monsters.to_a }.to(
+            satisfy { |proxy| !proxy.include?(entity) }
+          )
+        )
     end
 
     it 'should set the new inverse association' do
       expect { update_association }
-        .to change(new_dungeon, :boss)
-        .to be == entity
+        .to(
+          change { new_dungeon.monsters.to_a }
+          .to include(entity)
+        )
     end
   end
 
-  let(:described_class) { Spec::Boss }
-  let(:attributes)      { { challenge: 20, name: 'Lich Lord' } }
+  let(:described_class) { Spec::Monster }
+  let(:attributes)      { { challenge: 1, name: 'Goblin' } }
   let(:associations)    { {} }
-  let(:new_dungeon_boss) do
-    Spec::Boss.new(challenge: 1, name: 'Skellington')
+  let(:new_dungeon_monsters) do
+    [
+      Spec::Monster.new(challenge: 3, name: 'Big Goblin'),
+      Spec::Monster.new(challenge: 2, name: 'Goblin Archer'),
+      Spec::Monster.new(challenge: 2, name: 'Goblin Warrior')
+    ]
   end
   let(:new_dungeon) do
-    Spec::Dungeon.new(name: 'Dread Necropolis', boss: new_dungeon_boss)
+    Spec::Dungeon.new(
+      id:       1,
+      name:     'Dread Necropolis',
+      monsters: new_dungeon_monsters
+    )
   end
 
   # Ensure associations are populated before examples.
   before(:example) { new_dungeon }
 
-  example_class 'Spec::Boss' do |klass|
+  example_class 'Spec::Dungeon' do |klass|
+    klass.include Stannum::Entity
+
+    klass.define_primary_key :id, Integer
+
+    klass.attribute :name, String
+
+    klass.association :many, :monsters, class_name: 'Spec::Monster'
+  end
+
+  example_class 'Spec::Monster' do |klass|
     klass.include Stannum::Entity
 
     klass.attribute :challenge, Integer
 
     klass.attribute :name, String
 
-    klass.association :one, :dungeon, class_name: 'Spec::Dungeon'
-  end
-
-  example_class 'Spec::Dungeon' do |klass|
-    klass.include Stannum::Entity
-
-    klass.attribute :name, String
-
-    klass.association :one, :boss, class_name: 'Spec::Boss'
+    klass.association :one,
+      :dungeon,
+      class_name: 'Spec::Dungeon'
   end
 
   describe '#assign_associations' do
@@ -177,8 +192,8 @@ RSpec.describe Stannum::Associations::One do
       let(:value) { { dungeon: new_dungeon } }
       let(:expected) do
         {
-          'challenge' => 20,
-          'name'      => 'Lich Lord',
+          'challenge' => 1,
+          'name'      => 'Goblin',
           'dungeon'   => new_dungeon
         }
       end
@@ -197,8 +212,8 @@ RSpec.describe Stannum::Associations::One do
         let(:value) { { dungeon: nil } }
         let(:expected) do
           {
-            'challenge' => 20,
-            'name'      => 'Lich Lord',
+            'challenge' => 1,
+            'name'      => 'Goblin',
             'dungeon'   => nil
           }
         end
@@ -216,8 +231,8 @@ RSpec.describe Stannum::Associations::One do
         let(:value) { { dungeon: new_dungeon } }
         let(:expected) do
           {
-            'challenge' => 20,
-            'name'      => 'Lich Lord',
+            'challenge' => 1,
+            'name'      => 'Goblin',
             'dungeon'   => new_dungeon
           }
         end
@@ -342,8 +357,8 @@ RSpec.describe Stannum::Associations::One do
   describe '#properties' do
     let(:expected) do
       {
-        'challenge' => 20,
-        'name'      => 'Lich Lord',
+        'challenge' => 1,
+        'name'      => 'Goblin',
         'dungeon'   => nil
       }
     end

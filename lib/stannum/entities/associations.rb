@@ -8,6 +8,9 @@ module Stannum::Entities
   module Associations # rubocop:disable Metrics/ModuleLength
     # Class methods to extend the class when including Associations.
     module ClassMethods # rubocop:disable Metrics/ModuleLength
+      START_WITH_CAPITAL_LETTER = /\A[A-Z]/
+      private_constant :START_WITH_CAPITAL_LETTER
+
       # Defines an association on the entity.
       #
       # When an association is defined, each of the following steps is executed:
@@ -80,7 +83,7 @@ module Stannum::Entities
 
       private
 
-      def association_name_for(arity, class_or_name, configured)
+      def association_name_for(arity, class_or_name, configured) # rubocop:disable Metrics/MethodLength
         if configured
           raise ArgumentError,
             %(ambiguous class name "#{class_or_name}" or "#{configured}" ) \
@@ -91,8 +94,13 @@ module Stannum::Entities
           class_or_name.to_s.split('::').last
         )
         assoc_name = tools.string_tools.singularize(assoc_name) if arity == :one
+        assoc_name = tools.string_tools.pluralize(assoc_name) if arity == :many
 
         assoc_name
+      end
+
+      def class_name?(class_or_name)
+        START_WITH_CAPITAL_LETTER.match?(class_or_name)
       end
 
       def define_foreign_key(association)
@@ -173,13 +181,19 @@ module Stannum::Entities
       def resolve_association_class(arity)
         return Stannum::Associations::One if arity == :one
 
-        raise ArgumentError, 'association arity must be :one'
+        return Stannum::Associations::Many if arity == :many
+
+        raise ArgumentError, 'association arity must be :one or :many'
+      end
+
+      def resolve_association_type(assoc_name)
+        tools.string_tools.chain(assoc_name, :singularize, :camelize)
       end
 
       def resolve_parameters(arity, class_or_name, options)
         class_name = options.delete(:class_name)
 
-        if class_or_name.is_a?(Module) || class_or_name =~ /::/
+        if class_or_name.is_a?(Module) || class_name?(class_or_name)
           assoc_name = association_name_for(arity, class_or_name, class_name)
           assoc_type = class_or_name
 
@@ -187,7 +201,7 @@ module Stannum::Entities
         end
 
         assoc_name = tools.string_tools.underscore(class_or_name.to_s)
-        assoc_type = class_name || tools.string_tools.camelize(assoc_name)
+        assoc_type = class_name || resolve_association_type(assoc_name)
 
         [assoc_name, assoc_type, options]
       end
@@ -247,7 +261,8 @@ module Stannum::Entities
 
     # @param properties [Hash] the properties used to initialize the entity.
     def initialize(**properties)
-      @associations = {}
+      @associations        = {}
+      @association_proxies = {}
 
       super
     end
@@ -275,6 +290,12 @@ module Stannum::Entities
       end
 
       set_associations(associations, force: false)
+    end
+
+    # @api private
+    def association_proxy_for(association)
+      @association_proxies[association.name] ||=
+        Stannum::Associations::Many::Proxy.new(association:, entity: self)
     end
 
     # Collects the entity associations.
