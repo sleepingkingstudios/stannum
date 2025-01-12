@@ -27,13 +27,13 @@ module Stannum
       #
       # @see SleepingKingStudios::Tools::SemanticVersion#to_gem_version
       def to_gem_version
-        str = +"#{MAJOR}.#{MINOR}.#{PATCH}"
+        str = "#{MAJOR}.#{MINOR}.#{PATCH}"
 
         prerelease = value_of(:PRERELEASE)
-        str << ".#{prerelease}" if prerelease
+        str = "#{str}.#{prerelease}" if prerelease
 
         build = value_of(:BUILD)
-        str << ".#{build}" if build
+        str = "#{str}.#{build}" if build
 
         str
       end
