@@ -435,7 +435,8 @@ RSpec.describe Stannum::Contracts::Base do
           constraints.each do |definition|
             other.add_constraint(
               definition[:constraint],
-              **definition.fetch(:options, {}).merge(key: 'value')
+              **definition.fetch(:options, {}),
+              key: 'value'
             )
           end
         end

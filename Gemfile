@@ -13,8 +13,8 @@ group :development, :test do
     '>= 2.8.0.alpha',
     git:    'https://github.com/sleepingkingstudios/rspec-sleeping_king_studios.git',
     branch: 'main'
-  gem 'rubocop', '~> 1.65'
-  gem 'rubocop-rspec', '~> 3.0'
+  gem 'rubocop', '~> 1.70'
+  gem 'rubocop-rspec', '~> 3.3'
   gem 'simplecov', '~> 0.22'
 end
 

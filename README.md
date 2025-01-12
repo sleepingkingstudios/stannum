@@ -33,7 +33,7 @@ Still, most projects and applications use one framework to handle their data. Wh
 
 ### Compatibility
 
-Stannum is tested against Ruby (MRI) 3.1 through 3.3.
+Stannum is tested against Ruby (MRI) 3.1 through 3.4.
 
 ### Documentation
 
@@ -41,7 +41,7 @@ Documentation is generated using [YARD](https://yardoc.org/), and can be generat
 
 ### License
 
-Copyright (c) 2019-2024 Rob Smith
+Copyright (c) 2019-2025 Rob Smith
 
 Stannum is released under the [MIT License](https://opensource.org/licenses/MIT).
 

@@ -35,7 +35,7 @@ module Stannum::Entities
             "#{name} already defines primary key #{primary_key_name.inspect}"
         end
 
-        attribute(attr_name, attr_type, **options.merge(primary_key: true))
+        attribute(attr_name, attr_type, **options, primary_key: true)
       end
 
       # @return [Stannum::Attribute] the primary key attribute.

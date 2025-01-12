@@ -18,6 +18,14 @@ module Stannum::RSpec
     class InvalidParameterHandledError < StandardError; end
     private_constant :InvalidParameterHandledError
 
+    EXTRA_PARAMETER_ERROR_TYPES = Set.new(
+      [
+        Stannum::Constraints::Parameters::ExtraArguments::TYPE,
+        Stannum::Constraints::Parameters::ExtraKeywords::TYPE
+      ]
+    ).freeze
+    private_constant :EXTRA_PARAMETER_ERROR_TYPES
+
     class << self
       # @private
       def add_parameter_mapping(map:, match:)
@@ -313,14 +321,8 @@ module Stannum::RSpec
     end
 
     def extra_parameter?
-      extra_arguments_type =
-        Stannum::Constraints::Parameters::ExtraArguments::TYPE
-      extra_keywords_type =
-        Stannum::Constraints::Parameters::ExtraKeywords::TYPE
-
       return false unless scoped_errors(indexed: true).any? do |error|
-        error[:type] == extra_arguments_type ||
-        error[:type] == extra_keywords_type
+        EXTRA_PARAMETER_ERROR_TYPES.include?(error[:type])
       end
 
       @failure_reason = :parameter_not_validated
