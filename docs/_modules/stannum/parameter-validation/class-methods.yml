@@ -1,0 +1,21 @@
+---
+name: Stannum::ParameterValidation::ClassMethods
+slug: class-methods
+type: module
+files:
+- lib/stannum/parameter_validation.rb
+parent_path: stannum/parameter-validation
+short_description: Defines a DSL for validating method parameters.
+instance_methods:
+- name: validate_parameters
+  path: stannum/parameter-validation/class-methods/i-validate-parameters
+  slug: validate-parameters
+  inherited: false
+data_path: stannum/parameter-validation/class-methods
+metadata:
+  see:
+  - label: ParameterValidation
+    path:
+    text:
+    type: reference
+version: "*"

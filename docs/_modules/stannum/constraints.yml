@@ -1,0 +1,75 @@
+---
+name: Stannum::Constraints
+slug: constraints
+type: module
+files:
+- lib/stannum/constraints.rb
+- lib/stannum/constraints/base.rb
+- lib/stannum/constraints/enum.rb
+- lib/stannum/constraints/type.rb
+- lib/stannum/constraints/uuid.rb
+- lib/stannum/constraints/types.rb
+- lib/stannum/constraints/union.rb
+- lib/stannum/constraints/format.rb
+- lib/stannum/constraints/hashes.rb
+- lib/stannum/constraints/tuples.rb
+- lib/stannum/constraints/absence.rb
+- lib/stannum/constraints/boolean.rb
+- lib/stannum/constraints/nothing.rb
+- lib/stannum/constraints/anything.rb
+- lib/stannum/constraints/equality.rb
+- lib/stannum/constraints/identity.rb
+- lib/stannum/constraints/presence.rb
+- lib/stannum/constraints/delegator.rb
+- lib/stannum/constraints/signature.rb
+- lib/stannum/constraints/parameters.rb
+- lib/stannum/constraints/properties.rb
+- lib/stannum/constraints/signatures.rb
+parent_path: stannum
+short_description: Namespace for pre-defined constraints.
+defined_classes:
+- name: Absence
+  slug: absence
+- name: Anything
+  slug: anything
+- name: Base
+  slug: base
+- name: Boolean
+  slug: boolean
+- name: Delegator
+  slug: delegator
+- name: Enum
+  slug: enum
+- name: Equality
+  slug: equality
+- name: Format
+  slug: format
+- name: Identity
+  slug: identity
+- name: Nothing
+  slug: nothing
+- name: Presence
+  slug: presence
+- name: Signature
+  slug: signature
+- name: Type
+  slug: type
+- name: Union
+  slug: union
+- name: Uuid
+  slug: uuid
+defined_modules:
+- name: Hashes
+  slug: hashes
+- name: Parameters
+  slug: parameters
+- name: Properties
+  slug: properties
+- name: Signatures
+  slug: signatures
+- name: Tuples
+  slug: tuples
+- name: Types
+  slug: types
+data_path: stannum/constraints
+version: "*"

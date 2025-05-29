@@ -1,0 +1,21 @@
+---
+name: Stannum::Associations::Many#clear_value
+parent_path: stannum/associations/many
+signature: 'clear_value(entity, update_inverse: true)'
+slug: clear-value
+constructor: false
+data_path: stannum/associations/many/i-clear-value
+metadata:
+  api: private
+params:
+- description: the entity to update.
+  name: entity
+  type:
+  - name: Stannum::Entity
+    path: stannum/entity
+returns:
+- description: ''
+  type:
+  - name: void
+short_description: Removes the value of the association for the entity.
+version: "*"

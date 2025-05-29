@@ -1,0 +1,20 @@
+---
+name: Stannum::Constraints::Hashes
+slug: hashes
+type: module
+files:
+- lib/stannum/constraints/hashes.rb
+- lib/stannum/constraints/hashes/extra_keys.rb
+- lib/stannum/constraints/hashes/indifferent_key.rb
+- lib/stannum/constraints/hashes/indifferent_extra_keys.rb
+parent_path: stannum/constraints
+short_description: Namespace for Hash-specific constraints.
+defined_classes:
+- name: ExtraKeys
+  slug: extra-keys
+- name: IndifferentExtraKeys
+  slug: indifferent-extra-keys
+- name: IndifferentKey
+  slug: indifferent-key
+data_path: stannum/constraints/hashes
+version: "*"

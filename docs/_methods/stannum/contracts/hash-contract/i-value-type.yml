@@ -1,0 +1,17 @@
+---
+name: Stannum::Contracts::HashContract#value_type
+parent_path: stannum/contracts/hash-contract
+signature: value_type
+slug: value-type
+constructor: false
+data_path: stannum/contracts/hash-contract/i-value-type
+returns:
+- description: |-
+    the expected type for the
+    values in the Hash, if any.
+  type:
+  - name: Stannum::Constraints::Base
+    path: stannum/constraints/base
+  - name: Class
+  - name: nil
+version: "*"

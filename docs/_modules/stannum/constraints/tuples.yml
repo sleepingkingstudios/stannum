@@ -1,0 +1,14 @@
+---
+name: Stannum::Constraints::Tuples
+slug: tuples
+type: module
+files:
+- lib/stannum/constraints/tuples.rb
+- lib/stannum/constraints/tuples/extra_items.rb
+parent_path: stannum/constraints
+short_description: Namespace for tuple-specific constraints.
+defined_classes:
+- name: ExtraItems
+  slug: extra-items
+data_path: stannum/constraints/tuples
+version: "*"

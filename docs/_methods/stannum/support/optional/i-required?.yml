@@ -1,0 +1,17 @@
+---
+name: Stannum::Support::Optional#required?
+parent_path: stannum/support/optional
+signature: required?
+slug: required?
+constructor: false
+data_path: stannum/support/optional/i-required?
+metadata:
+  api: private
+returns:
+- description: |-
+    true if the property accepts nil values, otherwise
+    false.
+  type:
+  - name: 'true'
+  - name: 'false'
+version: "*"

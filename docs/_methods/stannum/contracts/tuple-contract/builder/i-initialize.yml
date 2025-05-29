@@ -1,0 +1,22 @@
+---
+name: Stannum::Contracts::TupleContract::Builder#initialize
+parent_path: stannum/contracts/tuple-contract/builder
+signature: initialize(contract)
+slug: initialize
+constructor: true
+data_path: stannum/contracts/tuple-contract/builder/i-initialize
+metadata:
+  api: private
+params:
+- description: |-
+    The contract to which constraints
+    are added.
+  name: contract
+  type:
+  - name: Stannum::Contract
+    path: stannum/contract
+returns:
+- description: a new instance of Builder
+  type:
+  - name: Builder
+version: "*"

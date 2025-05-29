@@ -1,0 +1,15 @@
+---
+name: Stannum::Constraints::Properties::Base#allow_nil?
+parent_path: stannum/constraints/properties/base
+signature: allow_nil?
+slug: allow-nil?
+constructor: false
+data_path: stannum/constraints/properties/base/i-allow-nil?
+returns:
+- description: |-
+    if true, will match against an object with nil
+    property values.
+  type:
+  - name: 'true'
+  - name: 'false'
+version: "*"

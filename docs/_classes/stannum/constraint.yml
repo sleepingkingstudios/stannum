@@ -1,0 +1,131 @@
+---
+name: Stannum::Constraint
+slug: constraint
+type: class
+files:
+- lib/stannum/constraint.rb
+parent_path: stannum
+short_description: Constraint class for defining a custom or one-off constraint instance.
+constants:
+- name: NEGATED_TYPE
+  path: stannum/constraints/base/negated-type
+  slug: negated-type
+  inherited: true
+- name: TYPE
+  path: stannum/constraints/base/type
+  slug: type
+  inherited: true
+instance_attributes:
+- name: options
+  read: true
+  write: true
+  path: stannum/constraints/base/i-options
+  slug: options
+  inherited: true
+instance_methods:
+- name: "=="
+  path: stannum/constraints/base/i-==
+  slug: "=="
+  inherited: true
+- name: clone
+  path: stannum/constraints/base/i-clone
+  slug: clone
+  inherited: true
+- name: does_not_match?
+  path: stannum/constraints/base/i-does-not-match?
+  slug: does-not-match?
+  inherited: true
+- name: dup
+  path: stannum/constraints/base/i-dup
+  slug: dup
+  inherited: true
+- name: errors_for
+  path: stannum/constraints/base/i-errors-for
+  slug: errors-for
+  inherited: true
+- name: initialize
+  path: stannum/constraint/i-initialize
+  slug: initialize
+  inherited: false
+  constructor: true
+- name: match
+  path: stannum/constraints/base/i-match
+  slug: match
+  inherited: true
+- name: matches?
+  path: stannum/constraint/i-matches?
+  slug: matches?
+  inherited: false
+- name: message
+  path: stannum/constraints/base/i-message
+  slug: message
+  inherited: true
+- name: negated_errors_for
+  path: stannum/constraints/base/i-negated-errors-for
+  slug: negated-errors-for
+  inherited: true
+- name: negated_match
+  path: stannum/constraints/base/i-negated-match
+  slug: negated-match
+  inherited: true
+- name: negated_message
+  path: stannum/constraints/base/i-negated-message
+  slug: negated-message
+  inherited: true
+- name: negated_type
+  path: stannum/constraints/base/i-negated-type
+  slug: negated-type
+  inherited: true
+- name: type
+  path: stannum/constraints/base/i-type
+  slug: type
+  inherited: true
+- name: with_options
+  path: stannum/constraints/base/i-with-options
+  slug: with-options
+  inherited: true
+data_path: stannum/constraint
+description: |-
+  The Stannum::Constraint class allows you to define a constraint instance
+  with a block, and optionally a type and negated type when generating errors
+  for non-matching objects.
+
+  If your use case is more complicated, such as a constraint with multiple
+  expectations and thus different errors depending on the given object, use
+  a subclass of the Stannum::Constraints::Base class instead. For example, an
+  is_odd constraint that checks if an object is an odd integer might have
+  different errors when passed a non-integer object and when passed an even
+  integer, even though both are failing matches.
+
+  Likewise, if you want to define a custom constraint class, it is recommended
+  that you use Stannum::Constraints::Base as the base class for all but the
+  simplest constraints.
+metadata:
+  examples:
+  - name: Defining a Custom Constraint
+    text: |-
+      is_integer = Stannum::Constraint.new { |actual| actual.is_a?(Integer) }
+      is_integer.matches?(nil) #=> false
+      is_integer.matches?(3)   #=> true
+      is_integer.matches?(3.5) #=> false
+  - name: Defining a Custom Constraint With Errors
+    text: |-
+      is_even_integer = Stannum::Constraint.new(
+        negated_type: 'examples.an_even_integer',
+        type:         'examples.not_an_even_integer'
+      ) { |actual| actual.is_a?(Integer) && actual.even? }
+
+      is_even_integer.matches?(nil) #=> false
+      is_even_integer.matches?(2)   #=> true
+      is_even_integer.matches?(3)   #=> false
+  see:
+  - label: Stannum::Constraints::Base
+    path: stannum/constraints/base
+    text:
+    type: reference
+constructor: true
+inherited_classes:
+- name: Stannum::Constraints::Base
+  slug: base
+  path: stannum/constraints/base
+version: "*"

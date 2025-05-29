@@ -1,0 +1,209 @@
+---
+name: Stannum::Contracts::Base
+slug: base
+type: class
+files:
+- lib/stannum/contracts/base.rb
+parent_path: stannum/contracts
+short_description: A Contract aggregates constraints about the given object.
+constants:
+- name: NEGATED_TYPE
+  path: stannum/constraints/base/negated-type
+  slug: negated-type
+  inherited: true
+- name: TYPE
+  path: stannum/constraints/base/type
+  slug: type
+  inherited: true
+instance_attributes:
+- name: options
+  read: true
+  write: true
+  path: stannum/constraints/base/i-options
+  slug: options
+  inherited: true
+instance_methods:
+- name: "=="
+  path: stannum/contracts/base/i-==
+  slug: "=="
+  inherited: false
+- name: add_constraint
+  path: stannum/contracts/base/i-add-constraint
+  slug: add-constraint
+  inherited: false
+- name: clone
+  path: stannum/constraints/base/i-clone
+  slug: clone
+  inherited: true
+- name: concat
+  path: stannum/contracts/base/i-concat
+  slug: concat
+  inherited: false
+- name: does_not_match?
+  path: stannum/contracts/base/i-does-not-match?
+  slug: does-not-match?
+  inherited: false
+- name: dup
+  path: stannum/constraints/base/i-dup
+  slug: dup
+  inherited: true
+- name: each_constraint
+  path: stannum/contracts/base/i-each-constraint
+  slug: each-constraint
+  inherited: false
+- name: each_pair
+  path: stannum/contracts/base/i-each-pair
+  slug: each-pair
+  inherited: false
+- name: errors_for
+  path: stannum/contracts/base/i-errors-for
+  slug: errors-for
+  inherited: false
+- name: initialize
+  path: stannum/contracts/base/i-initialize
+  slug: initialize
+  inherited: false
+  constructor: true
+- name: match
+  path: stannum/contracts/base/i-match
+  slug: match
+  inherited: false
+- name: matches?
+  path: stannum/contracts/base/i-matches?
+  slug: matches?
+  inherited: false
+- name: message
+  path: stannum/constraints/base/i-message
+  slug: message
+  inherited: true
+- name: negated_errors_for
+  path: stannum/contracts/base/i-negated-errors-for
+  slug: negated-errors-for
+  inherited: false
+- name: negated_match
+  path: stannum/contracts/base/i-negated-match
+  slug: negated-match
+  inherited: false
+- name: negated_message
+  path: stannum/constraints/base/i-negated-message
+  slug: negated-message
+  inherited: true
+- name: negated_type
+  path: stannum/constraints/base/i-negated-type
+  slug: negated-type
+  inherited: true
+- name: type
+  path: stannum/constraints/base/i-type
+  slug: type
+  inherited: true
+- name: with_options
+  path: stannum/constraints/base/i-with-options
+  slug: with-options
+  inherited: true
+data_path: stannum/contracts/base
+metadata:
+  examples:
+  - name: Creating A Contract With Constraints
+    text: |-
+      numeric_constraint =
+        Stannum::Constraint.new(type: 'not_numeric', negated_type: 'numeric') do |actual|
+          actual.is_a?(Numeric)
+        end
+      integer_constraint =
+        Stannum::Constraint.new(type: 'not_integer', negated_type: 'integer') do |actual|
+          actual.is_a?(Integer)
+        end
+      range_constraint =
+        Stannum::Constraint.new(type: 'not_in_range', negated_type: 'in_range') do |actual|
+          actual >= 0 && actual <= 10 rescue false
+        end
+      contract =
+        Stannum::Contracts::Base.new
+        .add_constraint(numeric_constraint)
+        .add_constraint(integer_constraint)
+        .add_constraint(range_constraint)
+  - name: With An Object That Matches None Of The Constraints
+    text: |-
+      contract.matches?(nil) #=> false
+      errors = contract.errors_for(nil) #=> Cuprum::Errors
+      errors.to_a
+      #=> [
+        { type: 'not_numeric',  data: {}, path: [], message: nil },
+        { type: 'not_integer',  data: {}, path: [], message: nil },
+        { type: 'not_in_range', data: {}, path: [], message: nil }
+      ]
+
+      contract.does_not_match?(nil) #=> true
+      errors = contract.negated_errors_for(nil) #=> Cuprum::Errors
+      errors.to_a
+      #=> []
+  - name: With An Object That Matches Some Of The Constraints
+    text: |-
+      contract.matches?(11) #=> false
+      contract.errors_for(11).to_a
+      #=> [
+        { type: 'not_in_range', data: {}, path: [], message: nil }
+      ]
+
+      contract.does_not_match?(11) #=> true
+      contract.negated_errors_for(11).to_a
+      #=> [
+        { type: 'numeric',  data: {}, path: [], message: nil },
+        { type: 'integer',  data: {}, path: [], message: nil }
+      ]
+  - name: With An Object That Matches All Of The Constraints
+    text: |-
+      contract.matches?(5)        #=> true
+      contract.errors_for(5).to_a #=> []
+
+      contract.does_not_match?(5) #=> false
+      contract.negated_errors_for(5)
+      #=> [
+        { type: 'numeric',  data: {}, path: [], message: nil },
+        { type: 'integer',  data: {}, path: [], message: nil },
+        { type: 'in_range', data: {}, path: [], message: nil }
+      ]
+  - name: Creating A Contract With A Sanity Constraint
+    text: |-
+      format_constraint =
+        Stannum::Constraint.new(type: 'invalid_format', negated_type: 'valid_format') do |actual|
+          actual =~ /\A0x[0-9A-Fa-f]*\z/
+        end
+      length_constraint =
+        Stannum::Constraint.new(type: 'invalid_length', negated_type: 'valid_length') do |actual|
+          actual.length > 2
+        end
+      string_constraint = Stannum::Constraints::Type.new(String)
+      contract =
+        Stannum::Contracts::Base.new
+        .add_constraint(string_constraint, sanity: true)
+        .add_constraint(format_constraint)
+        .add_constraint(length_constraint)
+  - name: With An Object That Does Not Match The Sanity Constraint
+    text: |-
+      contract.matches?(nil) #=> false
+      errors = contract.errors_for(nil) #=> Cuprum::Errors
+      errors.to_a
+      #=> [
+        {
+          data:    { type: String},
+          message: nil,
+          path:    [],
+          type:    'stannum.constraints.is_not_type'
+        }
+      ]
+
+      contract.does_not_match?(nil) #=> true
+      errors = contract.negated_errors_for(nil) #=> Cuprum::Errors
+      errors.to_a
+      #=> []
+constructor: true
+direct_subclasses:
+- name: Stannum::Contract
+  slug: contract
+  path: stannum/contract
+inherited_classes:
+- name: Stannum::Constraints::Base
+  slug: base
+  path: stannum/constraints/base
+version: "*"

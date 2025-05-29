@@ -1,0 +1,8 @@
+---
+name: Stannum::Constraints::Equality::NEGATED_TYPE
+parent_path: stannum/constraints/equality
+slug: negated-type
+short_description: The :type of the error generated for a matching object.
+value: "'stannum.constraints.is_equal_to'"
+data_path: stannum/constraints/equality/negated-type
+version: "*"

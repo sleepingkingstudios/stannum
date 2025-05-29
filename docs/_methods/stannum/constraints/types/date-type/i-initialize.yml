@@ -1,0 +1,22 @@
+---
+name: Stannum::Constraints::Types::DateType#initialize
+parent_path: stannum/constraints/types/date-type
+signature: initialize(**options)
+slug: initialize
+constructor: true
+data_path: stannum/constraints/types/date-type/i-initialize
+params:
+- description: |-
+    Configuration options for the
+    constraint. Defaults to an empty Hash.
+  name: options
+  type:
+  - name: Hash
+    items:
+    - name: Symbol
+    - name: Object
+returns:
+- description: a new instance of DateType
+  type:
+  - name: DateType
+version: "*"

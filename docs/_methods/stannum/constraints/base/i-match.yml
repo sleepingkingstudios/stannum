@@ -1,0 +1,48 @@
+---
+name: Stannum::Constraints::Base#match
+parent_path: stannum/constraints/base
+signature: match(actual)
+slug: match
+constructor: false
+data_path: stannum/constraints/base/i-match
+description: |-
+  This method checks the given object against the expected properties or
+  behavior. If the object matches the constraint, #match will return true.
+  If the object does not match the constraint, #match will return false and
+  the generated errors for that object.
+metadata:
+  examples:
+  - name: Checking a matching object.
+    text: |-
+      constraint = CustomConstraint.new
+      object     = MatchingObject.new
+
+      success, errors = constraint.match(object)
+      success #=> true
+      errors  #=> nil
+  - name: Checking a non-matching object.
+    text: |-
+      constraint = CustomConstraint.new
+      object     = NonMatchingObject.new
+
+      success, errors = constraint.match(object)
+      success      #=> false
+      errors.class #=> Stannum::Errors
+      errors.to_a  #=> [{ type: 'some_error', message: 'some error message' }]
+  see:
+  - label: "#errors_for"
+    path: stannum/constraints/base#instance-method-errors-for
+    text:
+    type: reference
+  - label: "#matches?"
+    path: stannum/constraints/base#instance-method-matches?
+    text:
+    type: reference
+params:
+- description: The object to match.
+  name: actual
+  type:
+  - name: Object
+short_description: Checks the given object against the constraint and returns errors,
+  if any.
+version: "*"

@@ -1,0 +1,12 @@
+---
+name: Stannum::Association#resolved_type
+parent_path: stannum/association
+signature: resolved_type
+slug: resolved-type
+constructor: false
+data_path: stannum/association/i-resolved-type
+returns:
+- description: the type of the association.
+  type:
+  - name: Module
+version: "*"

@@ -1,0 +1,43 @@
+---
+name: Stannum::Errors#group_by_path
+parent_path: stannum/errors
+signature: group_by_path
+slug: group-by-path
+constructor: false
+data_path: stannum/errors/i-group-by-path
+description: |-
+  Generates a Hash whose keys are the unique error :path values. For each
+  path, the corresponding value is the Array of all errors with that path.
+
+  This will flatten paths: an error with path [:parts] will be grouped in a
+  separate array from a part with path [:parts, :assemblies].
+
+  Errors with an empty path will be grouped with a key of an empty Array.
+overloads:
+- name: Stannum::Errors#group_by_path
+  parent_path: stannum/errors
+  signature: group_by_path
+  slug: group-by-path
+  constructor: false
+- name: Stannum::Errors#group_by_path
+  parent_path: stannum/errors
+  signature: group_by_path(&block)
+  slug: group-by-path
+  constructor: false
+  short_description: Groups the values returned by the block by the error path.
+  yield_params:
+  - description: the error Hash.
+    name: error
+    type:
+    - name: Hash
+      items:
+      - name: Symbol
+returns:
+- description: the errors grouped by the error path.
+  type:
+  - name: Hash
+    items:
+    - name: Array
+    - name: Array
+short_description: Groups the errors by the error path.
+version: "*"

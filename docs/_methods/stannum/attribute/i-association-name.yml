@@ -1,0 +1,14 @@
+---
+name: Stannum::Attribute#association_name
+parent_path: stannum/attribute
+signature: association_name
+slug: association-name
+constructor: false
+data_path: stannum/attribute/i-association-name
+returns:
+- description: |-
+    the name of the association if the attribute is a foreign
+    key; otherwise false.
+  type:
+  - name: String
+version: "*"

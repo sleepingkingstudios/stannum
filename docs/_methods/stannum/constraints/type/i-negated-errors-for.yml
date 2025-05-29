@@ -1,0 +1,56 @@
+---
+name: Stannum::Constraints::Type#negated_errors_for
+parent_path: stannum/constraints/type
+signature: 'negated_errors_for(actual, errors: nil)'
+slug: negated-errors-for
+constructor: false
+data_path: stannum/constraints/type/i-negated-errors-for
+description: |-
+  The errors object represents the difference between the given object and
+  the expected properties or behavior when the constraint is negated. It may
+  be the same for all objects, or different based on the details of the
+  object or the constraint.
+metadata:
+  examples:
+  - name: Generating errors for a matching object.
+    text: |-
+      constraint = CustomConstraint.new
+      object     = MatchingObject.new
+      errors     = constraint.negated_errors_for(object)
+
+      errors.class #=> Stannum::Errors
+      errors.to_a  #=> [{ type: 'some_error', message: 'some error message' }]
+  notes:
+  - |-
+    This method should only be called for an object that matches the
+    constraint. Generating errors for a matching object can result in
+    undefined behavior.
+  see:
+  - label: "#does_not_match?"
+    path:
+    text:
+    type: reference
+  - label: "#errors_for"
+    path: stannum/constraints/type#instance-method-errors-for
+    text:
+    type: reference
+params:
+- description: The object to generate errors for.
+  name: actual
+  type:
+  - name: Object
+- description: |-
+    The errors object to append errors to. If
+    an errors object is not given, a new errors object will be created.
+  name: errors
+  type:
+  - name: Stannum::Errors
+    path: stannum/errors
+  default: nil
+returns:
+- description: the given or generated errors object.
+  type:
+  - name: Stannum::Errors
+    path: stannum/errors
+short_description: Generates an errors object for the given object when negated.
+version: "*"

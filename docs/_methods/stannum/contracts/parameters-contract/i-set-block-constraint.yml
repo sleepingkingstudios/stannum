@@ -1,0 +1,34 @@
+---
+name: Stannum::Contracts::ParametersContract#set_block_constraint
+parent_path: stannum/contracts/parameters-contract
+signature: set_block_constraint(present)
+slug: set-block-constraint
+constructor: false
+data_path: stannum/contracts/parameters-contract/i-set-block-constraint
+description: |-
+  If the expected presence is true, a block must be given as part of the
+  parameters. If the expected presence is false, a block must not be given.
+  If the presence is a constraint, then the block must match the constraint.
+params:
+- description: |-
+    The expected presence of
+    the block.
+  name: present
+  type:
+  - name: 'true'
+  - name: 'false'
+  - name: Stannum::Constraint
+    path: stannum/constraint
+raises:
+- description: |-
+    if there is already a block constraint defined for
+    the contract.
+  type:
+  - name: RuntimeError
+returns:
+- description: the contract.
+  type:
+  - name: Stannum::Contracts::ParametersContract
+    path: stannum/contracts/parameters-contract
+short_description: Sets the block parameter constraint for the contract.
+version: "*"

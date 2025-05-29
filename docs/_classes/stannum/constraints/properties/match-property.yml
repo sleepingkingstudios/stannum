@@ -1,0 +1,153 @@
+---
+name: Stannum::Constraints::Properties::MatchProperty
+slug: match-property
+type: class
+files:
+- lib/stannum/constraints/properties/match_property.rb
+parent_path: stannum/constraints/properties
+short_description: Compares the properties of the given object with the specified
+  property.
+constants:
+- name: FILTERED_PARAMETERS
+  path: stannum/constraints/properties/base/filtered-parameters
+  slug: filtered-parameters
+  inherited: true
+- name: NEGATED_TYPE
+  path: stannum/constraints/properties/match-property/negated-type
+  slug: negated-type
+  inherited: false
+- name: TYPE
+  path: stannum/constraints/properties/match-property/type
+  slug: type
+  inherited: false
+instance_attributes:
+- name: options
+  read: true
+  write: true
+  path: stannum/constraints/base/i-options
+  slug: options
+  inherited: true
+- name: property_names
+  read: true
+  write: false
+  path: stannum/constraints/properties/base/i-property-names
+  slug: property-names
+  inherited: true
+- name: reference_name
+  read: true
+  write: false
+  path: stannum/constraints/properties/matching/i-reference-name
+  slug: reference-name
+  inherited: true
+instance_methods:
+- name: "=="
+  path: stannum/constraints/base/i-==
+  slug: "=="
+  inherited: true
+- name: allow_empty?
+  path: stannum/constraints/properties/base/i-allow-empty?
+  slug: allow-empty?
+  inherited: true
+- name: allow_nil?
+  path: stannum/constraints/properties/base/i-allow-nil?
+  slug: allow-nil?
+  inherited: true
+- name: clone
+  path: stannum/constraints/base/i-clone
+  slug: clone
+  inherited: true
+- name: does_not_match?
+  path: stannum/constraints/properties/match-property/i-does-not-match?
+  slug: does-not-match?
+  inherited: false
+- name: dup
+  path: stannum/constraints/base/i-dup
+  slug: dup
+  inherited: true
+- name: errors_for
+  path: stannum/constraints/properties/match-property/i-errors-for
+  slug: errors-for
+  inherited: false
+- name: initialize
+  path: stannum/constraints/properties/matching/i-initialize
+  slug: initialize
+  inherited: true
+  constructor: true
+- name: match
+  path: stannum/constraints/base/i-match
+  slug: match
+  inherited: true
+- name: matches?
+  path: stannum/constraints/properties/match-property/i-matches?
+  slug: matches?
+  inherited: false
+- name: message
+  path: stannum/constraints/base/i-message
+  slug: message
+  inherited: true
+- name: negated_errors_for
+  path: stannum/constraints/properties/match-property/i-negated-errors-for
+  slug: negated-errors-for
+  inherited: false
+- name: negated_match
+  path: stannum/constraints/base/i-negated-match
+  slug: negated-match
+  inherited: true
+- name: negated_message
+  path: stannum/constraints/base/i-negated-message
+  slug: negated-message
+  inherited: true
+- name: negated_type
+  path: stannum/constraints/base/i-negated-type
+  slug: negated-type
+  inherited: true
+- name: type
+  path: stannum/constraints/base/i-type
+  slug: type
+  inherited: true
+- name: with_options
+  path: stannum/constraints/base/i-with-options
+  slug: with-options
+  inherited: true
+data_path: stannum/constraints/properties/match-property
+description: |-
+  If all of the property values equal the expected value, the constraint will
+  match the object; otherwise, if there are any non-matching values, the
+  constraint will not match.
+metadata:
+  examples:
+  - name: Using an Properties::Match constraint
+    text: |-
+      ConfirmPassword = Struct.new(:password, :confirmation)
+      constraint    = Stannum::Constraints::Properties::MatchProperty.new(
+        :password,
+        :confirmation
+      )
+
+      params = ConfirmPassword.new('tronlives', 'ifightfortheusers')
+      constraint.matches?(params)
+      #=> false
+      constraint.errors_for(params)
+      #=> [
+        {
+          path: [:confirmation],
+          type: 'stannum.constraints.is_not_equal_to',
+          data: { expected: '[FILTERED]', actual: '[FILTERED]' }
+        }
+      ]
+
+      params = ConfirmPassword.new('tronlives', 'tronlives')
+      constraint.matches?(params)
+      #=> true
+constructor: true
+inherited_classes:
+- name: Stannum::Constraints::Properties::Matching
+  slug: matching
+  path: stannum/constraints/properties/matching
+- name: Stannum::Constraints::Properties::Base
+  slug: base
+  path: stannum/constraints/properties/base
+- name: Stannum::Constraints::Base
+  slug: base
+  path: stannum/constraints/base
+version: "*"

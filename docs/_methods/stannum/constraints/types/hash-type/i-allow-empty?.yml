@@ -1,0 +1,15 @@
+---
+name: Stannum::Constraints::Types::HashType#allow_empty?
+parent_path: stannum/constraints/types/hash-type
+signature: allow_empty?
+slug: allow-empty?
+constructor: false
+data_path: stannum/constraints/types/hash-type/i-allow-empty?
+returns:
+- description: |-
+    if false, then the constraint will not
+    match against a Hash with no keys.
+  type:
+  - name: 'true'
+  - name: 'false'
+version: "*"

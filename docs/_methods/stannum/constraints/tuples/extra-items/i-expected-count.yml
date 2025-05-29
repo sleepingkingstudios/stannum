@@ -1,0 +1,12 @@
+---
+name: Stannum::Constraints::Tuples::ExtraItems#expected_count
+parent_path: stannum/constraints/tuples/extra-items
+signature: expected_count
+slug: expected-count
+constructor: false
+data_path: stannum/constraints/tuples/extra-items/i-expected-count
+returns:
+- description: the number of expected items.
+  type:
+  - name: Integer
+version: "*"

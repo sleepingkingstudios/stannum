@@ -1,0 +1,14 @@
+---
+name: Stannum::Entities::PrimaryKey#primary_key?
+parent_path: stannum/entities/primary-key
+signature: primary_key?
+slug: primary-key?
+constructor: false
+data_path: stannum/entities/primary-key/i-primary-key?
+returns:
+- description: |-
+    true if the entity class defines a primary key and if
+    the entity has a non-empty value for that attribute; otherwise false.
+  type:
+  - name: Boolean
+version: "*"

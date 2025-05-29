@@ -1,0 +1,8 @@
+---
+name: Stannum::Constraints::Hashes::IndifferentKey::TYPE
+parent_path: stannum/constraints/hashes/indifferent-key
+slug: type
+short_description: The :type of the error generated for a non-matching object.
+value: "'stannum.constraints.hashes.is_not_string_or_symbol'"
+data_path: stannum/constraints/hashes/indifferent-key/type
+version: "*"

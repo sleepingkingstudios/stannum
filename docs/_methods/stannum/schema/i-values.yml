@@ -1,0 +1,16 @@
+---
+name: Stannum::Schema#values
+parent_path: stannum/schema
+signature: values
+slug: values
+constructor: false
+data_path: stannum/schema/i-values
+returns:
+- description: the property values.
+  type:
+  - name: Array
+    items:
+    - name: Stannum::Attribute
+      path: stannum/attribute
+short_description: Returns the defined property value.
+version: "*"

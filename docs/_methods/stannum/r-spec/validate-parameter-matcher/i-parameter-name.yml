@@ -1,0 +1,13 @@
+---
+name: Stannum::RSpec::ValidateParameterMatcher#parameter_name
+parent_path: stannum/r-spec/validate-parameter-matcher
+signature: parameter_name
+slug: parameter-name
+constructor: false
+data_path: stannum/r-spec/validate-parameter-matcher/i-parameter-name
+returns:
+- description: the name of the validated method parameter.
+  type:
+  - name: String
+  - name: Symbol
+version: "*"

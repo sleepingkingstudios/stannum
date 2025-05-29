@@ -1,0 +1,8 @@
+---
+name: Stannum::Constraints::Equality::TYPE
+parent_path: stannum/constraints/equality
+slug: type
+short_description: The :type of the error generated for a non-matching object.
+value: "'stannum.constraints.is_not_equal_to'"
+data_path: stannum/constraints/equality/type
+version: "*"

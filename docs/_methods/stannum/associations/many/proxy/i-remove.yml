@@ -1,0 +1,21 @@
+---
+name: Stannum::Associations::Many::Proxy#remove
+parent_path: stannum/associations/many/proxy
+signature: remove(value)
+slug: remove
+aliases:
+- delete
+constructor: false
+data_path: stannum/associations/many/proxy/i-remove
+params:
+- description: the entity to remove.
+  name: value
+  type:
+  - name: Stannum::Entity
+    path: stannum/entity
+returns:
+- description: the association proxy.
+  type:
+  - name: self
+short_description: Removes the entity from the association.
+version: "*"

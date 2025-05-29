@@ -1,0 +1,19 @@
+---
+name: Stannum::Constraints::Base#with_options
+parent_path: stannum/constraints/base
+signature: with_options(**options)
+slug: with-options
+constructor: false
+data_path: stannum/constraints/base/i-with-options
+params:
+- description: The options to update.
+  name: options
+  type:
+  - name: Hash
+returns:
+- description: the copied constraint.
+  type:
+  - name: Stannum::Constraints::Base
+    path: stannum/constraints/base
+short_description: Creates a copy of the constraint and updates the copy's options.
+version: "*"

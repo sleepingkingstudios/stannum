@@ -1,0 +1,63 @@
+---
+name: Stannum::Contract#add_constraint
+parent_path: stannum/contract
+signature: 'add_constraint(constraint, property: nil, sanity: false, **options)'
+slug: add-constraint
+constructor: false
+data_path: stannum/contract/i-add-constraint
+description: |-
+  When the contract is matched with an object, the constraint will be
+  evaluated with the object and the errors updated accordingly.
+
+  If the :property option is set, this defines a property constraint. See
+  #add_property_constraint for more information.
+metadata:
+  see:
+  - label: "#add_property_constraint"
+    path: stannum/contract#instance-method-add-property-constraint
+    text:
+    type: reference
+params:
+- description: The constraint to add.
+  name: constraint
+  type:
+  - name: Stannum::Constraints::Base
+    path: stannum/constraints/base
+- description: |-
+    Marks the constraint as a sanity constraint,
+    which is always matched first and will always short-circuit on a failed
+    match.
+  name: sanity
+  type:
+  - name: 'true'
+  - name: 'false'
+  default: 'false'
+- description: |-
+    Options for the constraint. These
+    can be used by subclasses to define the value and error mappings for the
+    constraint.
+  name: options
+  type:
+  - name: Hash
+    items:
+    - name: Symbol
+    - name: Object
+- description: |-
+    The
+    property to match.
+  name: property
+  type:
+  - name: String
+  - name: Symbol
+  - name: Array
+    items:
+    - name: String
+    - name: Symbol
+  - name: nil
+  default: nil
+returns:
+- description: the contract.
+  type:
+  - name: self
+short_description: Adds a constraint to the contract.
+version: "*"

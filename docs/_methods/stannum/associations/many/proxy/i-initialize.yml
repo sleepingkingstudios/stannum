@@ -1,0 +1,27 @@
+---
+name: Stannum::Associations::Many::Proxy#initialize
+parent_path: stannum/associations/many/proxy
+signature: initialize(association:, entity:)
+slug: initialize
+constructor: true
+data_path: stannum/associations/many/proxy/i-initialize
+params:
+- description: |-
+    the association being
+    wrapped.
+  name: association
+  type:
+  - name: Stannum::Associations::Many
+    path: stannum/associations/many
+- description: |-
+    the entity instance whose association is
+    being wrapped.
+  name: entity
+  type:
+  - name: Stannum::Entity
+    path: stannum/entity
+returns:
+- description: a new instance of Proxy
+  type:
+  - name: Proxy
+version: "*"

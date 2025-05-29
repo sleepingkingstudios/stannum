@@ -1,0 +1,57 @@
+---
+name: Stannum::Contracts::Base#negated_match
+parent_path: stannum/contracts/base
+signature: negated_match(actual)
+slug: negated-match
+constructor: false
+data_path: stannum/contracts/base/i-negated-match
+description: |-
+  For each defined constraint, the constraint is matched against the
+  mapped value for that constraint and the object. If the constraint
+  matches the mapped value, the corresponding errors will be added to
+  the errors object.
+
+  Finally, if none of the constraints match the mapped value, #match will
+  return true and the errors object. Otherwise, #match will return false and
+  the errors object.
+
+  If the contract defines sanity constraints, the sanity constraints will be
+  matched first. If any of the sanity constraints fail (#does_not_match?
+  for the constraint returns true), then this method will immediately return
+  true and any errors already set; and all subsequent constraints will be
+  skipped.
+metadata:
+  see:
+  - label: "#does_not_match?"
+    path: stannum/contracts/base#instance-method-does-not-match?
+    text:
+    type: reference
+  - label: "#each_pair"
+    path: stannum/contracts/base#instance-method-each-pair
+    text:
+    type: reference
+  - label: "#match"
+    path: stannum/contracts/base#instance-method-match
+    text:
+    type: reference
+  - label: "#negated_errors_for"
+    path: stannum/contracts/base#instance-method-negated-errors-for
+    text:
+    type: reference
+params:
+- description: The object to match.
+  name: actual
+  type:
+  - name: Object
+returns:
+- description: |-
+    the status (true or false) and
+    the generated errors object.
+  type:
+  - name: Array
+    items:
+    - name: Boolean
+    - name: Stannum::Errors
+      path: stannum/errors
+short_description: Matches and generates errors for each constraint.
+version: "*"

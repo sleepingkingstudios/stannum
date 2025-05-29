@@ -1,0 +1,34 @@
+---
+name: Stannum::Entities::Attributes#assign_attributes
+parent_path: stannum/entities/attributes
+signature: assign_attributes(attributes)
+slug: assign-attributes
+constructor: false
+data_path: stannum/entities/attributes/i-assign-attributes
+description: |-
+  This method is used to update some (but not all) of the attributes of the
+  struct. For each key in the hash, it calls the corresponding writer method
+  with the value for that attribute. If the value is nil, this will set the
+  attribute value to the default for that attribute.
+
+  Any attributes that are not in the given hash are unchanged, as are any
+  properties that are not attributes.
+
+  If the attributes hash includes any keys that do not correspond to an
+  attribute, the struct will raise an error.
+metadata:
+  see:
+  - label: "#attributes="
+    path: stannum/entities/attributes#instance-method-attributes=
+    text:
+    type: reference
+params:
+- description: The attributes for the struct.
+  name: attributes
+  type:
+  - name: Hash
+raises:
+- description: ArgumentError if any key is not a valid attribute.
+  type: []
+short_description: Updates the struct's attributes with the given values.
+version: "*"
