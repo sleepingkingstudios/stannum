@@ -16,3 +16,5 @@ Gemfile.lock
 /.byebug_history
 /spec/examples.txt
 /tmp
+/docs/.jekyll-cache
+/docs/_site
