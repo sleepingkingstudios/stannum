@@ -1,0 +1,19 @@
+---
+name: Stannum::Entities::Attributes.apply
+parent_path: stannum/entities/attributes
+signature: apply(other)
+slug: apply
+constructor: false
+data_path: stannum/entities/attributes/c-apply
+description: |-
+  Creates a new Stannum::Schema and sets it as the class's :Attributes
+  constant. If the superclass is an entity class (and already defines its
+  own Attributes, includes the superclass Attributes in the class
+  Attributes). Finally, includes the class Attributes in the class.
+params:
+- description: the class to which attributes are added.
+  name: other
+  type:
+  - name: Class
+short_description: Generates Attributes schema for the class.
+version: "*"

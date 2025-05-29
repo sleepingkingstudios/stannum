@@ -1,0 +1,12 @@
+---
+name: Stannum.gem_path
+parent_path: stannum
+signature: gem_path
+slug: gem-path
+constructor: false
+data_path: stannum/c-gem-path
+returns:
+- description: the absolute path to the gem directory.
+  type:
+  - name: String
+version: "*"

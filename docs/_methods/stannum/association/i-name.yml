@@ -1,0 +1,12 @@
+---
+name: Stannum::Association#name
+parent_path: stannum/association
+signature: name
+slug: name
+constructor: false
+data_path: stannum/association/i-name
+returns:
+- description: the name of the association.
+  type:
+  - name: String
+version: "*"

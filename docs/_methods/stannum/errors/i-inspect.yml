@@ -1,0 +1,12 @@
+---
+name: Stannum::Errors#inspect
+parent_path: stannum/errors
+signature: inspect
+slug: inspect
+constructor: false
+data_path: stannum/errors/i-inspect
+returns:
+- description: a human-readable representation of the object.
+  type:
+  - name: String
+version: "*"

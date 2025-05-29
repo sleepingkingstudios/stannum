@@ -1,0 +1,16 @@
+---
+name: Stannum::Errors#to_a
+parent_path: stannum/errors
+signature: to_a
+slug: to-a
+constructor: false
+data_path: stannum/errors/i-to-a
+description: Each error is a hash containing the keys :data, :message, :path and :type.
+returns:
+- description: the error objects.
+  type:
+  - name: Array
+    items:
+    - name: Hash
+short_description: Generates an array of error objects.
+version: "*"

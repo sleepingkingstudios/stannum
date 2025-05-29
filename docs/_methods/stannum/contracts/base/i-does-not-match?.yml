@@ -1,0 +1,40 @@
+---
+name: Stannum::Contracts::Base#does_not_match?
+parent_path: stannum/contracts/base
+signature: does_not_match?(actual)
+slug: does-not-match?
+constructor: false
+data_path: stannum/contracts/base/i-does-not-match?
+description: |-
+  If the contract defines sanity constraints, the sanity constraints will be
+  matched first. If any of the sanity constraints fail (#does_not_match?
+  for the constraint returns true), then this method will immediately return
+  true and all subsequent constraints will be skipped.
+metadata:
+  see:
+  - label: "#each_pair"
+    path: stannum/contracts/base#instance-method-each-pair
+    text:
+    type: reference
+  - label: "#matches?"
+    path: stannum/contracts/base#instance-method-matches?
+    text:
+    type: reference
+  - label: "#negated_match"
+    path: stannum/contracts/base#instance-method-negated-match
+    text:
+    type: reference
+params:
+- description: The object to match.
+  name: actual
+  type:
+  - name: Object
+returns:
+- description: |-
+    True if none of the constraints match the given
+    object; otherwise false. If there are no constraints, returns true.
+  type:
+  - name: 'true'
+  - name: 'false'
+short_description: Checks that none of the added constraints match the object.
+version: "*"

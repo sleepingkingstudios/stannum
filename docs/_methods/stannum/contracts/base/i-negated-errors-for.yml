@@ -1,0 +1,49 @@
+---
+name: Stannum::Contracts::Base#negated_errors_for
+parent_path: stannum/contracts/base
+signature: 'negated_errors_for(actual, errors: nil)'
+slug: negated-errors-for
+constructor: false
+data_path: stannum/contracts/base/i-negated-errors-for
+description: |-
+  For each defined constraint, the constraint is matched against the mapped
+  value for that constraint and the object. If the constraint matches the
+  mapped value, the corresponding errors will be added to the errors object.
+
+  If the contract defines sanity constraints, the sanity constraints will be
+  matched first. If any of the sanity constraints fail, #errors_for will
+  immediately return any errors already added to the errors object.
+metadata:
+  see:
+  - label: "#each_pair"
+    path: stannum/contracts/base#instance-method-each-pair
+    text:
+    type: reference
+  - label: "#errors_for"
+    path: stannum/contracts/base#instance-method-errors-for
+    text:
+    type: reference
+  - label: "#negated_match"
+    path: stannum/contracts/base#instance-method-negated-match
+    text:
+    type: reference
+params:
+- description: The object to match.
+  name: actual
+  type:
+  - name: Object
+- description: |-
+    The errors object to append errors to. If
+    an errors object is not given, a new errors object will be created.
+  name: errors
+  type:
+  - name: Stannum::Errors
+    path: stannum/errors
+  default: nil
+returns:
+- description: the given or generated errors object.
+  type:
+  - name: Stannum::Errors
+    path: stannum/errors
+short_description: Aggregates errors for each constraint that matches the object.
+version: "*"

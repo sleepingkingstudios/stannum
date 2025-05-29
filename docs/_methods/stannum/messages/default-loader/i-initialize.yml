@@ -1,0 +1,28 @@
+---
+name: Stannum::Messages::DefaultLoader#initialize
+parent_path: stannum/messages/default-loader
+signature: 'initialize(file_paths:, locale: ''en'')'
+slug: initialize
+constructor: true
+data_path: stannum/messages/default-loader/i-initialize
+params:
+- description: |-
+    The directories from which to load the
+    configuration files.
+  name: file_paths
+  type:
+  - name: Array
+    items:
+    - name: String
+- description: |-
+    The name of the locale for which to load
+    configuration.
+  name: locale
+  type:
+  - name: String
+  default: "'en'"
+returns:
+- description: a new instance of DefaultLoader
+  type:
+  - name: DefaultLoader
+version: "*"

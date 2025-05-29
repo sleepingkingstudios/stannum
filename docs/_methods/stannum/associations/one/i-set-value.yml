@@ -1,0 +1,32 @@
+---
+name: Stannum::Associations::One#set_value
+parent_path: stannum/associations/one
+signature: 'set_value(entity, value, update_inverse: true)'
+slug: set-value
+constructor: false
+data_path: stannum/associations/one/i-set-value
+metadata:
+  api: private
+params:
+- description: the entity to update.
+  name: entity
+  type:
+  - name: Stannum::Entity
+    path: stannum/entity
+- description: the new value for the association.
+  name: value
+  type:
+  - name: Object
+- description: |-
+    if true, updates the inverse association
+    (if any). Defaults to false.
+  name: update_inverse
+  type:
+  - name: Boolean
+  default: 'true'
+returns:
+- description: ''
+  type:
+  - name: void
+short_description: Replaces the association for the entity with the given value.
+version: "*"

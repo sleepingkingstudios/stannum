@@ -1,0 +1,16 @@
+---
+name: Stannum::Messages::DefaultStrategy.load_paths
+parent_path: stannum/messages/default-strategy
+signature: load_paths
+slug: load-paths
+constructor: false
+data_path: stannum/messages/default-strategy/c-load-paths
+returns:
+- description: |-
+    The directories from which to load configured
+    error messages.
+  type:
+  - name: Array
+    items:
+    - name: String
+version: "*"

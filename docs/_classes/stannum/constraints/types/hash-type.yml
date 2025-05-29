@@ -1,0 +1,167 @@
+---
+name: Stannum::Constraints::Types::HashType
+slug: hash-type
+type: class
+files:
+- lib/stannum/constraints/types/hash_type.rb
+parent_path: stannum/constraints/types
+short_description: A Hash type constraint asserts that the object is a Hash.
+constants:
+- name: NEGATED_TYPE
+  path: stannum/constraints/type/negated-type
+  slug: negated-type
+  inherited: true
+- name: TYPE
+  path: stannum/constraints/type/type
+  slug: type
+  inherited: true
+instance_attributes:
+- name: options
+  read: true
+  write: true
+  path: stannum/constraints/base/i-options
+  slug: options
+  inherited: true
+instance_methods:
+- name: "=="
+  path: stannum/constraints/base/i-==
+  slug: "=="
+  inherited: true
+- name: allow_empty?
+  path: stannum/constraints/types/hash-type/i-allow-empty?
+  slug: allow-empty?
+  inherited: false
+- name: clone
+  path: stannum/constraints/base/i-clone
+  slug: clone
+  inherited: true
+- name: does_not_match?
+  path: stannum/constraints/types/hash-type/i-does-not-match?
+  slug: does-not-match?
+  inherited: false
+- name: dup
+  path: stannum/constraints/base/i-dup
+  slug: dup
+  inherited: true
+- name: errors_for
+  path: stannum/constraints/types/hash-type/i-errors-for
+  slug: errors-for
+  inherited: false
+- name: expected_type
+  path: stannum/constraints/type/i-expected-type
+  slug: expected-type
+  inherited: true
+- name: initialize
+  path: stannum/constraints/types/hash-type/i-initialize
+  slug: initialize
+  inherited: false
+  constructor: true
+- name: key_type
+  path: stannum/constraints/types/hash-type/i-key-type
+  slug: key-type
+  inherited: false
+- name: match
+  path: stannum/constraints/base/i-match
+  slug: match
+  inherited: true
+- name: matches?
+  path: stannum/constraints/types/hash-type/i-matches?
+  slug: matches?
+  inherited: false
+- name: message
+  path: stannum/constraints/base/i-message
+  slug: message
+  inherited: true
+- name: negated_errors_for
+  path: stannum/constraints/type/i-negated-errors-for
+  slug: negated-errors-for
+  inherited: true
+- name: negated_match
+  path: stannum/constraints/base/i-negated-match
+  slug: negated-match
+  inherited: true
+- name: negated_message
+  path: stannum/constraints/base/i-negated-message
+  slug: negated-message
+  inherited: true
+- name: negated_type
+  path: stannum/constraints/base/i-negated-type
+  slug: negated-type
+  inherited: true
+- name: optional?
+  path: stannum/support/optional/i-optional?
+  slug: optional?
+  inherited: true
+- name: required?
+  path: stannum/support/optional/i-required?
+  slug: required?
+  inherited: true
+- name: type
+  path: stannum/constraints/base/i-type
+  slug: type
+  inherited: true
+- name: value_type
+  path: stannum/constraints/types/hash-type/i-value-type
+  slug: value-type
+  inherited: false
+- name: with_options
+  path: stannum/constraints/type/i-with-options
+  slug: with-options
+  inherited: true
+data_path: stannum/constraints/types/hash-type
+metadata:
+  examples:
+  - name: Using a Hash type constraint
+    text: |-
+      constraint = Stannum::Constraints::Types::HashType.new
+
+      constraint.matches?(nil)              # => false
+      constraint.matches?(Object.new)       # => false
+      constraint.matches?({})               # => true
+      constraint.matches?({ key: 'value' }) # => true
+  - name: Using a Hash type constraint with a key constraint
+    text: |-
+      constraint = Stannum::Constraints::Types::HashType.new(key_type: String)
+
+      constraint.matches?(nil)                  # => false
+      constraint.matches?(Object.new)           # => false
+      constraint.matches?({})                   # => true
+      constraint.matches?({ key: 'value' })     # => false
+      constraint.matches?({ 'key' => 'value' }) # => true
+  - name: Using a Hash type constraint with a value constraint
+    text: |-
+      constraint = Stannum::Constraints::Types::HashType.new(value_type: String)
+
+      constraint.matches?(nil)              # => false
+      constraint.matches?(Object.new)       # => false
+      constraint.matches?({})               # => true
+      constraint.matches?({ key: :value })  # => false
+      constraint.matches?({ key: 'value' }) # => true
+  - name: Using a Hash type constraint with a presence constraint
+    text: |-
+      constraint = Stannum::Constraints::Types::HashType.new(allow_empty: false)
+
+      constraint.matches?(nil)              # => false
+      constraint.matches?(Object.new)       # => false
+      constraint.matches?({})               # => false
+      constraint.matches?({ key: :value })  # => true
+      constraint.matches?({ key: 'value' }) # => true
+constructor: true
+direct_subclasses:
+- name: Stannum::Constraints::Types::HashWithIndifferentKeys
+  slug: hash-with-indifferent-keys
+  path: stannum/constraints/types/hash-with-indifferent-keys
+- name: Stannum::Constraints::Types::HashWithStringKeys
+  slug: hash-with-string-keys
+  path: stannum/constraints/types/hash-with-string-keys
+- name: Stannum::Constraints::Types::HashWithSymbolKeys
+  slug: hash-with-symbol-keys
+  path: stannum/constraints/types/hash-with-symbol-keys
+inherited_classes:
+- name: Stannum::Constraints::Type
+  slug: type
+  path: stannum/constraints/type
+- name: Stannum::Constraints::Base
+  slug: base
+  path: stannum/constraints/base
+version: "*"

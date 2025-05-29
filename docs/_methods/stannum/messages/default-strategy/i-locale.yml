@@ -1,0 +1,12 @@
+---
+name: Stannum::Messages::DefaultStrategy#locale
+parent_path: stannum/messages/default-strategy
+signature: locale
+slug: locale
+constructor: false
+data_path: stannum/messages/default-strategy/i-locale
+returns:
+- description: The locale used to load and scope configured messages.
+  type:
+  - name: String
+version: "*"

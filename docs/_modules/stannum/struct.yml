@@ -1,0 +1,151 @@
+---
+name: Stannum::Struct
+slug: struct
+type: module
+files:
+- lib/stannum/struct.rb
+parent_path: stannum
+short_description: Abstract class for defining objects with structured attributes.
+instance_methods:
+- name: "=="
+  path: stannum/entities/properties/i-==
+  slug: "=="
+  inherited: true
+- name: "[]"
+  path: stannum/entities/properties/i-[]
+  slug: "[]"
+  inherited: true
+- name: "[]="
+  path: stannum/entities/properties/i-[]=
+  slug: "[]="
+  inherited: true
+- name: assign_attributes
+  path: stannum/entities/attributes/i-assign-attributes
+  slug: assign-attributes
+  inherited: true
+- name: assign_properties
+  path: stannum/entities/properties/i-assign-properties
+  slug: assign-properties
+  inherited: true
+- name: attributes
+  path: stannum/entities/attributes/i-attributes
+  slug: attributes
+  inherited: true
+- name: attributes=
+  path: stannum/entities/attributes/i-attributes=
+  slug: attributes=
+  inherited: true
+- name: initialize
+  path: stannum/struct/i-initialize
+  slug: initialize
+  inherited: false
+- name: inspect
+  path: stannum/entities/properties/i-inspect
+  slug: inspect
+  inherited: true
+- name: inspect_with_options
+  path: stannum/entities/properties/i-inspect-with-options
+  slug: inspect-with-options
+  inherited: true
+- name: properties
+  path: stannum/entities/attributes/i-properties
+  slug: properties
+  inherited: true
+- name: properties=
+  path: stannum/entities/properties/i-properties=
+  slug: properties=
+  inherited: true
+- name: read_attribute
+  path: stannum/entities/attributes/i-read-attribute
+  slug: read-attribute
+  inherited: true
+- name: to_h
+  path: stannum/entities/properties/i-to-h
+  slug: to-h
+  inherited: true
+- name: write_attribute
+  path: stannum/entities/attributes/i-write-attribute
+  slug: write-attribute
+  inherited: true
+data_path: stannum/struct
+included_modules:
+- name: Stannum::Entities::Attributes
+  slug: attributes
+  path: stannum/entities/attributes
+- name: Stannum::Entities::Constraints
+  slug: constraints
+  path: stannum/entities/constraints
+- name: Stannum::Entities::Properties
+  slug: properties
+  path: stannum/entities/properties
+metadata:
+  examples:
+  - name: Defining Attributes
+    text: |-
+      class Widget
+        include Stannum::Struct
+
+        attribute :name,        String
+        attribute :description, String,  optional: true
+        attribute :quantity,    Integer, default:  0
+      end
+
+      widget = Widget.new(name: 'Self-sealing Stem Bolt')
+      widget.name        #=> 'Self-sealing Stem Bolt'
+      widget.description #=> nil
+      widget.quantity    #=> 0
+      widget.attributes  #=>
+      # {
+      #   name:        'Self-sealing Stem Bolt',
+      #   description: nil,
+      #   quantity:    0
+      # }
+  - name: Setting Attributes
+    text: |-
+      widget.description = 'A stem bolt, but self sealing.'
+      widget.attributes #=>
+      # {
+      #   name:        'Self-sealing Stem Bolt',
+      #   description: 'A stem bolt, but self sealing.',
+      #   quantity:    0
+      # }
+
+      widget.assign_attributes(quantity: 50)
+      widget.attributes #=>
+      # {
+      #   name:        'Self-sealing Stem Bolt',
+      #   description: 'A stem bolt, but self sealing.',
+      #   quantity:    50
+      # }
+
+      widget.attributes = (name: 'Inverse Chronoton Emitter')
+      # {
+      #   name:        'Inverse Chronoton Emitter',
+      #   description: nil,
+      #   quantity:    0
+      # }
+  - name: Defining Attribute Constraints
+    text: |-
+      Widget::Contract.matches?(quantity: -5)                    #=> false
+      Widget::Contract.matches?(name: 'Capacitor', quantity: -5) #=> true
+
+      class Widget
+        constraint(:quantity) { |qty| qty >= 0 }
+      end
+
+      Widget::Contract.matches?(name: 'Capacitor', quantity: -5) #=> false
+      Widget::Contract.matches?(name: 'Capacitor', quantity: 10) #=> true
+  - name: Defining Struct Constraints
+    text: |-
+      Widget::Contract.matches?(name: 'Diode') #=> true
+
+      class Widget
+        constraint { |struct| struct.description&.include?(struct.name) }
+      end
+
+      Widget::Contract.matches?(name: 'Diode') #=> false
+      Widget::Contract.matches?(
+        name:        'Diode',
+        description: 'A low budget Diode',
+      ) #=> true
+version: "*"

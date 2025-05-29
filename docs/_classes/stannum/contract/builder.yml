@@ -1,0 +1,34 @@
+---
+name: Stannum::Contract::Builder
+slug: builder
+type: class
+files:
+- lib/stannum/contract.rb
+parent_path: stannum/contract
+short_description: Builder class for defining item constraints for a Contract.
+instance_methods:
+- name: property
+  path: stannum/contract/builder/i-property
+  slug: property
+  inherited: false
+data_path: stannum/contract/builder
+description: |-
+  This class should not be invoked directly. Instead, pass a block to the
+  constructor for Contract.
+metadata:
+  api: private
+constructor: false
+direct_subclasses:
+- name: Stannum::Contracts::MapContract::Builder
+  slug: builder
+  path: stannum/contracts/map-contract/builder
+- name: Stannum::Contracts::ParametersContract::Builder
+  slug: builder
+  path: stannum/contracts/parameters-contract/builder
+- name: Stannum::Contracts::TupleContract::Builder
+  slug: builder
+  path: stannum/contracts/tuple-contract/builder
+inherited_classes:
+- name: Stannum::Contracts::Base::Builder
+  slug: builder
+version: "*"

@@ -1,0 +1,42 @@
+---
+name: Stannum::Contracts::ParametersContract#set_arguments_item_constraint
+parent_path: stannum/contracts/parameters-contract
+signature: set_arguments_item_constraint(name, type)
+slug: set-arguments-item-constraint
+constructor: false
+data_path: stannum/contracts/parameters-contract/i-set-arguments-item-constraint
+description: |-
+  If the parameters includes variadic (or "splatted") arguments, then each
+  item in the variadic arguments array must match the given type or
+  constraint. If the type is a constraint, then the given constraint will be
+  copied with the given options. If the type is a Class or a Module, then a
+  Stannum::Constraints::Type constraint will be created with the given type.
+params:
+- description: |-
+    a human-readable name for the variadic
+    arguments; used in generating error messages.
+  name: name
+  type:
+  - name: String
+  - name: Symbol
+- description: |-
+    The expected type
+    of the variadic arguments items.
+  name: type
+  type:
+  - name: Class
+  - name: Module
+  - name: Stannum::Constraints:Base
+raises:
+- description: |-
+    if there is already a variadic arguments constraint
+    defined for the contract.
+  type:
+  - name: RuntimeError
+returns:
+- description: the contract.
+  type:
+  - name: Stannum::Contracts::ParametersContract
+    path: stannum/contracts/parameters-contract
+short_description: Sets the variadic arguments constraint for the contract.
+version: "*"

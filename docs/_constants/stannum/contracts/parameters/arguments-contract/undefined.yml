@@ -1,0 +1,11 @@
+---
+name: Stannum::Contracts::Parameters::ArgumentsContract::UNDEFINED
+parent_path: stannum/contracts/parameters/arguments-contract
+slug: undefined
+short_description: Value used when arguments array does not have a value for the given
+  index.
+value: Object.new.freeze
+data_path: stannum/contracts/parameters/arguments-contract/undefined
+metadata:
+  api: private
+version: "*"

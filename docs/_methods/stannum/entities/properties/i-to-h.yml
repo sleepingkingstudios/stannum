@@ -1,0 +1,22 @@
+---
+name: Stannum::Entities::Properties#to_h
+parent_path: stannum/entities/properties
+signature: to_h
+slug: to-h
+constructor: false
+data_path: stannum/entities/properties/i-to-h
+metadata:
+  see:
+  - label: "#properties"
+    path: stannum/entities/properties#instance-method-properties
+    text:
+    type: reference
+returns:
+- description: the entity properties.
+  type:
+  - name: Hash
+    items:
+    - name: String
+    - name: Object
+short_description: Returns a Hash representation of the entity.
+version: "*"

@@ -1,0 +1,21 @@
+---
+name: Stannum::Constraints::Nothing#matches?
+parent_path: stannum/constraints/nothing
+signature: matches?(_actual)
+slug: matches?
+aliases:
+- match?
+constructor: false
+data_path: stannum/constraints/nothing/i-matches?
+metadata:
+  see:
+  - label: Stannum::Constraint#matches?
+    path: stannum/constraint#instance-method-matches?
+    text:
+    type: reference
+returns:
+- description: in all cases.
+  type:
+  - name: 'false'
+short_description: Returns false for all objects.
+version: "*"

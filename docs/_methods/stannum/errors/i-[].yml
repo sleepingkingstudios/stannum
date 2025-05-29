@@ -1,0 +1,95 @@
+---
+name: Stannum::Errors#[]
+parent_path: stannum/errors
+signature: "[](key)"
+slug: "[]"
+constructor: false
+data_path: stannum/errors/i-[]
+description: |-
+  Each errors object can have one or more children, each of which is itself
+  an errors object. These nested errors represent errors on some subset of
+  the main object - for example, a failed validation of a named property,
+  of the value in a key-value pair, or of an indexed value in an ordered
+  collection.
+
+  The children are created as needed and are stored with either an integer
+  or a symbol key. Calling errors[1] multiple times will always return the
+  same errors object. Likewise, calling errors[:some_key] multiple times
+  will return the same object, and calling errors['some_key'] will return
+  that same errors object as well.
+metadata:
+  examples:
+  - name: Accessing Nested Errors via a Key
+    text: |-
+      errors = Stannum::Errors.new
+      child  = errors[:spell]
+      child.size #=> 0
+      child.to_a #=> []
+
+      child.add(:insufficient_mana)
+      child.size # 1
+      child.to_a # [{ type: :insufficient_mana, path: [] }]
+
+      # Adding an error to a child makes it available on a parent.
+      errors.size # 1
+      errors.to_a # [{ type: :insufficient_mana, path: [:spell] }]
+  - name: Accessing Nested Errors via an Index
+    text: |-
+      errors = Stannum::Errors.new
+      child  = errors[1]
+
+      child.size #=> 0
+      child.to_a #=> []
+
+      child.add(:unknown_monster)
+      child.size # 1
+      child.to_a # [{ type: :unknown_monster, path: [] }]
+
+      # Adding an error to a child makes it available on a parent.
+      errors.size # 1
+      errors.to_a # [{ type: :unknown_monster, path: [1] }]
+  - name: Accessing Deeply Nested Errors
+    text: |-
+      errors = Stannum::Errors.new
+
+      errors[:towns][1][:name].add(:unpronounceable)
+      errors.size #=> 1
+      errors.to_a #=> [{ type: :unpronounceable, path: [:towns, 1, :name] }]
+
+      errors[:towns].size #=> 1
+      errors[:towns].to_a #=> [{ type: :unpronounceable, path: [1, :name] }]
+
+      errors[:towns][1].size #=> 1
+      errors[:towns][1].to_a #=> [{ type: :unpronounceable, path: [:name] }]
+
+      errors[:towns][1][:name].size #=> 1
+      errors[:towns][1][:name].to_a #=> [{ type: :unpronounceable, path: [] }]
+  see:
+  - label: "#[]="
+    path: stannum/errors#instance-method-[]=
+    text:
+    type: reference
+  - label: "#dig"
+    path: stannum/errors#instance-method-dig
+    text:
+    type: reference
+params:
+- description: |-
+    The key or index of the referenced
+    value, item, or property.
+  name: key
+  type:
+  - name: Integer
+  - name: String
+  - name: Symbol
+raises:
+- description: if the key is not a String, Symbol or Integer.
+  type:
+  - name: ArgumentError
+returns:
+- description: an Errors object.
+  type:
+  - name: Stannum::Errors
+    path: stannum/errors
+short_description: Accesses a nested errors object.
+version: "*"

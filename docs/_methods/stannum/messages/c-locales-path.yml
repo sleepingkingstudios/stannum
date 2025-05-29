@@ -1,0 +1,12 @@
+---
+name: Stannum::Messages.locales_path
+parent_path: stannum/messages
+signature: locales_path
+slug: locales-path
+constructor: false
+data_path: stannum/messages/c-locales-path
+returns:
+- description: the absolute path to the configured locales.
+  type:
+  - name: String
+version: "*"

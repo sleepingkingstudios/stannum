@@ -1,0 +1,8 @@
+---
+name: Stannum::Constraints::Union::NEGATED_TYPE
+parent_path: stannum/constraints/union
+slug: negated-type
+short_description: The :type of the error generated for a matching object.
+value: "'stannum.constraints.is_in_union'"
+data_path: stannum/constraints/union/negated-type
+version: "*"

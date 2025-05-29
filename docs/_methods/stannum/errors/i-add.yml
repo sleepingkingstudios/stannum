@@ -1,0 +1,56 @@
+---
+name: Stannum::Errors#add
+parent_path: stannum/errors
+signature: 'add(type, message: nil, **data)'
+slug: add
+constructor: false
+data_path: stannum/errors/i-add
+metadata:
+  examples:
+  - name: Adding An Error
+    text: errors = Stannum::Errors.new.add(:not_found)
+  - name: Adding An Error With A Message
+    text: 'errors = Stannum::Errors.new.add(:not_found, message: ''is missing'')'
+  - name: Adding Multiple Errors
+    text: |-
+      errors = Stannum::Errors.new
+      errors
+        .add(:not_numeric)
+        .add(:not_integer, message: 'is outside the range')
+        .add(:not_in_range)
+params:
+- description: |-
+    The error type. This should be a string or
+    symbol with one or more underscored, dot-separated values.
+  name: type
+  type:
+  - name: String
+  - name: Symbol
+- description: |-
+    A custom error message to display. Optional;
+    defaults to nil.
+  name: message
+  type:
+  - name: String
+  default: nil
+- description: |-
+    Additional data to store about the
+    error, such as the expected type or the min/max values of the expected
+    range. Optional; defaults to an empty Hash.
+  name: data
+  type:
+  - name: Hash
+    items:
+    - name: Symbol
+    - name: Object
+raises:
+- description: if the type or message are invalid.
+  type:
+  - name: ArgumentError
+returns:
+- description: the errors object.
+  type:
+  - name: Stannum::Errors
+    path: stannum/errors
+short_description: Adds an error of the specified type.
+version: "*"

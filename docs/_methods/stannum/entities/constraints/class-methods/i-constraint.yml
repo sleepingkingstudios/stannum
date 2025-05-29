@@ -1,0 +1,91 @@
+---
+name: Stannum::Entities::Constraints::ClassMethods#constraint
+parent_path: stannum/entities/constraints/class-methods
+signature: constraint(attr_name = nil, constraint = nil, &)
+slug: constraint
+constructor: false
+data_path: stannum/entities/constraints/class-methods/i-constraint
+overloads:
+- name: Stannum::Entities::Constraints::ClassMethods#constraint
+  parent_path: stannum/entities/constraints/class-methods
+  signature: constraint()
+  slug: constraint
+  constructor: false
+  description: |-
+    A new Stannum::Constraint instance will be generated, passing the
+    block from .constraint to the new constraint. This constraint will be
+    added to the contract.
+  short_description: Defines a constraint on the entity.
+  yield_params:
+  - description: |-
+      The entity at the
+      time the constraint is evaluated.
+    name: entity
+    type:
+    - name: Stannum::Entities::Constraints
+      path: stannum/entities/constraints
+- name: Stannum::Entities::Constraints::ClassMethods#constraint
+  parent_path: stannum/entities/constraints/class-methods
+  signature: constraint(constraint)
+  slug: constraint
+  constructor: false
+  description: |-
+    The given constraint is added to the contract. When the contract is
+    evaluated, this constraint will be matched against the entity.
+  params:
+  - description: The constraint to add.
+    name: constraint
+    type:
+    - name: Stannum::Constraints::Base
+      path: stannum/constraints/base
+  short_description: Defines a constraint on the entity.
+- name: Stannum::Entities::Constraints::ClassMethods#constraint
+  parent_path: stannum/entities/constraints/class-methods
+  signature: constraint(attr_name)
+  slug: constraint
+  constructor: false
+  description: |-
+    A new Stannum::Constraint instance will be generated, passing the
+    block from .constraint to the new constraint. This constraint will be
+    added to the contract.
+  params:
+  - description: |-
+      The name of the attribute or
+      property to constrain.
+    name: attr_name
+    type:
+    - name: String
+    - name: Symbol
+  short_description: Defines a constraint on the given attribute or property.
+  yield_params:
+  - description: |-
+      The value of the attribute or property of
+      the entity at the time the constraint is evaluated.
+    name: value
+    type:
+    - name: Object
+- name: Stannum::Entities::Constraints::ClassMethods#constraint
+  parent_path: stannum/entities/constraints/class-methods
+  signature: constraint(attr_name, constraint)
+  slug: constraint
+  constructor: false
+  description: |-
+    The given constraint is added to the contract. When the contract is
+    evaluated, this constraint will be matched against the value of the
+    attribute or property.
+  params:
+  - description: |-
+      The name of the attribute or
+      property to constrain.
+    name: attr_name
+    type:
+    - name: String
+    - name: Symbol
+  - description: The constraint to add.
+    name: constraint
+    type:
+    - name: Stannum::Constraints::Base
+      path: stannum/constraints/base
+  short_description: Defines a constraint on the given attribute or property.
+short_description: Defines a constraint on the entity or one of its properties.
+version: "*"

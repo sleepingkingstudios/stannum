@@ -1,0 +1,25 @@
+---
+name: Stannum::Contracts::Builder#concat
+parent_path: stannum/contracts/builder
+signature: concat(other)
+slug: concat
+constructor: false
+data_path: stannum/contracts/builder/i-concat
+metadata:
+  see:
+  - label: Stannum::Contracts::Base#concat
+    path: stannum/contracts/base#instance-method-concat
+    text:
+    type: reference
+params:
+- description: the other contract.
+  name: other
+  type:
+  - name: Stannum::Contract
+    path: stannum/contract
+returns:
+- description: the contract builder.
+  type:
+  - name: self
+short_description: Concatenate the constraints from the given other contract.
+version: "*"

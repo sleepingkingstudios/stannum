@@ -1,0 +1,40 @@
+---
+name: Stannum::Associations::Many::Proxy
+slug: proxy
+type: class
+files:
+- lib/stannum/associations/many.rb
+parent_path: stannum/associations/many
+short_description: Wrapper object for an entity's plural association.
+instance_methods:
+- name: "=="
+  path: stannum/associations/many/proxy/i-==
+  slug: "=="
+  inherited: false
+- name: add
+  path: stannum/associations/many/proxy/i-add
+  slug: add
+  inherited: false
+- name: each
+  path: stannum/associations/many/proxy/i-each
+  slug: each
+  inherited: false
+- name: initialize
+  path: stannum/associations/many/proxy/i-initialize
+  slug: initialize
+  inherited: false
+  constructor: true
+- name: inspect
+  path: stannum/associations/many/proxy/i-inspect
+  slug: inspect
+  inherited: false
+- name: remove
+  path: stannum/associations/many/proxy/i-remove
+  slug: remove
+  inherited: false
+data_path: stannum/associations/many/proxy
+included_modules:
+- name: Enumerable
+  slug: enumerable
+constructor: true
+version: "*"

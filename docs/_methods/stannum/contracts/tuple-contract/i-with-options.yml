@@ -1,0 +1,12 @@
+---
+name: Stannum::Contracts::TupleContract#with_options
+parent_path: stannum/contracts/tuple-contract
+signature: with_options(**options)
+slug: with-options
+constructor: false
+data_path: stannum/contracts/tuple-contract/i-with-options
+raises:
+- description: ''
+  type:
+  - name: ArgumentError
+version: "*"

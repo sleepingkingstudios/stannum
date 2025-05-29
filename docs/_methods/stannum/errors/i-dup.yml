@@ -1,0 +1,14 @@
+---
+name: Stannum::Errors#dup
+parent_path: stannum/errors
+signature: dup
+slug: dup
+constructor: false
+data_path: stannum/errors/i-dup
+returns:
+- description: the copy of the errors object.
+  type:
+  - name: Stannum::Errors
+    path: stannum/errors
+short_description: Creates a deep copy of the errors object.
+version: "*"

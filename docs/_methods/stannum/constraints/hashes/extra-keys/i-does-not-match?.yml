@@ -1,0 +1,15 @@
+---
+name: Stannum::Constraints::Hashes::ExtraKeys#does_not_match?
+parent_path: stannum/constraints/hashes/extra-keys
+signature: does_not_match?(actual)
+slug: does-not-match?
+constructor: false
+data_path: stannum/constraints/hashes/extra-keys/i-does-not-match?
+returns:
+- description: |-
+    true if the object responds to #[] and #keys and the
+    object has at least one key that is not in expected_keys.
+  type:
+  - name: 'true'
+  - name: 'false'
+version: "*"

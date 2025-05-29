@@ -1,0 +1,14 @@
+---
+name: Stannum::Association::AbstractAssociationError
+slug: abstract-association-error
+type: class
+files:
+- lib/stannum/association.rb
+parent_path: stannum/association
+short_description: Exception raised when calling an abstract method.
+data_path: stannum/association/abstract-association-error
+constructor: false
+inherited_classes:
+- name: StandardError
+  slug: standard-error
+version: "*"

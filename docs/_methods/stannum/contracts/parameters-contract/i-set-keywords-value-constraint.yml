@@ -1,0 +1,42 @@
+---
+name: Stannum::Contracts::ParametersContract#set_keywords_value_constraint
+parent_path: stannum/contracts/parameters-contract
+signature: set_keywords_value_constraint(name, type)
+slug: set-keywords-value-constraint
+constructor: false
+data_path: stannum/contracts/parameters-contract/i-set-keywords-value-constraint
+description: |-
+  If the parameters includes variadic (or "splatted") keywords, then each
+  value in the variadic keywords hash must match the given type or
+  constraint. If the type is a constraint, then the given constraint will be
+  copied with the given options. If the type is a Class or a Module, then a
+  Stannum::Constraints::Type constraint will be created with the given type.
+params:
+- description: |-
+    a human-readable name for the variadic
+    keywords; used in generating error messages.
+  name: name
+  type:
+  - name: String
+  - name: Symbol
+- description: |-
+    The expected type
+    of the variadic keywords values.
+  name: type
+  type:
+  - name: Class
+  - name: Module
+  - name: Stannum::Constraints:Base
+raises:
+- description: |-
+    if there is already a variadic keywords constraint
+    defined for the contract.
+  type:
+  - name: RuntimeError
+returns:
+- description: the contract.
+  type:
+  - name: Stannum::Contracts::ParametersContract
+    path: stannum/contracts/parameters-contract
+short_description: Sets the variadic keywords constraint for the contract.
+version: "*"

@@ -1,0 +1,17 @@
+---
+name: Stannum::Constraints::Signature#matches?
+parent_path: stannum/constraints/signature
+signature: matches?(actual)
+slug: matches?
+aliases:
+- match?
+constructor: false
+data_path: stannum/constraints/signature/i-matches?
+returns:
+- description: |-
+    true if the object responds to all of the expected
+    methods; otherwise false.
+  type:
+  - name: 'true'
+  - name: 'false'
+version: "*"

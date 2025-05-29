@@ -1,0 +1,23 @@
+---
+name: Stannum::Support::Coercion.error_key
+parent_path: stannum/support/coercion
+signature: error_key(value)
+slug: error-key
+constructor: false
+data_path: stannum/support/coercion/c-error-key
+description: |-
+  If the value is an Integer, a String, or a Symbol, returns the value.
+  Otherwise, returns the result of calling #inspect on the value.
+params:
+- description: The value to coerce.
+  name: value
+  type:
+  - name: Object
+returns:
+- description: 'the value or result of #inspect.'
+  type:
+  - name: Integer
+  - name: String
+  - name: Symbol
+short_description: Coerces an arbitrary object into a valid Stannum::Errors key.
+version: "*"

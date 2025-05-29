@@ -1,0 +1,14 @@
+---
+name: Stannum::RSpec::MatchErrorsMatcher#description
+parent_path: stannum/r-spec/match-errors-matcher
+signature: description
+slug: description
+constructor: false
+data_path: stannum/r-spec/match-errors-matcher/i-description
+returns:
+- description: |-
+    a short description of the matcher and expected
+    properties.
+  type:
+  - name: String
+version: "*"

@@ -1,0 +1,15 @@
+---
+name: Stannum::Contracts::TupleContract#allow_extra_items?
+parent_path: stannum/contracts/tuple-contract
+signature: allow_extra_items?
+slug: allow-extra-items?
+constructor: false
+data_path: stannum/contracts/tuple-contract/i-allow-extra-items?
+returns:
+- description: |-
+    If false, then a tuple with extra items after the
+    last expected item will not match the contract.
+  type:
+  - name: 'true'
+  - name: 'false'
+version: "*"

@@ -1,0 +1,28 @@
+---
+name: Stannum::Association::Builder
+slug: builder
+type: class
+files:
+- lib/stannum/association.rb
+parent_path: stannum/association
+short_description: Builder class for defining association methods on an entity.
+instance_attributes:
+- name: schema
+  read: true
+  write: false
+  path: stannum/association/builder/i-schema
+  slug: schema
+  inherited: false
+instance_methods:
+- name: call
+  path: stannum/association/builder/i-call
+  slug: call
+  inherited: false
+- name: initialize
+  path: stannum/association/builder/i-initialize
+  slug: initialize
+  inherited: false
+  constructor: true
+data_path: stannum/association/builder
+constructor: true
+version: "*"

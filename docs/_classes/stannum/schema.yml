@@ -1,0 +1,81 @@
+---
+name: Stannum::Schema
+slug: schema
+type: class
+files:
+- lib/stannum/schema.rb
+parent_path: stannum
+short_description: Abstract class for defining property methods for an entity.
+instance_attributes:
+- name: property_class
+  read: true
+  write: false
+  path: stannum/schema/i-property-class
+  slug: property-class
+  inherited: false
+- name: property_name
+  read: true
+  write: false
+  path: stannum/schema/i-property-name
+  slug: property-name
+  inherited: false
+instance_methods:
+- name: "[]"
+  path: stannum/schema/i-[]
+  slug: "[]"
+  inherited: false
+- name: define
+  path: stannum/schema/i-define
+  slug: define
+  inherited: false
+- name: each
+  path: stannum/schema/i-each
+  slug: each
+  inherited: false
+- name: each_key
+  path: stannum/schema/i-each-key
+  slug: each-key
+  inherited: false
+- name: each_value
+  path: stannum/schema/i-each-value
+  slug: each-value
+  inherited: false
+- name: initialize
+  path: stannum/schema/i-initialize
+  slug: initialize
+  inherited: false
+  constructor: true
+- name: key?
+  path: stannum/schema/i-key?
+  slug: key?
+  inherited: false
+- name: keys
+  path: stannum/schema/i-keys
+  slug: keys
+  inherited: false
+- name: size
+  path: stannum/schema/i-size
+  slug: size
+  inherited: false
+- name: values
+  path: stannum/schema/i-values
+  slug: values
+  inherited: false
+data_path: stannum/schema
+extended_modules:
+- name: Forwardable
+  slug: forwardable
+included_modules:
+- name: Enumerable
+  slug: enumerable
+metadata:
+  see:
+  - label: Stannum::Attribute
+    path: stannum/attribute
+    text:
+    type: reference
+constructor: true
+inherited_classes:
+- name: Module
+  slug: module
+version: "*"

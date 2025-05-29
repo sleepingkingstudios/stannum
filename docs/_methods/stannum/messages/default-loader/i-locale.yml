@@ -1,0 +1,12 @@
+---
+name: Stannum::Messages::DefaultLoader#locale
+parent_path: stannum/messages/default-loader
+signature: locale
+slug: locale
+constructor: false
+data_path: stannum/messages/default-loader/i-locale
+returns:
+- description: the name of the locale for which to load configuration.
+  type:
+  - name: String
+version: "*"

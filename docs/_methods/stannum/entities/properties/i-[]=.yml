@@ -1,0 +1,22 @@
+---
+name: Stannum::Entities::Properties#[]=
+parent_path: stannum/entities/properties
+signature: "[]=(property, value)"
+slug: "[]="
+constructor: false
+data_path: stannum/entities/properties/i-[]=
+params:
+- description: The property key.
+  name: property
+  type:
+  - name: String
+  - name: Symbol
+- description: The value for the property.
+  name: value
+  type:
+  - name: Object
+raises:
+- description: ArgumentError if the key is not a valid property.
+  type: []
+short_description: Sets the given property to the given value.
+version: "*"

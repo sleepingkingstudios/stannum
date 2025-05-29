@@ -1,0 +1,62 @@
+---
+name: Stannum::Contracts::Builder#constraint
+parent_path: stannum/contracts/builder
+signature: constraint(constraint = nil, **options, &)
+slug: constraint
+constructor: false
+data_path: stannum/contracts/builder/i-constraint
+overloads:
+- name: Stannum::Contracts::Builder#constraint
+  parent_path: stannum/contracts/builder
+  signature: constraint(constraint, **options)
+  slug: constraint
+  constructor: false
+  params:
+  - description: |-
+      The constraint to add to
+      the contract.
+    name: constraint
+    type:
+    - name: Stannum::Constraints::Base
+      path: stannum/constraints/base
+  - description: Options for the constraint.
+    name: options
+    type:
+    - name: Hash
+      items:
+      - name: Symbol
+      - name: Object
+  short_description: Adds the given constraint to the contract.
+- name: Stannum::Contracts::Builder#constraint
+  parent_path: stannum/contracts/builder
+  signature: constraint(**options, &block)
+  slug: constraint
+  constructor: false
+  options:
+  - name: options
+    opts:
+    - description: |-
+        The error type generated for a
+        matching object.
+      name: negated_type
+      type:
+      - name: String
+    - description: |-
+        The error type generated for a
+        non-matching object.
+      name: type
+      type:
+      - name: String
+  params:
+  - description: Options for the constraint.
+    name: options
+    type:
+    - name: Hash
+      items:
+      - name: Symbol
+      - name: Object
+  short_description: |-
+    Creates an instance of Stannum::Constraint using the given block and
+    adds it to the contract.
+short_description: Adds a constraint to the contract.
+version: "*"

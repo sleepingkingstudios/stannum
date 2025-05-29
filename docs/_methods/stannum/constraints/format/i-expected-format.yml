@@ -1,0 +1,13 @@
+---
+name: Stannum::Constraints::Format#expected_format
+parent_path: stannum/constraints/format
+signature: expected_format
+slug: expected-format
+constructor: false
+data_path: stannum/constraints/format/i-expected-format
+returns:
+- description: the expected format.
+  type:
+  - name: Regex
+  - name: String
+version: "*"

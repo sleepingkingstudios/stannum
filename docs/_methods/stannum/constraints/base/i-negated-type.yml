@@ -1,0 +1,12 @@
+---
+name: Stannum::Constraints::Base#negated_type
+parent_path: stannum/constraints/base
+signature: negated_type
+slug: negated-type
+constructor: false
+data_path: stannum/constraints/base/i-negated-type
+returns:
+- description: the error type generated for a matching object.
+  type:
+  - name: String
+version: "*"

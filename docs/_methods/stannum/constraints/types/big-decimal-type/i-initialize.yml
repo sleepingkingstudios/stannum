@@ -1,0 +1,22 @@
+---
+name: Stannum::Constraints::Types::BigDecimalType#initialize
+parent_path: stannum/constraints/types/big-decimal-type
+signature: initialize(**options)
+slug: initialize
+constructor: true
+data_path: stannum/constraints/types/big-decimal-type/i-initialize
+params:
+- description: |-
+    Configuration options for the
+    constraint. Defaults to an empty Hash.
+  name: options
+  type:
+  - name: Hash
+    items:
+    - name: Symbol
+    - name: Object
+returns:
+- description: a new instance of BigDecimalType
+  type:
+  - name: BigDecimalType
+version: "*"

@@ -1,0 +1,12 @@
+---
+name: Stannum::Constraints::Hashes::ExtraKeys#expected_keys
+parent_path: stannum/constraints/hashes/extra-keys
+signature: expected_keys
+slug: expected-keys
+constructor: false
+data_path: stannum/constraints/hashes/extra-keys/i-expected-keys
+returns:
+- description: the expected keys.
+  type:
+  - name: Set
+version: "*"

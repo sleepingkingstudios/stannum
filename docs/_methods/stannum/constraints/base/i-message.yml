@@ -1,0 +1,15 @@
+---
+name: Stannum::Constraints::Base#message
+parent_path: stannum/constraints/base
+signature: message
+slug: message
+constructor: false
+data_path: stannum/constraints/base/i-message
+returns:
+- description: |-
+    the default error message generated for a
+    non-matching object.
+  type:
+  - name: String
+  - name: nil
+version: "*"

@@ -1,0 +1,15 @@
+---
+name: Stannum::Constraints::Signature#does_not_match?
+parent_path: stannum/constraints/signature
+signature: does_not_match?(actual)
+slug: does-not-match?
+constructor: false
+data_path: stannum/constraints/signature/i-does-not-match?
+returns:
+- description: |-
+    true if the object does not respond to any of the
+    expected methods; otherwise false.
+  type:
+  - name: 'true'
+  - name: 'false'
+version: "*"

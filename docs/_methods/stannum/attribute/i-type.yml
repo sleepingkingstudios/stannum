@@ -1,0 +1,12 @@
+---
+name: Stannum::Attribute#type
+parent_path: stannum/attribute
+signature: type
+slug: type
+constructor: false
+data_path: stannum/attribute/i-type
+returns:
+- description: the name of the attribute type Class or Module.
+  type:
+  - name: String
+version: "*"

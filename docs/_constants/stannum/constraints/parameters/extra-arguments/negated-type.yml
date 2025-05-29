@@ -1,0 +1,8 @@
+---
+name: Stannum::Constraints::Parameters::ExtraArguments::NEGATED_TYPE
+parent_path: stannum/constraints/parameters/extra-arguments
+slug: negated-type
+short_description: The :type of the error generated for a matching object.
+value: "'stannum.constraints.parameters.no_extra_arguments'"
+data_path: stannum/constraints/parameters/extra-arguments/negated-type
+version: "*"

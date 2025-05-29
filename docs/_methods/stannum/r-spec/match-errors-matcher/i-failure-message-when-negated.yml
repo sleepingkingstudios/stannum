@@ -1,0 +1,14 @@
+---
+name: Stannum::RSpec::MatchErrorsMatcher#failure_message_when_negated
+parent_path: stannum/r-spec/match-errors-matcher
+signature: failure_message_when_negated
+slug: failure-message-when-negated
+constructor: false
+data_path: stannum/r-spec/match-errors-matcher/i-failure-message-when-negated
+returns:
+- description: |-
+    a summary message describing a failed negated
+    expectation.
+  type:
+  - name: String
+version: "*"

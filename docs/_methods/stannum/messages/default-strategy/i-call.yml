@@ -1,0 +1,21 @@
+---
+name: Stannum::Messages::DefaultStrategy#call
+parent_path: stannum/messages/default-strategy
+signature: call(error_type, **options)
+slug: call
+constructor: false
+data_path: stannum/messages/default-strategy/i-call
+params:
+- description: |-
+    The qualified path to the configured error
+    message.
+  name: error_type
+  type:
+  - name: String
+- description: |-
+    Additional properties to interpolate or to pass to
+    the message proc.
+  name: options
+  type:
+  - name: Hash
+version: "*"

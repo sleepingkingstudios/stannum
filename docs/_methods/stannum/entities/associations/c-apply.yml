@@ -1,0 +1,19 @@
+---
+name: Stannum::Entities::Associations.apply
+parent_path: stannum/entities/associations
+signature: apply(other)
+slug: apply
+constructor: false
+data_path: stannum/entities/associations/c-apply
+description: |-
+  Creates a new Stannum::Schema and sets it as the class's :Associations
+  constant. If the superclass is an entity class (and already defines its
+  own Associations, includes the superclass Associations in the class
+  Associations). Finally, includes the class Associations in the class.
+params:
+- description: the class to which attributes are added.
+  name: other
+  type:
+  - name: Class
+short_description: Generates Associations schema for the class.
+version: "*"

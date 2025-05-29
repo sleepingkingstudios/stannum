@@ -1,0 +1,30 @@
+---
+name: Stannum::Entities::Associations#associations=
+parent_path: stannum/entities/associations
+signature: associations=(associations)
+slug: associations=
+constructor: false
+data_path: stannum/entities/associations/i-associations=
+description: |-
+  This method is used to update all of the associations of the entity. For
+  each association, the writer method is called with the value from the
+  hash. Non-association properties are unchanged.
+
+  If the associations hash includes any keys that do not correspond to a
+  valid association, the entity will raise an error.
+metadata:
+  see:
+  - label: "#assign_attributes"
+    path:
+    text:
+    type: reference
+params:
+- description: the associations to assign to the entity.
+  name: associations
+  type:
+  - name: Hash
+raises:
+- description: ArgumentError if any key is not a valid association.
+  type: []
+short_description: Replaces the entity's associations with the given values.
+version: "*"

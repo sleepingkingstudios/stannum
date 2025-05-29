@@ -1,0 +1,23 @@
+---
+name: Stannum::Constraints::Properties
+slug: properties
+type: module
+files:
+- lib/stannum/constraints/properties.rb
+- lib/stannum/constraints/properties/base.rb
+- lib/stannum/constraints/properties/matching.rb
+- lib/stannum/constraints/properties/match_property.rb
+- lib/stannum/constraints/properties/do_not_match_property.rb
+parent_path: stannum/constraints
+short_description: Namespace for Object property-specific constraints.
+defined_classes:
+- name: Base
+  slug: base
+- name: DoNotMatchProperty
+  slug: do-not-match-property
+- name: MatchProperty
+  slug: match-property
+- name: Matching
+  slug: matching
+data_path: stannum/constraints/properties
+version: "*"

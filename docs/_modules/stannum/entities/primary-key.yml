@@ -1,0 +1,35 @@
+---
+name: Stannum::Entities::PrimaryKey
+slug: primary-key
+type: module
+files:
+- lib/stannum/entities/primary_key.rb
+parent_path: stannum/entities
+short_description: Methods for defining and accessing an entity's primary key attribute.
+defined_classes:
+- name: PrimaryKeyAlreadyExists
+  slug: primary-key-already-exists
+- name: PrimaryKeyMissing
+  slug: primary-key-missing
+defined_modules:
+- name: ClassMethods
+  slug: class-methods
+instance_methods:
+- name: primary_key?
+  path: stannum/entities/primary-key/i-primary-key?
+  slug: primary-key?
+  inherited: false
+- name: primary_key_name
+  path: stannum/entities/primary-key/i-primary-key-name
+  slug: primary-key-name
+  inherited: false
+- name: primary_key_type
+  path: stannum/entities/primary-key/i-primary-key-type
+  slug: primary-key-type
+  inherited: false
+- name: primary_key_value
+  path: stannum/entities/primary-key/i-primary-key-value
+  slug: primary-key-value
+  inherited: false
+data_path: stannum/entities/primary-key
+version: "*"

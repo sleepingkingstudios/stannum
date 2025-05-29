@@ -1,0 +1,14 @@
+---
+name: Stannum::Entities::Associations::InvalidOptionError
+slug: invalid-option-error
+type: class
+files:
+- lib/stannum/entities/associations.rb
+parent_path: stannum/entities/associations
+short_description: Exception class raised when an invalid option value is set.
+data_path: stannum/entities/associations/invalid-option-error
+constructor: false
+inherited_classes:
+- name: StandardError
+  slug: standard-error
+version: "*"

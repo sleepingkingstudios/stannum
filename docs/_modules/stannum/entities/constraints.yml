@@ -1,0 +1,20 @@
+---
+name: Stannum::Entities::Constraints
+slug: constraints
+type: module
+files:
+- lib/stannum/entities/constraints.rb
+parent_path: stannum/entities
+short_description: Methods for defining and accessing entity constraints.
+class_methods:
+- name: apply
+  path: stannum/entities/constraints/c-apply
+  slug: apply
+  inherited: false
+defined_modules:
+- name: AttributesMethods
+  slug: attributes-methods
+- name: ClassMethods
+  slug: class-methods
+data_path: stannum/entities/constraints
+version: "*"

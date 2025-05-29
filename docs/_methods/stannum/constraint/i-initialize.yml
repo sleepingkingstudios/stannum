@@ -1,0 +1,51 @@
+---
+name: Stannum::Constraint#initialize
+parent_path: stannum/constraint
+signature: initialize(**options, &block)
+slug: initialize
+constructor: true
+data_path: stannum/constraint/i-initialize
+overloads:
+- name: Stannum::Constraint#initialize
+  parent_path: stannum/constraint
+  signature: initialize(**options)
+  slug: initialize
+  constructor: true
+  metadata:
+    see:
+    - label: "#matches?"
+      path: stannum/constraint#instance-method-matches?
+      text:
+      type: reference
+  params:
+  - description: |-
+      Configuration options for the
+      constraint. Defaults to an empty Hash.
+    name: options
+    type:
+    - name: Hash
+      items:
+      - name: Symbol
+      - name: Object
+  yield_params:
+  - description: The object to check against the constraint.
+    name: actual
+    type:
+    - name: Object
+  yield_returns:
+  - description: |-
+      true if the given object matches the
+      constraint, otherwise false.
+    type:
+    - name: 'true'
+    - name: 'false'
+  yields:
+  - description: |-
+      The definition for the constraint. Each time #matches? is called
+      for this constraint, the given object will be passed to this block and
+      the result of the block will be returned.
+returns:
+- description: a new instance of Constraint
+  type:
+  - name: Constraint
+version: "*"

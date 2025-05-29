@@ -1,0 +1,12 @@
+---
+name: Stannum::Association#options
+parent_path: stannum/association
+signature: options
+slug: options
+constructor: false
+data_path: stannum/association/i-options
+returns:
+- description: the association options.
+  type:
+  - name: Hash
+version: "*"

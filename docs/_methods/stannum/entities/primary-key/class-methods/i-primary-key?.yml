@@ -1,0 +1,14 @@
+---
+name: Stannum::Entities::PrimaryKey::ClassMethods#primary_key?
+parent_path: stannum/entities/primary-key/class-methods
+signature: primary_key?
+slug: primary-key?
+constructor: false
+data_path: stannum/entities/primary-key/class-methods/i-primary-key?
+returns:
+- description: |-
+    true if the entity class defines a primary key;
+    otherwise false.
+  type:
+  - name: Boolean
+version: "*"

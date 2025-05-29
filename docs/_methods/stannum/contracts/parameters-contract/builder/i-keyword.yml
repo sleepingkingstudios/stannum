@@ -1,0 +1,94 @@
+---
+name: Stannum::Contracts::ParametersContract::Builder#keyword
+parent_path: stannum/contracts/parameters-contract/builder
+signature: keyword(name, type = nil, **options, &)
+slug: keyword
+constructor: false
+data_path: stannum/contracts/parameters-contract/builder/i-keyword
+metadata:
+  api: private
+overloads:
+- name: Stannum::Contracts::ParametersContract::Builder#keyword
+  parent_path: stannum/contracts/parameters-contract/builder
+  signature: keyword(name, type, **options)
+  slug: keyword
+  constructor: false
+  params:
+  - description: The keyword to constrain.
+    name: keyword
+    type:
+    - name: Symbol
+  - description: |-
+      The expected
+      type of the keyword.
+    name: type
+    type:
+    - name: Class
+    - name: Module
+    - name: Stannum::Constraints:Base
+  - description: |-
+      Configuration options for the
+      constraint. Defaults to an empty Hash.
+    name: options
+    type:
+    - name: Hash
+      items:
+      - name: Symbol
+      - name: Object
+  returns:
+  - description: the builder.
+    type:
+    - name: Stannum::Contracts::ParametersContract::Builder
+      path: stannum/contracts/parameters-contract/builder
+  short_description: |-
+    Generates a keyword constraint based on the given type. If the type is
+    a constraint, then the given constraint will be copied with the given
+    options and added for the given keyword. If the type is a Class or a
+    Module, then a Stannum::Constraints::Type constraint will be created
+    with the given type and options and added for the keyword.
+- name: Stannum::Contracts::ParametersContract::Builder#keyword
+  parent_path: stannum/contracts/parameters-contract/builder
+  signature: keyword(name, **options, &block)
+  slug: keyword
+  constructor: false
+  params:
+  - description: The keyword to constrain.
+    name: keyword
+    type:
+    - name: Symbol
+  - description: |-
+      Configuration options for the
+      constraint. Defaults to an empty Hash.
+    name: options
+    type:
+    - name: Hash
+      items:
+      - name: Symbol
+      - name: Object
+  returns:
+  - description: the builder.
+    type:
+    - name: Stannum::Contracts::ParametersContract::Builder
+      path: stannum/contracts/parameters-contract/builder
+  short_description: Generates a new Stannum::Constraint using the block.
+  yield_params:
+  - description: |-
+      The object to check against the
+      constraint.
+    name: actual
+    type:
+    - name: Object
+  yield_returns:
+  - description: |-
+      true if the given object matches the
+      constraint, otherwise false.
+    type:
+    - name: 'true'
+    - name: 'false'
+  yields:
+  - description: |-
+      The definition for the constraint. Each time #matches? is
+      called for this constraint, the given object will be passed to this
+      block and the result of the block will be returned.
+short_description: Adds a keyword constraint to the contract.
+version: "*"

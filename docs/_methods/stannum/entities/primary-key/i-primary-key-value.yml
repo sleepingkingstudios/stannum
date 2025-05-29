@@ -1,0 +1,21 @@
+---
+name: Stannum::Entities::PrimaryKey#primary_key_value
+parent_path: stannum/entities/primary-key
+signature: primary_key_value
+slug: primary-key-value
+aliases:
+- primary_key
+constructor: false
+data_path: stannum/entities/primary-key/i-primary-key-value
+raises:
+- description: |-
+    if the entity
+    does not define a primary key.
+  type:
+  - name: Stannum::Entities::PrimaryKey::PrimaryKeyMissing
+    path: stannum/entities/primary-key/primary-key-missing
+returns:
+- description: the current value of the primary key attribute.
+  type:
+  - name: Object
+version: "*"

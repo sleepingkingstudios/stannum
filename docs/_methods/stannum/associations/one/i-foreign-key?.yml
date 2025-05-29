@@ -1,0 +1,14 @@
+---
+name: Stannum::Associations::One#foreign_key?
+parent_path: stannum/associations/one
+signature: foreign_key?
+slug: foreign-key?
+constructor: false
+data_path: stannum/associations/one/i-foreign-key?
+returns:
+- description: |-
+    true if the association has a foreign key; otherwise
+    false.
+  type:
+  - name: Boolean
+version: "*"

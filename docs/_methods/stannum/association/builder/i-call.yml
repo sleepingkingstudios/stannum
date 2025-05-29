@@ -1,0 +1,15 @@
+---
+name: Stannum::Association::Builder#call
+parent_path: stannum/association/builder
+signature: call(association)
+slug: call
+constructor: false
+data_path: stannum/association/builder/i-call
+params:
+- description: ''
+  name: association
+  type:
+  - name: Stannum::Association
+    path: stannum/association
+short_description: Defines the reader and writer methods for the association.
+version: "*"

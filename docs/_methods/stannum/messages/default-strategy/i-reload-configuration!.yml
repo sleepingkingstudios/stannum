@@ -1,0 +1,16 @@
+---
+name: Stannum::Messages::DefaultStrategy#reload_configuration!
+parent_path: stannum/messages/default-strategy
+signature: reload_configuration!
+slug: reload-configuration!
+constructor: false
+data_path: stannum/messages/default-strategy/i-reload-configuration!
+description: |-
+  This can be useful when the load_path is updated after creating the
+  strategy, such as in an initializer for another gem.
+returns:
+- description: the strategy.
+  type:
+  - name: DefaultStrategy
+short_description: Reloads the configuration from the configured load_path.
+version: "*"

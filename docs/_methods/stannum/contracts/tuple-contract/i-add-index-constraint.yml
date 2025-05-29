@@ -1,0 +1,51 @@
+---
+name: Stannum::Contracts::TupleContract#add_index_constraint
+parent_path: stannum/contracts/tuple-contract
+signature: 'add_index_constraint(index, constraint, sanity: false, **options)'
+slug: add-index-constraint
+constructor: false
+data_path: stannum/contracts/tuple-contract/i-add-index-constraint
+description: |-
+  When the contract is called, the contract will find the value of the
+  object at the given index.
+metadata:
+  see:
+  - label: Stannum::Contract#add_constraint
+    path: stannum/contract#instance-method-add-constraint
+    text:
+    type: reference
+params:
+- description: The index of the value to match.
+  name: index
+  type:
+  - name: Integer
+- description: The constraint to add.
+  name: constraint
+  type:
+  - name: Stannum::Constraints::Base
+    path: stannum/constraints/base
+- description: |-
+    Marks the constraint as a sanity constraint,
+    which is always matched first and will always short-circuit on a failed
+    match.
+  name: sanity
+  type:
+  - name: 'true'
+  - name: 'false'
+  default: 'false'
+- description: |-
+    Options for the constraint. These
+    can be used by subclasses to define the value and error mappings for the
+    constraint.
+  name: options
+  type:
+  - name: Hash
+    items:
+    - name: Symbol
+    - name: Object
+returns:
+- description: the contract.
+  type:
+  - name: self
+short_description: Adds an index constraint to the contract.
+version: "*"

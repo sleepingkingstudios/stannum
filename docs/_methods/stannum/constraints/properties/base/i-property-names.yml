@@ -1,0 +1,17 @@
+---
+name: Stannum::Constraints::Properties::Base#property_names
+parent_path: stannum/constraints/properties/base
+signature: property_names
+slug: property-names
+constructor: false
+data_path: stannum/constraints/properties/base/i-property-names
+returns:
+- description: |-
+    the name or names of the properties to
+    match.
+  type:
+  - name: Array
+    items:
+    - name: String
+    - name: Symbol
+version: "*"

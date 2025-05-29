@@ -1,0 +1,14 @@
+---
+name: Stannum::Association#inverse?
+parent_path: stannum/association
+signature: inverse?
+slug: inverse?
+constructor: false
+data_path: stannum/association/i-inverse?
+returns:
+- description: |-
+    true if the association has an inverse association;
+    otherwise false.
+  type:
+  - name: Boolean
+version: "*"

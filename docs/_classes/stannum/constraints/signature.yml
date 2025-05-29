@@ -1,0 +1,115 @@
+---
+name: Stannum::Constraints::Signature
+slug: signature
+type: class
+files:
+- lib/stannum/constraints/signature.rb
+parent_path: stannum/constraints
+short_description: Constraint for matching objects by the methods they respond to.
+constants:
+- name: NEGATED_TYPE
+  path: stannum/constraints/signature/negated-type
+  slug: negated-type
+  inherited: false
+- name: TYPE
+  path: stannum/constraints/signature/type
+  slug: type
+  inherited: false
+instance_attributes:
+- name: expected_methods
+  read: true
+  write: false
+  path: stannum/constraints/signature/i-expected-methods
+  slug: expected-methods
+  inherited: false
+- name: options
+  read: true
+  write: true
+  path: stannum/constraints/base/i-options
+  slug: options
+  inherited: true
+instance_methods:
+- name: "=="
+  path: stannum/constraints/base/i-==
+  slug: "=="
+  inherited: true
+- name: clone
+  path: stannum/constraints/base/i-clone
+  slug: clone
+  inherited: true
+- name: does_not_match?
+  path: stannum/constraints/signature/i-does-not-match?
+  slug: does-not-match?
+  inherited: false
+- name: dup
+  path: stannum/constraints/base/i-dup
+  slug: dup
+  inherited: true
+- name: errors_for
+  path: stannum/constraints/signature/i-errors-for
+  slug: errors-for
+  inherited: false
+- name: initialize
+  path: stannum/constraints/signature/i-initialize
+  slug: initialize
+  inherited: false
+  constructor: true
+- name: match
+  path: stannum/constraints/base/i-match
+  slug: match
+  inherited: true
+- name: matches?
+  path: stannum/constraints/signature/i-matches?
+  slug: matches?
+  inherited: false
+- name: message
+  path: stannum/constraints/base/i-message
+  slug: message
+  inherited: true
+- name: negated_errors_for
+  path: stannum/constraints/signature/i-negated-errors-for
+  slug: negated-errors-for
+  inherited: false
+- name: negated_match
+  path: stannum/constraints/base/i-negated-match
+  slug: negated-match
+  inherited: true
+- name: negated_message
+  path: stannum/constraints/base/i-negated-message
+  slug: negated-message
+  inherited: true
+- name: negated_type
+  path: stannum/constraints/base/i-negated-type
+  slug: negated-type
+  inherited: true
+- name: type
+  path: stannum/constraints/base/i-type
+  slug: type
+  inherited: true
+- name: with_options
+  path: stannum/constraints/base/i-with-options
+  slug: with-options
+  inherited: true
+data_path: stannum/constraints/signature
+metadata:
+  examples:
+  - name: ''
+    text: |-
+      constraint = Stannum::Constraints::Signature.new(:[], :keys)
+
+      constraint.matches?(Object.new) #=> false
+      constraint.matches?([])         #=> false
+      constraint.matches?({})         #=> true
+constructor: true
+direct_subclasses:
+- name: Stannum::Constraints::Signatures::Map
+  slug: map
+  path: stannum/constraints/signatures/map
+- name: Stannum::Constraints::Signatures::Tuple
+  slug: tuple
+  path: stannum/constraints/signatures/tuple
+inherited_classes:
+- name: Stannum::Constraints::Base
+  slug: base
+  path: stannum/constraints/base
+version: "*"

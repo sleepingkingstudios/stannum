@@ -1,0 +1,22 @@
+---
+name: Stannum::Constraints::Types::SymbolType#initialize
+parent_path: stannum/constraints/types/symbol-type
+signature: initialize(**options)
+slug: initialize
+constructor: true
+data_path: stannum/constraints/types/symbol-type/i-initialize
+params:
+- description: |-
+    Configuration options for the
+    constraint. Defaults to an empty Hash.
+  name: options
+  type:
+  - name: Hash
+    items:
+    - name: Symbol
+    - name: Object
+returns:
+- description: a new instance of SymbolType
+  type:
+  - name: SymbolType
+version: "*"

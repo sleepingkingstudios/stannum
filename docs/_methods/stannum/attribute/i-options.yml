@@ -1,0 +1,12 @@
+---
+name: Stannum::Attribute#options
+parent_path: stannum/attribute
+signature: options
+slug: options
+constructor: false
+data_path: stannum/attribute/i-options
+returns:
+- description: the attribute options.
+  type:
+  - name: Hash
+version: "*"

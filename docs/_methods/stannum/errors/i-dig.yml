@@ -1,0 +1,109 @@
+---
+name: Stannum::Errors#dig
+parent_path: stannum/errors
+signature: dig(first, *rest)
+slug: dig
+constructor: false
+data_path: stannum/errors/i-dig
+description: |-
+  Similiar to the #[] method, but can access a deeply nested errors object
+  as well. The #dig method can take either a list of one or more keys
+  (Integers, Strings, and Symbols) as arguments, or an Array of keys.
+  Calling errors.dig is equivalent to calling errors[] with each key in
+  sequence.
+metadata:
+  examples:
+  - name: Accessing Nested Errors via a Key
+    text: |-
+      errors = Stannum::Errors.new
+      child  = errors.dig(:spell)
+      child.size #=> 0
+      child.to_a #=> []
+
+      child.add(:insufficient_mana)
+      child.size # 1
+      child.to_a # [{ type: :insufficient_mana, path: [] }]
+
+      # Adding an error to a child makes it available on a parent.
+      errors.size # 1
+      errors.to_a # [{ type: :insufficient_mana, path: [:spell] }]
+  - name: Accessing Nested Errors via an Index
+    text: |-
+      errors = Stannum::Errors.new
+      child  = errors.dig(1)
+
+      child.size #=> 0
+      child.to_a #=> []
+
+      child.add(:unknown_monster)
+      child.size # 1
+      child.to_a # [{ type: :unknown_monster, path: [] }]
+
+      # Adding an error to a child makes it available on a parent.
+      errors.size # 1
+      errors.to_a # [{ type: :unknown_monster, path: [1] }]
+  - name: Accessing Deeply Nested Errors
+    text: |-
+      errors = Stannum::Errors.new
+
+      errors.dig(:towns, 1, :name).add(:unpronounceable)
+      errors.size #=> 1
+      errors.to_a #=> [{ type: :unpronounceable, path: [:towns, 1, :name] }]
+
+      errors.dig(:towns).size #=> 1
+      errors.dig(:towns).to_a #=> [{ type: :unpronounceable, path: [1, :name] }]
+
+      errors.dig(:towns, 1).size #=> 1
+      errors.dig(:towns, 1).to_a #=> [{ type: :unpronounceable, path: [:name] }]
+
+      errors.dig(:towns, 1, :name).size #=> 1
+      errors.dig(:towns, 1, :name).to_a #=> [{ type: :unpronounceable, path: [] }]
+  see:
+  - label: "#[]"
+    path: stannum/errors#instance-method-[]
+    text:
+    type: reference
+overloads:
+- name: Stannum::Errors#dig
+  parent_path: stannum/errors
+  signature: dig(keys)
+  slug: dig
+  constructor: false
+  params:
+  - description: |-
+      The path to the nested
+      errors object, as an array of Integers, Strings, and Symbols.
+    name: keys
+    type:
+    - name: Array
+      items:
+      - name: Integer
+      - name: String
+      - name: Symbol
+- name: Stannum::Errors#dig
+  parent_path: stannum/errors
+  signature: dig(*keys)
+  slug: dig
+  constructor: false
+  params:
+  - description: |-
+      The path to the nested
+      errors object, as individual Integers, Strings, and Symbols.
+    name: keys
+    type:
+    - name: Array
+      items:
+      - name: Integer
+      - name: String
+      - name: Symbol
+raises:
+- description: if the keys are not Strings, Symbols or Integers.
+  type:
+  - name: ArgumentError
+returns:
+- description: the nested error object at the specified path.
+  type:
+  - name: Stannum::Errors
+    path: stannum/errors
+short_description: Accesses a (possibly deeply) nested errors object.
+version: "*"

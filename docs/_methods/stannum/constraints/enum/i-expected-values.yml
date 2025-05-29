@@ -1,0 +1,12 @@
+---
+name: Stannum::Constraints::Enum#expected_values
+parent_path: stannum/constraints/enum
+signature: expected_values
+slug: expected-values
+constructor: false
+data_path: stannum/constraints/enum/i-expected-values
+returns:
+- description: the possible values for the object.
+  type:
+  - name: Array
+version: "*"

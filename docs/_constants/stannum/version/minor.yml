@@ -1,0 +1,10 @@
+---
+name: Stannum::Version::MINOR
+parent_path: stannum/version
+slug: minor
+short_description: Minor version.
+value: '4'
+data_path: stannum/version/minor
+metadata:
+  api: private
+version: "*"

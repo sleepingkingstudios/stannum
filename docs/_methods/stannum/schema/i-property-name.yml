@@ -1,0 +1,12 @@
+---
+name: Stannum::Schema#property_name
+parent_path: stannum/schema
+signature: property_name
+slug: property-name
+constructor: false
+data_path: stannum/schema/i-property-name
+returns:
+- description: the name of the schema elements.
+  type:
+  - name: String
+version: "*"

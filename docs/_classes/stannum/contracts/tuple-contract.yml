@@ -1,0 +1,199 @@
+---
+name: Stannum::Contracts::TupleContract
+slug: tuple-contract
+type: class
+files:
+- lib/stannum/contracts/tuple_contract.rb
+parent_path: stannum/contracts
+short_description: A TupleContract defines constraints for an ordered, indexed object.
+constants:
+- name: NEGATED_TYPE
+  path: stannum/constraints/base/negated-type
+  slug: negated-type
+  inherited: true
+- name: TYPE
+  path: stannum/constraints/base/type
+  slug: type
+  inherited: true
+defined_classes:
+- name: Builder
+  slug: builder
+instance_attributes:
+- name: options
+  read: true
+  write: true
+  path: stannum/constraints/base/i-options
+  slug: options
+  inherited: true
+instance_methods:
+- name: "=="
+  path: stannum/contracts/base/i-==
+  slug: "=="
+  inherited: true
+- name: add_constraint
+  path: stannum/contract/i-add-constraint
+  slug: add-constraint
+  inherited: true
+- name: add_index_constraint
+  path: stannum/contracts/tuple-contract/i-add-index-constraint
+  slug: add-index-constraint
+  inherited: false
+- name: add_property_constraint
+  path: stannum/contract/i-add-property-constraint
+  slug: add-property-constraint
+  inherited: true
+- name: allow_extra_items?
+  path: stannum/contracts/tuple-contract/i-allow-extra-items?
+  slug: allow-extra-items?
+  inherited: false
+- name: clone
+  path: stannum/constraints/base/i-clone
+  slug: clone
+  inherited: true
+- name: concat
+  path: stannum/contracts/base/i-concat
+  slug: concat
+  inherited: true
+- name: does_not_match?
+  path: stannum/contracts/base/i-does-not-match?
+  slug: does-not-match?
+  inherited: true
+- name: dup
+  path: stannum/constraints/base/i-dup
+  slug: dup
+  inherited: true
+- name: each_constraint
+  path: stannum/contracts/base/i-each-constraint
+  slug: each-constraint
+  inherited: true
+- name: each_pair
+  path: stannum/contracts/base/i-each-pair
+  slug: each-pair
+  inherited: true
+- name: errors_for
+  path: stannum/contracts/base/i-errors-for
+  slug: errors-for
+  inherited: true
+- name: initialize
+  path: stannum/contracts/tuple-contract/i-initialize
+  slug: initialize
+  inherited: false
+  constructor: true
+- name: match
+  path: stannum/contracts/base/i-match
+  slug: match
+  inherited: true
+- name: matches?
+  path: stannum/contracts/base/i-matches?
+  slug: matches?
+  inherited: true
+- name: message
+  path: stannum/constraints/base/i-message
+  slug: message
+  inherited: true
+- name: negated_errors_for
+  path: stannum/contracts/base/i-negated-errors-for
+  slug: negated-errors-for
+  inherited: true
+- name: negated_match
+  path: stannum/contracts/base/i-negated-match
+  slug: negated-match
+  inherited: true
+- name: negated_message
+  path: stannum/constraints/base/i-negated-message
+  slug: negated-message
+  inherited: true
+- name: negated_type
+  path: stannum/constraints/base/i-negated-type
+  slug: negated-type
+  inherited: true
+- name: type
+  path: stannum/constraints/base/i-type
+  slug: type
+  inherited: true
+- name: with_options
+  path: stannum/contracts/tuple-contract/i-with-options
+  slug: with-options
+  inherited: false
+data_path: stannum/contracts/tuple-contract
+description: |-
+  In order to match a TupleContract, the object must respond to the :[],
+  :each, and :size methods, and the items in the object at each index must
+  match the item constraint defined for that index. Finally, unless the
+  :allow_extra_items option is set to true, the object must not have any extra
+  items.
+metadata:
+  examples:
+  - name: Creating A Contract With Item Constraints
+    text: |-
+      third_base_constraint = Stannum::Constraint.new do |actual|
+        actual == "I Don't Know"
+      end
+      tuple_contract = Stannum::Contracts::TupleContract.new do
+        item { |actual| actual == 'Who' }
+        item { |actual| actual == 'What' }
+        item third_base_constraint
+      end
+  - name: With A Non-Tuple Object
+    text: |-
+      tuple_contract.matches?(nil) #=> false
+      errors = tuple_contract.errors_for(nil)
+      errors.to_a
+      #=> [
+        {
+          type:    'stannum.constraints.does_not_have_methods',
+          data:    { methods: [:[], :each, :size], missing: [:[], :each, :size] },
+          message: nil,
+          path:    []
+        }
+      ]
+  - name: With An Object With Missing Items
+    text: |-
+      tuple_contract.matches?(['Who']) #=> false
+      errors = tuple_contract.errors_for(['Who'])
+      errors.to_a
+      #=> [
+        { type: 'stannum.constraints.invalid', data: {}, path: [1], message: nil },
+        { type: 'stannum.constraints.invalid', data: {}, path: [2], message: nil }
+      ]
+  - name: With An Object With Incorrect Items
+    text: |-
+      tuple_contract.matches?(['What', 'What', "I Don't Know"]) #=> false
+      errors = tuple_contract.errors_for(['What', 'What', "I Don't Know"])
+      errors.to_a
+      #=> [
+        { type: 'stannum.constraints.invalid', data: {}, path: [0], message: nil }
+      ]
+  - name: With An Object With Valid Items
+    text: |-
+      tuple_contract.matches?(['Who', 'What', "I Don't Know"]) #=> true
+      errors = tuple_contract.errors_for(['What', 'What', "I Don't Know"])
+      errors.to_a #=> []
+  - name: With An Object With Extra Items
+    text: |-
+      tuple_contract.matches?(['Who', 'What', "I Don't Know", 'Tomorrow', 'Today']) #=> false
+      errors = tuple_contract.errors_for(['Who', 'What', "I Don't Know", 'Tomorrow', 'Today'])
+      errors.to_a
+      #=> [
+        { type: 'stannum.constraints.tuples.extra_items', data: {}, path: [3], message: nil },
+        { type: 'stannum.constraints.tuples.extra_items', data: {}, path: [4], message: nil }
+      ]
+constructor: true
+direct_subclasses:
+- name: Stannum::Contracts::ArrayContract
+  slug: array-contract
+  path: stannum/contracts/array-contract
+- name: Stannum::Contracts::Parameters::ArgumentsContract
+  slug: arguments-contract
+  path: stannum/contracts/parameters/arguments-contract
+inherited_classes:
+- name: Stannum::Contract
+  slug: contract
+  path: stannum/contract
+- name: Stannum::Contracts::Base
+  slug: base
+  path: stannum/contracts/base
+- name: Stannum::Constraints::Base
+  slug: base
+  path: stannum/constraints/base
+version: "*"

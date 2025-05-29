@@ -1,0 +1,14 @@
+---
+name: Stannum::ParameterValidation::MethodValidations#contracts
+parent_path: stannum/parameter-validation/method-validations
+signature: contracts
+slug: contracts
+constructor: false
+data_path: stannum/parameter-validation/method-validations/i-contracts
+metadata:
+  api: private
+returns:
+- description: the validation contracts defined for the class.
+  type:
+  - name: Hash
+version: "*"

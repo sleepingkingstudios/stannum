@@ -1,0 +1,12 @@
+---
+name: Stannum::Associations::Many::Proxy#inspect
+parent_path: stannum/associations/many/proxy
+signature: inspect
+slug: inspect
+constructor: false
+data_path: stannum/associations/many/proxy/i-inspect
+returns:
+- description: a human-readable string representation of the object.
+  type:
+  - name: String
+version: "*"

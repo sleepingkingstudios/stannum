@@ -1,0 +1,13 @@
+---
+name: Stannum::RSpec::MatchErrorsMatcher#does_not_match?
+parent_path: stannum/r-spec/match-errors-matcher
+signature: does_not_match?(actual)
+slug: does-not-match?
+constructor: false
+data_path: stannum/r-spec/match-errors-matcher/i-does-not-match?
+returns:
+- description: ''
+  type:
+  - name: Boolean
+short_description: Checks that the given errors do not match the expected errors.
+version: "*"

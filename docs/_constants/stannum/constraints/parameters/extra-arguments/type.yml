@@ -1,0 +1,8 @@
+---
+name: Stannum::Constraints::Parameters::ExtraArguments::TYPE
+parent_path: stannum/constraints/parameters/extra-arguments
+slug: type
+short_description: The :type of the error generated for a non-matching object.
+value: "'stannum.constraints.parameters.extra_arguments'"
+data_path: stannum/constraints/parameters/extra-arguments/type
+version: "*"

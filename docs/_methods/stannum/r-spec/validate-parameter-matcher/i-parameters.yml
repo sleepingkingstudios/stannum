@@ -1,0 +1,12 @@
+---
+name: Stannum::RSpec::ValidateParameterMatcher#parameters
+parent_path: stannum/r-spec/validate-parameter-matcher
+signature: parameters
+slug: parameters
+constructor: false
+data_path: stannum/r-spec/validate-parameter-matcher/i-parameters
+returns:
+- description: the configured parameters to match.
+  type:
+  - name: Hash
+version: "*"

@@ -1,0 +1,25 @@
+---
+name: Stannum::Association#get_value
+parent_path: stannum/association
+signature: get_value(entity)
+slug: get-value
+constructor: false
+data_path: stannum/association/i-get-value
+metadata:
+  api: private
+params:
+- description: the entity to update.
+  name: entity
+  type:
+  - name: Stannum::Entity
+    path: stannum/entity
+raises:
+- description: ''
+  type:
+  - name: AbstractAssociationError
+returns:
+- description: the value of the association.
+  type:
+  - name: Object
+short_description: Retrieves the value of the association for the entity.
+version: "*"

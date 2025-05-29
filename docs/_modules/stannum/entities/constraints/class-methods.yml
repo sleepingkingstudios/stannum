@@ -1,0 +1,19 @@
+---
+name: Stannum::Entities::Constraints::ClassMethods
+slug: class-methods
+type: module
+files:
+- lib/stannum/entities/constraints.rb
+parent_path: stannum/entities/constraints
+short_description: Class methods to extend the class when including Constraints.
+instance_methods:
+- name: constraint
+  path: stannum/entities/constraints/class-methods/i-constraint
+  slug: constraint
+  inherited: false
+- name: contract
+  path: stannum/entities/constraints/class-methods/i-contract
+  slug: contract
+  inherited: false
+data_path: stannum/entities/constraints/class-methods
+version: "*"

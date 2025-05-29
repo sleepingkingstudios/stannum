@@ -1,0 +1,21 @@
+---
+name: Stannum::RSpec::ValidateParameterMatcher#matches?
+parent_path: stannum/r-spec/validate-parameter-matcher
+signature: matches?(actual)
+slug: matches?
+constructor: false
+data_path: stannum/r-spec/validate-parameter-matcher/i-matches?
+params:
+- description: The object to match.
+  name: actual
+  type:
+  - name: Object
+returns:
+- description: |-
+    true if the object validates the parameter,
+    otherwise false.
+  type:
+  - name: 'true'
+  - name: 'false'
+short_description: Asserts that the object validates the specified method parameter.
+version: "*"

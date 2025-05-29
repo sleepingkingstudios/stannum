@@ -1,0 +1,24 @@
+---
+name: Stannum::Constraints::Format#matches?
+parent_path: stannum/constraints/format
+signature: matches?(actual)
+slug: matches?
+aliases:
+- match?
+constructor: false
+data_path: stannum/constraints/format/i-matches?
+metadata:
+  see:
+  - label: Stannum::Constraint#matches?
+    path: stannum/constraint#instance-method-matches?
+    text:
+    type: reference
+returns:
+- description: |-
+    true if the object is a string with the expected
+    format, otherwise false.
+  type:
+  - name: 'true'
+  - name: 'false'
+short_description: Checks that the object is a string with the expected format.
+version: "*"

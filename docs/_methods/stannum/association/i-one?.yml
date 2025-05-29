@@ -1,0 +1,14 @@
+---
+name: Stannum::Association#one?
+parent_path: stannum/association
+signature: one?
+slug: one?
+constructor: false
+data_path: stannum/association/i-one?
+returns:
+- description: |-
+    true if the association is a singular association;
+    otherwise false.
+  type:
+  - name: 'false'
+version: "*"

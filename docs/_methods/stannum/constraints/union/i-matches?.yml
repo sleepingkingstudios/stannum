@@ -1,0 +1,24 @@
+---
+name: Stannum::Constraints::Union#matches?
+parent_path: stannum/constraints/union
+signature: matches?(actual)
+slug: matches?
+aliases:
+- match?
+constructor: false
+data_path: stannum/constraints/union/i-matches?
+metadata:
+  see:
+  - label: Stannum::Constraint#matches?
+    path: stannum/constraint#instance-method-matches?
+    text:
+    type: reference
+returns:
+- description: |-
+    false if the object matches a constraint, otherwise
+    false.
+  type:
+  - name: 'true'
+  - name: 'false'
+short_description: Checks that the object matches at least one of the given constraints.
+version: "*"

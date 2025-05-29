@@ -1,0 +1,12 @@
+---
+name: Stannum::Constraints::Identity#expected_value
+parent_path: stannum/constraints/identity
+signature: expected_value
+slug: expected-value
+constructor: false
+data_path: stannum/constraints/identity/i-expected-value
+returns:
+- description: the expected object.
+  type:
+  - name: Object
+version: "*"

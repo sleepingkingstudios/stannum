@@ -1,0 +1,32 @@
+---
+name: Stannum::Struct#initialize
+parent_path: stannum/struct
+signature: initialize(attributes = {})
+slug: initialize
+constructor: false
+data_path: stannum/struct/i-initialize
+description: |-
+  For each key in the attributes hash, the corresponding writer method will
+  be called with the attribute value. If the hash does not include the key
+  for an attribute, or if the value is nil, the attribute will be set to
+  its default value.
+
+  If the attributes hash includes any keys that do not correspond to an
+  attribute, the struct will raise an error.
+metadata:
+  see:
+  - label: "#attributes="
+    path:
+    text:
+    type: reference
+params:
+- description: The initial attributes for the struct.
+  name: attributes
+  type:
+  - name: Hash
+  default: "{}"
+raises:
+- description: ArgumentError if given an invalid attributes hash.
+  type: []
+short_description: Initializes the struct with the given attributes.
+version: "*"

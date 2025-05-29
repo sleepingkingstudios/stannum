@@ -1,0 +1,31 @@
+---
+name: Stannum::Constraints::Types::HashType#matches?
+parent_path: stannum/constraints/types/hash-type
+signature: matches?(actual)
+slug: matches?
+aliases:
+- match?
+constructor: false
+data_path: stannum/constraints/types/hash-type/i-matches?
+description: |-
+  If the constraint was configured with a key_type, each key in the hash
+  will be compared to the expected type. Likewise, if the constraint was
+  configured with a value_type, each value in the hash will be compared. If
+  any keys and/or values do not match the expectation, then #matches? will
+  return false.
+metadata:
+  see:
+  - label: Stannum::Constraints::Types::HashType#does_not_match?
+    path: stannum/constraints/types/hash-type#instance-method-does-not-match?
+    text:
+    type: reference
+returns:
+- description: |-
+    true if the object is a Hash instance with matching
+    keys and values, otherwise false.
+  type:
+  - name: 'true'
+  - name: 'false'
+short_description: Checks that the object is a Hash instance and that the keys/values
+  match.
+version: "*"
