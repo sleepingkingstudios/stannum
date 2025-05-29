@@ -29,7 +29,7 @@ module Stannum::Constraints::Tuples
 
     # @return [true, false] true if the object responds to #size and the object
     #   size is greater than the number of expected items; otherwise false.
-    def does_not_match?(actual)
+    def does_not_match?(actual) # rubocop:disable Naming/PredicateName
       return false unless actual.respond_to?(:size)
 
       actual.size > expected_count

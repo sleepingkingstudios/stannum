@@ -41,7 +41,7 @@ module Stannum::Constraints::Properties
 
     # @return [true, false] false if any of the property values match the
     #   reference property value; otherwise true.
-    def does_not_match?(actual)
+    def does_not_match?(actual) # rubocop:disable Naming/PredicateName
       return false unless can_match_properties?(actual)
 
       expected = expected_value(actual)

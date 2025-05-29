@@ -45,7 +45,7 @@ module Stannum::Constraints::Hashes
 
     # @return [true, false] true if the object responds to #[] and #keys and the
     #   object has at least one key that is not in expected_keys.
-    def does_not_match?(actual)
+    def does_not_match?(actual) # rubocop:disable Naming/PredicateName
       return false unless hash?(actual)
 
       !(Set.new(actual.keys) <= expected_keys) # rubocop:disable Style/InverseMethods

@@ -1,4 +1,4 @@
-require:
+plugins:
   - rubocop-rspec
 
 inherit_gem:
@@ -68,6 +68,9 @@ RSpec/ExpectInLet:
 
 RSpec/HookArgument:
   EnforcedStyle: example
+
+RSpec/IncludeExamples:
+  Enabled: false
 
 RSpec/LeadingSubject:
   Enabled: false
