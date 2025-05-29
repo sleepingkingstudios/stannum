@@ -60,7 +60,7 @@ module Stannum::Constraints::Types
     #   otherwise false.
     #
     # @see Stannum::Constraints::Types::ArrayType#matches?
-    def does_not_match?(actual)
+    def does_not_match?(actual) # rubocop:disable Naming/PredicateName
       !matches_type?(actual)
     end
 

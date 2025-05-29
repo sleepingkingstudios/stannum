@@ -36,7 +36,7 @@ module Stannum::Constraints
 
     # @return [true, false] true if the object does not respond to any of the
     #   expected methods; otherwise false.
-    def does_not_match?(actual)
+    def does_not_match?(actual) # rubocop:disable Naming/PredicateName
       each_missing_method(actual).to_a == expected_methods
     end
 
