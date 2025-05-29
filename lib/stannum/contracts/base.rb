@@ -355,7 +355,7 @@ module Stannum::Contracts
     #
     # @param actual [Object] The object to match.
     #
-    # @return [<Array(Boolean, Stannum::Errors)>] the status (true or false) and
+    # @return [Array<Boolean, Stannum::Errors>] the status (true or false) and
     #   the generated errors object.
     #
     # @see #each_pair
@@ -459,7 +459,7 @@ module Stannum::Contracts
     #
     # @param actual [Object] The object to match.
     #
-    # @return [<Array(Boolean, Stannum::Errors)>] the status (true or false) and
+    # @return [Array<Boolean, Stannum::Errors>] the status (true or false) and
     #   the generated errors object.
     #
     # @see #does_not_match?

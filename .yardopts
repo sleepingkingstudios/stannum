@@ -1,0 +1,7 @@
+--embed-mixins
+--markup markdown
+--markup-provider kramdown
+--no-private
+-
+CHANGELOG.md
+LICENSE

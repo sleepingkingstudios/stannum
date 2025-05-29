@@ -292,7 +292,7 @@ module Stannum::Entities
       set_associations(associations, force: false)
     end
 
-    # @api private
+    # @private
     def association_proxy_for(association)
       @association_proxies[association.name] ||=
         Stannum::Associations::Many::Proxy.new(association:, entity: self)
@@ -363,7 +363,7 @@ module Stannum::Entities
     # that name. By default, :safe is set to true.
     #
     # @param key [String, Symbol] the key of the association to assign.
-    # @oaram value [Object] the value to assign.
+    # @param value [Object] the value to assign.
     # @param safe [Boolean] if true, validates the association key.
     #
     # @return [Object] the assigned value.
