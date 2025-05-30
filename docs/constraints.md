@@ -17,6 +17,11 @@ Constraints provide the foundation for data validation in Stannum. Fundamentally
 - [Constraint Subclasses](#constraint-subclasses)
 - [Built-In Constraints](#built-in-constraints)
 
+### See Also
+
+- [Contracts](./contracts)
+<!-- - [Errors](./errors) -->
+
 ## Defining Constraints
 
 The easiest way to define a constraint is by passing a block to `Stannum::Constraint.new`:
@@ -136,6 +141,8 @@ errors.first.message
 errors.first.type
 #=> 'example.constraints.even'
 ```
+
+<!-- The error message can also be generated automatically from the type (see [Generating Messages](./errors#generating-messages)). -->
 
 ## Constraint Subclasses
 
