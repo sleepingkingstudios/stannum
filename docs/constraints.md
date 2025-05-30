@@ -187,6 +187,30 @@ We can likewise define the behavior of the constraint when negated. We've alread
 
 ## Built-In Constraints
 
-Stannum includes a number of pre-defined constraints. They can be found in the [Reference Documentation](./reference) in the [Contracts](./reference/stannum/constraints) namespace.
+Stannum includes a number of pre-defined constraints.
+
+- [Boolean](./reference/stannum/constraints/boolean): A `Boolean` constraint will match either `true` or `false`.
+- [Enum](./reference/stannum/constraints/enum): An `Enum` constraint matches any of the given values.
+- [Equality](./reference/stannum/constraints/equality): An `Equality` constraint matches any object equal to the given value.
+- [Format](./reference/stannum/constraints/format): A `Format` constraint matches any string containing the given substring or matching the given pattern.
+- [Presence](./reference/stannum/constraints/presence): A `Presence` constraint matches any non-`nil` and non-`empty?` object. It's inverse is the [Absence](./reference/stannum/constraints/absence) constraint.
+- [Signature](./reference/stannum/constraints/format): A `Signature` constraint matches objects that respond to the given methods.
+- [Type](./reference/stannum/constraints/type): A `Type` constraint matches objects that are instances of the given class or method.
+- [Uuid](./reference/stannum/constraints/format): A `Uuid` constraint matches a valid hyphen-separated UUID with either uppercase or lowercase alphanumeric characters.
+
+Some constraints are more useful in specific situations or when building or testing advanced behavior:
+
+- [Anything](./reference/stannum/constraints/anything): An `Anything` constraint will match all objects.
+- [Delegator](./reference/stannum/constraints/delegator): A `Delegator` constraint defers its matching to another constraint.
+- [Nothing](./reference/stannum/constraints/nothing): A `Nothing` constraint does not match any objects.
+- [Union](./reference/stannum/constraints/union): A `Union` constraint matches any object that matches any of the given child constraints.
+
+A full list can be found in the [Reference Documentation](./reference) in the [Constraints](./reference/stannum/constraints) namespace.
+
+### Type Constraints
+
+Stannum also includes a number of pre-defined [Type constraints](./reference/stannum/constraints/types), including [ArrayType](./reference/stannum/constraints/types/array-type), [HashType](./reference/stannum/constraints/types/hash-type), [IntegerType](./reference/stannum/constraints/types/integer-type), [NilType](./reference/stannum/constraints/types/nil-type), and [StringType](./reference/stannum/constraints/types/string-type).
+
+A full list can be found in the [Reference Documentation](./reference) in the [Type Constraints](./reference/stannum/constraints/types) namespace.
 
 {% include breadcrumbs.md %}
