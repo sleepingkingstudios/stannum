@@ -20,7 +20,7 @@ Constraints provide the foundation for data validation in Stannum. Fundamentally
 ### See Also
 
 - [Contracts](./contracts)
-<!-- - [Errors](./errors) -->
+- [Errors](./errors)
 
 ## Defining Constraints
 
@@ -142,7 +142,7 @@ errors.first.type
 #=> 'example.constraints.even'
 ```
 
-<!-- The error message can also be generated automatically from the type (see [Generating Messages](./errors#generating-messages)). -->
+The error message can also be generated automatically from the type (see [Generating Messages](./errors#generating-messages)).
 
 ## Constraint Subclasses
 

@@ -26,7 +26,7 @@ A contract is a collection of [constraints](./constraints) that validate an obje
 ### See Also
 
 - [Constraints](./constraints)
-<!-- - [Errors](./errors) -->
+- [Errors](./errors)
 
 ## Defining Contracts
 
@@ -279,7 +279,7 @@ class WhirlygigContract
 
     constraint Stannum::Constraints::Type.new(Whirlygig), sanity: true
 
-    property :rotation_speed, Stannum::Constraints::Types::Float.new
+    property :rotation_speed, Stannum::Constraints::Types::FloatType.new
   end
 end
 ```
