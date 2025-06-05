@@ -117,7 +117,7 @@ module Stannum::RSpec
     #
     # @return [true, false] false if the object validates the parameter,
     #   otherwise true.
-    def does_not_match?(actual) # rubocop:disable Naming/PredicateName
+    def does_not_match?(actual) # rubocop:disable Naming/PredicatePrefix
       disallow_fluent_options!
 
       @actual         = actual

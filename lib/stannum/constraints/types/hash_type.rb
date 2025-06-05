@@ -73,7 +73,7 @@ module Stannum::Constraints::Types
     #   false.
     #
     # @see Stannum::Constraints::Types::HashType#matches?
-    def does_not_match?(actual) # rubocop:disable Naming/PredicateName
+    def does_not_match?(actual) # rubocop:disable Naming/PredicatePrefix
       !matches_type?(actual)
     end
 

@@ -78,7 +78,7 @@ module Stannum::Constraints
     #   or behavior, otherwise true.
     #
     # @see #matches?
-    def does_not_match?(actual) # rubocop:disable Naming/PredicateName
+    def does_not_match?(actual) # rubocop:disable Naming/PredicatePrefix
       !matches?(actual)
     end
 
