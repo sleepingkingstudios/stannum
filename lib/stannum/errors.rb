@@ -622,7 +622,7 @@ module Stannum
       { data:, message: msg, type: }
     end
 
-    def compare_hashed_errors(other_errors)
+    def compare_hashed_errors(other_errors) # rubocop:disable Naming/PredicateMethod
       hashes       = Set.new(map(&:hash))
       other_hashes = Set.new(other_errors.map(&:hash))
 

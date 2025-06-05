@@ -27,7 +27,7 @@ module Stannum::RSpec
     end
 
     # Checks that the given errors do not match the expected errors.
-    def does_not_match?(actual) # rubocop:disable Naming/PredicateName
+    def does_not_match?(actual) # rubocop:disable Naming/PredicatePrefix
       @actual = actual.is_a?(Stannum::Errors) ? actual.to_a : actual
 
       errors? && equality_matcher.does_not_match?(@actual)

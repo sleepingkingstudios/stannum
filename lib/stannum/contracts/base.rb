@@ -216,7 +216,7 @@ module Stannum::Contracts
     # @see #each_pair
     # @see #matches?
     # @see #negated_match
-    def does_not_match?(actual) # rubocop:disable Naming/PredicateName
+    def does_not_match?(actual) # rubocop:disable Naming/PredicatePrefix
       each_pair(actual) do |definition, value|
         if definition.contract.match_negated_constraint(definition, value)
           next unless definition.sanity?
