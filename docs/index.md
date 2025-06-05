@@ -35,17 +35,17 @@ In addition, Stannum defines the following components for defining data objects:
 - **[Entities](./entities)**
   <br>
   A structured data object with a defined, typed set of properties.
-- **[Attributes](./entities/attributes)**
-  <br>
-  A typed and validated property for an entity.
-- **[Associations](./entities/associations)**
-  <br>
-  Defining relationships between entities.
-- **[Primary Keys](./entities/primary-keys)**
-  <br>
-  Setting a unique identifier for the entity.
-- **[Validation](./entities/validation)**
-  <br>
-  Leveraging Stannum's contracts to validate entity properties.
+  - **[Attributes](./entities#attributes)**
+    <br>
+    A typed and validated property for an entity.
+  - **[Associations](./entities#associations)**
+    <br>
+    Defining relationships between entities.
+  - **[Primary Keys](./entities#primary-keys)**
+    <br>
+    Setting a unique identifier for the entity.
+  - **[Validation](./entities#validation)**
+    <br>
+    Leveraging Stannum's contracts to validate entity properties.
 
 For a full list of defined classes and objects, see [Reference](./reference).
