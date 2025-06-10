@@ -1,0 +1,14 @@
+---
+name: Stannum::Schema#size
+parent_path: stannum/schema
+signature: size
+slug: size
+aliases:
+- count
+constructor: false
+data_path: stannum/schema/i-size
+returns:
+- description: the number of defined properties.
+  type:
+  - name: Integer
+version: "*"

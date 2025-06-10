@@ -1,0 +1,16 @@
+---
+name: Stannum::Entities::Attributes#attributes
+parent_path: stannum/entities/attributes
+signature: attributes
+slug: attributes
+constructor: false
+data_path: stannum/entities/attributes/i-attributes
+returns:
+- description: the entity attributes.
+  type:
+  - name: Hash
+    items:
+    - name: String
+    - name: Object
+short_description: Collects the entity attributes.
+version: "*"

@@ -1,0 +1,13 @@
+---
+name: Stannum::Entities::Attributes::ClassMethods#attributes
+parent_path: stannum/entities/attributes/class-methods
+signature: attributes
+slug: attributes
+constructor: false
+data_path: stannum/entities/attributes/class-methods/i-attributes
+returns:
+- description: The attributes Schema object for the Entity.
+  type:
+  - name: Stannum::Schema
+    path: stannum/schema
+version: "*"

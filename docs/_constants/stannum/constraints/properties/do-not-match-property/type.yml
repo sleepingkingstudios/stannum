@@ -1,0 +1,8 @@
+---
+name: Stannum::Constraints::Properties::DoNotMatchProperty::TYPE
+parent_path: stannum/constraints/properties/do-not-match-property
+slug: type
+short_description: The :type of the error generated for a non-matching object.
+value: Stannum::Constraints::Equality::NEGATED_TYPE
+data_path: stannum/constraints/properties/do-not-match-property/type
+version: "*"

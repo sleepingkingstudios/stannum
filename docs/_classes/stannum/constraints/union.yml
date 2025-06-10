@@ -1,0 +1,113 @@
+---
+name: Stannum::Constraints::Union
+slug: union
+type: class
+files:
+- lib/stannum/constraints/union.rb
+parent_path: stannum/constraints
+short_description: Asserts that the object matches one of the given constraints.
+constants:
+- name: NEGATED_TYPE
+  path: stannum/constraints/union/negated-type
+  slug: negated-type
+  inherited: false
+- name: TYPE
+  path: stannum/constraints/union/type
+  slug: type
+  inherited: false
+instance_attributes:
+- name: expected_constraints
+  read: true
+  write: false
+  path: stannum/constraints/union/i-expected-constraints
+  slug: expected-constraints
+  inherited: false
+- name: options
+  read: true
+  write: true
+  path: stannum/constraints/base/i-options
+  slug: options
+  inherited: true
+instance_methods:
+- name: "=="
+  path: stannum/constraints/base/i-==
+  slug: "=="
+  inherited: true
+- name: clone
+  path: stannum/constraints/base/i-clone
+  slug: clone
+  inherited: true
+- name: does_not_match?
+  path: stannum/constraints/base/i-does-not-match?
+  slug: does-not-match?
+  inherited: true
+- name: dup
+  path: stannum/constraints/base/i-dup
+  slug: dup
+  inherited: true
+- name: errors_for
+  path: stannum/constraints/union/i-errors-for
+  slug: errors-for
+  inherited: false
+- name: initialize
+  path: stannum/constraints/union/i-initialize
+  slug: initialize
+  inherited: false
+  constructor: true
+- name: match
+  path: stannum/constraints/base/i-match
+  slug: match
+  inherited: true
+- name: matches?
+  path: stannum/constraints/union/i-matches?
+  slug: matches?
+  inherited: false
+- name: message
+  path: stannum/constraints/base/i-message
+  slug: message
+  inherited: true
+- name: negated_errors_for
+  path: stannum/constraints/union/i-negated-errors-for
+  slug: negated-errors-for
+  inherited: false
+- name: negated_match
+  path: stannum/constraints/base/i-negated-match
+  slug: negated-match
+  inherited: true
+- name: negated_message
+  path: stannum/constraints/base/i-negated-message
+  slug: negated-message
+  inherited: true
+- name: negated_type
+  path: stannum/constraints/base/i-negated-type
+  slug: negated-type
+  inherited: true
+- name: type
+  path: stannum/constraints/base/i-type
+  slug: type
+  inherited: true
+- name: with_options
+  path: stannum/constraints/base/i-with-options
+  slug: with-options
+  inherited: true
+data_path: stannum/constraints/union
+metadata:
+  examples:
+  - name: Using a Union Constraint.
+    text: |-
+      false_constraint = Stannum::Constraint.new { |actual| actual == false }
+      true_constraint  = Stannum::Constraint.new { |actual| actual == true }
+      union_constraint = Stannum::Constraints::Union.new(
+        false_constraint,
+        true_constraint
+      )
+
+      constraint.matches?(nil)   #=> false
+      constraint.matches?(false) #=> true
+      constraint.matches?(true)  #=> true
+constructor: true
+inherited_classes:
+- name: Stannum::Constraints::Base
+  slug: base
+  path: stannum/constraints/base
+version: "*"

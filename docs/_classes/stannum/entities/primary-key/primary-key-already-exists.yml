@@ -1,0 +1,15 @@
+---
+name: Stannum::Entities::PrimaryKey::PrimaryKeyAlreadyExists
+slug: primary-key-already-exists
+type: class
+files:
+- lib/stannum/entities/primary_key.rb
+parent_path: stannum/entities/primary-key
+short_description: Raised when adding a primary key to an entity that already has
+  one.
+data_path: stannum/entities/primary-key/primary-key-already-exists
+constructor: false
+inherited_classes:
+- name: StandardError
+  slug: standard-error
+version: "*"

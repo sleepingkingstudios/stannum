@@ -1,0 +1,12 @@
+---
+name: Stannum::Messages.strategy
+parent_path: stannum/messages
+signature: strategy
+slug: strategy
+constructor: false
+data_path: stannum/messages/c-strategy
+returns:
+- description: the configured strategy for generating messages.
+  type:
+  - name: "#call"
+version: "*"

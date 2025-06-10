@@ -1,0 +1,216 @@
+---
+name: Stannum::Errors
+slug: errors
+type: class
+files:
+- lib/stannum/errors.rb
+parent_path: stannum
+short_description: An errors object represents a collection of errors.
+instance_methods:
+- name: "=="
+  path: stannum/errors/i-==
+  slug: "=="
+  inherited: false
+- name: "[]"
+  path: stannum/errors/i-[]
+  slug: "[]"
+  inherited: false
+- name: "[]="
+  path: stannum/errors/i-[]=
+  slug: "[]="
+  inherited: false
+- name: add
+  path: stannum/errors/i-add
+  slug: add
+  inherited: false
+- name: dig
+  path: stannum/errors/i-dig
+  slug: dig
+  inherited: false
+- name: dup
+  path: stannum/errors/i-dup
+  slug: dup
+  inherited: false
+- name: each
+  path: stannum/errors/i-each
+  slug: each
+  inherited: false
+- name: empty?
+  path: stannum/errors/i-empty?
+  slug: empty?
+  inherited: false
+- name: group_by_path
+  path: stannum/errors/i-group-by-path
+  slug: group-by-path
+  inherited: false
+- name: initialize
+  path: stannum/errors/i-initialize
+  slug: initialize
+  inherited: false
+  constructor: true
+- name: inspect
+  path: stannum/errors/i-inspect
+  slug: inspect
+  inherited: false
+- name: merge
+  path: stannum/errors/i-merge
+  slug: merge
+  inherited: false
+- name: size
+  path: stannum/errors/i-size
+  slug: size
+  inherited: false
+- name: summary
+  path: stannum/errors/i-summary
+  slug: summary
+  inherited: false
+- name: to_a
+  path: stannum/errors/i-to-a
+  slug: to-a
+  inherited: false
+- name: update
+  path: stannum/errors/i-update
+  slug: update
+  inherited: false
+- name: with_messages
+  path: stannum/errors/i-with-messages
+  slug: with-messages
+  inherited: false
+data_path: stannum/errors
+description: |-
+  Most of the time, an end user will not be creating an Errors object
+  directly. Instead, an errors object may be returned by a process that
+  validates or coerces data to an expected form. For one such example, see
+  the Stannum::Constraint and its subclasses.
+
+  Internally, an errors object is an Array of errors. Each error is
+  represented by a Hash containing the keys :data, :message, :path and :type.
+
+  - The :type of the error is a short, unique symbol or string that identifies
+    the type of the error, such as 'invalid' or 'not_found'. The type is
+    frequently namespaced, e.g. 'stannum.constraints.present'.
+  - The :message of the error is a short string that provides a human-readable
+    description of the error, such as 'is invalid' or 'is not found'. The
+    message may include format directives for error data (see below). If the
+    :message key is missing or the value is nil, use a default error message
+    or generate the message from the :type.
+  - The :data of the error stores additional information about the error and
+    the expected behavior. For example, an out of range error might have
+    type: 'out_of_range' and data { min: 0, max: 10 }, indicating that the
+    expected values were between 0 and 10. If the data key is missing or the
+    value is empty, there is no additional information about the error.
+  - The :path of the error reflects the steps to resolve the relevant property
+    from the given data object. The path is an Array with keys of either
+    Symbols/Strings (for object properties or Hash keys) or Integers (for
+    Array indices). For example, given the hash { companies: [{ teams: [] }] }
+    and an expecation that a company's team must not be empty, the resulting
+    error would have path: [:companies, 0, :teams]. if the path key is missing
+    or the value is empty, the error refers to the root object.
+included_modules:
+- name: Enumerable
+  slug: enumerable
+metadata:
+  examples:
+  - name: Creating An Errors Object
+    text: errors = Stannum::Errors.new
+  - name: Adding Errors
+    text: |-
+      errors.add(:not_numeric)
+
+      # Add an error with a custom message.
+      errors.add(:invalid, message: 'is not valid')
+
+      # Add an error with additional data.
+      errors.add(:out_of_range, min: 0, max: 10)
+
+      # Add multiple errors.
+      errors.add(:first_error).add(:second_error).add(:third_error)
+  - name: Viewing The Errors
+    text: |-
+      errors.empty? #=> false
+      errors.size   #=> 6
+
+      errors.each { |err| } #=> yields each error to the block
+      errors.to_a           #=> returns an array containing each error
+  - name: Accessing Nested Errors via a Key
+    text: |-
+      errors = Stannum::Errors.new
+      child  = errors[:spell]
+      child.size #=> 0
+      child.to_a #=> []
+
+      child.add(:insufficient_mana)
+      child.size # 1
+      child.to_a # [{ type: :insufficient_mana, path: [] }]
+
+      # Adding an error to a child makes it available on a parent.
+      errors.size # 1
+      errors.to_a # [{ type: :insufficient_mana, path: [:spell] }]
+  - name: Accessing Nested Errors via an Index
+    text: |-
+      errors = Stannum::Errors.new
+      child  = errors[1]
+
+      child.size #=> 0
+      child.to_a #=> []
+
+      child.add(:unknown_monster)
+      child.size # 1
+      child.to_a # [{ type: :unknown_monster, path: [] }]
+
+      # Adding an error to a child makes it available on a parent.
+      errors.size # 1
+      errors.to_a # [{ type: :unknown_monster, path: [1] }]
+  - name: Accessing Deeply Nested Errors
+    text: |-
+      errors = Stannum::Errors.new
+
+      errors[:towns][1][:name].add(:unpronounceable)
+      errors.size #=> 1
+      errors.to_a #=> [{ type: :unpronounceable, path: [:towns, 1, :name] }]
+
+      errors[:towns].size #=> 1
+      errors[:towns].to_a #=> [{ type: :unpronounceable, path: [1, :name] }]
+
+      errors[:towns][1].size #=> 1
+      errors[:towns][1].to_a #=> [{ type: :unpronounceable, path: [:name] }]
+
+      errors[:towns][1][:name].size #=> 1
+      errors[:towns][1][:name].to_a #=> [{ type: :unpronounceable, path: [] }]
+
+      # Can also access nested properties via #dig.
+      errors.dig(:towns, 1, :name).to_a #=> [{ type: :unpronounceable, path: [] }]
+  - name: Replacing Errors
+    text: |-
+      errors = Cuprum::Errors.new
+      errors[:potions][:ingredients].add(:missing_rabbits_foot)
+      errors.size #=> 1
+
+      other = Cuprum::Errors.new.add(:too_hot, :brew_longer, :foul_smelling)
+      errors[:potions] = other
+      errors.size #=> 3
+      errors.to_a
+      #=> [
+      #     { type: :brew_longer, path: [:potions] },
+      #     { type: :foul_smelling, path: [:potions] },
+      #     { type: :too_hot, path: [:potions] }
+      #   ]
+  - name: Replacing Nested Errors
+    text: |-
+      errors = Cuprum::Errors.new
+      errors[:armory].add(:empty)
+
+      other = Cuprum::Errors.new
+      other.dig(:weapons, 0).add(:needs_sharpening)
+      other.dig(:weapons, 1).add(:rusty).add(:out_of_ammo)
+
+      errors[:armory] = other
+      errors.size #=> 3
+      errors.to_a
+      #=> [
+      #     { type: needs_sharpening, path: [:armory, :weapons, 0] },
+      #     { type: out_of_ammo, path: [:armory, :weapons, 1] },
+      #     { type: rusty, path: [:armory, :weapons, 1] }
+      #   ]
+constructor: true
+version: "*"

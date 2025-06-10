@@ -1,0 +1,20 @@
+---
+name: Stannum::RSpec::Matchers
+slug: matchers
+type: module
+files:
+- lib/stannum/rspec/match_errors.rb
+- lib/stannum/rspec/validate_parameter.rb
+parent_path: stannum/r-spec
+short_description: Namespace for custom RSpec matcher macros.
+instance_methods:
+- name: match_errors
+  path: stannum/r-spec/matchers/i-match-errors
+  slug: match-errors
+  inherited: false
+- name: validate_parameter
+  path: stannum/r-spec/matchers/i-validate-parameter
+  slug: validate-parameter
+  inherited: false
+data_path: stannum/r-spec/matchers
+version: "*"

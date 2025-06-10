@@ -1,0 +1,13 @@
+---
+name: Stannum::Contracts::Builder#contract
+parent_path: stannum/contracts/builder
+signature: contract
+slug: contract
+constructor: false
+data_path: stannum/contracts/builder/i-contract
+returns:
+- description: The contract to which constraints are added.
+  type:
+  - name: Stannum::Contract
+    path: stannum/contract
+version: "*"

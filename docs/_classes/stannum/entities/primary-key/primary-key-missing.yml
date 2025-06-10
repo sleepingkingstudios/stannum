@@ -1,0 +1,15 @@
+---
+name: Stannum::Entities::PrimaryKey::PrimaryKeyMissing
+slug: primary-key-missing
+type: class
+files:
+- lib/stannum/entities/primary_key.rb
+parent_path: stannum/entities/primary-key
+short_description: Raised when accessing a primary key for an entity that does not
+  have one.
+data_path: stannum/entities/primary-key/primary-key-missing
+constructor: false
+inherited_classes:
+- name: StandardError
+  slug: standard-error
+version: "*"

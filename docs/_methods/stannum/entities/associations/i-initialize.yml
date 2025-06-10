@@ -1,0 +1,13 @@
+---
+name: Stannum::Entities::Associations#initialize
+parent_path: stannum/entities/associations
+signature: initialize(**properties)
+slug: initialize
+constructor: false
+data_path: stannum/entities/associations/i-initialize
+params:
+- description: the properties used to initialize the entity.
+  name: properties
+  type:
+  - name: Hash
+version: "*"

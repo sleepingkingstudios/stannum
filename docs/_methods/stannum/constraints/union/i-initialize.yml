@@ -1,0 +1,37 @@
+---
+name: Stannum::Constraints::Union#initialize
+parent_path: stannum/constraints/union
+signature: initialize(first, *rest, **options)
+slug: initialize
+constructor: true
+data_path: stannum/constraints/union/i-initialize
+overloads:
+- name: Stannum::Constraints::Union#initialize
+  parent_path: stannum/constraints/union
+  signature: initialize(*expected_constraints, **options)
+  slug: initialize
+  constructor: true
+  params:
+  - description: |-
+      The
+      possible values for the object.
+    name: expected_constraints
+    type:
+    - name: Array
+      items:
+      - name: Stannum::Constraints::Base
+        path: stannum/constraints/base
+  - description: |-
+      Configuration options for the
+      constraint. Defaults to an empty Hash.
+    name: options
+    type:
+    - name: Hash
+      items:
+      - name: Symbol
+      - name: Object
+returns:
+- description: a new instance of Union
+  type:
+  - name: Union
+version: "*"

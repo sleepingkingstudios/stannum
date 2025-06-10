@@ -1,0 +1,172 @@
+---
+name: Stannum::Constraints::Type
+slug: type
+type: class
+files:
+- lib/stannum/constraints/type.rb
+parent_path: stannum/constraints
+short_description: A type constraint asserts that the object is of the expected type.
+constants:
+- name: NEGATED_TYPE
+  path: stannum/constraints/type/negated-type
+  slug: negated-type
+  inherited: false
+- name: TYPE
+  path: stannum/constraints/type/type
+  slug: type
+  inherited: false
+instance_attributes:
+- name: options
+  read: true
+  write: true
+  path: stannum/constraints/base/i-options
+  slug: options
+  inherited: true
+instance_methods:
+- name: "=="
+  path: stannum/constraints/base/i-==
+  slug: "=="
+  inherited: true
+- name: clone
+  path: stannum/constraints/base/i-clone
+  slug: clone
+  inherited: true
+- name: does_not_match?
+  path: stannum/constraints/base/i-does-not-match?
+  slug: does-not-match?
+  inherited: true
+- name: dup
+  path: stannum/constraints/base/i-dup
+  slug: dup
+  inherited: true
+- name: errors_for
+  path: stannum/constraints/type/i-errors-for
+  slug: errors-for
+  inherited: false
+- name: expected_type
+  path: stannum/constraints/type/i-expected-type
+  slug: expected-type
+  inherited: false
+- name: initialize
+  path: stannum/constraints/type/i-initialize
+  slug: initialize
+  inherited: false
+  constructor: true
+- name: match
+  path: stannum/constraints/base/i-match
+  slug: match
+  inherited: true
+- name: matches?
+  path: stannum/constraints/type/i-matches?
+  slug: matches?
+  inherited: false
+- name: message
+  path: stannum/constraints/base/i-message
+  slug: message
+  inherited: true
+- name: negated_errors_for
+  path: stannum/constraints/type/i-negated-errors-for
+  slug: negated-errors-for
+  inherited: false
+- name: negated_match
+  path: stannum/constraints/base/i-negated-match
+  slug: negated-match
+  inherited: true
+- name: negated_message
+  path: stannum/constraints/base/i-negated-message
+  slug: negated-message
+  inherited: true
+- name: negated_type
+  path: stannum/constraints/base/i-negated-type
+  slug: negated-type
+  inherited: true
+- name: optional?
+  path: stannum/support/optional/i-optional?
+  slug: optional?
+  inherited: true
+- name: required?
+  path: stannum/support/optional/i-required?
+  slug: required?
+  inherited: true
+- name: type
+  path: stannum/constraints/base/i-type
+  slug: type
+  inherited: true
+- name: with_options
+  path: stannum/constraints/type/i-with-options
+  slug: with-options
+  inherited: false
+data_path: stannum/constraints/type
+included_modules:
+- name: Stannum::Support::Optional
+  slug: optional
+  path: stannum/support/optional
+metadata:
+  examples:
+  - name: Using a Type constraint with a Class
+    text: |-
+      constraint = Stannum::Constraints::Type.new(StandardError)
+
+      constraint.matches?(nil)               # => false
+      constraint.matches?(Object.new)        # => false
+      constraint.matches?(StandardError.new) # => true
+      constraint.matches?(RuntimeError.new)  # => true
+  - name: Using a Type constraint with a Module
+    text: |-
+      constraint = Stannum::Constraints::Type.new(Enumerable)
+
+      constraint.matches?(nil)                           #=> false
+      constraint.matches?(Object.new)                    #=> false
+      constraint.matches?(Array)                         #=> true
+      constraint.matches?(Object.new.extend(Enumerable)) #=> true
+  - name: Using a Type constraint with a Class name
+    text: |-
+      constraint = Stannum::Constraints::Type.new('StandardError')
+
+      constraint.matches?(nil)               # => false
+      constraint.matches?(Object.new)        # => false
+      constraint.matches?(StandardError.new) # => true
+      constraint.matches?(RuntimeError.new)  # => true
+constructor: true
+direct_subclasses:
+- name: Stannum::Constraints::Types::ArrayType
+  slug: array-type
+  path: stannum/constraints/types/array-type
+- name: Stannum::Constraints::Types::BigDecimalType
+  slug: big-decimal-type
+  path: stannum/constraints/types/big-decimal-type
+- name: Stannum::Constraints::Types::DateTimeType
+  slug: date-time-type
+  path: stannum/constraints/types/date-time-type
+- name: Stannum::Constraints::Types::DateType
+  slug: date-type
+  path: stannum/constraints/types/date-type
+- name: Stannum::Constraints::Types::FloatType
+  slug: float-type
+  path: stannum/constraints/types/float-type
+- name: Stannum::Constraints::Types::HashType
+  slug: hash-type
+  path: stannum/constraints/types/hash-type
+- name: Stannum::Constraints::Types::IntegerType
+  slug: integer-type
+  path: stannum/constraints/types/integer-type
+- name: Stannum::Constraints::Types::NilType
+  slug: nil-type
+  path: stannum/constraints/types/nil-type
+- name: Stannum::Constraints::Types::ProcType
+  slug: proc-type
+  path: stannum/constraints/types/proc-type
+- name: Stannum::Constraints::Types::StringType
+  slug: string-type
+  path: stannum/constraints/types/string-type
+- name: Stannum::Constraints::Types::SymbolType
+  slug: symbol-type
+  path: stannum/constraints/types/symbol-type
+- name: Stannum::Constraints::Types::TimeType
+  slug: time-type
+  path: stannum/constraints/types/time-type
+inherited_classes:
+- name: Stannum::Constraints::Base
+  slug: base
+  path: stannum/constraints/base
+version: "*"

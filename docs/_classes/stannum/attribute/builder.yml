@@ -1,0 +1,28 @@
+---
+name: Stannum::Attribute::Builder
+slug: builder
+type: class
+files:
+- lib/stannum/attribute.rb
+parent_path: stannum/attribute
+short_description: Builder class for defining attribute methods on an entity.
+instance_attributes:
+- name: schema
+  read: true
+  write: false
+  path: stannum/attribute/builder/i-schema
+  slug: schema
+  inherited: false
+instance_methods:
+- name: call
+  path: stannum/attribute/builder/i-call
+  slug: call
+  inherited: false
+- name: initialize
+  path: stannum/attribute/builder/i-initialize
+  slug: initialize
+  inherited: false
+  constructor: true
+data_path: stannum/attribute/builder
+constructor: true
+version: "*"

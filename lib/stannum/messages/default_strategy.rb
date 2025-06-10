@@ -18,7 +18,7 @@ module Stannum::Messages
       @load_paths ||= DEFAULT_LOAD_PATHS.dup
     end
 
-    # @param configuration [Hash{Symbol, Object}] The configured messages.
+    # @param configuration [Hash{Symbol=>Object}] The configured messages.
     # @param load_paths [Array<String>] The directories from which to load
     #   configured error messages.
     # @param locale [String] The locale used to load and scope configured

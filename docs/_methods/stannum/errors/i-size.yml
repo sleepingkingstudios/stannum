@@ -1,0 +1,15 @@
+---
+name: Stannum::Errors#size
+parent_path: stannum/errors
+signature: size
+slug: size
+aliases:
+- count
+constructor: false
+data_path: stannum/errors/i-size
+returns:
+- description: the number of errors.
+  type:
+  - name: Integer
+short_description: The number of errors in the errors object.
+version: "*"

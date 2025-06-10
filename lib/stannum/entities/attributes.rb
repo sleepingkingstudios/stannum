@@ -208,7 +208,7 @@ module Stannum::Entities
     # name. By default, :safe is set to true.
     #
     # @param key [String, Symbol] the key of the attribute to assign.
-    # @oaram value [Object] the value to assign.
+    # @param value [Object] the value to assign.
     # @param safe [Boolean] if true, validates the attribute key.
     #
     # @return [Object] the assigned value.

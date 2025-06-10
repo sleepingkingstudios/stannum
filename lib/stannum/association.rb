@@ -19,8 +19,8 @@ module Stannum
         @schema = schema
       end
 
-      # @return schema [Stannum::Schema] the associations schema on which to
-      #   define methods.
+      # @return [Stannum::Schema] the associations schema on which to define
+      #   methods.
       attr_reader :schema
 
       # Defines the reader and writer methods for the association.

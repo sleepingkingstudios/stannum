@@ -1,0 +1,20 @@
+---
+name: Stannum::Contracts::Definition#==
+parent_path: stannum/contracts/definition
+signature: "==(other)"
+slug: "=="
+constructor: false
+data_path: stannum/contracts/definition/i-==
+params:
+- description: The object to compare.
+  name: other
+  type:
+  - name: Object
+returns:
+- description: |-
+    true if the other object is a Definition with the same
+    attributes; otherwise false.
+  type:
+  - name: Boolean
+short_description: Compares the other object with the definition.
+version: "*"

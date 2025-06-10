@@ -1,0 +1,20 @@
+---
+name: Stannum::RSpec::Matchers#match_errors
+parent_path: stannum/r-spec/matchers
+signature: match_errors(expected)
+slug: match-errors
+constructor: false
+data_path: stannum/r-spec/matchers/i-match-errors
+params:
+- description: The expected errors.
+  name: expected
+  type:
+  - name: Stannum::Errors
+    path: stannum/errors
+returns:
+- description: the matcher.
+  type:
+  - name: Stannum::RSpec::MatchErrorsMatcher
+    path: stannum/r-spec/match-errors-matcher
+short_description: Builds a MatchErrorsMatcher.
+version: "*"

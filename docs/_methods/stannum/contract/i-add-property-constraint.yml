@@ -1,0 +1,70 @@
+---
+name: Stannum::Contract#add_property_constraint
+parent_path: stannum/contract
+signature: 'add_property_constraint(property, constraint, sanity: false, **options)'
+slug: add-property-constraint
+constructor: false
+data_path: stannum/contract/i-add-property-constraint
+description: |-
+  When the contract is called, the contract will find the value of that
+  property for the given object. If the property is an array, the contract
+  will recursively retrieve each property.
+
+  A property of nil will match against the given object itself, rather
+  than one of its properties.
+
+  If the value does not match the constraint, then the error from the
+  constraint will be added in an error namespace matching the constraint.
+  For example, a property of :name will add the error message to
+  errors.dig(:name), while a property of [:manufacturer, :address, :street]
+  will add the error message to
+  errors.dig(:manufacturer, :address, :street).
+metadata:
+  see:
+  - label: "#add_constraint"
+    path: stannum/contract#instance-method-add-constraint
+    text:
+    type: reference
+params:
+- description: |-
+    The
+    property to match.
+  name: property
+  type:
+  - name: String
+  - name: Symbol
+  - name: Array
+    items:
+    - name: String
+    - name: Symbol
+  - name: nil
+- description: The constraint to add.
+  name: constraint
+  type:
+  - name: Stannum::Constraints::Base
+    path: stannum/constraints/base
+- description: |-
+    Marks the constraint as a sanity constraint,
+    which is always matched first and will always short-circuit on a failed
+    match.
+  name: sanity
+  type:
+  - name: 'true'
+  - name: 'false'
+  default: 'false'
+- description: |-
+    Options for the constraint. These
+    can be used by subclasses to define the value and error mappings for the
+    constraint.
+  name: options
+  type:
+  - name: Hash
+    items:
+    - name: Symbol
+    - name: Object
+returns:
+- description: the contract.
+  type:
+  - name: self
+short_description: Adds a property constraint to the contract.
+version: "*"

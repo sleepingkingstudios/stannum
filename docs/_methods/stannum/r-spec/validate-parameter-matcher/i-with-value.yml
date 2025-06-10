@@ -1,0 +1,21 @@
+---
+name: Stannum::RSpec::ValidateParameterMatcher#with_value
+parent_path: stannum/r-spec/validate-parameter-matcher
+signature: with_value(parameter_value)
+slug: with-value
+constructor: false
+data_path: stannum/r-spec/validate-parameter-matcher/i-with-value
+params:
+- description: |-
+    The invalid value for the validated
+    parameter.
+  name: parameter_value
+  type:
+  - name: Object
+returns:
+- description: the matcher.
+  type:
+  - name: Stannum::RSpec::ValidateParameterMatcher
+    path: stannum/r-spec/validate-parameter-matcher
+short_description: Specifies an invalid value for the parameter.
+version: "*"

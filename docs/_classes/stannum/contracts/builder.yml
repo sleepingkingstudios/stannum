@@ -1,0 +1,40 @@
+---
+name: Stannum::Contracts::Builder
+slug: builder
+type: class
+files:
+- lib/stannum/contracts/builder.rb
+parent_path: stannum/contracts
+short_description: Abstract base class for contract builder classes.
+instance_attributes:
+- name: contract
+  read: true
+  write: false
+  path: stannum/contracts/builder/i-contract
+  slug: contract
+  inherited: false
+instance_methods:
+- name: concat
+  path: stannum/contracts/builder/i-concat
+  slug: concat
+  inherited: false
+- name: constraint
+  path: stannum/contracts/builder/i-constraint
+  slug: constraint
+  inherited: false
+- name: initialize
+  path: stannum/contracts/builder/i-initialize
+  slug: initialize
+  inherited: false
+  constructor: true
+data_path: stannum/contracts/builder
+description: |-
+  A contract builder provides a Domain-Specific Language for defining
+  constraints on a contract. They are typically used during initialization if
+  a block is passed to Contract#new.
+constructor: true
+direct_subclasses:
+- name: Stannum::Constraints::Base::Builder
+  slug: builder
+  path: stannum/constraints/base/builder
+version: "*"

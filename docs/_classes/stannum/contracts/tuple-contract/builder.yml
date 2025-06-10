@@ -1,0 +1,36 @@
+---
+name: Stannum::Contracts::TupleContract::Builder
+slug: builder
+type: class
+files:
+- lib/stannum/contracts/tuple_contract.rb
+parent_path: stannum/contracts/tuple-contract
+short_description: Builder class for defining item constraints for a TupleContract.
+instance_methods:
+- name: initialize
+  path: stannum/contracts/tuple-contract/builder/i-initialize
+  slug: initialize
+  inherited: false
+  constructor: true
+- name: item
+  path: stannum/contracts/tuple-contract/builder/i-item
+  slug: item
+  inherited: false
+- name: property
+  path: stannum/contract/builder/i-property
+  slug: property
+  inherited: true
+data_path: stannum/contracts/tuple-contract/builder
+description: |-
+  This class should not be invoked directly. Instead, pass a block to the
+  constructor for TupleContract.
+metadata:
+  api: private
+constructor: true
+inherited_classes:
+- name: Stannum::Contract::Builder
+  slug: builder
+  path: stannum/contract/builder
+- name: Stannum::Contracts::Base::Builder
+  slug: builder
+version: "*"

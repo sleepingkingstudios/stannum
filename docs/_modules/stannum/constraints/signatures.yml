@@ -1,0 +1,17 @@
+---
+name: Stannum::Constraints::Signatures
+slug: signatures
+type: module
+files:
+- lib/stannum/constraints/signatures.rb
+- lib/stannum/constraints/signatures/map.rb
+- lib/stannum/constraints/signatures/tuple.rb
+parent_path: stannum/constraints
+short_description: Namespace for constraints that match objects by methods.
+defined_classes:
+- name: Map
+  slug: map
+- name: Tuple
+  slug: tuple
+data_path: stannum/constraints/signatures
+version: "*"

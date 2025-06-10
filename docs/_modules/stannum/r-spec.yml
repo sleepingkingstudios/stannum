@@ -1,0 +1,22 @@
+---
+name: Stannum::RSpec
+slug: r-spec
+type: module
+files:
+- lib/stannum/rspec.rb
+- lib/stannum/rspec/match_errors.rb
+- lib/stannum/rspec/validate_parameter.rb
+- lib/stannum/rspec/match_errors_matcher.rb
+- lib/stannum/rspec/validate_parameter_matcher.rb
+parent_path: stannum
+short_description: Namespace for RSpec extensions for testing Stannum applications.
+defined_classes:
+- name: MatchErrorsMatcher
+  slug: match-errors-matcher
+- name: ValidateParameterMatcher
+  slug: validate-parameter-matcher
+defined_modules:
+- name: Matchers
+  slug: matchers
+data_path: stannum/r-spec
+version: "*"

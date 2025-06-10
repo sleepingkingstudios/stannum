@@ -1,0 +1,111 @@
+---
+name: Stannum::Constraints::Tuples::ExtraItems
+slug: extra-items
+type: class
+files:
+- lib/stannum/constraints/tuples/extra_items.rb
+parent_path: stannum/constraints/tuples
+short_description: Constraint for validating the length of an indexed object.
+constants:
+- name: NEGATED_TYPE
+  path: stannum/constraints/tuples/extra-items/negated-type
+  slug: negated-type
+  inherited: false
+- name: TYPE
+  path: stannum/constraints/tuples/extra-items/type
+  slug: type
+  inherited: false
+instance_attributes:
+- name: options
+  read: true
+  write: true
+  path: stannum/constraints/base/i-options
+  slug: options
+  inherited: true
+instance_methods:
+- name: "=="
+  path: stannum/constraints/base/i-==
+  slug: "=="
+  inherited: true
+- name: clone
+  path: stannum/constraints/base/i-clone
+  slug: clone
+  inherited: true
+- name: does_not_match?
+  path: stannum/constraints/tuples/extra-items/i-does-not-match?
+  slug: does-not-match?
+  inherited: false
+- name: dup
+  path: stannum/constraints/base/i-dup
+  slug: dup
+  inherited: true
+- name: errors_for
+  path: stannum/constraints/tuples/extra-items/i-errors-for
+  slug: errors-for
+  inherited: false
+- name: expected_count
+  path: stannum/constraints/tuples/extra-items/i-expected-count
+  slug: expected-count
+  inherited: false
+- name: initialize
+  path: stannum/constraints/tuples/extra-items/i-initialize
+  slug: initialize
+  inherited: false
+  constructor: true
+- name: match
+  path: stannum/constraints/base/i-match
+  slug: match
+  inherited: true
+- name: matches?
+  path: stannum/constraints/tuples/extra-items/i-matches?
+  slug: matches?
+  inherited: false
+- name: message
+  path: stannum/constraints/base/i-message
+  slug: message
+  inherited: true
+- name: negated_errors_for
+  path: stannum/constraints/base/i-negated-errors-for
+  slug: negated-errors-for
+  inherited: true
+- name: negated_match
+  path: stannum/constraints/base/i-negated-match
+  slug: negated-match
+  inherited: true
+- name: negated_message
+  path: stannum/constraints/base/i-negated-message
+  slug: negated-message
+  inherited: true
+- name: negated_type
+  path: stannum/constraints/base/i-negated-type
+  slug: negated-type
+  inherited: true
+- name: type
+  path: stannum/constraints/base/i-type
+  slug: type
+  inherited: true
+- name: with_options
+  path: stannum/constraints/base/i-with-options
+  slug: with-options
+  inherited: true
+data_path: stannum/constraints/tuples/extra-items
+metadata:
+  examples:
+  - name: ''
+    text: |-
+      constraint = Stannum::Constraints::Tuples::ExtraItems.new(3)
+
+      constraint.matches?([])           #=> true
+      constraint.matches?([1])          #=> true
+      constraint.matches?([1, 2, 3])    #=> true
+      constraint.matches?([1, 2, 3, 4]) #=> false
+constructor: true
+direct_subclasses:
+- name: Stannum::Constraints::Parameters::ExtraArguments
+  slug: extra-arguments
+  path: stannum/constraints/parameters/extra-arguments
+inherited_classes:
+- name: Stannum::Constraints::Base
+  slug: base
+  path: stannum/constraints/base
+version: "*"

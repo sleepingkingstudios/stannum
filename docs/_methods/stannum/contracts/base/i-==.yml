@@ -1,0 +1,21 @@
+---
+name: Stannum::Contracts::Base#==
+parent_path: stannum/contracts/base
+signature: "==(other)"
+slug: "=="
+constructor: false
+data_path: stannum/contracts/base/i-==
+params:
+- description: The object to compare.
+  name: other
+  type:
+  - name: Object
+returns:
+- description: |-
+    true if the other object has the same class,
+    options, and constraints; otherwise false.
+  type:
+  - name: 'true'
+  - name: 'false'
+short_description: Performs an equality comparison.
+version: "*"

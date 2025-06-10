@@ -1,0 +1,52 @@
+---
+name: Stannum::Constraints::Base#negated_match
+parent_path: stannum/constraints/base
+signature: negated_match(actual)
+slug: negated-match
+constructor: false
+data_path: stannum/constraints/base/i-negated-match
+description: |-
+  This method checks the given object against the expected properties or
+  behavior. If the object matches the constraint, #negated_match will return
+  false and the generated errors for that object. If the object does not
+  match the constraint, #negated_match will return true.
+metadata:
+  examples:
+  - name: Checking a matching object.
+    text: |-
+      constraint = CustomConstraint.new
+      object     = MatchingObject.new
+
+      success, errors = constraint.negated_match(object)
+      success      #=> false
+      errors.class #=> Stannum::Errors
+      errors.to_a  #=> [{ type: 'some_error', message: 'some error message' }]
+  - name: Checking a non-matching object.
+    text: |-
+      constraint = CustomConstraint.new
+      object     = NonMatchingObject.new
+
+      success, errors = constraint.negated_match(object)
+      success #=> true
+      errors  #=> nil
+  see:
+  - label: "#does_not_match?"
+    path: stannum/constraints/base#instance-method-does-not-match?
+    text:
+    type: reference
+  - label: "#match"
+    path: stannum/constraints/base#instance-method-match
+    text:
+    type: reference
+  - label: "#negated_errors_for"
+    path: stannum/constraints/base#instance-method-negated-errors-for
+    text:
+    type: reference
+params:
+- description: The object to match.
+  name: actual
+  type:
+  - name: Object
+short_description: Checks the given object against the constraint and returns errors,
+  if any.
+version: "*"

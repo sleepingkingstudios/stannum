@@ -436,7 +436,7 @@ module Stannum
     # @overload each
     #   Iterates through the errors, yielding each error to the provided block.
     #
-    #   @yieldparam error [Hash<Symbol=>Object>] The error object. Each error
+    #   @yieldparam error [Hash{Symbol=>Object}] The error object. Each error
     #     is a hash containing the keys :data, :message, :path and :type.
     def each
       return to_enum(:each) { size } unless block_given?

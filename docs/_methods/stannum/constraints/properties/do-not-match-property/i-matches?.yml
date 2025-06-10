@@ -1,0 +1,17 @@
+---
+name: Stannum::Constraints::Properties::DoNotMatchProperty#matches?
+parent_path: stannum/constraints/properties/do-not-match-property
+signature: matches?(actual)
+slug: matches?
+aliases:
+- match?
+constructor: false
+data_path: stannum/constraints/properties/do-not-match-property/i-matches?
+returns:
+- description: |-
+    false if any of the property values match the
+    reference property value; otherwise true.
+  type:
+  - name: 'true'
+  - name: 'false'
+version: "*"

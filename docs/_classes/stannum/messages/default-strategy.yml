@@ -1,0 +1,46 @@
+---
+name: Stannum::Messages::DefaultStrategy
+slug: default-strategy
+type: class
+files:
+- lib/stannum/messages/default_strategy.rb
+parent_path: stannum/messages
+short_description: Strategy to generate error messages from gem configuration.
+class_methods:
+- name: load_paths
+  path: stannum/messages/default-strategy/c-load-paths
+  slug: load-paths
+  inherited: false
+constants:
+- name: DEFAULT_LOAD_PATHS
+  path: stannum/messages/default-strategy/default-load-paths
+  slug: default-load-paths
+  inherited: false
+instance_attributes:
+- name: locale
+  read: true
+  write: false
+  path: stannum/messages/default-strategy/i-locale
+  slug: locale
+  inherited: false
+instance_methods:
+- name: call
+  path: stannum/messages/default-strategy/i-call
+  slug: call
+  inherited: false
+- name: initialize
+  path: stannum/messages/default-strategy/i-initialize
+  slug: initialize
+  inherited: false
+  constructor: true
+- name: load_paths
+  path: stannum/messages/default-strategy/i-load-paths
+  slug: load-paths
+  inherited: false
+- name: reload_configuration!
+  path: stannum/messages/default-strategy/i-reload-configuration!
+  slug: reload-configuration!
+  inherited: false
+data_path: stannum/messages/default-strategy
+constructor: true
+version: "*"

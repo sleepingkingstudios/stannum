@@ -1,0 +1,20 @@
+---
+name: Stannum::Entities::Constraints::AttributesMethods#attribute
+parent_path: stannum/entities/constraints/attributes-methods
+signature: attribute(attr_name, attr_type, **options)
+slug: attribute
+aliases:
+- define_attribute
+constructor: false
+data_path: stannum/entities/constraints/attributes-methods/i-attribute
+description: |-
+  Delegates to the superclass method, and then adds a type constraint to
+  ::Contract.
+metadata:
+  see:
+  - label: Stannum::Entities::Attributes::ClassMethods#attribute
+    path: stannum/entities/attributes/class-methods#instance-method-attribute
+    text:
+    type: reference
+short_description: Defines an attribute on the entity.
+version: "*"

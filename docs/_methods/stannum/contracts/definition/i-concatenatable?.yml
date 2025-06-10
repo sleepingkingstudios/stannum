@@ -1,0 +1,15 @@
+---
+name: Stannum::Contracts::Definition#concatenatable?
+parent_path: stannum/contracts/definition
+signature: concatenatable?
+slug: concatenatable?
+constructor: false
+data_path: stannum/contracts/definition/i-concatenatable?
+returns:
+- description: |-
+    true if options[:concatenatable] is set to a truthy
+    value; otherwise false.
+  type:
+  - name: Boolean
+short_description: Indicates whether the defined constraint is inherited via concatenation.
+version: "*"

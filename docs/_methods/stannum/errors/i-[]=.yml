@@ -1,0 +1,88 @@
+---
+name: Stannum::Errors#[]=
+parent_path: stannum/errors
+signature: "[]=(key, value)"
+slug: "[]="
+constructor: false
+data_path: stannum/errors/i-[]=
+description: |-
+  If the given value is nil or an empty array, the #[]= operator will remove
+  the child errors object at the given key, removing all errors within that
+  namespace and all namespaces nested inside it.
+
+  If the given value is an errors object or an Array of errors object, the
+  #[]= operation will replace the child errors object at the given key,
+  removing all existing errors and adding the new errors. Each added error
+  will use its nested path (if any) as a relative path from the given key.
+metadata:
+  examples:
+  - name: Replacing Errors
+    text: |-
+      errors = Cuprum::Errors.new
+      errors[:potions][:ingredients].add(:missing_rabbits_foot)
+      errors.size #=> 1
+
+      other = Cuprum::Errors.new.add(:too_hot, :brew_longer, :foul_smelling)
+      errors[:potions] = other
+      errors.size #=> 3
+      errors.to_a
+      #=> [
+      #     { type: :brew_longer, path: [:potions] },
+      #     { type: :foul_smelling, path: [:potions] },
+      #     { type: :too_hot, path: [:potions] }
+      #   ]
+  - name: Replacing Nested Errors
+    text: |-
+      errors = Cuprum::Errors.new
+      errors[:armory].add(:empty)
+
+      other = Cuprum::Errors.new
+      other.dig(:weapons, 0).add(:needs_sharpening)
+      other.dig(:weapons, 1).add(:rusty).add(:out_of_ammo)
+
+      errors[:armory] = other
+      errors.size #=> 3
+      errors.to_a
+      #=> [
+      #     { type: needs_sharpening, path: [:armory, :weapons, 0] },
+      #     { type: out_of_ammo, path: [:armory, :weapons, 1] },
+      #     { type: rusty, path: [:armory, :weapons, 1] }
+      #   ]
+  see:
+  - label: "#[]"
+    path: stannum/errors#instance-method-[]
+    text:
+    type: reference
+params:
+- description: |-
+    The key or index of the referenced
+    value, item, or property.
+  name: key
+  type:
+  - name: Integer
+  - name: String
+  - name: Symbol
+- description: |-
+    The errors to insert with
+    the specified path.
+  name: value
+  type:
+  - name: Stannum::Errors
+    path: stannum/errors
+  - name: Array[Hash]
+  - name: nil
+raises:
+- description: if the key is not a String, Symbol or Integer.
+  type:
+  - name: ArgumentError
+- description: |-
+    if the value is not a valid errors object, Array of
+    errors hashes, empty Array, or nil.
+  type:
+  - name: ArgumentError
+returns:
+- description: the value passed in.
+  type:
+  - name: Object
+short_description: Replaces the child errors with the specified errors object or Array.
+version: "*"

@@ -1,0 +1,25 @@
+---
+name: Stannum::Schema#[]
+parent_path: stannum/schema
+signature: "[](key)"
+slug: "[]"
+constructor: false
+data_path: stannum/schema/i-[]
+params:
+- description: The name of the requested property.
+  name: key
+  type:
+  - name: String
+  - name: Symbol
+raises:
+- description: ArgumentError if the key is invalid.
+  type: []
+- description: KeyError if the property is not defined.
+  type: []
+returns:
+- description: The property object.
+  type:
+  - name: Stannum::Attribute
+    path: stannum/attribute
+short_description: Retrieves the named property object.
+version: "*"

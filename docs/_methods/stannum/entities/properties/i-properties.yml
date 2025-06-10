@@ -1,0 +1,16 @@
+---
+name: Stannum::Entities::Properties#properties
+parent_path: stannum/entities/properties
+signature: properties
+slug: properties
+constructor: false
+data_path: stannum/entities/properties/i-properties
+returns:
+- description: the entity properties.
+  type:
+  - name: Hash
+    items:
+    - name: String
+    - name: Object
+short_description: Collects the entity properties.
+version: "*"

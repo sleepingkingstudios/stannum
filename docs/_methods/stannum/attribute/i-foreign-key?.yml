@@ -1,0 +1,14 @@
+---
+name: Stannum::Attribute#foreign_key?
+parent_path: stannum/attribute
+signature: foreign_key?
+slug: foreign-key?
+constructor: false
+data_path: stannum/attribute/i-foreign-key?
+returns:
+- description: |-
+    true if the attribute represents the foreign key for an
+    association; otherwise false.
+  type:
+  - name: Boolean
+version: "*"

@@ -1,0 +1,32 @@
+---
+name: Stannum::Constraints::Enum#initialize
+parent_path: stannum/constraints/enum
+signature: initialize(first, *rest, **options)
+slug: initialize
+constructor: true
+data_path: stannum/constraints/enum/i-initialize
+overloads:
+- name: Stannum::Constraints::Enum#initialize
+  parent_path: stannum/constraints/enum
+  signature: initialize(*expected_values, **options)
+  slug: initialize
+  constructor: true
+  params:
+  - description: the possible values for the object.
+    name: expected_values
+    type:
+    - name: Array
+  - description: |-
+      Configuration options for the
+      constraint. Defaults to an empty Hash.
+    name: options
+    type:
+    - name: Hash
+      items:
+      - name: Symbol
+      - name: Object
+returns:
+- description: a new instance of Enum
+  type:
+  - name: Enum
+version: "*"

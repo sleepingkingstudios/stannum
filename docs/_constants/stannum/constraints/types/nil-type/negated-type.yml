@@ -1,0 +1,8 @@
+---
+name: Stannum::Constraints::Types::NilType::NEGATED_TYPE
+parent_path: stannum/constraints/types/nil-type
+slug: negated-type
+short_description: The :type of the error generated for a matching object.
+value: "'stannum.constraints.types.is_nil'"
+data_path: stannum/constraints/types/nil-type/negated-type
+version: "*"

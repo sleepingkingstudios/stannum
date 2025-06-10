@@ -1,0 +1,19 @@
+---
+name: Stannum::Constraints::Properties::Base::FILTERED_PARAMETERS
+parent_path: stannum/constraints/properties/base
+slug: filtered-parameters
+short_description: Default parameter names to filter out of errors.
+value: |-
+  %i[
+    passw
+    secret
+    token
+    _key
+    crypt
+    salt
+    certificate
+    otp
+    ssn
+  ].freeze
+data_path: stannum/constraints/properties/base/filtered-parameters
+version: "*"

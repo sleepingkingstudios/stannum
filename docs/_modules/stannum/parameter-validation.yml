@@ -1,0 +1,90 @@
+---
+name: Stannum::ParameterValidation
+slug: parameter-validation
+type: module
+files:
+- lib/stannum/parameter_validation.rb
+parent_path: stannum
+short_description: Provides a DSL for validating method parameters.
+constants:
+- name: VALIDATION_SUCCESS
+  path: stannum/parameter-validation/validation-success
+  slug: validation-success
+  inherited: false
+defined_classes:
+- name: MethodValidations
+  slug: method-validations
+defined_modules:
+- name: ClassMethods
+  slug: class-methods
+data_path: stannum/parameter-validation
+description: |-
+  Use the .validate_parameters method to define parameter validation for an
+  instance method of the class or module.
+
+  Ruby does not distinguish between an explicit nil versus an undefined value
+  in an Array or Hash, but does distinguish between a nil value and a missing
+  parameter. Be careful when validating methods with optional or default
+  arguments or keywords:
+
+  * If the actual value can be nil, or if the default parameter is nil, then
+    use the optional: true option. This will match an empty arguments list, or
+    an arguments list with nil as the first value:
+
+      def method_with_optional_argument(name: nil)
+        @name = name || 'Alan Bradley'
+      end
+
+      validate_parameters(:method_with_optional_argument) do
+        argument :name, optional: true
+      end
+
+  * If the default parameter is any other value, then use the default: true
+    option. This will match an empty arguments list, but not an arguments list
+    with nil as the first value:
+
+      def method_with_default_argument(role: 'User')
+        @role = role
+      end
+
+      validate_parameters(:method_with_default_argument) do
+        argument :role, default: true
+      end
+metadata:
+  examples:
+  - name: Validating Parameters
+    text: |-
+      class PerformAction
+        include Stannum::ParameterValidation
+
+        def perform(action, record_class = nil, user:, role: 'User')
+        end
+
+        validate_parameters(:perform) do
+          argument :action,       Symbol
+          argument :record_class, Class,  optional: true
+          keyword  :role,         String, default:  true
+          keyword  :user,         Stannum::Constraints::Type.new(User)
+        end
+      end
+  - name: Validating Class Methods
+    text: |-
+      module Authorization
+        extend Stannum::ParameterValidation
+
+        class << self
+          def authorize_user(user, role: 'User')
+          end
+
+          validate_parameters(:authorize_user) do
+            argument :user, User
+            argument :role, String, default: true
+          end
+        end
+      end
+  see:
+  - label: Stannum::Contracts::ParametersContract
+    path: stannum/contracts/parameters-contract
+    text:
+    type: reference
+version: "*"

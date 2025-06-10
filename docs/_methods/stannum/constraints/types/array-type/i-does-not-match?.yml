@@ -1,0 +1,22 @@
+---
+name: Stannum::Constraints::Types::ArrayType#does_not_match?
+parent_path: stannum/constraints/types/array-type
+signature: does_not_match?(actual)
+slug: does-not-match?
+constructor: false
+data_path: stannum/constraints/types/array-type/i-does-not-match?
+metadata:
+  see:
+  - label: Stannum::Constraints::Types::ArrayType#matches?
+    path: stannum/constraints/types/array-type#instance-method-matches?
+    text:
+    type: reference
+returns:
+- description: |-
+    true if the object is not an Array instance,
+    otherwise false.
+  type:
+  - name: 'true'
+  - name: 'false'
+short_description: Checks that the object is not an Array instance.
+version: "*"

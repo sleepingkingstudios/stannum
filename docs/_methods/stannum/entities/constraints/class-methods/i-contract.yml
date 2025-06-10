@@ -1,0 +1,13 @@
+---
+name: Stannum::Entities::Constraints::ClassMethods#contract
+parent_path: stannum/entities/constraints/class-methods
+signature: contract
+slug: contract
+constructor: false
+data_path: stannum/entities/constraints/class-methods/i-contract
+returns:
+- description: The Contract object for the entity.
+  type:
+  - name: Stannum::Contract
+    path: stannum/contract
+version: "*"

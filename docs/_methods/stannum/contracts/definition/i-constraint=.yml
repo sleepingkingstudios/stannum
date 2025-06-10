@@ -1,0 +1,13 @@
+---
+name: Stannum::Contracts::Definition#constraint=
+parent_path: stannum/contracts/definition
+signature: constraint=(value)
+slug: constraint=
+constructor: false
+data_path: stannum/contracts/definition/i-constraint=
+params:
+- description: the value to set the attribute constraint to.
+  name: value
+  type: []
+short_description: Sets the attribute constraint
+version: "*"

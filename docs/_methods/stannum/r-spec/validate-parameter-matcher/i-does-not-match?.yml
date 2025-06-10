@@ -1,0 +1,22 @@
+---
+name: Stannum::RSpec::ValidateParameterMatcher#does_not_match?
+parent_path: stannum/r-spec/validate-parameter-matcher
+signature: does_not_match?(actual)
+slug: does-not-match?
+constructor: false
+data_path: stannum/r-spec/validate-parameter-matcher/i-does-not-match?
+params:
+- description: The object to match.
+  name: actual
+  type:
+  - name: Object
+returns:
+- description: |-
+    false if the object validates the parameter,
+    otherwise true.
+  type:
+  - name: 'true'
+  - name: 'false'
+short_description: Asserts that the object does not validate the specified method
+  parameter.
+version: "*"
