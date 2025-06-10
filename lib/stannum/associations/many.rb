@@ -32,6 +32,9 @@ module Stannum::Associations
 
       # Appends the entity to the association.
       #
+      # If the entity is already in the association data, this method does
+      # nothing.
+      #
       # @param value [Stannum::Entity] the entity to add.
       #
       # @return [self] the association proxy.
@@ -70,6 +73,8 @@ module Stannum::Associations
       end
 
       # Removes the entity from the association.
+      #
+      # If the entity is not in the association data, this method does nothing.
       #
       # @param value [Stannum::Entity] the entity to remove.
       #

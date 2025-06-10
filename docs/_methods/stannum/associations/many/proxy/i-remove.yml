@@ -7,6 +7,7 @@ aliases:
 - delete
 constructor: false
 data_path: stannum/associations/many/proxy/i-remove
+description: If the entity is not in the association data, this method does nothing.
 params:
 - description: the entity to remove.
   name: value
