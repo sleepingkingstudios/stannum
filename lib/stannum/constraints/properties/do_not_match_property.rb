@@ -65,7 +65,7 @@ module Stannum::Constraints::Properties
       expected = expected_value(actual)
       matching = each_matching_property(actual:, expected:)
 
-      return generic_errors(errors) if matching.count.zero?
+      return generic_errors(errors) if matching.none?
 
       matching.each do |property_name, _| # rubocop:disable Style/HashEachMethods
         errors[property_name].add(type, message:)
@@ -100,7 +100,7 @@ module Stannum::Constraints::Properties
         include_all: true
       )
 
-      return generic_errors(errors) if matching.count.zero?
+      return generic_errors(errors) if matching.none?
 
       matching.each do |property_name, value|
         errors[property_name].add(

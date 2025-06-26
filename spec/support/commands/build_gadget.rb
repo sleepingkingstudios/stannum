@@ -45,7 +45,7 @@ module Spec
       super
     end
 
-    def validate(gadget)
+    def validate(gadget) # rubocop:disable Naming/PredicateMethod
       Spec::Gadget.contract.matches?(gadget)
     end
   end

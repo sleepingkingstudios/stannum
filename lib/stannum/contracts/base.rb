@@ -530,11 +530,11 @@ module Stannum::Contracts
       @constraints.each(&)
     end
 
-    def match_constraint(definition, value)
+    def match_constraint(definition, value) # rubocop:disable Naming/PredicateMethod
       definition.constraint.matches?(value)
     end
 
-    def match_negated_constraint(definition, value)
+    def match_negated_constraint(definition, value) # rubocop:disable Naming/PredicateMethod
       definition.constraint.does_not_match?(value)
     end
 
