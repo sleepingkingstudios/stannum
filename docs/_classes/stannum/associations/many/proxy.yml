@@ -11,6 +11,10 @@ instance_methods:
   path: stannum/associations/many/proxy/i-==
   slug: "=="
   inherited: false
+- name: "[]"
+  path: stannum/associations/many/proxy/i-[]
+  slug: "[]"
+  inherited: false
 - name: add
   path: stannum/associations/many/proxy/i-add
   slug: add
@@ -18,6 +22,10 @@ instance_methods:
 - name: each
   path: stannum/associations/many/proxy/i-each
   slug: each
+  inherited: false
+- name: empty?
+  path: stannum/associations/many/proxy/i-empty?
+  slug: empty?
   inherited: false
 - name: initialize
   path: stannum/associations/many/proxy/i-initialize
@@ -33,6 +41,9 @@ instance_methods:
   slug: remove
   inherited: false
 data_path: stannum/associations/many/proxy
+extended_modules:
+- name: Forwardable
+  slug: forwardable
 included_modules:
 - name: Enumerable
   slug: enumerable

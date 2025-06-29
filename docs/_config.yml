@@ -23,6 +23,8 @@ description: |
 github:
   repository_url: https://github.com/sleepingkingstudios/stannum
 markdown: kramdown
+plugins:
+  - sleeping_king_studios/docs/jekyll/plugins/liquid/filters/anchorize_slug
 repository: sleepingkingstudios/stannum
 theme: jekyll-theme-dinky
 title: Stannum

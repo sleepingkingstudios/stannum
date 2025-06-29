@@ -1,5 +1,7 @@
 # frozen_string_literal: true
 
+require 'forwardable'
+
 require 'stannum/associations'
 
 module Stannum::Associations
@@ -8,6 +10,7 @@ module Stannum::Associations
     # Wrapper object for an entity's plural association.
     class Proxy
       include Enumerable
+      extend  Forwardable
 
       # @param association [Stannum::Associations::Many] the association being
       #   wrapped.
@@ -17,6 +20,34 @@ module Stannum::Associations
         @association = association
         @entity      = entity
       end
+
+      # @!method [](index)
+      #   Retrieves the value of the association at the specified index.
+      #
+      #   @param index [Integer] the index of the value to retrieve.
+      #
+      #   @return [Stannum::Entity] the association value at the index.
+      def_delegator :data, :[]
+
+      # @!method each(&block)
+      #   @overload each
+      #     @return [Enumerator] an enumerator over each item in the entity's
+      #       association data.
+      #
+      #   @overload each(&block)
+      #     @yield Yields each item in the entity's association data.
+      #     @yieldparam item [Stannum::Entity] the associated entity.
+      def_delegator :data, :each
+
+      # @!method empty?
+      #   @return [true, false] true if the association has no items; otherwise
+      #     false.
+      def_delegator :data, :empty?
+
+      # @!method size
+      #   @return [Integer] the number of items in the association.
+      def_delegator :data, :size
+      alias size count
 
       # @param other [Object] the object to compare.
       #
@@ -54,19 +85,6 @@ module Stannum::Associations
       alias << add
       alias push add
 
-      # @overload each
-      #   @return [Enumerator] an enumerator over each item in the entity's
-      #     association data.
-      #
-      # @overload each(&block)
-      #   @yield Yields each item in the entity's association data.
-      #   @yieldparam item [Stannum::Entity] the associated entity.
-      def each(&)
-        return enum_for(:each) unless block_given?
-
-        (entity.read_association(association.name, safe: false) || []).each(&)
-      end
-
       # @return [String] a human-readable string representation of the object.
       def inspect
         "#{super[...55]} data=[#{each.map(&:inspect).join(', ')}]>"
@@ -99,6 +117,10 @@ module Stannum::Associations
       attr_reader :association
 
       attr_reader :entity
+
+      def data
+        entity.read_association(association.name, safe: false) || []
+      end
     end
 
     # (see Stannum::Association#add_value)

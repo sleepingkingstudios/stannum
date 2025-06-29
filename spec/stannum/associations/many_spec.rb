@@ -205,6 +205,24 @@ RSpec.describe Stannum::Associations::Many do
       end
     end
 
+    describe '#[]' do
+      it { expect(proxy).to respond_to(:[]).with(1).argument }
+
+      describe 'with a non-matching index' do
+        it { expect(proxy[0]).to be nil }
+      end
+
+      wrap_context 'when the association has a value' do
+        describe 'with a non-matching index' do
+          it { expect(proxy[previous_value.size]).to be nil }
+        end
+
+        describe 'with a matching index' do
+          it { expect(proxy[1]).to eq(previous_value[1]) }
+        end
+      end
+    end
+
     describe '#add' do
       let(:error_message) do
         'invalid association item - must be an instance of Spec::Reference'
@@ -260,6 +278,14 @@ RSpec.describe Stannum::Associations::Many do
       end
     end
 
+    describe '#count' do
+      include_examples 'should define reader', :count, 0
+
+      wrap_context 'when the association has a value' do
+        it { expect(proxy.count).to be previous_value.count }
+      end
+    end
+
     describe '#each' do
       it { expect(proxy).to respond_to(:each).with(0).arguments.and_a_block }
 
@@ -276,6 +302,14 @@ RSpec.describe Stannum::Associations::Many do
           expect { |block| proxy.each(&block) }
             .to yield_successive_args(*previous_value)
         end
+      end
+    end
+
+    describe '#empty?' do
+      include_examples 'should define predicate', :empty?, true
+
+      wrap_context 'when the association has a value' do
+        it { expect(proxy.empty?).to be false }
       end
     end
 
@@ -371,6 +405,14 @@ RSpec.describe Stannum::Associations::Many do
         end
 
         it { expect(proxy.remove(value)).to be proxy }
+      end
+    end
+
+    describe '#size' do
+      include_examples 'should define reader', :size, 0
+
+      wrap_context 'when the association has a value' do
+        it { expect(proxy.size).to be previous_value.size }
       end
     end
   end
