@@ -1,7 +1,7 @@
 ---
 name: Stannum::Associations::Many::Proxy#each
 parent_path: stannum/associations/many/proxy
-signature: each(&)
+signature: each(&block)
 slug: each
 constructor: false
 data_path: stannum/associations/many/proxy/i-each
