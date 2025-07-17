@@ -2,6 +2,8 @@
 
 ## 0.4.0
 
+Published YARD documentation.
+
 ### Constraints
 
 - Implemented `Stannum::Constraints::Format`
@@ -11,6 +13,12 @@
 
 - Added support for default blocks to `Stannum::Entities::Attributes`.
 - Refactored `Stannum::Schema`. **Note:** This change is not backwards-compatible.
+
+#### Associations
+
+- Added support for one-to-one and one-to-many associations.
+  - Added support for association foreign keys.
+  - Added support for inverse associations.
 
 #### Primary Keys
 
