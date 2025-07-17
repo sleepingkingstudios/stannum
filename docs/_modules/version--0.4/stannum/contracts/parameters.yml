@@ -1,0 +1,20 @@
+---
+name: Stannum::Contracts::Parameters
+slug: parameters
+type: module
+files:
+- lib/stannum/contracts/parameters.rb
+- lib/stannum/contracts/parameters/keywords_contract.rb
+- lib/stannum/contracts/parameters/arguments_contract.rb
+- lib/stannum/contracts/parameters/signature_contract.rb
+parent_path: stannum/contracts
+short_description: Namespace for contracts that constrain method parameters.
+defined_classes:
+- name: ArgumentsContract
+  slug: arguments-contract
+- name: KeywordsContract
+  slug: keywords-contract
+- name: SignatureContract
+  slug: signature-contract
+data_path: stannum/contracts/parameters
+version: '0.4'

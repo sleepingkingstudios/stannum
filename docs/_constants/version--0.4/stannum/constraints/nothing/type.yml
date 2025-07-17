@@ -1,0 +1,8 @@
+---
+name: Stannum::Constraints::Nothing::TYPE
+parent_path: stannum/constraints/nothing
+slug: type
+short_description: The :type of the error generated for a non-matching object.
+value: "'stannum.constraints.anything'"
+data_path: stannum/constraints/nothing/type
+version: '0.4'

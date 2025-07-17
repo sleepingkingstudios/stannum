@@ -1,0 +1,26 @@
+---
+name: Stannum::ParameterValidation::MethodValidations
+slug: method-validations
+type: class
+files:
+- lib/stannum/parameter_validation.rb
+parent_path: stannum/parameter-validation
+short_description: Base class for modules that handle tracking validated methods.
+instance_methods:
+- name: contracts
+  path: stannum/parameter-validation/method-validations/i-contracts
+  slug: contracts
+  inherited: false
+- name: initialize
+  path: stannum/parameter-validation/method-validations/i-initialize
+  slug: initialize
+  inherited: false
+  constructor: true
+data_path: stannum/parameter-validation/method-validations
+metadata:
+  api: private
+constructor: true
+inherited_classes:
+- name: Module
+  slug: module
+version: '0.4'

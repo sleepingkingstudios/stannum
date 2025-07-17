@@ -1,0 +1,51 @@
+---
+name: Stannum::Contracts::MapContract::Builder#key
+parent_path: stannum/contracts/map-contract/builder
+signature: key(property, constraint = nil, **options, &)
+slug: key
+constructor: false
+data_path: stannum/contracts/map-contract/builder/i-key
+metadata:
+  api: private
+overloads:
+- name: Stannum::Contracts::MapContract::Builder#key
+  parent_path: stannum/contracts/map-contract/builder
+  signature: key(key, constraint, **options)
+  slug: key
+  constructor: false
+  params:
+  - description: |-
+      The key to
+      constrain.
+    name: key
+    type:
+    - name: String
+    - name: Symbol
+    - name: Array
+      items:
+      - name: String
+      - name: Symbol
+  - description: The constraint to add.
+    name: constraint
+    type:
+    - name: Stannum::Constraint::Base
+  - description: Options for the constraint.
+    name: options
+    type:
+    - name: Hash
+      items:
+      - name: Symbol
+      - name: Object
+  short_description: |-
+    Adds the given constraint to the contract for the value at the given
+    key.
+- name: Stannum::Contracts::MapContract::Builder#key
+  parent_path: stannum/contracts/map-contract/builder
+  signature: key(**options) { |value| }
+  slug: key
+  constructor: false
+  short_description: |-
+    Creates a new Stannum::Constraint object with the given block, and
+    adds that constraint to the contract for the value at the given key.
+short_description: Defines a key constraint on the contract.
+version: '0.4'

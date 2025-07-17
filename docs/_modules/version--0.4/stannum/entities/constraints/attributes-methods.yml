@@ -1,0 +1,15 @@
+---
+name: Stannum::Entities::Constraints::AttributesMethods
+slug: attributes-methods
+type: module
+files:
+- lib/stannum/entities/constraints.rb
+parent_path: stannum/entities/constraints
+short_description: Class methods to extend the class when including Attributes.
+instance_methods:
+- name: attribute
+  path: stannum/entities/constraints/attributes-methods/i-attribute
+  slug: attribute
+  inherited: false
+data_path: stannum/entities/constraints/attributes-methods
+version: '0.4'

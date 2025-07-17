@@ -1,0 +1,86 @@
+---
+name: Stannum::RSpec::ValidateParameterMatcher
+slug: validate-parameter-matcher
+type: class
+files:
+- lib/stannum/rspec/validate_parameter_matcher.rb
+parent_path: stannum/r-spec
+short_description: Asserts that the command validates the given method parameter.
+defined_classes:
+- name: InvalidParameterHandledError
+  slug: invalid-parameter-handled-error
+instance_attributes:
+- name: expected_constraint
+  read: true
+  write: false
+  path: stannum/r-spec/validate-parameter-matcher/i-expected-constraint
+  slug: expected-constraint
+  inherited: false
+- name: method_name
+  read: true
+  write: false
+  path: stannum/r-spec/validate-parameter-matcher/i-method-name
+  slug: method-name
+  inherited: false
+- name: parameter_name
+  read: true
+  write: false
+  path: stannum/r-spec/validate-parameter-matcher/i-parameter-name
+  slug: parameter-name
+  inherited: false
+- name: parameter_value
+  read: true
+  write: false
+  path: stannum/r-spec/validate-parameter-matcher/i-parameter-value
+  slug: parameter-value
+  inherited: false
+- name: parameters
+  read: true
+  write: false
+  path: stannum/r-spec/validate-parameter-matcher/i-parameters
+  slug: parameters
+  inherited: false
+instance_methods:
+- name: description
+  path: stannum/r-spec/validate-parameter-matcher/i-description
+  slug: description
+  inherited: false
+- name: does_not_match?
+  path: stannum/r-spec/validate-parameter-matcher/i-does-not-match?
+  slug: does-not-match?
+  inherited: false
+- name: failure_message
+  path: stannum/r-spec/validate-parameter-matcher/i-failure-message
+  slug: failure-message
+  inherited: false
+- name: failure_message_when_negated
+  path: stannum/r-spec/validate-parameter-matcher/i-failure-message-when-negated
+  slug: failure-message-when-negated
+  inherited: false
+- name: initialize
+  path: stannum/r-spec/validate-parameter-matcher/i-initialize
+  slug: initialize
+  inherited: false
+  constructor: true
+- name: matches?
+  path: stannum/r-spec/validate-parameter-matcher/i-matches?
+  slug: matches?
+  inherited: false
+- name: using_constraint
+  path: stannum/r-spec/validate-parameter-matcher/i-using-constraint
+  slug: using-constraint
+  inherited: false
+- name: with_parameters
+  path: stannum/r-spec/validate-parameter-matcher/i-with-parameters
+  slug: with-parameters
+  inherited: false
+- name: with_value
+  path: stannum/r-spec/validate-parameter-matcher/i-with-value
+  slug: with-value
+  inherited: false
+data_path: stannum/r-spec/validate-parameter-matcher
+included_modules:
+- name: RSpec::Mocks::ExampleMethods
+  slug: example-methods
+constructor: true
+version: '0.4'

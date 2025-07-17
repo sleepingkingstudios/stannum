@@ -1,0 +1,12 @@
+---
+name: Stannum::Attribute#resolved_type
+parent_path: stannum/attribute
+signature: resolved_type
+slug: resolved-type
+constructor: false
+data_path: stannum/attribute/i-resolved-type
+returns:
+- description: the type of the attribute.
+  type:
+  - name: Module
+version: '0.4'

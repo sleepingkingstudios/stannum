@@ -1,0 +1,12 @@
+---
+name: Stannum::Contracts::MapContract#expected_keys
+parent_path: stannum/contracts/map-contract
+signature: expected_keys
+slug: expected-keys
+constructor: false
+data_path: stannum/contracts/map-contract/i-expected-keys
+returns:
+- description: the list of keys expected by the key constraints.
+  type:
+  - name: Array
+version: '0.4'

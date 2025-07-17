@@ -1,0 +1,12 @@
+---
+name: Stannum::Association#type
+parent_path: stannum/association
+signature: type
+slug: type
+constructor: false
+data_path: stannum/association/i-type
+returns:
+- description: the name of the association type Class or Module.
+  type:
+  - name: String
+version: '0.4'

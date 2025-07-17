@@ -1,0 +1,8 @@
+---
+name: Stannum::Constraints::Presence::TYPE
+parent_path: stannum/constraints/presence
+slug: type
+short_description: The :type of the error generated for a non-matching object.
+value: "'stannum.constraints.absent'"
+data_path: stannum/constraints/presence/type
+version: '0.4'

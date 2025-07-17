@@ -1,0 +1,50 @@
+---
+name: Stannum::Attribute#initialize
+parent_path: stannum/attribute
+signature: initialize(name:, options:, type:)
+slug: initialize
+constructor: true
+data_path: stannum/attribute/i-initialize
+options:
+- name: options
+  opts:
+  - description: |-
+      The default value for the attribute.
+      Defaults to nil.
+    name: ":default"
+    type:
+    - name: Object
+  - description: |-
+      true if the attribute represents
+      the primary key for the entity; otherwise false. Defaults to false.
+    name: ":primary_key"
+    type:
+    - name: Boolean
+params:
+- description: |-
+    The name of the attribute. Converted to a
+    String.
+  name: name
+  type:
+  - name: String
+  - name: Symbol
+- description: |-
+    Options for the attribute. Converted to a Hash
+    with Symbol keys. Defaults to an empty Hash.
+  name: options
+  type:
+  - name: Hash
+  - name: nil
+- description: |-
+    The type of the attribute. Can be a
+    Class, a Module, or the name of a class or module.
+  name: type
+  type:
+  - name: Class
+  - name: Module
+  - name: String
+returns:
+- description: a new instance of Attribute
+  type:
+  - name: Attribute
+version: '0.4'

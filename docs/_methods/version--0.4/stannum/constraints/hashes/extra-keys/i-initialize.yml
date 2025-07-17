@@ -1,0 +1,29 @@
+---
+name: Stannum::Constraints::Hashes::ExtraKeys#initialize
+parent_path: stannum/constraints/hashes/extra-keys
+signature: initialize(expected_keys, **options)
+slug: initialize
+constructor: true
+data_path: stannum/constraints/hashes/extra-keys/i-initialize
+params:
+- description: |-
+    The expected keys. If a Proc, will be
+    evaluated each time the constraint is matched.
+  name: expected_keys
+  type:
+  - name: Array
+  - name: Proc
+- description: |-
+    Configuration options for the
+    constraint. Defaults to an empty Hash.
+  name: options
+  type:
+  - name: Hash
+    items:
+    - name: Symbol
+    - name: Object
+returns:
+- description: a new instance of ExtraKeys
+  type:
+  - name: ExtraKeys
+version: '0.4'

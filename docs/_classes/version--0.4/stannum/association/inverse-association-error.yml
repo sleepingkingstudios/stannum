@@ -1,0 +1,14 @@
+---
+name: Stannum::Association::InverseAssociationError
+slug: inverse-association-error
+type: class
+files:
+- lib/stannum/association.rb
+parent_path: stannum/association
+short_description: Exception raised when referencing an invalid inverse association..
+data_path: stannum/association/inverse-association-error
+constructor: false
+inherited_classes:
+- name: StandardError
+  slug: standard-error
+version: '0.4'

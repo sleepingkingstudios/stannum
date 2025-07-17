@@ -1,0 +1,50 @@
+---
+name: Stannum::Entities::Associations
+slug: associations
+type: module
+files:
+- lib/stannum/entities/associations.rb
+parent_path: stannum/entities
+short_description: Methods for defining and accessing entity associations.
+class_methods:
+- name: apply
+  path: stannum/entities/associations/c-apply
+  slug: apply
+  inherited: false
+defined_classes:
+- name: InvalidOptionError
+  slug: invalid-option-error
+defined_modules:
+- name: ClassMethods
+  slug: class-methods
+instance_methods:
+- name: assign_associations
+  path: stannum/entities/associations/i-assign-associations
+  slug: assign-associations
+  inherited: false
+- name: associations
+  path: stannum/entities/associations/i-associations
+  slug: associations
+  inherited: false
+- name: associations=
+  path: stannum/entities/associations/i-associations=
+  slug: associations=
+  inherited: false
+- name: initialize
+  path: stannum/entities/associations/i-initialize
+  slug: initialize
+  inherited: false
+- name: properties
+  path: stannum/entities/associations/i-properties
+  slug: properties
+  inherited: false
+- name: read_association
+  path: stannum/entities/associations/i-read-association
+  slug: read-association
+  inherited: false
+- name: write_association
+  path: stannum/entities/associations/i-write-association
+  slug: write-association
+  inherited: false
+data_path: stannum/entities/associations
+version: '0.4'

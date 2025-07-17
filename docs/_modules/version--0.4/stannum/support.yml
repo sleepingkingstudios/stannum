@@ -1,0 +1,17 @@
+---
+name: Stannum::Support
+slug: support
+type: module
+files:
+- lib/stannum/support.rb
+- lib/stannum/support/coercion.rb
+- lib/stannum/support/optional.rb
+parent_path: stannum
+short_description: Namespace for internal code that supports public features.
+defined_modules:
+- name: Coercion
+  slug: coercion
+- name: Optional
+  slug: optional
+data_path: stannum/support
+version: '0.4'

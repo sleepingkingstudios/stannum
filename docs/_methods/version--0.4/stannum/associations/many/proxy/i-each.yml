@@ -1,0 +1,33 @@
+---
+name: Stannum::Associations::Many::Proxy#each
+parent_path: stannum/associations/many/proxy
+signature: each(&block)
+slug: each
+constructor: false
+data_path: stannum/associations/many/proxy/i-each
+overloads:
+- name: Stannum::Associations::Many::Proxy#each
+  parent_path: stannum/associations/many/proxy
+  signature: each
+  slug: each
+  constructor: false
+  returns:
+  - description: |-
+      an enumerator over each item in the entity's
+      association data.
+    type:
+    - name: Enumerator
+- name: Stannum::Associations::Many::Proxy#each
+  parent_path: stannum/associations/many/proxy
+  signature: each(&block)
+  slug: each
+  constructor: false
+  yield_params:
+  - description: the associated entity.
+    name: item
+    type:
+    - name: Stannum::Entity
+      path: stannum/entity
+  yields:
+  - description: Yields each item in the entity's association data.
+version: '0.4'

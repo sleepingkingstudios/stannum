@@ -1,0 +1,8 @@
+---
+name: Stannum::Constraints::Base::TYPE
+parent_path: stannum/constraints/base
+slug: type
+short_description: The :type of the error generated for a non-matching object.
+value: "'stannum.constraints.invalid'"
+data_path: stannum/constraints/base/type
+version: '0.4'

@@ -1,0 +1,12 @@
+---
+name: Stannum::Attribute#writer_name
+parent_path: stannum/attribute
+signature: writer_name
+slug: writer-name
+constructor: false
+data_path: stannum/attribute/i-writer-name
+returns:
+- description: the name of the writer method for the attribute.
+  type:
+  - name: Symbol
+version: '0.4'

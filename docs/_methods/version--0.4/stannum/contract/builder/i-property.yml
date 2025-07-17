@@ -1,0 +1,49 @@
+---
+name: Stannum::Contract::Builder#property
+parent_path: stannum/contract/builder
+signature: property(property, constraint = nil, **options, &)
+slug: property
+constructor: false
+data_path: stannum/contract/builder/i-property
+metadata:
+  api: private
+overloads:
+- name: Stannum::Contract::Builder#property
+  parent_path: stannum/contract/builder
+  signature: property(property, constraint, **options)
+  slug: property
+  constructor: false
+  params:
+  - description: |-
+      The property
+      to constrain.
+    name: property
+    type:
+    - name: String
+    - name: Symbol
+    - name: Array
+      items:
+      - name: String
+      - name: Symbol
+  - description: The constraint to add.
+    name: constraint
+    type:
+    - name: Stannum::Constraint::Base
+  - description: Options for the constraint.
+    name: options
+    type:
+    - name: Hash
+      items:
+      - name: Symbol
+      - name: Object
+  short_description: Adds the given constraint to the contract for the property.
+- name: Stannum::Contract::Builder#property
+  parent_path: stannum/contract/builder
+  signature: property(**options) { |value| }
+  slug: property
+  constructor: false
+  short_description: |-
+    Creates a new Stannum::Constraint object with the given block, and
+    adds that constraint to the contract for the property.
+short_description: Defines a property constraint on the contract.
+version: '0.4'

@@ -1,0 +1,16 @@
+---
+name: Stannum::Contracts::ArrayContract#item_type
+parent_path: stannum/contracts/array-contract
+signature: item_type
+slug: item-type
+constructor: false
+data_path: stannum/contracts/array-contract/i-item-type
+returns:
+- description: |-
+    the expected type for the items
+    in the array.
+  type:
+  - name: Stannum::Constraints::Base
+    path: stannum/constraints/base
+  - name: nil
+version: '0.4'

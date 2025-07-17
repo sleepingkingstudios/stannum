@@ -1,0 +1,8 @@
+---
+name: Stannum::Constraints::Hashes::ExtraKeys::NEGATED_TYPE
+parent_path: stannum/constraints/hashes/extra-keys
+slug: negated-type
+short_description: The :type of the error generated for a matching object.
+value: "'stannum.constraints.hashes.no_extra_keys'"
+data_path: stannum/constraints/hashes/extra-keys/negated-type
+version: '0.4'

@@ -1,0 +1,33 @@
+---
+name: Stannum::Entities::Associations#assign_associations
+parent_path: stannum/entities/associations
+signature: assign_associations(associations)
+slug: assign-associations
+constructor: false
+data_path: stannum/entities/associations/i-assign-associations
+description: |-
+  This method is used to update some (but not all) of the associations of
+  the struct. For each key in the hash, it calls the corresponding writer
+  method with the value for that association.
+
+  Any associations that are not in the given hash are unchanged, as are any
+  properties that are not associations.
+
+  If the associations hash includes any keys that do not correspond to an
+  association, the struct will raise an error.
+metadata:
+  see:
+  - label: "#associations="
+    path: stannum/entities/associations#instance-method-associations=
+    text:
+    type: reference
+params:
+- description: The associations for the struct.
+  name: associations
+  type:
+  - name: Hash
+raises:
+- description: ArgumentError if any key is not a valid association.
+  type: []
+short_description: Updates the struct's associations with the given values.
+version: '0.4'

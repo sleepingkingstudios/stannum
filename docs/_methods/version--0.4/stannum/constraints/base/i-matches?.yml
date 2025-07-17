@@ -1,0 +1,50 @@
+---
+name: Stannum::Constraints::Base#matches?
+parent_path: stannum/constraints/base
+signature: matches?(_actual)
+slug: matches?
+aliases:
+- match?
+constructor: false
+data_path: stannum/constraints/base/i-matches?
+metadata:
+  examples:
+  - name: Checking a matching object.
+    text: |-
+      constraint = CustomConstraint.new
+      object     = MatchingObject.new
+
+      constraint.matches?(object) #=> true
+  - name: Checking a non-matching object.
+    text: |-
+      constraint = CustomConstraint.new
+      object     = NonMatchingObject.new
+
+      constraint.matches?(object) #=> false
+  see:
+  - label: "#does_not_match?"
+    path: stannum/constraints/base#instance-method-does-not-match?
+    text:
+    type: reference
+overloads:
+- name: Stannum::Constraints::Base#matches?
+  parent_path: stannum/constraints/base
+  signature: matches?(actual)
+  slug: matches?
+  aliases:
+  - match?
+  constructor: false
+  params:
+  - description: The object to match.
+    name: actual
+    type:
+    - name: Object
+  returns:
+  - description: |-
+      true if the object matches the expected properties
+      or behavior, otherwise false.
+    type:
+    - name: 'true'
+    - name: 'false'
+  short_description: Checks that the given object matches the constraint.
+version: '0.4'

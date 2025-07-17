@@ -1,0 +1,31 @@
+---
+name: Stannum::Constraints::Type#initialize
+parent_path: stannum/constraints/type
+signature: 'initialize(expected_type, optional: nil, required: nil, **options)'
+slug: initialize
+constructor: true
+data_path: stannum/constraints/type/i-initialize
+params:
+- description: |-
+    The type the object is
+    expected to belong to. Can be a Class or a Module, or the name of a
+    class or module.
+  name: expected_type
+  type:
+  - name: Class
+  - name: Module
+  - name: String
+- description: |-
+    Configuration options for the
+    constraint. Defaults to an empty Hash.
+  name: options
+  type:
+  - name: Hash
+    items:
+    - name: Symbol
+    - name: Object
+returns:
+- description: a new instance of Type
+  type:
+  - name: Type
+version: '0.4'

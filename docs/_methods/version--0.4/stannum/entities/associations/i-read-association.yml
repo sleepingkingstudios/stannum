@@ -1,0 +1,30 @@
+---
+name: Stannum::Entities::Associations#read_association
+parent_path: stannum/entities/associations
+signature: 'read_association(key, safe: true)'
+slug: read-association
+constructor: false
+data_path: stannum/entities/associations/i-read-association
+description: |-
+  If the :safe flag is set, will verify that the association name is valid
+  (a non-empty String or Symbol) and that there is a defined association by
+  that name. By default, :safe is set to true.
+metadata:
+  api: private
+params:
+- description: the key of the association to retrieve.
+  name: key
+  type:
+  - name: String
+  - name: Symbol
+- description: if true, validates the association key.
+  name: safe
+  type:
+  - name: Boolean
+  default: 'true'
+returns:
+- description: the value of the requested association.
+  type:
+  - name: Object
+short_description: Retrieves the association value for the requested key.
+version: '0.4'

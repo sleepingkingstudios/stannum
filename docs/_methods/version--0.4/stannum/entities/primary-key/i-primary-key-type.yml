@@ -1,0 +1,19 @@
+---
+name: Stannum::Entities::PrimaryKey#primary_key_type
+parent_path: stannum/entities/primary-key
+signature: primary_key_type
+slug: primary-key-type
+constructor: false
+data_path: stannum/entities/primary-key/i-primary-key-type
+raises:
+- description: |-
+    if the entity
+    does not define a primary key.
+  type:
+  - name: Stannum::Entities::PrimaryKey::PrimaryKeyMissing
+    path: stannum/entities/primary-key/primary-key-missing
+returns:
+- description: the type of the primary key attribute.
+  type:
+  - name: Class
+version: '0.4'

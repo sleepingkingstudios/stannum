@@ -1,0 +1,38 @@
+---
+name: Stannum::Errors#update
+parent_path: stannum/errors
+signature: update(value)
+slug: update
+constructor: false
+data_path: stannum/errors/i-update
+description: |-
+  Adds each error in the passed in errors object or array to the current
+  errors object. It will then contain all of the original errors and all of
+  the errors from the passed in object. This changes the current object.
+metadata:
+  see:
+  - label: "#merge"
+    path: stannum/errors#instance-method-merge
+    text:
+    type: reference
+params:
+- description: |-
+    The errors to add to the
+    current errors object.
+  name: value
+  type:
+  - name: Stannum::Errors
+    path: stannum/errors
+  - name: Array[Hash]
+raises:
+- description: |-
+    if the value is not a valid errors object or Array
+    of errors hashes.
+  type:
+  - name: ArgumentError
+returns:
+- description: the current errors object.
+  type:
+  - name: self
+short_description: Adds the given errors to the errors object.
+version: '0.4'

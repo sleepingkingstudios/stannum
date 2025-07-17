@@ -1,0 +1,24 @@
+---
+name: Stannum::Constraints::Identity#matches?
+parent_path: stannum/constraints/identity
+signature: matches?(actual)
+slug: matches?
+aliases:
+- match?
+constructor: false
+data_path: stannum/constraints/identity/i-matches?
+metadata:
+  see:
+  - label: Stannum::Constraint#matches?
+    path: stannum/constraint#instance-method-matches?
+    text:
+    type: reference
+returns:
+- description: |-
+    true if the object is the expected value, otherwise
+    false.
+  type:
+  - name: 'true'
+  - name: 'false'
+short_description: Checks that the object is the expected value.
+version: '0.4'

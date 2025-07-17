@@ -1,0 +1,26 @@
+---
+name: Stannum::Constraints::Equality#initialize
+parent_path: stannum/constraints/equality
+signature: initialize(expected_value, **options)
+slug: initialize
+constructor: true
+data_path: stannum/constraints/equality/i-initialize
+params:
+- description: The expected object.
+  name: expected_value
+  type:
+  - name: Object
+- description: |-
+    Configuration options for the
+    constraint. Defaults to an empty Hash.
+  name: options
+  type:
+  - name: Hash
+    items:
+    - name: Symbol
+    - name: Object
+returns:
+- description: a new instance of Equality
+  type:
+  - name: Equality
+version: '0.4'

@@ -1,0 +1,19 @@
+---
+name: Stannum::Associations::Many::Proxy#[]
+parent_path: stannum/associations/many/proxy
+signature: "[](index)"
+slug: "[]"
+constructor: false
+data_path: stannum/associations/many/proxy/i-[]
+params:
+- description: the index of the value to retrieve.
+  name: index
+  type:
+  - name: Integer
+returns:
+- description: the association value at the index.
+  type:
+  - name: Stannum::Entity
+    path: stannum/entity
+short_description: Retrieves the value of the association at the specified index.
+version: '0.4'

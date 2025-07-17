@@ -1,0 +1,12 @@
+---
+name: Stannum::Association#writer_name
+parent_path: stannum/association
+signature: writer_name
+slug: writer-name
+constructor: false
+data_path: stannum/association/i-writer-name
+returns:
+- description: the name of the writer method for the association.
+  type:
+  - name: Symbol
+version: '0.4'

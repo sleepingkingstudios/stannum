@@ -1,0 +1,16 @@
+---
+name: Stannum::Messages::DefaultLoader#file_paths
+parent_path: stannum/messages/default-loader
+signature: file_paths
+slug: file-paths
+constructor: false
+data_path: stannum/messages/default-loader/i-file-paths
+returns:
+- description: |-
+    the directories from which to load the
+    configuration files.
+  type:
+  - name: Array
+    items:
+    - name: String
+version: '0.4'

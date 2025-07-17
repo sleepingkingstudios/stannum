@@ -1,0 +1,15 @@
+---
+name: Stannum::Entities::Properties#==
+parent_path: stannum/entities/properties
+signature: "==(other)"
+slug: "=="
+constructor: false
+data_path: stannum/entities/properties/i-==
+description: |-
+  The other object must be an instance of the current class. In addition,
+  the properties hashes of the two objects must be equal.
+returns:
+- description: true if the object is a matching entity.
+  type: []
+short_description: Compares the entity with the other object.
+version: '0.4'

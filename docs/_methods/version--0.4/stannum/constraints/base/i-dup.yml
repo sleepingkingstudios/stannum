@@ -1,0 +1,14 @@
+---
+name: Stannum::Constraints::Base#dup
+parent_path: stannum/constraints/base
+signature: dup
+slug: dup
+constructor: false
+data_path: stannum/constraints/base/i-dup
+returns:
+- description: the duplicated constraint.
+  type:
+  - name: Stannum::Constraints::Base
+    path: stannum/constraints/base
+short_description: Produces a shallow copy of the constraint.
+version: '0.4'

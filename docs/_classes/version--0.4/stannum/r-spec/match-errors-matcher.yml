@@ -1,0 +1,37 @@
+---
+name: Stannum::RSpec::MatchErrorsMatcher
+slug: match-errors-matcher
+type: class
+files:
+- lib/stannum/rspec/match_errors_matcher.rb
+parent_path: stannum/r-spec
+short_description: Asserts that the expected and actual errors are equal.
+instance_methods:
+- name: description
+  path: stannum/r-spec/match-errors-matcher/i-description
+  slug: description
+  inherited: false
+- name: does_not_match?
+  path: stannum/r-spec/match-errors-matcher/i-does-not-match?
+  slug: does-not-match?
+  inherited: false
+- name: failure_message
+  path: stannum/r-spec/match-errors-matcher/i-failure-message
+  slug: failure-message
+  inherited: false
+- name: failure_message_when_negated
+  path: stannum/r-spec/match-errors-matcher/i-failure-message-when-negated
+  slug: failure-message-when-negated
+  inherited: false
+- name: initialize
+  path: stannum/r-spec/match-errors-matcher/i-initialize
+  slug: initialize
+  inherited: false
+  constructor: true
+- name: matches?
+  path: stannum/r-spec/match-errors-matcher/i-matches?
+  slug: matches?
+  inherited: false
+data_path: stannum/r-spec/match-errors-matcher
+constructor: true
+version: '0.4'

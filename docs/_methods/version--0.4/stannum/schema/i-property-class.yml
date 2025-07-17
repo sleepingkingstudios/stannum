@@ -1,0 +1,12 @@
+---
+name: Stannum::Schema#property_class
+parent_path: stannum/schema
+signature: property_class
+slug: property-class
+constructor: false
+data_path: stannum/schema/i-property-class
+returns:
+- description: the class representing the elements of the schema.
+  type:
+  - name: Class
+version: '0.4'

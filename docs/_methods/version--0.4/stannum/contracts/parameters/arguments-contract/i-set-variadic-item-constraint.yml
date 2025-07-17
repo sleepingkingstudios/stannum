@@ -1,0 +1,48 @@
+---
+name: Stannum::Contracts::Parameters::ArgumentsContract#set_variadic_item_constraint
+parent_path: stannum/contracts/parameters/arguments-contract
+signature: 'set_variadic_item_constraint(item_type, as: nil)'
+slug: set-variadic-item-constraint
+constructor: false
+data_path: stannum/contracts/parameters/arguments-contract/i-set-variadic-item-constraint
+description: |-
+  The given type or constraint must individually match each item (if any) in
+  the variadic arguments. To constrain the variadic arguments as a whole,
+  use #set_variadic_constraint.
+metadata:
+  api: private
+  see:
+  - label: "#set_variadic_constraint"
+    path: stannum/contracts/parameters/arguments-contract#instance-method-set-variadic-constraint
+    text:
+    type: reference
+params:
+- description: |-
+    The type or
+    constraint to add. If the type is a Class or Module, then it is
+    converted to a Stannum::Constraints::Type. Each item in the variadic
+    arguments must match the given constraint.
+  name: item_type
+  type:
+  - name: Stannum::Constraints::Base
+    path: stannum/constraints/base
+  - name: Class
+  - name: Module
+- description: |-
+    A human-friendly reference for the additional
+    arguments. Used when generating errors. Should be the same name used in
+    the method definition.
+  name: as
+  type:
+  - name: Symbol
+  default: nil
+raises:
+- description: if the variadic arguments constraint is already set.
+  type:
+  - name: RuntimeError
+returns:
+- description: the contract.
+  type:
+  - name: self
+short_description: Sets a constraint for the variadic argument items.
+version: '0.4'

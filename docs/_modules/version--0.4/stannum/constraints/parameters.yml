@@ -1,0 +1,17 @@
+---
+name: Stannum::Constraints::Parameters
+slug: parameters
+type: module
+files:
+- lib/stannum/constraints/parameters.rb
+- lib/stannum/constraints/parameters/extra_keywords.rb
+- lib/stannum/constraints/parameters/extra_arguments.rb
+parent_path: stannum/constraints
+short_description: Namespace for constraints that match method parameters.
+defined_classes:
+- name: ExtraArguments
+  slug: extra-arguments
+- name: ExtraKeywords
+  slug: extra-keywords
+data_path: stannum/constraints/parameters
+version: '0.4'

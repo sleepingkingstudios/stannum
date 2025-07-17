@@ -1,0 +1,20 @@
+---
+name: Stannum::Attribute::Builder#initialize
+parent_path: stannum/attribute/builder
+signature: initialize(schema)
+slug: initialize
+constructor: true
+data_path: stannum/attribute/builder/i-initialize
+params:
+- description: |-
+    the attributes schema on which to define
+    methods.
+  name: schema
+  type:
+  - name: Stannum::Schema
+    path: stannum/schema
+returns:
+- description: a new instance of Builder
+  type:
+  - name: Builder
+version: '0.4'

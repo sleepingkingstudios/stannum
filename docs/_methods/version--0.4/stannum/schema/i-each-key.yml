@@ -1,0 +1,14 @@
+---
+name: Stannum::Schema#each_key
+parent_path: stannum/schema
+signature: each_key(&block)
+slug: each-key
+constructor: false
+data_path: stannum/schema/i-each-key
+short_description: Iterates through the the properties by name.
+yield_params:
+- description: The name of the property.
+  name: name
+  type:
+  - name: String
+version: '0.4'

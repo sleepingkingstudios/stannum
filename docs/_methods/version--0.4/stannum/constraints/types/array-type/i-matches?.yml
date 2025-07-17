@@ -1,0 +1,29 @@
+---
+name: Stannum::Constraints::Types::ArrayType#matches?
+parent_path: stannum/constraints/types/array-type
+signature: matches?(actual)
+slug: matches?
+aliases:
+- match?
+constructor: false
+data_path: stannum/constraints/types/array-type/i-matches?
+description: |-
+  If the constraint was configured with an item_type, each item in the Array
+  will be compared to the expected type. If any items do not match the
+  expectation, then #matches? will return false.
+metadata:
+  see:
+  - label: Stannum::Constraints::Types::ArrayType#does_not_match?
+    path: stannum/constraints/types/array-type#instance-method-does-not-match?
+    text:
+    type: reference
+returns:
+- description: |-
+    true if the object is an Array instance with
+    matching items, otherwise false.
+  type:
+  - name: 'true'
+  - name: 'false'
+short_description: Checks that the object is an Array instance and that the items
+  match.
+version: '0.4'

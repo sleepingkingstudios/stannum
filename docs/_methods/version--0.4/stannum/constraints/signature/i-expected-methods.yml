@@ -1,0 +1,17 @@
+---
+name: Stannum::Constraints::Signature#expected_methods
+parent_path: stannum/constraints/signature
+signature: expected_methods
+slug: expected-methods
+constructor: false
+data_path: stannum/constraints/signature/i-expected-methods
+returns:
+- description: |-
+    the methods the object is expected to
+    respond to.
+  type:
+  - name: Array
+    items:
+    - name: String
+    - name: Symbol
+version: '0.4'

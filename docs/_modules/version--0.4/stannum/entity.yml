@@ -1,0 +1,193 @@
+---
+name: Stannum::Entity
+slug: entity
+type: module
+files:
+- lib/stannum/entity.rb
+parent_path: stannum
+short_description: Abstract module for defining objects with structured attributes.
+instance_methods:
+- name: "=="
+  path: stannum/entities/properties/i-==
+  slug: "=="
+  inherited: true
+- name: "[]"
+  path: stannum/entities/properties/i-[]
+  slug: "[]"
+  inherited: true
+- name: "[]="
+  path: stannum/entities/properties/i-[]=
+  slug: "[]="
+  inherited: true
+- name: assign_associations
+  path: stannum/entities/associations/i-assign-associations
+  slug: assign-associations
+  inherited: true
+- name: assign_attributes
+  path: stannum/entities/attributes/i-assign-attributes
+  slug: assign-attributes
+  inherited: true
+- name: assign_properties
+  path: stannum/entities/properties/i-assign-properties
+  slug: assign-properties
+  inherited: true
+- name: associations
+  path: stannum/entities/associations/i-associations
+  slug: associations
+  inherited: true
+- name: associations=
+  path: stannum/entities/associations/i-associations=
+  slug: associations=
+  inherited: true
+- name: attributes
+  path: stannum/entities/attributes/i-attributes
+  slug: attributes
+  inherited: true
+- name: attributes=
+  path: stannum/entities/attributes/i-attributes=
+  slug: attributes=
+  inherited: true
+- name: initialize
+  path: stannum/entities/associations/i-initialize
+  slug: initialize
+  inherited: true
+- name: inspect
+  path: stannum/entities/properties/i-inspect
+  slug: inspect
+  inherited: true
+- name: inspect_with_options
+  path: stannum/entities/properties/i-inspect-with-options
+  slug: inspect-with-options
+  inherited: true
+- name: primary_key?
+  path: stannum/entities/primary-key/i-primary-key?
+  slug: primary-key?
+  inherited: true
+- name: primary_key_name
+  path: stannum/entities/primary-key/i-primary-key-name
+  slug: primary-key-name
+  inherited: true
+- name: primary_key_type
+  path: stannum/entities/primary-key/i-primary-key-type
+  slug: primary-key-type
+  inherited: true
+- name: primary_key_value
+  path: stannum/entities/primary-key/i-primary-key-value
+  slug: primary-key-value
+  inherited: true
+- name: properties
+  path: stannum/entities/associations/i-properties
+  slug: properties
+  inherited: true
+- name: properties=
+  path: stannum/entities/properties/i-properties=
+  slug: properties=
+  inherited: true
+- name: read_association
+  path: stannum/entities/associations/i-read-association
+  slug: read-association
+  inherited: true
+- name: read_attribute
+  path: stannum/entities/attributes/i-read-attribute
+  slug: read-attribute
+  inherited: true
+- name: to_h
+  path: stannum/entities/properties/i-to-h
+  slug: to-h
+  inherited: true
+- name: write_association
+  path: stannum/entities/associations/i-write-association
+  slug: write-association
+  inherited: true
+- name: write_attribute
+  path: stannum/entities/attributes/i-write-attribute
+  slug: write-attribute
+  inherited: true
+data_path: stannum/entity
+included_modules:
+- name: Stannum::Entities::Associations
+  slug: associations
+  path: stannum/entities/associations
+- name: Stannum::Entities::Attributes
+  slug: attributes
+  path: stannum/entities/attributes
+- name: Stannum::Entities::Constraints
+  slug: constraints
+  path: stannum/entities/constraints
+- name: Stannum::Entities::PrimaryKey
+  slug: primary-key
+  path: stannum/entities/primary-key
+- name: Stannum::Entities::Properties
+  slug: properties
+  path: stannum/entities/properties
+metadata:
+  examples:
+  - name: Defining Attributes
+    text: |-
+      class Widget
+        include Stannum::Entity
+
+        attribute :name,        String
+        attribute :description, String,  optional: true
+        attribute :quantity,    Integer, default:  0
+      end
+
+      widget = Widget.new(name: 'Self-sealing Stem Bolt')
+      widget.name        #=> 'Self-sealing Stem Bolt'
+      widget.description #=> nil
+      widget.quantity    #=> 0
+      widget.attributes  #=>
+      # {
+      #   name:        'Self-sealing Stem Bolt',
+      #   description: nil,
+      #   quantity:    0
+      # }
+  - name: Setting Attributes
+    text: |-
+      widget.description = 'A stem bolt, but self sealing.'
+      widget.attributes #=>
+      # {
+      #   name:        'Self-sealing Stem Bolt',
+      #   description: 'A stem bolt, but self sealing.',
+      #   quantity:    0
+      # }
+
+      widget.assign_attributes(quantity: 50)
+      widget.attributes #=>
+      # {
+      #   name:        'Self-sealing Stem Bolt',
+      #   description: 'A stem bolt, but self sealing.',
+      #   quantity:    50
+      # }
+
+      widget.attributes = (name: 'Inverse Chronoton Emitter')
+      # {
+      #   name:        'Inverse Chronoton Emitter',
+      #   description: nil,
+      #   quantity:    0
+      # }
+  - name: Defining Attribute Constraints
+    text: |-
+      Widget::Contract.matches?(quantity: -5)                    #=> false
+      Widget::Contract.matches?(name: 'Capacitor', quantity: -5) #=> true
+
+      class Widget
+        constraint(:quantity) { |qty| qty >= 0 }
+      end
+
+      Widget::Contract.matches?(name: 'Capacitor', quantity: -5) #=> false
+      Widget::Contract.matches?(name: 'Capacitor', quantity: 10) #=> true
+  - name: Defining Struct Constraints
+    text: |-
+      Widget::Contract.matches?(name: 'Diode') #=> true
+
+      class Widget
+        constraint { |struct| struct.description&.include?(struct.name) }
+      end
+
+      Widget::Contract.matches?(name: 'Diode') #=> false
+      Widget::Contract.matches?(
+        name:        'Diode',
+        description: 'A low budget Diode',
+      ) #=> true
+version: '0.4'

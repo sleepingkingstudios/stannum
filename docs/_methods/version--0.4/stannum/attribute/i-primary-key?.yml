@@ -1,0 +1,14 @@
+---
+name: Stannum::Attribute#primary_key?
+parent_path: stannum/attribute
+signature: primary_key?
+slug: primary-key?
+constructor: false
+data_path: stannum/attribute/i-primary-key?
+returns:
+- description: |-
+    true if the attribute represents the primary key for the
+    entity; otherwise false.
+  type:
+  - name: Boolean
+version: '0.4'

@@ -1,0 +1,32 @@
+---
+name: Stannum::Messages::DefaultLoader#call
+parent_path: stannum/messages/default-loader
+signature: call
+slug: call
+aliases:
+- load
+constructor: false
+data_path: stannum/messages/default-loader/i-call
+description: |-
+  The configuration file should be either a Ruby file or a YAML file, with
+  the filename of the format locale.extname, e.g. en.rb or en-gb.yml, and
+  located in one of the directories defined in #file_paths.
+
+  The contents of each file should be either a Ruby Hash or a YAML document
+  containing an associative array, with a single key equal to the locale.
+  The value of the key must be a Hash or associative array, which contains
+  the scoped messages to load.
+
+  Each file is read in order and parsed into a Hash. Each hash is then deep
+  merged in sequence, with nested hashes merged together instead of
+  overwritten.
+returns:
+- description: the merged configuration data.
+  type:
+  - name: Hash
+    items:
+    - name: Symbol
+    - name: Object
+short_description: Loads and parses each file, then deep merges the data from each
+  file.
+version: '0.4'

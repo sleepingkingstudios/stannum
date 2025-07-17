@@ -1,0 +1,56 @@
+---
+name: Stannum::Contracts::Definition
+slug: definition
+type: class
+files:
+- lib/stannum/contracts/definition.rb
+parent_path: stannum/contracts
+short_description: Struct that encapsulates a constraint definition on a contract.
+instance_attributes:
+- name: constraint
+  read: true
+  write: true
+  path: stannum/contracts/definition/i-constraint
+  slug: constraint
+  inherited: false
+- name: contract
+  read: true
+  write: true
+  path: stannum/contracts/definition/i-contract
+  slug: contract
+  inherited: false
+- name: options
+  read: true
+  write: true
+  path: stannum/contracts/definition/i-options
+  slug: options
+  inherited: false
+instance_methods:
+- name: "=="
+  path: stannum/contracts/definition/i-==
+  slug: "=="
+  inherited: false
+- name: concatenatable?
+  path: stannum/contracts/definition/i-concatenatable?
+  slug: concatenatable?
+  inherited: false
+- name: initialize
+  path: stannum/contracts/definition/i-initialize
+  slug: initialize
+  inherited: false
+  constructor: true
+- name: property
+  path: stannum/contracts/definition/i-property
+  slug: property
+  inherited: false
+- name: property_name
+  path: stannum/contracts/definition/i-property-name
+  slug: property-name
+  inherited: false
+- name: sanity?
+  path: stannum/contracts/definition/i-sanity?
+  slug: sanity?
+  inherited: false
+data_path: stannum/contracts/definition
+constructor: true
+version: '0.4'

@@ -1,0 +1,22 @@
+---
+name: Stannum::RSpec::MatchErrorsMatcher#matches?
+parent_path: stannum/r-spec/match-errors-matcher
+signature: matches?(actual)
+slug: matches?
+constructor: false
+data_path: stannum/r-spec/match-errors-matcher/i-matches?
+description: |-
+  Returns false if the object is not a Stannum::Errors instance or an Array.
+  Otherwise, it converts the expected and actual errors to arrays and
+  performs a deep match.
+params:
+- description: The actual object to match.
+  name: actual
+  type:
+  - name: Object
+returns:
+- description: true if the actual errors match the expected errors.
+  type:
+  - name: Boolean
+short_description: Checks that the given errors match the expected errors.
+version: '0.4'

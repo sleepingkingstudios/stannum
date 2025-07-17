@@ -1,0 +1,8 @@
+---
+name: Stannum::Messages::DefaultStrategy::DEFAULT_LOAD_PATHS
+parent_path: stannum/messages/default-strategy
+slug: default-load-paths
+short_description: The default directories from which to load configured error messages.
+value: "[Stannum::Messages.locales_path].freeze"
+data_path: stannum/messages/default-strategy/default-load-paths
+version: '0.4'

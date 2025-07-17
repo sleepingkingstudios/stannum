@@ -12,7 +12,7 @@ A library for defining and validating data structures.
 
 This is the documentation for the [current development build](https://github.com/sleepingkingstudios/stannum) of Stannum.
 
-<!-- - For the most recent release, see [Version 0.1]({{site.baseurl}}/versions/0.1). -->
+- For the most recent release, see [Version 0.4]({{site.baseurl}}/versions/0.4).
 - For previous releases, see the [Versions]({{site.baseurl}}/versions) page.
 
 ## Reference

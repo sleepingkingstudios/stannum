@@ -1,0 +1,26 @@
+---
+name: Stannum::Constraints::Identity#initialize
+parent_path: stannum/constraints/identity
+signature: initialize(expected_value, **options)
+slug: initialize
+constructor: true
+data_path: stannum/constraints/identity/i-initialize
+params:
+- description: The expected object.
+  name: expected_value
+  type:
+  - name: Object
+- description: |-
+    Configuration options for the
+    constraint. Defaults to an empty Hash.
+  name: options
+  type:
+  - name: Hash
+    items:
+    - name: Symbol
+    - name: Object
+returns:
+- description: a new instance of Identity
+  type:
+  - name: Identity
+version: '0.4'

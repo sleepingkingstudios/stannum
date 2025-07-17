@@ -1,0 +1,15 @@
+---
+name: Stannum::Constraints::Types::ArrayType#allow_empty?
+parent_path: stannum/constraints/types/array-type
+signature: allow_empty?
+slug: allow-empty?
+constructor: false
+data_path: stannum/constraints/types/array-type/i-allow-empty?
+returns:
+- description: |-
+    if false, then the constraint will not
+    match against an Array with no items.
+  type:
+  - name: 'true'
+  - name: 'false'
+version: '0.4'

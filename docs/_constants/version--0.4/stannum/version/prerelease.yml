@@ -1,0 +1,10 @@
+---
+name: Stannum::Version::PRERELEASE
+parent_path: stannum/version
+slug: prerelease
+short_description: Prerelease version.
+value: nil
+data_path: stannum/version/prerelease
+metadata:
+  api: private
+version: '0.4'

@@ -1,0 +1,12 @@
+---
+name: Stannum::Association#foreign_key_name
+parent_path: stannum/association
+signature: foreign_key_name
+slug: foreign-key-name
+constructor: false
+data_path: stannum/association/i-foreign-key-name
+returns:
+- description: the name of the foreign key, if any.
+  type:
+  - name: String?
+version: '0.4'

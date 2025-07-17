@@ -1,0 +1,53 @@
+---
+name: Stannum::Entities::PrimaryKey::ClassMethods#define_primary_key
+parent_path: stannum/entities/primary-key/class-methods
+signature: define_primary_key(attr_name, attr_type, **options)
+slug: define-primary-key
+constructor: false
+data_path: stannum/entities/primary-key/class-methods/i-define-primary-key
+metadata:
+  see:
+  - label: Stannum::Entities::Attributes::ClassMethods#define_attribute
+    path: stannum/entities/attributes/class-methods#instance-method-define-attribute
+    text:
+    type: reference
+options:
+- name: options
+  opts:
+  - description: |-
+      The default value for the attribute.
+      Defaults to nil.
+    name: ":default"
+    type:
+    - name: Object
+  - description: |-
+      true if the attribute represents
+      the primary key for the entity; otherwise false. Defaults to false.
+    name: ":primary_key"
+    type:
+    - name: Boolean
+params:
+- description: |-
+    The name of the attribute. Must be a
+    non-empty String or Symbol.
+  name: attr_name
+  type:
+  - name: String
+  - name: Symbol
+- description: |-
+    The type of the attribute. Must be a
+    Class or Module, or the name of a class or module.
+  name: attr_type
+  type:
+  - name: Class
+  - name: String
+- description: Additional options for the attribute.
+  name: options
+  type:
+  - name: Hash
+returns:
+- description: The attribute name as a symbol.
+  type:
+  - name: Symbol
+short_description: Defines a primary key attribute on the entity.
+version: '0.4'

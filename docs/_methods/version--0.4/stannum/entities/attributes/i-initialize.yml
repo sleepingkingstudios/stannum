@@ -1,0 +1,13 @@
+---
+name: Stannum::Entities::Attributes#initialize
+parent_path: stannum/entities/attributes
+signature: initialize(**properties)
+slug: initialize
+constructor: false
+data_path: stannum/entities/attributes/i-initialize
+params:
+- description: the properties used to initialize the entity.
+  name: properties
+  type:
+  - name: Hash
+version: '0.4'

@@ -1,0 +1,22 @@
+---
+name: Stannum::Constraints::Types::HashType#does_not_match?
+parent_path: stannum/constraints/types/hash-type
+signature: does_not_match?(actual)
+slug: does-not-match?
+constructor: false
+data_path: stannum/constraints/types/hash-type/i-does-not-match?
+metadata:
+  see:
+  - label: Stannum::Constraints::Types::HashType#matches?
+    path: stannum/constraints/types/hash-type#instance-method-matches?
+    text:
+    type: reference
+returns:
+- description: |-
+    true if the object is not a Hash instance, otherwise
+    false.
+  type:
+  - name: 'true'
+  - name: 'false'
+short_description: Checks that the object is not a Hash instance.
+version: '0.4'

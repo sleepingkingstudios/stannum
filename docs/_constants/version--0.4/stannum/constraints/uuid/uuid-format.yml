@@ -1,0 +1,8 @@
+---
+name: Stannum::Constraints::Uuid::UUID_FORMAT
+parent_path: stannum/constraints/uuid
+slug: uuid-format
+short_description: Regular expression describing a valid upper- or lower-case UUID.
+value: "/\\A\\h{8}-\\h{4}-\\h{4}-\\h{4}-\\h{12}\\z/"
+data_path: stannum/constraints/uuid/uuid-format
+version: '0.4'

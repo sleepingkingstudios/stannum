@@ -1,0 +1,150 @@
+---
+name: Stannum::Constraints::Base
+slug: base
+type: class
+files:
+- lib/stannum/constraints/base.rb
+parent_path: stannum/constraints
+short_description: A constraint codifies a particular expectation about an object.
+constants:
+- name: NEGATED_TYPE
+  path: stannum/constraints/base/negated-type
+  slug: negated-type
+  inherited: false
+- name: TYPE
+  path: stannum/constraints/base/type
+  slug: type
+  inherited: false
+defined_classes:
+- name: Builder
+  slug: builder
+instance_attributes:
+- name: options
+  read: true
+  write: true
+  path: stannum/constraints/base/i-options
+  slug: options
+  inherited: false
+instance_methods:
+- name: "=="
+  path: stannum/constraints/base/i-==
+  slug: "=="
+  inherited: false
+- name: clone
+  path: stannum/constraints/base/i-clone
+  slug: clone
+  inherited: false
+- name: does_not_match?
+  path: stannum/constraints/base/i-does-not-match?
+  slug: does-not-match?
+  inherited: false
+- name: dup
+  path: stannum/constraints/base/i-dup
+  slug: dup
+  inherited: false
+- name: errors_for
+  path: stannum/constraints/base/i-errors-for
+  slug: errors-for
+  inherited: false
+- name: initialize
+  path: stannum/constraints/base/i-initialize
+  slug: initialize
+  inherited: false
+  constructor: true
+- name: match
+  path: stannum/constraints/base/i-match
+  slug: match
+  inherited: false
+- name: matches?
+  path: stannum/constraints/base/i-matches?
+  slug: matches?
+  inherited: false
+- name: message
+  path: stannum/constraints/base/i-message
+  slug: message
+  inherited: false
+- name: negated_errors_for
+  path: stannum/constraints/base/i-negated-errors-for
+  slug: negated-errors-for
+  inherited: false
+- name: negated_match
+  path: stannum/constraints/base/i-negated-match
+  slug: negated-match
+  inherited: false
+- name: negated_message
+  path: stannum/constraints/base/i-negated-message
+  slug: negated-message
+  inherited: false
+- name: negated_type
+  path: stannum/constraints/base/i-negated-type
+  slug: negated-type
+  inherited: false
+- name: type
+  path: stannum/constraints/base/i-type
+  slug: type
+  inherited: false
+- name: with_options
+  path: stannum/constraints/base/i-with-options
+  slug: with-options
+  inherited: false
+data_path: stannum/constraints/base
+constructor: true
+direct_subclasses:
+- name: Stannum::Constraint
+  slug: constraint
+  path: stannum/constraint
+- name: Stannum::Constraints::Absence
+  slug: absence
+  path: stannum/constraints/absence
+- name: Stannum::Constraints::Anything
+  slug: anything
+  path: stannum/constraints/anything
+- name: Stannum::Constraints::Boolean
+  slug: boolean
+  path: stannum/constraints/boolean
+- name: Stannum::Constraints::Delegator
+  slug: delegator
+  path: stannum/constraints/delegator
+- name: Stannum::Constraints::Enum
+  slug: enum
+  path: stannum/constraints/enum
+- name: Stannum::Constraints::Equality
+  slug: equality
+  path: stannum/constraints/equality
+- name: Stannum::Constraints::Format
+  slug: format
+  path: stannum/constraints/format
+- name: Stannum::Constraints::Hashes::ExtraKeys
+  slug: extra-keys
+  path: stannum/constraints/hashes/extra-keys
+- name: Stannum::Constraints::Hashes::IndifferentKey
+  slug: indifferent-key
+  path: stannum/constraints/hashes/indifferent-key
+- name: Stannum::Constraints::Identity
+  slug: identity
+  path: stannum/constraints/identity
+- name: Stannum::Constraints::Nothing
+  slug: nothing
+  path: stannum/constraints/nothing
+- name: Stannum::Constraints::Presence
+  slug: presence
+  path: stannum/constraints/presence
+- name: Stannum::Constraints::Properties::Base
+  slug: base
+  path: stannum/constraints/properties/base
+- name: Stannum::Constraints::Signature
+  slug: signature
+  path: stannum/constraints/signature
+- name: Stannum::Constraints::Tuples::ExtraItems
+  slug: extra-items
+  path: stannum/constraints/tuples/extra-items
+- name: Stannum::Constraints::Type
+  slug: type
+  path: stannum/constraints/type
+- name: Stannum::Constraints::Union
+  slug: union
+  path: stannum/constraints/union
+- name: Stannum::Contracts::Base
+  slug: base
+  path: stannum/contracts/base
+version: '0.4'

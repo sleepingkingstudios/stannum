@@ -1,0 +1,12 @@
+---
+name: Stannum::Entities::Properties#inspect
+parent_path: stannum/entities/properties
+signature: inspect
+slug: inspect
+constructor: false
+data_path: stannum/entities/properties/i-inspect
+returns:
+- description: a string representation of the entity and its properties.
+  type:
+  - name: String
+version: '0.4'

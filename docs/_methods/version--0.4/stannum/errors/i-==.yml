@@ -1,0 +1,18 @@
+---
+name: Stannum::Errors#==
+parent_path: stannum/errors
+signature: "==(other)"
+slug: "=="
+aliases:
+- eql?
+constructor: false
+data_path: stannum/errors/i-==
+returns:
+- description: |-
+    true if the other object is an errors object or an
+    array with the same class and errors, otherwise false.
+  type:
+  - name: 'true'
+  - name: 'false'
+short_description: Checks if the other errors object contains the same errors.
+version: '0.4'

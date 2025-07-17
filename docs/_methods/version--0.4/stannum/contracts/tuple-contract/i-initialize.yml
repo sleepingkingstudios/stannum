@@ -1,0 +1,30 @@
+---
+name: Stannum::Contracts::TupleContract#initialize
+parent_path: stannum/contracts/tuple-contract
+signature: 'initialize(allow_extra_items: false, **options, &block)'
+slug: initialize
+constructor: true
+data_path: stannum/contracts/tuple-contract/i-initialize
+params:
+- description: |-
+    If false, then a tuple with extra
+    items after the last expected item will not match the contract.
+  name: allow_extra_items
+  type:
+  - name: 'true'
+  - name: 'false'
+  default: 'false'
+- description: |-
+    Configuration options for the
+    contract. Defaults to an empty Hash.
+  name: options
+  type:
+  - name: Hash
+    items:
+    - name: Symbol
+    - name: Object
+returns:
+- description: a new instance of TupleContract
+  type:
+  - name: TupleContract
+version: '0.4'

@@ -1,0 +1,44 @@
+---
+name: Stannum::Contracts::Definition#initialize
+parent_path: stannum/contracts/definition
+signature: initialize(attributes = {})
+slug: initialize
+constructor: true
+data_path: stannum/contracts/definition/i-initialize
+options:
+- name: attributes
+  opts:
+  - description: |-
+      The constraint
+      to define for the contract.
+    name: ":constraint"
+    type:
+    - name: Stannum::Constraints::Base
+      path: stannum/constraints/base
+  - description: |-
+      The contract for
+      which the constraint is defined.
+    name: ":contract"
+    type:
+    - name: Stannum::Contracts::Base
+      path: stannum/contracts/base
+  - description: |-
+      The options for the
+      constraint.
+    name: ":options"
+    type:
+    - name: Hash
+      items:
+      - name: Symbol
+      - name: Object
+params:
+- description: The attributes for the definition.
+  name: attributes
+  type:
+  - name: Hash
+  default: "{}"
+returns:
+- description: a new instance of Definition
+  type:
+  - name: Definition
+version: '0.4'

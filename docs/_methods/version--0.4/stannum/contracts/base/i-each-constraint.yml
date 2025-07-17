@@ -1,0 +1,52 @@
+---
+name: Stannum::Contracts::Base#each_constraint
+parent_path: stannum/contracts/base
+signature: each_constraint
+slug: each-constraint
+constructor: false
+data_path: stannum/contracts/base/i-each-constraint
+description: |-
+  Any constraints defined on concatenated contracts are yielded, followed by
+  any constraints defined on the contract itself.
+
+  Each constraint is represented as a Stannum::Contracts::Definition, which
+  encapsulates the constraint, the original contract, and the options
+  specified by #add_constraint.
+
+  If the contract defines sanity constraints, the sanity constraints will be
+  returned or yielded first, followed by the remaining constraints.
+metadata:
+  see:
+  - label: "#concat"
+    path: stannum/contracts/base#instance-method-concat
+    text:
+    type: reference
+  - label: "#each_pair"
+    path: stannum/contracts/base#instance-method-each-pair
+    text:
+    type: reference
+overloads:
+- name: Stannum::Contracts::Base#each_constraint
+  parent_path: stannum/contracts/base
+  signature: each_constraint
+  slug: each-constraint
+  constructor: false
+  returns:
+  - description: An enumerator for the constraint definitions.
+    type:
+    - name: Enumerator
+- name: Stannum::Contracts::Base#each_constraint
+  parent_path: stannum/contracts/base
+  signature: each_constraint
+  slug: each-constraint
+  constructor: false
+  yield_params:
+  - description: |-
+      Each definition
+      from the contract or concatenated contracts.
+    name: definition
+    type:
+    - name: Stannum::Contracts::Definition
+      path: stannum/contracts/definition
+short_description: Iterates through the constraints defined for the contract.
+version: '0.4'

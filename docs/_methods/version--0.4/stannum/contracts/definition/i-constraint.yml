@@ -1,0 +1,13 @@
+---
+name: Stannum::Contracts::Definition#constraint
+parent_path: stannum/contracts/definition
+signature: constraint
+slug: constraint
+constructor: false
+data_path: stannum/contracts/definition/i-constraint
+returns:
+- description: the defined constraint.
+  type:
+  - name: Stannum::Constraints::Base
+    path: stannum/constraints/base
+version: '0.4'

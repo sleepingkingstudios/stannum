@@ -1,0 +1,15 @@
+---
+name: Stannum::Entities::PrimaryKey::ClassMethods#primary_key_name
+parent_path: stannum/entities/primary-key/class-methods
+signature: primary_key_name
+slug: primary-key-name
+constructor: false
+data_path: stannum/entities/primary-key/class-methods/i-primary-key-name
+returns:
+- description: |-
+    the name of the primary key attribute, or nil if
+    the entity does not define a primary key.
+  type:
+  - name: String
+  - name: nil
+version: '0.4'

@@ -1,0 +1,230 @@
+---
+name: Stannum::Contracts::HashContract
+slug: hash-contract
+type: class
+files:
+- lib/stannum/contracts/hash_contract.rb
+parent_path: stannum/contracts
+short_description: A HashContract defines constraints on an hash's values.
+constants:
+- name: NEGATED_TYPE
+  path: stannum/constraints/base/negated-type
+  slug: negated-type
+  inherited: true
+- name: TYPE
+  path: stannum/constraints/base/type
+  slug: type
+  inherited: true
+instance_attributes:
+- name: options
+  read: true
+  write: true
+  path: stannum/constraints/base/i-options
+  slug: options
+  inherited: true
+instance_methods:
+- name: "=="
+  path: stannum/contracts/base/i-==
+  slug: "=="
+  inherited: true
+- name: add_constraint
+  path: stannum/contract/i-add-constraint
+  slug: add-constraint
+  inherited: true
+- name: add_key_constraint
+  path: stannum/contracts/map-contract/i-add-key-constraint
+  slug: add-key-constraint
+  inherited: true
+- name: add_property_constraint
+  path: stannum/contract/i-add-property-constraint
+  slug: add-property-constraint
+  inherited: true
+- name: allow_extra_keys?
+  path: stannum/contracts/map-contract/i-allow-extra-keys?
+  slug: allow-extra-keys?
+  inherited: true
+- name: clone
+  path: stannum/constraints/base/i-clone
+  slug: clone
+  inherited: true
+- name: concat
+  path: stannum/contracts/base/i-concat
+  slug: concat
+  inherited: true
+- name: does_not_match?
+  path: stannum/contracts/base/i-does-not-match?
+  slug: does-not-match?
+  inherited: true
+- name: dup
+  path: stannum/constraints/base/i-dup
+  slug: dup
+  inherited: true
+- name: each_constraint
+  path: stannum/contracts/base/i-each-constraint
+  slug: each-constraint
+  inherited: true
+- name: each_pair
+  path: stannum/contracts/base/i-each-pair
+  slug: each-pair
+  inherited: true
+- name: errors_for
+  path: stannum/contracts/base/i-errors-for
+  slug: errors-for
+  inherited: true
+- name: expected_keys
+  path: stannum/contracts/map-contract/i-expected-keys
+  slug: expected-keys
+  inherited: true
+- name: initialize
+  path: stannum/contracts/hash-contract/i-initialize
+  slug: initialize
+  inherited: false
+  constructor: true
+- name: key_type
+  path: stannum/contracts/hash-contract/i-key-type
+  slug: key-type
+  inherited: false
+- name: match
+  path: stannum/contracts/base/i-match
+  slug: match
+  inherited: true
+- name: matches?
+  path: stannum/contracts/base/i-matches?
+  slug: matches?
+  inherited: true
+- name: message
+  path: stannum/constraints/base/i-message
+  slug: message
+  inherited: true
+- name: negated_errors_for
+  path: stannum/contracts/base/i-negated-errors-for
+  slug: negated-errors-for
+  inherited: true
+- name: negated_match
+  path: stannum/contracts/base/i-negated-match
+  slug: negated-match
+  inherited: true
+- name: negated_message
+  path: stannum/constraints/base/i-negated-message
+  slug: negated-message
+  inherited: true
+- name: negated_type
+  path: stannum/constraints/base/i-negated-type
+  slug: negated-type
+  inherited: true
+- name: type
+  path: stannum/constraints/base/i-type
+  slug: type
+  inherited: true
+- name: value_type
+  path: stannum/contracts/hash-contract/i-value-type
+  slug: value-type
+  inherited: false
+- name: with_options
+  path: stannum/contracts/map-contract/i-with-options
+  slug: with-options
+  inherited: true
+data_path: stannum/contracts/hash-contract
+metadata:
+  examples:
+  - name: Creating A Hash Contract
+    text: |-
+      hash_contract = Stannum::Contracts::HashContract.new
+
+      hash_contract.add_constraint(
+        negated_type:  'example.is_boolean',
+        property:      :ok,
+        property_type: :key,
+        type:          'example.is_not_boolean'
+      ) { |actual| actual == true || actual == false }
+      hash_contract.add_constraint(
+        Stannum::Constraints::Type.new(Hash),
+        property:      :data,
+        property_type: :key,
+      )
+      hash_contract.add_constraint(
+        Stannum::Constraints::Presence.new,
+        property:      :signature,
+        property_type: :key,
+      )
+  - name: With A Non-Hash Object
+    text: |-
+      hash_contract.matches?(nil) #=> false
+      errors = hash_contract.errors_for(nil)
+      #=> [{ type: 'is_not_type', data: { type: Hash }, path: [], message: nil }]
+
+      hash_contract.does_not_match?(nil)          #=> true
+      hash_contract.negated_errors_for?(nil).to_a #=> []
+  - name: With A Hash That Matches None Of The Key Constraints
+    text: |-
+      hash_contract.matches?({}) #=> false
+      errors = hash_contract.errors_for({})
+      errors.to_a
+      #=> [
+        { type: 'is_not_boolean', data: {}, path: [:ok], message: nil },
+        { type: 'is_not_type', data: { type: Hash }, path: [:data], message: nil },
+        { type: 'absent', data: {}, path: [:signature], message: nil }
+      ]
+
+      hash_contract.does_not_match?({}) #=> false
+      errors.to_a
+      #=> [
+        { type: 'is_type', data: { type: Hash }, path: [], message: nil }
+      ]
+  - name: With A Hash That Matches Some Of The Key Constraints
+    text: |-
+      hash = { ok: true, signature: '' }
+      hash_contract.matches?(hash) #=> false
+      errors = hash_contract.errors_for(hash)
+      errors.to_a
+      #=> [
+        { type: 'is_not_type', data: { type: Hash }, path: [:data], message: nil },
+        { type: 'absent', data: {}, path: [:signature], message: nil }
+      ]
+
+      hash_contract.does_not_match?(hash) #=> false
+      errors = hash_contract.negated_errors_for?(hash)
+      errors.to_a
+      #=> [
+        { type: 'is_type', data: { type: Hash }, path: [], message: nil },
+        { type: 'is_boolean', data: {}, path: [:ok], message: nil }
+      ]
+  - name: With A Hash That Matches All Of The Key Constraints
+    text: |-
+      hash = { ok: true, data: {}, signature: 'abc' }
+      hash_contract.matches?(hash)        #=> true
+      hash_contract.errors_for(hash).to_a #=> []
+
+      hash_contract.does_not_match?(hash) #=> false
+      errors = hash_contract.negated_errors_for?(hash)
+      errors.to_a
+      #=> [
+        { type: 'is_type', data: { type: Hash }, path: [], message: nil },
+        { type: 'is_boolean', data: {}, path: [:ok], message: nil },
+        { type: 'present', data: {}, path: [:signature], message: nil },
+      ]
+constructor: true
+direct_subclasses:
+- name: Stannum::Contracts::IndifferentHashContract
+  slug: indifferent-hash-contract
+  path: stannum/contracts/indifferent-hash-contract
+- name: Stannum::Contracts::Parameters::SignatureContract
+  slug: signature-contract
+  path: stannum/contracts/parameters/signature-contract
+- name: Stannum::Contracts::ParametersContract
+  slug: parameters-contract
+  path: stannum/contracts/parameters-contract
+inherited_classes:
+- name: Stannum::Contracts::MapContract
+  slug: map-contract
+  path: stannum/contracts/map-contract
+- name: Stannum::Contract
+  slug: contract
+  path: stannum/contract
+- name: Stannum::Contracts::Base
+  slug: base
+  path: stannum/contracts/base
+- name: Stannum::Constraints::Base
+  slug: base
+  path: stannum/constraints/base
+version: '0.4'

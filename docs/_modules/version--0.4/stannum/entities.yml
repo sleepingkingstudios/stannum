@@ -1,0 +1,26 @@
+---
+name: Stannum::Entities
+slug: entities
+type: module
+files:
+- lib/stannum/entities.rb
+- lib/stannum/entities/attributes.rb
+- lib/stannum/entities/properties.rb
+- lib/stannum/entities/constraints.rb
+- lib/stannum/entities/primary_key.rb
+- lib/stannum/entities/associations.rb
+parent_path: stannum
+short_description: Namespace for modules implementing Entity functionality.
+defined_modules:
+- name: Associations
+  slug: associations
+- name: Attributes
+  slug: attributes
+- name: Constraints
+  slug: constraints
+- name: PrimaryKey
+  slug: primary-key
+- name: Properties
+  slug: properties
+data_path: stannum/entities
+version: '0.4'

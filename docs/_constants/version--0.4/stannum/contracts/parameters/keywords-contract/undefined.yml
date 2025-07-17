@@ -1,0 +1,11 @@
+---
+name: Stannum::Contracts::Parameters::KeywordsContract::UNDEFINED
+parent_path: stannum/contracts/parameters/keywords-contract
+slug: undefined
+short_description: Value used when keywords hash does not have a value for the given
+  key.
+value: Object.new.freeze
+data_path: stannum/contracts/parameters/keywords-contract/undefined
+metadata:
+  api: private
+version: '0.4'

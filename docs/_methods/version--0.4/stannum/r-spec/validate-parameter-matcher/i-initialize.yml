@@ -1,0 +1,27 @@
+---
+name: Stannum::RSpec::ValidateParameterMatcher#initialize
+parent_path: stannum/r-spec/validate-parameter-matcher
+signature: initialize(method_name:, parameter_name:)
+slug: initialize
+constructor: true
+data_path: stannum/r-spec/validate-parameter-matcher/i-initialize
+params:
+- description: |-
+    The name of the method with validated
+    parameters.
+  name: method_name
+  type:
+  - name: String
+  - name: Symbol
+- description: |-
+    The name of the validated method
+    parameter.
+  name: parameter_name
+  type:
+  - name: String
+  - name: Symbol
+returns:
+- description: a new instance of ValidateParameterMatcher
+  type:
+  - name: ValidateParameterMatcher
+version: '0.4'

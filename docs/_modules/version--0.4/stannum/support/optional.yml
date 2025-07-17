@@ -1,0 +1,21 @@
+---
+name: Stannum::Support::Optional
+slug: optional
+type: module
+files:
+- lib/stannum/support/optional.rb
+parent_path: stannum/support
+short_description: Methods for handling optional/required options.
+instance_methods:
+- name: optional?
+  path: stannum/support/optional/i-optional?
+  slug: optional?
+  inherited: false
+- name: required?
+  path: stannum/support/optional/i-required?
+  slug: required?
+  inherited: false
+data_path: stannum/support/optional
+metadata:
+  api: private
+version: '0.4'

@@ -1,0 +1,15 @@
+---
+name: Stannum::Constraints::Hashes::IndifferentKey#matches?
+parent_path: stannum/constraints/hashes/indifferent-key
+signature: matches?(actual)
+slug: matches?
+aliases:
+- match?
+constructor: false
+data_path: stannum/constraints/hashes/indifferent-key/i-matches?
+returns:
+- description: true if the object is a non-empty String or Symbol.
+  type:
+  - name: 'true'
+  - name: 'false'
+version: '0.4'

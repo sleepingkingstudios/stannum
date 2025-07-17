@@ -1,0 +1,22 @@
+---
+name: Stannum::Constraints::Presence#matches?
+parent_path: stannum/constraints/presence
+signature: matches?(actual)
+slug: matches?
+aliases:
+- match?
+constructor: false
+data_path: stannum/constraints/presence/i-matches?
+metadata:
+  see:
+  - label: Stannum::Constraint#matches?
+    path: stannum/constraint#instance-method-matches?
+    text:
+    type: reference
+returns:
+- description: false if the object is nil or empty, otherwise true.
+  type:
+  - name: 'true'
+  - name: 'false'
+short_description: Checks that the object is not nil and not empty.
+version: '0.4'

@@ -1,0 +1,26 @@
+---
+name: Stannum::RSpec::ValidateParameterMatcher#with_parameters
+parent_path: stannum/r-spec/validate-parameter-matcher
+signature: with_parameters(*arguments, **keywords, &block)
+slug: with-parameters
+constructor: false
+data_path: stannum/r-spec/validate-parameter-matcher/i-with-parameters
+description: |-
+  The matcher will pass if and only if the method fails validation with the
+  specified parameters.
+params:
+- description: A list of arguments to test.
+  name: arguments
+  type:
+  - name: Array
+- description: A hash of keywords to test.
+  name: keywords
+  type:
+  - name: Hash
+returns:
+- description: the matcher.
+  type:
+  - name: Stannum::RSpec::ValidateParameterMatcher
+    path: stannum/r-spec/validate-parameter-matcher
+short_description: Specifies custom parameters to test.
+version: '0.4'

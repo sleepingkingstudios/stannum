@@ -1,0 +1,34 @@
+---
+name: Stannum::Entities::Attributes#write_attribute
+parent_path: stannum/entities/attributes
+signature: 'write_attribute(key, value, safe: true)'
+slug: write-attribute
+constructor: false
+data_path: stannum/entities/attributes/i-write-attribute
+description: |-
+  If the :safe flag is set, will verify that the attribute name is valid (a
+  non-empty String or Symbol) and that there is a defined attribute by that
+  name. By default, :safe is set to true.
+metadata:
+  api: private
+params:
+- description: the key of the attribute to assign.
+  name: key
+  type:
+  - name: String
+  - name: Symbol
+- description: the value to assign.
+  name: value
+  type:
+  - name: Object
+- description: if true, validates the attribute key.
+  name: safe
+  type:
+  - name: Boolean
+  default: 'true'
+returns:
+- description: the assigned value.
+  type:
+  - name: Object
+short_description: Assigns the attribute value for the requested key.
+version: '0.4'

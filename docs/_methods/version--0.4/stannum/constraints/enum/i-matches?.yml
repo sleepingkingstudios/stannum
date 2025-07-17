@@ -1,0 +1,24 @@
+---
+name: Stannum::Constraints::Enum#matches?
+parent_path: stannum/constraints/enum
+signature: matches?(actual)
+slug: matches?
+aliases:
+- match?
+constructor: false
+data_path: stannum/constraints/enum/i-matches?
+metadata:
+  see:
+  - label: Stannum::Constraint#matches?
+    path: stannum/constraint#instance-method-matches?
+    text:
+    type: reference
+returns:
+- description: |-
+    false if the object is in the list of expected
+    values, otherwise true.
+  type:
+  - name: 'true'
+  - name: 'false'
+short_description: Checks that the object is in the list of expected values.
+version: '0.4'

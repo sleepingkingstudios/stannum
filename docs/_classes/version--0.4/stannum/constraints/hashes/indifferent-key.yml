@@ -1,0 +1,130 @@
+---
+name: Stannum::Constraints::Hashes::IndifferentKey
+slug: indifferent-key
+type: class
+files:
+- lib/stannum/constraints/hashes/indifferent_key.rb
+parent_path: stannum/constraints/hashes
+short_description: Constraint for validating an indifferent hash key.
+constants:
+- name: NEGATED_TYPE
+  path: stannum/constraints/hashes/indifferent-key/negated-type
+  slug: negated-type
+  inherited: false
+- name: TYPE
+  path: stannum/constraints/hashes/indifferent-key/type
+  slug: type
+  inherited: false
+instance_attributes:
+- name: options
+  read: true
+  write: true
+  path: stannum/constraints/base/i-options
+  slug: options
+  inherited: true
+instance_methods:
+- name: "=="
+  path: stannum/constraints/base/i-==
+  slug: "=="
+  inherited: true
+- name: clone
+  path: stannum/constraints/base/i-clone
+  slug: clone
+  inherited: true
+- name: does_not_match?
+  path: stannum/constraints/base/i-does-not-match?
+  slug: does-not-match?
+  inherited: true
+- name: dup
+  path: stannum/constraints/base/i-dup
+  slug: dup
+  inherited: true
+- name: errors_for
+  path: stannum/constraints/hashes/indifferent-key/i-errors-for
+  slug: errors-for
+  inherited: false
+- name: initialize
+  path: stannum/constraints/base/i-initialize
+  slug: initialize
+  inherited: true
+  constructor: true
+- name: match
+  path: stannum/constraints/base/i-match
+  slug: match
+  inherited: true
+- name: matches?
+  path: stannum/constraints/hashes/indifferent-key/i-matches?
+  slug: matches?
+  inherited: false
+- name: message
+  path: stannum/constraints/base/i-message
+  slug: message
+  inherited: true
+- name: negated_errors_for
+  path: stannum/constraints/base/i-negated-errors-for
+  slug: negated-errors-for
+  inherited: true
+- name: negated_match
+  path: stannum/constraints/base/i-negated-match
+  slug: negated-match
+  inherited: true
+- name: negated_message
+  path: stannum/constraints/base/i-negated-message
+  slug: negated-message
+  inherited: true
+- name: negated_type
+  path: stannum/constraints/base/i-negated-type
+  slug: negated-type
+  inherited: true
+- name: type
+  path: stannum/constraints/base/i-type
+  slug: type
+  inherited: true
+- name: with_options
+  path: stannum/constraints/base/i-with-options
+  slug: with-options
+  inherited: true
+data_path: stannum/constraints/hashes/indifferent-key
+description: |-
+  To be a valid indifferent Hash key, an object must be a String or a Symbol
+  and cannot be empty.
+metadata:
+  examples:
+  - name: With nil
+    text: |-
+      constraint = Stannum::Constraints::Hashes::IndifferentKey.new
+      constraint.matches?(nil) #=> false
+      constraint.errors_for(nil)
+      #=> [{ type: 'absent', data: {}, path: [], message: nil }]
+  - name: With an Object
+    text: |-
+      constraint = Stannum::Constraints::Hashes::IndifferentKey.new
+      constraint.matches?(Object.new.freeze) #=> false
+      constraint.errors_for(Object.new.freeze)
+      #=> [{ type: 'is_not_string_or_symbol', data: {}, path: [], message: nil }]
+  - name: With an empty String
+    text: |-
+      constraint = Stannum::Constraints::Hashes::IndifferentKey.new
+      constraint.matches?('') #=> false
+      constraint.errors_for('')
+      #=> [{ type: 'absent', data: {}, path: [], message: nil }]
+  - name: With a String
+    text: |-
+      constraint = Stannum::Constraints::Hashes::IndifferentKey.new
+      constraint.matches?('a string') #=> true
+  - name: With an empty Symbol
+    text: |-
+      constraint = Stannum::Constraints::Hashes::IndifferentKey.new
+      constraint.matches?(:'') #=> false
+      constraint.errors_for(:'')
+      #=> [{ type: 'absent', data: {}, path: [], message: nil }]
+  - name: With a Symbol
+    text: |-
+      constraint = Stannum::Constraints::Hashes::IndifferentKey.new
+      constraint.matches?(:a_symbol) #=> true
+constructor: true
+inherited_classes:
+- name: Stannum::Constraints::Base
+  slug: base
+  path: stannum/constraints/base
+version: '0.4'

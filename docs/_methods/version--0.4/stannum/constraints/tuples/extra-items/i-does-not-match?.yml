@@ -1,0 +1,15 @@
+---
+name: Stannum::Constraints::Tuples::ExtraItems#does_not_match?
+parent_path: stannum/constraints/tuples/extra-items
+signature: does_not_match?(actual)
+slug: does-not-match?
+constructor: false
+data_path: stannum/constraints/tuples/extra-items/i-does-not-match?
+returns:
+- description: |-
+    true if the object responds to #size and the object
+    size is greater than the number of expected items; otherwise false.
+  type:
+  - name: 'true'
+  - name: 'false'
+version: '0.4'

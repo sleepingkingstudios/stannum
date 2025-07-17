@@ -1,0 +1,127 @@
+---
+name: Stannum::Constraints::Properties::Matching
+slug: matching
+type: class
+files:
+- lib/stannum/constraints/properties/matching.rb
+parent_path: stannum/constraints/properties
+short_description: Abstract base class for property matching constraints.
+constants:
+- name: FILTERED_PARAMETERS
+  path: stannum/constraints/properties/base/filtered-parameters
+  slug: filtered-parameters
+  inherited: true
+- name: NEGATED_TYPE
+  path: stannum/constraints/base/negated-type
+  slug: negated-type
+  inherited: true
+- name: TYPE
+  path: stannum/constraints/base/type
+  slug: type
+  inherited: true
+instance_attributes:
+- name: options
+  read: true
+  write: true
+  path: stannum/constraints/base/i-options
+  slug: options
+  inherited: true
+- name: property_names
+  read: true
+  write: false
+  path: stannum/constraints/properties/base/i-property-names
+  slug: property-names
+  inherited: true
+- name: reference_name
+  read: true
+  write: false
+  path: stannum/constraints/properties/matching/i-reference-name
+  slug: reference-name
+  inherited: false
+instance_methods:
+- name: "=="
+  path: stannum/constraints/base/i-==
+  slug: "=="
+  inherited: true
+- name: allow_empty?
+  path: stannum/constraints/properties/base/i-allow-empty?
+  slug: allow-empty?
+  inherited: true
+- name: allow_nil?
+  path: stannum/constraints/properties/base/i-allow-nil?
+  slug: allow-nil?
+  inherited: true
+- name: clone
+  path: stannum/constraints/base/i-clone
+  slug: clone
+  inherited: true
+- name: does_not_match?
+  path: stannum/constraints/base/i-does-not-match?
+  slug: does-not-match?
+  inherited: true
+- name: dup
+  path: stannum/constraints/base/i-dup
+  slug: dup
+  inherited: true
+- name: errors_for
+  path: stannum/constraints/base/i-errors-for
+  slug: errors-for
+  inherited: true
+- name: initialize
+  path: stannum/constraints/properties/matching/i-initialize
+  slug: initialize
+  inherited: false
+  constructor: true
+- name: match
+  path: stannum/constraints/base/i-match
+  slug: match
+  inherited: true
+- name: matches?
+  path: stannum/constraints/base/i-matches?
+  slug: matches?
+  inherited: true
+- name: message
+  path: stannum/constraints/base/i-message
+  slug: message
+  inherited: true
+- name: negated_errors_for
+  path: stannum/constraints/base/i-negated-errors-for
+  slug: negated-errors-for
+  inherited: true
+- name: negated_match
+  path: stannum/constraints/base/i-negated-match
+  slug: negated-match
+  inherited: true
+- name: negated_message
+  path: stannum/constraints/base/i-negated-message
+  slug: negated-message
+  inherited: true
+- name: negated_type
+  path: stannum/constraints/base/i-negated-type
+  slug: negated-type
+  inherited: true
+- name: type
+  path: stannum/constraints/base/i-type
+  slug: type
+  inherited: true
+- name: with_options
+  path: stannum/constraints/base/i-with-options
+  slug: with-options
+  inherited: true
+data_path: stannum/constraints/properties/matching
+constructor: true
+direct_subclasses:
+- name: Stannum::Constraints::Properties::DoNotMatchProperty
+  slug: do-not-match-property
+  path: stannum/constraints/properties/do-not-match-property
+- name: Stannum::Constraints::Properties::MatchProperty
+  slug: match-property
+  path: stannum/constraints/properties/match-property
+inherited_classes:
+- name: Stannum::Constraints::Properties::Base
+  slug: base
+  path: stannum/constraints/properties/base
+- name: Stannum::Constraints::Base
+  slug: base
+  path: stannum/constraints/base
+version: '0.4'

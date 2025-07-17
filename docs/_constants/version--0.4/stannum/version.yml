@@ -1,0 +1,8 @@
+---
+name: Stannum::VERSION
+parent_path: stannum
+slug: version
+short_description: The current version of the gem in Rubygems format.
+value: Version.to_gem_version
+data_path: stannum/version
+version: '0.4'

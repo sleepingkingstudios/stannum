@@ -1,0 +1,23 @@
+---
+name: Stannum::Entities::Associations::ClassMethods
+slug: class-methods
+type: module
+files:
+- lib/stannum/entities/associations.rb
+parent_path: stannum/entities/associations
+short_description: Class methods to extend the class when including Associations.
+instance_methods:
+- name: association
+  path: stannum/entities/associations/class-methods/i-association
+  slug: association
+  inherited: false
+- name: associations
+  path: stannum/entities/associations/class-methods/i-associations
+  slug: associations
+  inherited: false
+- name: default_foreign_key_type
+  path: stannum/entities/associations/class-methods/i-default-foreign-key-type
+  slug: default-foreign-key-type
+  inherited: false
+data_path: stannum/entities/associations/class-methods
+version: '0.4'

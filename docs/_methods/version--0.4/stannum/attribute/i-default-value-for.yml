@@ -1,0 +1,21 @@
+---
+name: Stannum::Attribute#default_value_for
+parent_path: stannum/attribute
+signature: default_value_for(context)
+slug: default-value-for
+constructor: false
+data_path: stannum/attribute/i-default-value-for
+params:
+- description: |-
+    the context object used to determinet the default
+    value.
+  name: context
+  type:
+  - name: Object
+returns:
+- description: |-
+    the value of the default attribute for the given context
+    object, if any.
+  type:
+  - name: Object
+version: '0.4'

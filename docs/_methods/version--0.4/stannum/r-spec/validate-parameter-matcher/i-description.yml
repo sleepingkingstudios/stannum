@@ -1,0 +1,14 @@
+---
+name: Stannum::RSpec::ValidateParameterMatcher#description
+parent_path: stannum/r-spec/validate-parameter-matcher
+signature: description
+slug: description
+constructor: false
+data_path: stannum/r-spec/validate-parameter-matcher/i-description
+returns:
+- description: |-
+    a short description of the matcher and expected
+    properties.
+  type:
+  - name: String
+version: '0.4'

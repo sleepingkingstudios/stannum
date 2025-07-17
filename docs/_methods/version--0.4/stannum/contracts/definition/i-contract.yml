@@ -1,0 +1,15 @@
+---
+name: Stannum::Contracts::Definition#contract
+parent_path: stannum/contracts/definition
+signature: contract
+slug: contract
+constructor: false
+data_path: stannum/contracts/definition/i-contract
+returns:
+- description: |-
+    the contract containing the
+    constraint.
+  type:
+  - name: Stannum::Contracts::Base
+    path: stannum/contracts/base
+version: '0.4'

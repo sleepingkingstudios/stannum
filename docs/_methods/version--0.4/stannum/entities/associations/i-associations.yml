@@ -1,0 +1,16 @@
+---
+name: Stannum::Entities::Associations#associations
+parent_path: stannum/entities/associations
+signature: associations
+slug: associations
+constructor: false
+data_path: stannum/entities/associations/i-associations
+returns:
+- description: the entity associations.
+  type:
+  - name: Hash
+    items:
+    - name: String
+    - name: Object
+short_description: Collects the entity associations.
+version: '0.4'

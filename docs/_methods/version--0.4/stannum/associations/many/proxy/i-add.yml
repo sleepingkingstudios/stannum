@@ -1,0 +1,25 @@
+---
+name: Stannum::Associations::Many::Proxy#add
+parent_path: stannum/associations/many/proxy
+signature: add(value)
+slug: add
+aliases:
+- !!str '<<'
+- push
+constructor: false
+data_path: stannum/associations/many/proxy/i-add
+description: |-
+  If the entity is already in the association data, this method does
+  nothing.
+params:
+- description: the entity to add.
+  name: value
+  type:
+  - name: Stannum::Entity
+    path: stannum/entity
+returns:
+- description: the association proxy.
+  type:
+  - name: self
+short_description: Appends the entity to the association.
+version: '0.4'

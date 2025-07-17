@@ -1,0 +1,19 @@
+---
+name: Stannum::Schema#define
+parent_path: stannum/schema
+signature: 'define(name:, options:, type:, definition_class: nil)'
+slug: define
+constructor: false
+data_path: stannum/schema/i-define
+description: |-
+  This method should not be called directly. Instead, define properties via
+  the Struct.property class method.
+metadata:
+  api: private
+  see:
+  - label: Stannum::Struct
+    path: stannum/struct
+    text:
+    type: reference
+short_description: Defines an property and adds the property to the contract.
+version: '0.4'

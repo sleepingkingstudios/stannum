@@ -1,0 +1,35 @@
+---
+name: Stannum::Association#initialize
+parent_path: stannum/association
+signature: initialize(name:, options:, type:)
+slug: initialize
+constructor: true
+data_path: stannum/association/i-initialize
+params:
+- description: |-
+    The name of the association. Converted to a
+    String.
+  name: name
+  type:
+  - name: String
+  - name: Symbol
+- description: |-
+    Options for the association. Converted to a
+    Hash with Symbol keys. Defaults to an empty Hash.
+  name: options
+  type:
+  - name: Hash
+  - name: nil
+- description: |-
+    The type of the association. Can be a
+    Class, a Module, or the name of a class or module.
+  name: type
+  type:
+  - name: Class
+  - name: Module
+  - name: String
+returns:
+- description: a new instance of Association
+  type:
+  - name: Association
+version: '0.4'

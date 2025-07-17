@@ -1,0 +1,13 @@
+---
+name: Stannum::Entities::Associations::ClassMethods#associations
+parent_path: stannum/entities/associations/class-methods
+signature: associations
+slug: associations
+constructor: false
+data_path: stannum/entities/associations/class-methods/i-associations
+returns:
+- description: The associations Schema object for the Entity.
+  type:
+  - name: Stannum::Schema
+    path: stannum/schema
+version: '0.4'

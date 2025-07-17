@@ -1,0 +1,56 @@
+---
+name: Stannum::Entities::Attributes::ClassMethods#attribute
+parent_path: stannum/entities/attributes/class-methods
+signature: attribute(attr_name, attr_type, **options)
+slug: attribute
+aliases:
+- define_attribute
+constructor: false
+data_path: stannum/entities/attributes/class-methods/i-attribute
+description: |-
+  When an attribute is defined, each of the following steps is executed:
+
+  - Adds the attribute to ::Attributes and the .attributes class method.
+  - Adds the attribute to #attributes and the associated methods, such as
+    #assign_attributes, #[] and #[]=.
+  - Defines reader and writer methods.
+options:
+- name: options
+  opts:
+  - description: |-
+      The default value for the attribute.
+      Defaults to nil.
+    name: ":default"
+    type:
+    - name: Object
+  - description: |-
+      true if the attribute represents
+      the primary key for the entity; otherwise false. Defaults to false.
+    name: ":primary_key"
+    type:
+    - name: Boolean
+params:
+- description: |-
+    The name of the attribute. Must be a
+    non-empty String or Symbol.
+  name: attr_name
+  type:
+  - name: String
+  - name: Symbol
+- description: |-
+    The type of the attribute. Must be a
+    Class or Module, or the name of a class or module.
+  name: attr_type
+  type:
+  - name: Class
+  - name: String
+- description: Additional options for the attribute.
+  name: options
+  type:
+  - name: Hash
+returns:
+- description: the attribute name as a symbol.
+  type:
+  - name: Symbol
+short_description: Defines an attribute on the entity.
+version: '0.4'

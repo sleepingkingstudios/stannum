@@ -1,0 +1,115 @@
+---
+name: Stannum::Constraints::Uuid
+slug: uuid
+type: class
+files:
+- lib/stannum/constraints/uuid.rb
+parent_path: stannum/constraints
+short_description: A UUID constraint asserts the value is a string in UUID format.
+constants:
+- name: NEGATED_TYPE
+  path: stannum/constraints/uuid/negated-type
+  slug: negated-type
+  inherited: false
+- name: TYPE
+  path: stannum/constraints/uuid/type
+  slug: type
+  inherited: false
+- name: UUID_FORMAT
+  path: stannum/constraints/uuid/uuid-format
+  slug: uuid-format
+  inherited: false
+instance_attributes:
+- name: expected_format
+  read: true
+  write: false
+  path: stannum/constraints/format/i-expected-format
+  slug: expected-format
+  inherited: true
+- name: options
+  read: true
+  write: true
+  path: stannum/constraints/base/i-options
+  slug: options
+  inherited: true
+instance_methods:
+- name: "=="
+  path: stannum/constraints/base/i-==
+  slug: "=="
+  inherited: true
+- name: clone
+  path: stannum/constraints/base/i-clone
+  slug: clone
+  inherited: true
+- name: does_not_match?
+  path: stannum/constraints/base/i-does-not-match?
+  slug: does-not-match?
+  inherited: true
+- name: dup
+  path: stannum/constraints/base/i-dup
+  slug: dup
+  inherited: true
+- name: errors_for
+  path: stannum/constraints/format/i-errors-for
+  slug: errors-for
+  inherited: true
+- name: initialize
+  path: stannum/constraints/uuid/i-initialize
+  slug: initialize
+  inherited: false
+  constructor: true
+- name: match
+  path: stannum/constraints/base/i-match
+  slug: match
+  inherited: true
+- name: matches?
+  path: stannum/constraints/format/i-matches?
+  slug: matches?
+  inherited: true
+- name: message
+  path: stannum/constraints/base/i-message
+  slug: message
+  inherited: true
+- name: negated_errors_for
+  path: stannum/constraints/base/i-negated-errors-for
+  slug: negated-errors-for
+  inherited: true
+- name: negated_match
+  path: stannum/constraints/base/i-negated-match
+  slug: negated-match
+  inherited: true
+- name: negated_message
+  path: stannum/constraints/base/i-negated-message
+  slug: negated-message
+  inherited: true
+- name: negated_type
+  path: stannum/constraints/base/i-negated-type
+  slug: negated-type
+  inherited: true
+- name: type
+  path: stannum/constraints/base/i-type
+  slug: type
+  inherited: true
+- name: with_options
+  path: stannum/constraints/base/i-with-options
+  slug: with-options
+  inherited: true
+data_path: stannum/constraints/uuid
+metadata:
+  examples:
+  - name: Using a UUID constraint with a String format.
+    text: |-
+      constraint = Stannum::Constraints::Uuid.new
+
+      constraint.matches?(nil)                                    #=> false
+      constraint.matches?('Hello, world')                         #=> false
+      constraint.matches?('01234567-89ab-cdef-0123-456789abcdef') #=> true
+constructor: true
+inherited_classes:
+- name: Stannum::Constraints::Format
+  slug: format
+  path: stannum/constraints/format
+- name: Stannum::Constraints::Base
+  slug: base
+  path: stannum/constraints/base
+version: '0.4'

@@ -1,0 +1,12 @@
+---
+name: Stannum::Attribute#name
+parent_path: stannum/attribute
+signature: name
+slug: name
+constructor: false
+data_path: stannum/attribute/i-name
+returns:
+- description: the name of the attribute.
+  type:
+  - name: String
+version: '0.4'

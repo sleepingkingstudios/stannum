@@ -1,0 +1,40 @@
+---
+name: Stannum::Errors#merge
+parent_path: stannum/errors
+signature: merge(value)
+slug: merge
+constructor: false
+data_path: stannum/errors/i-merge
+description: |-
+  Creates a copy of the errors object, and then adds each error in the
+  passed in errors object or array to the copy. The copy will thus contain
+  all of the errors from the original object and all of the errors from the
+  passed in object. The original object is not changed.
+metadata:
+  see:
+  - label: "#update"
+    path: stannum/errors#instance-method-update
+    text:
+    type: reference
+params:
+- description: |-
+    The errors to add to the
+    copied errors object.
+  name: value
+  type:
+  - name: Stannum::Errors
+    path: stannum/errors
+  - name: Array[Hash]
+raises:
+- description: |-
+    if the value is not a valid errors object or Array
+    of errors hashes.
+  type:
+  - name: ArgumentError
+returns:
+- description: the copied errors object.
+  type:
+  - name: Stannum::Errors
+    path: stannum/errors
+short_description: Adds the given errors to a copy of the errors object.
+version: '0.4'

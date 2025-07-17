@@ -1,0 +1,22 @@
+---
+name: Stannum::Constraints::Types::StringType#initialize
+parent_path: stannum/constraints/types/string-type
+signature: initialize(**options)
+slug: initialize
+constructor: true
+data_path: stannum/constraints/types/string-type/i-initialize
+params:
+- description: |-
+    Configuration options for the
+    constraint. Defaults to an empty Hash.
+  name: options
+  type:
+  - name: Hash
+    items:
+    - name: Symbol
+    - name: Object
+returns:
+- description: a new instance of StringType
+  type:
+  - name: StringType
+version: '0.4'

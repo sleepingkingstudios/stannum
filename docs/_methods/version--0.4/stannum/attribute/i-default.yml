@@ -1,0 +1,12 @@
+---
+name: Stannum::Attribute#default
+parent_path: stannum/attribute
+signature: default
+slug: default
+constructor: false
+data_path: stannum/attribute/i-default
+returns:
+- description: the default value for the attribute, if any.
+  type:
+  - name: Object
+version: '0.4'

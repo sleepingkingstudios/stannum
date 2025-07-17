@@ -3,7 +3,7 @@ name: Stannum::Version::BUILD
 parent_path: stannum/version
 slug: build
 short_description: Build metadata.
-value: '0'
+value: nil
 data_path: stannum/version/build
 metadata:
   api: private

@@ -1,0 +1,17 @@
+---
+name: Stannum::Associations
+slug: associations
+type: module
+files:
+- lib/stannum/associations.rb
+- lib/stannum/associations/one.rb
+- lib/stannum/associations/many.rb
+parent_path: stannum
+short_description: Namespace for modules implementing Association functionality.
+defined_classes:
+- name: Many
+  slug: many
+- name: One
+  slug: one
+data_path: stannum/associations
+version: '0.4'

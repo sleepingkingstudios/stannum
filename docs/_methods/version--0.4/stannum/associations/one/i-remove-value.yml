@@ -1,0 +1,33 @@
+---
+name: Stannum::Associations::One#remove_value
+parent_path: stannum/associations/one
+signature: 'remove_value(entity, value, update_inverse: true)'
+slug: remove-value
+constructor: false
+data_path: stannum/associations/one/i-remove-value
+metadata:
+  api: private
+params:
+- description: the entity to update.
+  name: entity
+  type:
+  - name: Stannum::Entity
+    path: stannum/entity
+- description: the association value to remove.
+  name: value
+  type:
+  - name: Stannum::Entity
+    path: stannum/entity
+- description: |-
+    if true, updates the inverse association
+    (if any). Defaults to false.
+  name: update_inverse
+  type:
+  - name: Boolean
+  default: 'true'
+returns:
+- description: ''
+  type:
+  - name: void
+short_description: Removes the given value from the association for the entity.
+version: '0.4'

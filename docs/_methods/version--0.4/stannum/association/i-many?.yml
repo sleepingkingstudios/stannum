@@ -1,0 +1,14 @@
+---
+name: Stannum::Association#many?
+parent_path: stannum/association
+signature: many?
+slug: many?
+constructor: false
+data_path: stannum/association/i-many?
+returns:
+- description: |-
+    true if the association is a plural association;
+    otherwise false.
+  type:
+  - name: 'false'
+version: '0.4'

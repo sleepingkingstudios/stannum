@@ -1,0 +1,8 @@
+---
+name: Stannum::Constraints::Boolean::TYPE
+parent_path: stannum/constraints/boolean
+slug: type
+short_description: The :type of the error generated for a non-matching object.
+value: "'stannum.constraints.is_not_boolean'"
+data_path: stannum/constraints/boolean/type
+version: '0.4'

@@ -1,0 +1,108 @@
+---
+name: Stannum::Associations::One
+slug: one
+type: class
+files:
+- lib/stannum/associations/one.rb
+parent_path: stannum/associations
+short_description: Data object representing a singular association.
+instance_attributes:
+- name: name
+  read: true
+  write: false
+  path: stannum/association/i-name
+  slug: name
+  inherited: true
+- name: options
+  read: true
+  write: false
+  path: stannum/association/i-options
+  slug: options
+  inherited: true
+- name: type
+  read: true
+  write: false
+  path: stannum/association/i-type
+  slug: type
+  inherited: true
+instance_methods:
+- name: add_value
+  path: stannum/associations/one/i-add-value
+  slug: add-value
+  inherited: false
+- name: clear_value
+  path: stannum/associations/one/i-clear-value
+  slug: clear-value
+  inherited: false
+- name: entity_class_name
+  path: stannum/association/i-entity-class-name
+  slug: entity-class-name
+  inherited: true
+- name: foreign_key?
+  path: stannum/associations/one/i-foreign-key?
+  slug: foreign-key?
+  inherited: false
+- name: foreign_key_name
+  path: stannum/associations/one/i-foreign-key-name
+  slug: foreign-key-name
+  inherited: false
+- name: foreign_key_type
+  path: stannum/associations/one/i-foreign-key-type
+  slug: foreign-key-type
+  inherited: false
+- name: get_value
+  path: stannum/associations/one/i-get-value
+  slug: get-value
+  inherited: false
+- name: initialize
+  path: stannum/association/i-initialize
+  slug: initialize
+  inherited: true
+  constructor: true
+- name: inverse?
+  path: stannum/association/i-inverse?
+  slug: inverse?
+  inherited: true
+- name: inverse_name
+  path: stannum/association/i-inverse-name
+  slug: inverse-name
+  inherited: true
+- name: many?
+  path: stannum/association/i-many?
+  slug: many?
+  inherited: true
+- name: one?
+  path: stannum/associations/one/i-one?
+  slug: one?
+  inherited: false
+- name: reader_name
+  path: stannum/association/i-reader-name
+  slug: reader-name
+  inherited: true
+- name: remove_value
+  path: stannum/associations/one/i-remove-value
+  slug: remove-value
+  inherited: false
+- name: resolved_inverse
+  path: stannum/association/i-resolved-inverse
+  slug: resolved-inverse
+  inherited: true
+- name: resolved_type
+  path: stannum/association/i-resolved-type
+  slug: resolved-type
+  inherited: true
+- name: set_value
+  path: stannum/associations/one/i-set-value
+  slug: set-value
+  inherited: false
+- name: writer_name
+  path: stannum/association/i-writer-name
+  slug: writer-name
+  inherited: true
+data_path: stannum/associations/one
+constructor: true
+inherited_classes:
+- name: Stannum::Association
+  slug: association
+  path: stannum/association
+version: '0.4'

@@ -1,0 +1,30 @@
+---
+name: Stannum::Errors#with_messages
+parent_path: stannum/errors
+signature: 'with_messages(force: false, strategy: nil)'
+slug: with-messages
+constructor: false
+data_path: stannum/errors/i-with-messages
+params:
+- description: |-
+    If true, overrides any messages already defined for
+    the errors.
+  name: force
+  type:
+  - name: Boolean
+  default: 'false'
+- description: |-
+    The strategy to use to generate the error
+    messages.
+  name: strategy
+  type:
+  - name: "#call"
+  default: nil
+returns:
+- description: the copy of the errors object.
+  type:
+  - name: Stannum::Errors
+    path: stannum/errors
+short_description: Creates a copy of the errors and generates error messages for each
+  error.
+version: '0.4'

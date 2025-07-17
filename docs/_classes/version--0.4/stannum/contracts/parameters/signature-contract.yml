@@ -1,0 +1,145 @@
+---
+name: Stannum::Contracts::Parameters::SignatureContract
+slug: signature-contract
+type: class
+files:
+- lib/stannum/contracts/parameters/signature_contract.rb
+parent_path: stannum/contracts/parameters
+short_description: A SignatureContract defines a parameters object for a ParametersContract.
+constants:
+- name: NEGATED_TYPE
+  path: stannum/constraints/base/negated-type
+  slug: negated-type
+  inherited: true
+- name: TYPE
+  path: stannum/constraints/base/type
+  slug: type
+  inherited: true
+instance_attributes:
+- name: options
+  read: true
+  write: true
+  path: stannum/constraints/base/i-options
+  slug: options
+  inherited: true
+instance_methods:
+- name: "=="
+  path: stannum/contracts/base/i-==
+  slug: "=="
+  inherited: true
+- name: add_constraint
+  path: stannum/contract/i-add-constraint
+  slug: add-constraint
+  inherited: true
+- name: add_key_constraint
+  path: stannum/contracts/map-contract/i-add-key-constraint
+  slug: add-key-constraint
+  inherited: true
+- name: add_property_constraint
+  path: stannum/contract/i-add-property-constraint
+  slug: add-property-constraint
+  inherited: true
+- name: allow_extra_keys?
+  path: stannum/contracts/map-contract/i-allow-extra-keys?
+  slug: allow-extra-keys?
+  inherited: true
+- name: clone
+  path: stannum/constraints/base/i-clone
+  slug: clone
+  inherited: true
+- name: concat
+  path: stannum/contracts/base/i-concat
+  slug: concat
+  inherited: true
+- name: does_not_match?
+  path: stannum/contracts/base/i-does-not-match?
+  slug: does-not-match?
+  inherited: true
+- name: dup
+  path: stannum/constraints/base/i-dup
+  slug: dup
+  inherited: true
+- name: each_constraint
+  path: stannum/contracts/base/i-each-constraint
+  slug: each-constraint
+  inherited: true
+- name: each_pair
+  path: stannum/contracts/base/i-each-pair
+  slug: each-pair
+  inherited: true
+- name: errors_for
+  path: stannum/contracts/base/i-errors-for
+  slug: errors-for
+  inherited: true
+- name: expected_keys
+  path: stannum/contracts/map-contract/i-expected-keys
+  slug: expected-keys
+  inherited: true
+- name: initialize
+  path: stannum/contracts/parameters/signature-contract/i-initialize
+  slug: initialize
+  inherited: false
+  constructor: true
+- name: key_type
+  path: stannum/contracts/hash-contract/i-key-type
+  slug: key-type
+  inherited: true
+- name: match
+  path: stannum/contracts/base/i-match
+  slug: match
+  inherited: true
+- name: matches?
+  path: stannum/contracts/base/i-matches?
+  slug: matches?
+  inherited: true
+- name: message
+  path: stannum/constraints/base/i-message
+  slug: message
+  inherited: true
+- name: negated_errors_for
+  path: stannum/contracts/base/i-negated-errors-for
+  slug: negated-errors-for
+  inherited: true
+- name: negated_match
+  path: stannum/contracts/base/i-negated-match
+  slug: negated-match
+  inherited: true
+- name: negated_message
+  path: stannum/constraints/base/i-negated-message
+  slug: negated-message
+  inherited: true
+- name: negated_type
+  path: stannum/constraints/base/i-negated-type
+  slug: negated-type
+  inherited: true
+- name: type
+  path: stannum/constraints/base/i-type
+  slug: type
+  inherited: true
+- name: value_type
+  path: stannum/contracts/hash-contract/i-value-type
+  slug: value-type
+  inherited: true
+- name: with_options
+  path: stannum/contracts/map-contract/i-with-options
+  slug: with-options
+  inherited: true
+data_path: stannum/contracts/parameters/signature-contract
+constructor: true
+inherited_classes:
+- name: Stannum::Contracts::HashContract
+  slug: hash-contract
+  path: stannum/contracts/hash-contract
+- name: Stannum::Contracts::MapContract
+  slug: map-contract
+  path: stannum/contracts/map-contract
+- name: Stannum::Contract
+  slug: contract
+  path: stannum/contract
+- name: Stannum::Contracts::Base
+  slug: base
+  path: stannum/contracts/base
+- name: Stannum::Constraints::Base
+  slug: base
+  path: stannum/constraints/base
+version: '0.4'

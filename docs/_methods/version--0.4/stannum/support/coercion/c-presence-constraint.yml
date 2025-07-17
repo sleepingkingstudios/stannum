@@ -1,0 +1,84 @@
+---
+name: Stannum::Support::Coercion.presence_constraint
+parent_path: stannum/support/coercion
+signature: 'presence_constraint(present, allow_nil: false, as: ''present'', **options,
+  &block)'
+slug: presence-constraint
+constructor: false
+data_path: stannum/support/coercion/c-presence-constraint
+params:
+- description: |-
+    The
+    expected presence or absence of the value. If true, will return a
+    Presence constraint. If false, will return an Absence constraint.
+  name: present
+  type:
+  - name: 'true'
+  - name: 'false'
+  - name: Stannum::Constraints::Base
+    path: stannum/constraints/base
+  - name: nil
+- description: |-
+    If true, a nil value will be returned
+    instead of raising an exception.
+  name: allow_nil
+  type:
+  - name: 'true'
+  - name: 'false'
+  default: 'false'
+- description: |-
+    A short name for the coerced value, used in
+    generating an error message. Defaults to "present".
+  name: as
+  type:
+  - name: String
+  default: "'present'"
+- description: |-
+    Configuration options for the
+    constraint. Defaults to an empty Hash.
+  name: options
+  type:
+  - name: Hash
+    items:
+    - name: Symbol
+    - name: Object
+raises:
+- description: ''
+  type:
+  - name: ArgumentError
+returns:
+- description: |-
+    the generated or given
+    constraint.
+  type:
+  - name: Stannum::Constraints:Base
+  - name: nil
+short_description: Coerce a Boolean value to a Presence constraint.
+yield_params:
+- description: |-
+    The expected presence or absence of
+    the value.
+  name: present
+  type:
+  - name: 'true'
+  - name: 'false'
+- description: |-
+    Configuration options for the
+    constraint. Defaults to an empty Hash.
+  name: options
+  type:
+  - name: Hash
+    items:
+    - name: Symbol
+    - name: Object
+yield_returns:
+- description: the generated constraint.
+  type:
+  - name: Stannum::Constraints::Base
+    path: stannum/constraints/base
+yields:
+- description: |-
+    Builds a constraint from true or false. If no block is given,
+    creates a Stannum::Constraints::Presence or
+    Stannum::Constraints::Absence constraint.
+version: '0.4'
