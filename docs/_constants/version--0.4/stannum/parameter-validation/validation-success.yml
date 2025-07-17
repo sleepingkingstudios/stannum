@@ -1,0 +1,10 @@
+---
+name: Stannum::ParameterValidation::VALIDATION_SUCCESS
+parent_path: stannum/parameter-validation
+slug: validation-success
+short_description: Value used to indicate a successful validation of the parameters.
+value: Object.new.freeze
+data_path: stannum/parameter-validation/validation-success
+metadata:
+  api: private
+version: '0.4'

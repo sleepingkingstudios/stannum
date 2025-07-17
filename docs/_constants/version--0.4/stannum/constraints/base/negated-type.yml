@@ -1,0 +1,8 @@
+---
+name: Stannum::Constraints::Base::NEGATED_TYPE
+parent_path: stannum/constraints/base
+slug: negated-type
+short_description: The :type of the error generated for a matching object.
+value: "'stannum.constraints.valid'"
+data_path: stannum/constraints/base/negated-type
+version: '0.4'

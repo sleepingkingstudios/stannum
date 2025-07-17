@@ -1,0 +1,13 @@
+---
+name: Stannum::Association#resolved_inverse
+parent_path: stannum/association
+signature: resolved_inverse
+slug: resolved-inverse
+constructor: false
+data_path: stannum/association/i-resolved-inverse
+returns:
+- description: the inverse association, if any.
+  type:
+  - name: Stannum::Association
+    path: stannum/association
+version: '0.4'

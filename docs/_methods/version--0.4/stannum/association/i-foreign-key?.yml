@@ -1,0 +1,15 @@
+---
+name: Stannum::Association#foreign_key?
+parent_path: stannum/association
+signature: foreign_key?
+slug: foreign-key?
+constructor: false
+data_path: stannum/association/i-foreign-key?
+returns:
+- description: |-
+    true if the association has defines a foreign key;
+    otherwise false.
+  type:
+  - name: 'true'
+  - name: 'false'
+version: '0.4'

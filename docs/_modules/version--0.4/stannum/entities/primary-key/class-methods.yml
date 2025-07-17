@@ -1,0 +1,31 @@
+---
+name: Stannum::Entities::PrimaryKey::ClassMethods
+slug: class-methods
+type: module
+files:
+- lib/stannum/entities/primary_key.rb
+parent_path: stannum/entities/primary-key
+short_description: Class methods to extend the class when including PrimaryKey.
+instance_methods:
+- name: define_primary_key
+  path: stannum/entities/primary-key/class-methods/i-define-primary-key
+  slug: define-primary-key
+  inherited: false
+- name: primary_key
+  path: stannum/entities/primary-key/class-methods/i-primary-key
+  slug: primary-key
+  inherited: false
+- name: primary_key?
+  path: stannum/entities/primary-key/class-methods/i-primary-key?
+  slug: primary-key?
+  inherited: false
+- name: primary_key_name
+  path: stannum/entities/primary-key/class-methods/i-primary-key-name
+  slug: primary-key-name
+  inherited: false
+- name: primary_key_type
+  path: stannum/entities/primary-key/class-methods/i-primary-key-type
+  slug: primary-key-type
+  inherited: false
+data_path: stannum/entities/primary-key/class-methods
+version: '0.4'

@@ -1,0 +1,111 @@
+---
+name: Stannum::Entities::Associations::ClassMethods#association
+parent_path: stannum/entities/associations/class-methods
+signature: association(arity, class_or_name, **options)
+slug: association
+aliases:
+- define_association
+constructor: false
+data_path: stannum/entities/associations/class-methods/i-association
+description: |-
+  When an association is defined, each of the following steps is executed:
+
+  - Adds the association to ::Associations and the .associations class
+    method.
+  - Adds the association to #association and the associated methods, such
+    as #assign_associations, #[] and #[]=.
+  - Defines reader and writer methods.
+overloads:
+- name: Stannum::Entities::Associations::ClassMethods#association
+  parent_path: stannum/entities/associations/class-methods
+  signature: association(arity, assoc_name, **options)
+  slug: association
+  aliases:
+  - define_association
+  constructor: false
+  options:
+  - name: options
+    opts:
+    - description: the name of the associated class.
+      name: ":class_name"
+      type:
+      - name: String
+    - description: |-
+        the foreign key options for
+        the association. Can be true, or a Hash containing :name and/or
+        :type keys.
+      name: ":foreign_key"
+      type:
+      - name: 'true'
+      - name: Hash
+  params:
+  - description: |-
+      :one if the association has one item, or
+      :many if the association can have multiple items.
+    name: arity
+    type:
+    - name: ":one"
+    - name: ":many"
+  - description: the name of the association.
+    name: assoc_name
+    type:
+    - name: String
+    - name: Symbol
+  - description: additional options for the association.
+    name: options
+    type:
+    - name: Hash
+  returns:
+  - description: the association name as a symbol.
+    type:
+    - name: Symbol
+  short_description: |-
+    Defines an association with the given name. The class of the
+    associated object is determined automatically based on the association
+    name, or can be specified with the :class_name keyword.
+- name: Stannum::Entities::Associations::ClassMethods#association
+  parent_path: stannum/entities/associations/class-methods
+  signature: association(arity, assoc_type, **options)
+  slug: association
+  aliases:
+  - define_association
+  constructor: false
+  options:
+  - name: options
+    opts:
+    - description: |-
+        the foreign key options for
+        the association. Can be true, or a Hash containing :name and/or
+        :type keys.
+      name: ":foreign_key"
+      type:
+      - name: 'true'
+      - name: Hash
+  params:
+  - description: |-
+      :one if the association has one item, or
+      :many if the association can have multiple items.
+    name: arity
+    type:
+    - name: ":one"
+    - name: ":many"
+  - description: the type of the associated
+    name: assoc_type
+    type:
+    - name: String
+    - name: Symbol
+    - name: Class
+  - description: additional options for the association.
+    name: options
+    type:
+    - name: Hash
+  returns:
+  - description: the association name as a symbol.
+    type:
+    - name: Symbol
+  short_description: |-
+    Defines an association with the given class. The name of the
+    association is determined automatically based on the association
+    class.
+short_description: Defines an association on the entity.
+version: '0.4'

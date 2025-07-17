@@ -1,0 +1,10 @@
+---
+name: Stannum::Version::MAJOR
+parent_path: stannum/version
+slug: major
+short_description: Major version.
+value: '0'
+data_path: stannum/version/major
+metadata:
+  api: private
+version: '0.4'

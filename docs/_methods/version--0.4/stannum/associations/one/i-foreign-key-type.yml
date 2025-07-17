@@ -1,0 +1,17 @@
+---
+name: Stannum::Associations::One#foreign_key_type
+parent_path: stannum/associations/one
+signature: foreign_key_type
+slug: foreign-key-type
+constructor: false
+data_path: stannum/associations/one/i-foreign-key-type
+returns:
+- description: |-
+    the type of the foreign key, if
+    any.
+  type:
+  - name: Class
+  - name: Stannum::Constraint
+    path: stannum/constraint
+  - name: nil
+version: '0.4'

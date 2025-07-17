@@ -1,0 +1,87 @@
+---
+name: Stannum::Attribute
+slug: attribute
+type: class
+files:
+- lib/stannum/attribute.rb
+parent_path: stannum
+short_description: Data object representing an attribute on an entity.
+defined_classes:
+- name: Builder
+  slug: builder
+instance_attributes:
+- name: name
+  read: true
+  write: false
+  path: stannum/attribute/i-name
+  slug: name
+  inherited: false
+- name: options
+  read: true
+  write: false
+  path: stannum/attribute/i-options
+  slug: options
+  inherited: false
+- name: type
+  read: true
+  write: false
+  path: stannum/attribute/i-type
+  slug: type
+  inherited: false
+instance_methods:
+- name: association_name
+  path: stannum/attribute/i-association-name
+  slug: association-name
+  inherited: false
+- name: default
+  path: stannum/attribute/i-default
+  slug: default
+  inherited: false
+- name: default?
+  path: stannum/attribute/i-default?
+  slug: default?
+  inherited: false
+- name: default_value_for
+  path: stannum/attribute/i-default-value-for
+  slug: default-value-for
+  inherited: false
+- name: foreign_key?
+  path: stannum/attribute/i-foreign-key?
+  slug: foreign-key?
+  inherited: false
+- name: initialize
+  path: stannum/attribute/i-initialize
+  slug: initialize
+  inherited: false
+  constructor: true
+- name: optional?
+  path: stannum/support/optional/i-optional?
+  slug: optional?
+  inherited: true
+- name: primary_key?
+  path: stannum/attribute/i-primary-key?
+  slug: primary-key?
+  inherited: false
+- name: reader_name
+  path: stannum/attribute/i-reader-name
+  slug: reader-name
+  inherited: false
+- name: required?
+  path: stannum/support/optional/i-required?
+  slug: required?
+  inherited: true
+- name: resolved_type
+  path: stannum/attribute/i-resolved-type
+  slug: resolved-type
+  inherited: false
+- name: writer_name
+  path: stannum/attribute/i-writer-name
+  slug: writer-name
+  inherited: false
+data_path: stannum/attribute
+included_modules:
+- name: Stannum::Support::Optional
+  slug: optional
+  path: stannum/support/optional
+constructor: true
+version: '0.4'

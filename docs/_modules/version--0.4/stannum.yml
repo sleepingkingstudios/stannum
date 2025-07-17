@@ -1,0 +1,77 @@
+---
+name: Stannum
+slug: stannum
+type: module
+files:
+- lib/stannum.rb
+- lib/stannum/rspec.rb
+- lib/stannum/entity.rb
+- lib/stannum/errors.rb
+- lib/stannum/schema.rb
+- lib/stannum/struct.rb
+- lib/stannum/support.rb
+- lib/stannum/version.rb
+- lib/stannum/contract.rb
+- lib/stannum/entities.rb
+- lib/stannum/messages.rb
+- lib/stannum/attribute.rb
+- lib/stannum/contracts.rb
+- lib/stannum/constraint.rb
+- lib/stannum/association.rb
+- lib/stannum/constraints.rb
+- lib/stannum/associations.rb
+- lib/stannum/parameter_validation.rb
+parent_path: ''
+short_description: A library for specifying and validating data structures.
+class_methods:
+- name: gem_path
+  path: stannum/c-gem-path
+  slug: gem-path
+  inherited: false
+- name: version
+  path: stannum/c-version
+  slug: version
+  inherited: false
+constants:
+- name: VERSION
+  path: stannum/version
+  slug: version
+  inherited: false
+defined_classes:
+- name: Association
+  slug: association
+- name: Attribute
+  slug: attribute
+- name: Constraint
+  slug: constraint
+- name: Contract
+  slug: contract
+- name: Errors
+  slug: errors
+- name: Schema
+  slug: schema
+defined_modules:
+- name: Associations
+  slug: associations
+- name: Constraints
+  slug: constraints
+- name: Contracts
+  slug: contracts
+- name: Entities
+  slug: entities
+- name: Entity
+  slug: entity
+- name: Messages
+  slug: messages
+- name: ParameterValidation
+  slug: parameter-validation
+- name: RSpec
+  slug: r-spec
+- name: Struct
+  slug: struct
+- name: Support
+  slug: support
+- name: Version
+  slug: version
+data_path: stannum
+version: '0.4'

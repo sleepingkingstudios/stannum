@@ -1,0 +1,42 @@
+---
+name: Stannum::Contracts
+slug: contracts
+type: module
+files:
+- lib/stannum/contracts.rb
+- lib/stannum/contracts/base.rb
+- lib/stannum/contracts/builder.rb
+- lib/stannum/contracts/definition.rb
+- lib/stannum/contracts/parameters.rb
+- lib/stannum/contracts/map_contract.rb
+- lib/stannum/contracts/hash_contract.rb
+- lib/stannum/contracts/array_contract.rb
+- lib/stannum/contracts/tuple_contract.rb
+- lib/stannum/contracts/parameters_contract.rb
+- lib/stannum/contracts/indifferent_hash_contract.rb
+parent_path: stannum
+short_description: Namespace for pre-defined contracts.
+defined_classes:
+- name: ArrayContract
+  slug: array-contract
+- name: Base
+  slug: base
+- name: Builder
+  slug: builder
+- name: Definition
+  slug: definition
+- name: HashContract
+  slug: hash-contract
+- name: IndifferentHashContract
+  slug: indifferent-hash-contract
+- name: MapContract
+  slug: map-contract
+- name: ParametersContract
+  slug: parameters-contract
+- name: TupleContract
+  slug: tuple-contract
+defined_modules:
+- name: Parameters
+  slug: parameters
+data_path: stannum/contracts
+version: '0.4'

@@ -1,0 +1,13 @@
+---
+name: Stannum::Contracts::Definition#options=
+parent_path: stannum/contracts/definition
+signature: options=(value)
+slug: options=
+constructor: false
+data_path: stannum/contracts/definition/i-options=
+params:
+- description: the value to set the attribute options to.
+  name: value
+  type: []
+short_description: Sets the attribute options
+version: '0.4'

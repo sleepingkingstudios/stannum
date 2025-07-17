@@ -1,0 +1,14 @@
+---
+name: Stannum::Attribute#default?
+parent_path: stannum/attribute
+signature: default?
+slug: default?
+constructor: false
+data_path: stannum/attribute/i-default?
+returns:
+- description: |-
+    true if the attribute has a default value; otherwise
+    false.
+  type:
+  - name: Boolean
+version: '0.4'

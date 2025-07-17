@@ -1,0 +1,19 @@
+---
+name: Stannum::Entities::Attributes::ClassMethods
+slug: class-methods
+type: module
+files:
+- lib/stannum/entities/attributes.rb
+parent_path: stannum/entities/attributes
+short_description: Class methods to extend the class when including Attributes.
+instance_methods:
+- name: attribute
+  path: stannum/entities/attributes/class-methods/i-attribute
+  slug: attribute
+  inherited: false
+- name: attributes
+  path: stannum/entities/attributes/class-methods/i-attributes
+  slug: attributes
+  inherited: false
+data_path: stannum/entities/attributes/class-methods
+version: '0.4'

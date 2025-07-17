@@ -1,0 +1,27 @@
+---
+name: Stannum::Constraints::Format#initialize
+parent_path: stannum/constraints/format
+signature: initialize(expected_format, **options)
+slug: initialize
+constructor: true
+data_path: stannum/constraints/format/i-initialize
+params:
+- description: The expected object.
+  name: expected_format
+  type:
+  - name: Regex
+  - name: String
+- description: |-
+    Configuration options for the
+    constraint. Defaults to an empty Hash.
+  name: options
+  type:
+  - name: Hash
+    items:
+    - name: Symbol
+    - name: Object
+returns:
+- description: a new instance of Format
+  type:
+  - name: Format
+version: '0.4'

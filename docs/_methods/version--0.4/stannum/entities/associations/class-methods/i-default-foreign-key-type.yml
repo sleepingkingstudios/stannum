@@ -1,0 +1,12 @@
+---
+name: Stannum::Entities::Associations::ClassMethods#default_foreign_key_type
+parent_path: stannum/entities/associations/class-methods
+signature: default_foreign_key_type
+slug: default-foreign-key-type
+constructor: false
+data_path: stannum/entities/associations/class-methods/i-default-foreign-key-type
+returns:
+- description: the default type for foreign key attributes.
+  type:
+  - name: Class
+version: '0.4'

@@ -1,0 +1,30 @@
+---
+name: Stannum::Entities::Attributes#read_attribute
+parent_path: stannum/entities/attributes
+signature: 'read_attribute(key, safe: true)'
+slug: read-attribute
+constructor: false
+data_path: stannum/entities/attributes/i-read-attribute
+description: |-
+  If the :safe flag is set, will verify that the attribute name is valid (a
+  non-empty String or Symbol) and that there is a defined attribute by that
+  name. By default, :safe is set to true.
+metadata:
+  api: private
+params:
+- description: the key of the attribute to retrieve.
+  name: key
+  type:
+  - name: String
+  - name: Symbol
+- description: if true, validates the attribute key.
+  name: safe
+  type:
+  - name: Boolean
+  default: 'true'
+returns:
+- description: the value of the requested attribute.
+  type:
+  - name: Object
+short_description: Retrieves the attribute value for the requested key.
+version: '0.4'

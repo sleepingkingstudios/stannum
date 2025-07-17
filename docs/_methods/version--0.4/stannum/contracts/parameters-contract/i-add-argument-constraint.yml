@@ -1,0 +1,51 @@
+---
+name: Stannum::Contracts::ParametersContract#add_argument_constraint
+parent_path: stannum/contracts/parameters-contract
+signature: add_argument_constraint(index, type, **options)
+slug: add-argument-constraint
+constructor: false
+data_path: stannum/contracts/parameters-contract/i-add-argument-constraint
+description: |-
+  Generates an argument constraint based on the given type. If the type is
+  a constraint, then the given constraint will be copied with the given
+  options and added for the argument at the index. If the type is a Class or
+  a Module, then a Stannum::Constraints::Type constraint will be created
+  with the given type and options and added for the argument.
+
+  If the index is specified, then the constraint will be added for the
+  argument at the specified index. If the index is not given, then the
+  constraint will be applied to the next unconstrained argument. For
+  example, the first argument constraint will be added for the argument at
+  index 0, the second constraint for the argument at index 1, and so on.
+params:
+- description: |-
+    The index of the argument. If not given, then
+    the next argument will be constrained with the type.
+  name: index
+  type:
+  - name: Integer
+  - name: nil
+- description: |-
+    The expected type
+    of the argument.
+  name: type
+  type:
+  - name: Class
+  - name: Module
+  - name: Stannum::Constraints:Base
+- description: |-
+    Configuration options for the
+    constraint. Defaults to an empty Hash.
+  name: options
+  type:
+  - name: Hash
+    items:
+    - name: Symbol
+    - name: Object
+returns:
+- description: the contract.
+  type:
+  - name: Stannum::Contracts::ParametersContract
+    path: stannum/contracts/parameters-contract
+short_description: Adds an argument constraint to the contract.
+version: '0.4'

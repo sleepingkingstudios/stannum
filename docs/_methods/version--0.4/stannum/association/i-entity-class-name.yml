@@ -1,0 +1,13 @@
+---
+name: Stannum::Association#entity_class_name
+parent_path: stannum/association
+signature: entity_class_name
+slug: entity-class-name
+constructor: false
+data_path: stannum/association/i-entity-class-name
+returns:
+- description: the name of the original entity class.
+  type:
+  - name: String
+  - name: nil
+version: '0.4'

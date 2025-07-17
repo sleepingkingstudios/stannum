@@ -1,0 +1,47 @@
+---
+name: Stannum::Contracts::ParametersContract::Builder
+slug: builder
+type: class
+files:
+- lib/stannum/contracts/parameters_contract.rb
+parent_path: stannum/contracts/parameters-contract
+short_description: Builder class for defining item constraints for a ParametersContract.
+instance_methods:
+- name: argument
+  path: stannum/contracts/parameters-contract/builder/i-argument
+  slug: argument
+  inherited: false
+- name: arguments
+  path: stannum/contracts/parameters-contract/builder/i-arguments
+  slug: arguments
+  inherited: false
+- name: block
+  path: stannum/contracts/parameters-contract/builder/i-block
+  slug: block
+  inherited: false
+- name: keyword
+  path: stannum/contracts/parameters-contract/builder/i-keyword
+  slug: keyword
+  inherited: false
+- name: keywords
+  path: stannum/contracts/parameters-contract/builder/i-keywords
+  slug: keywords
+  inherited: false
+- name: property
+  path: stannum/contract/builder/i-property
+  slug: property
+  inherited: true
+data_path: stannum/contracts/parameters-contract/builder
+description: |-
+  This class should not be invoked directly. Instead, pass a block to the
+  constructor for ParametersContract.
+metadata:
+  api: private
+constructor: false
+inherited_classes:
+- name: Stannum::Contract::Builder
+  slug: builder
+  path: stannum/contract/builder
+- name: Stannum::Contracts::Base::Builder
+  slug: builder
+version: '0.4'

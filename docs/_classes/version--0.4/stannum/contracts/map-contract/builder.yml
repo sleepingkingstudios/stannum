@@ -1,0 +1,31 @@
+---
+name: Stannum::Contracts::MapContract::Builder
+slug: builder
+type: class
+files:
+- lib/stannum/contracts/map_contract.rb
+parent_path: stannum/contracts/map-contract
+short_description: Builder class for defining item constraints for a Contract.
+instance_methods:
+- name: key
+  path: stannum/contracts/map-contract/builder/i-key
+  slug: key
+  inherited: false
+- name: property
+  path: stannum/contract/builder/i-property
+  slug: property
+  inherited: true
+data_path: stannum/contracts/map-contract/builder
+description: |-
+  This class should not be invoked directly. Instead, pass a block to the
+  constructor for HashContract.
+metadata:
+  api: private
+constructor: false
+inherited_classes:
+- name: Stannum::Contract::Builder
+  slug: builder
+  path: stannum/contract/builder
+- name: Stannum::Contracts::Base::Builder
+  slug: builder
+version: '0.4'

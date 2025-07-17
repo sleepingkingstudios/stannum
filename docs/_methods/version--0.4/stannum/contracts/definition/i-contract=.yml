@@ -1,0 +1,13 @@
+---
+name: Stannum::Contracts::Definition#contract=
+parent_path: stannum/contracts/definition
+signature: contract=(value)
+slug: contract=
+constructor: false
+data_path: stannum/contracts/definition/i-contract=
+params:
+- description: the value to set the attribute contract to.
+  name: value
+  type: []
+short_description: Sets the attribute contract
+version: '0.4'

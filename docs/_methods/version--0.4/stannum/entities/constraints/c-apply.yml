@@ -1,0 +1,19 @@
+---
+name: Stannum::Entities::Constraints.apply
+parent_path: stannum/entities/constraints
+signature: apply(other)
+slug: apply
+constructor: false
+data_path: stannum/entities/constraints/c-apply
+description: |-
+  Creates a new Stannum::Contract and sets it as the class's :Contract
+  constant. If the superclass is an entity class (and already defines its
+  own Contract, concatenates the superclass Contract into the class
+  Contract).
+params:
+- description: the class to which attributes are added.
+  name: other
+  type:
+  - name: Class
+short_description: Generates a Contract for the class.
+version: '0.4'

@@ -1,0 +1,21 @@
+---
+name: Stannum::Contracts::Definition#property_name
+parent_path: stannum/contracts/definition
+signature: property_name
+slug: property-name
+constructor: false
+data_path: stannum/contracts/definition/i-property-name
+returns:
+- description: |-
+    the property name of
+    the constraint, used for generating errors. If not given, defaults to
+    the value of #property.
+  type:
+  - name: nil
+  - name: String
+  - name: Symbol
+  - name: Array
+    items:
+    - name: String
+    - name: Symbol
+version: '0.4'

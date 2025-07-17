@@ -1,0 +1,38 @@
+---
+name: Stannum::Messages::DefaultStrategy#initialize
+parent_path: stannum/messages/default-strategy
+signature: 'initialize(configuration: nil, load_paths: nil, locale: ''en'')'
+slug: initialize
+constructor: true
+data_path: stannum/messages/default-strategy/i-initialize
+params:
+- description: The configured messages.
+  name: configuration
+  type:
+  - name: Hash
+    keys:
+    - name: Symbol
+    values:
+    - name: Object
+  default: nil
+- description: |-
+    The directories from which to load
+    configured error messages.
+  name: load_paths
+  type:
+  - name: Array
+    items:
+    - name: String
+  default: nil
+- description: |-
+    The locale used to load and scope configured
+    messages.
+  name: locale
+  type:
+  - name: String
+  default: "'en'"
+returns:
+- description: a new instance of DefaultStrategy
+  type:
+  - name: DefaultStrategy
+version: '0.4'

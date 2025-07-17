@@ -1,0 +1,63 @@
+---
+name: Stannum::Contracts::Base#each_pair
+parent_path: stannum/contracts/base
+signature: each_pair(actual)
+slug: each-pair
+constructor: false
+data_path: stannum/contracts/base/i-each-pair
+description: |-
+  For each constraint defined for the contract, the contract defines a data
+  mapping representing the object or property that the constraint will
+  match. Calling #each_pair for an object yields the constraint and the
+  mapped object or property for that constraint and object.
+
+  If the contract defines sanity constraints, the sanity constraints will be
+  returned or yielded first, followed by the remaining constraints.
+
+  By default, this mapping returns the object itself; however, this can be
+  overriden in subclasses based on the constraint options, such as matching
+  constraints against the properties of an object rather than the object
+  itself.
+
+  This enumerator is used internally to implement the Constraint interface
+  for subclasses of Contract.
+metadata:
+  see:
+  - label: "#each_constraint"
+    path: stannum/contracts/base#instance-method-each-constraint
+    text:
+    type: reference
+overloads:
+- name: Stannum::Contracts::Base#each_pair
+  parent_path: stannum/contracts/base
+  signature: each_pair(actual)
+  slug: each-pair
+  constructor: false
+  returns:
+  - description: An enumerator for the constraints and values.
+    type:
+    - name: Enumerator
+- name: Stannum::Contracts::Base#each_pair
+  parent_path: stannum/contracts/base
+  signature: each_pair(actual)
+  slug: each-pair
+  constructor: false
+  yield_params:
+  - description: |-
+      Each definition
+      from the contract or concatenated contracts.
+    name: definition
+    type:
+    - name: Stannum::Contracts::Definition
+      path: stannum/contracts/definition
+  - description: The mapped value for that constraint.
+    name: value
+    type:
+    - name: Object
+params:
+- description: The object to match.
+  name: actual
+  type:
+  - name: Object
+short_description: Iterates through the constraints and mapped values.
+version: '0.4'

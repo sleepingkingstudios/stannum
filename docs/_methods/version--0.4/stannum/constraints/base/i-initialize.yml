@@ -1,0 +1,49 @@
+---
+name: Stannum::Constraints::Base#initialize
+parent_path: stannum/constraints/base
+signature: initialize(**options)
+slug: initialize
+constructor: true
+data_path: stannum/constraints/base/i-initialize
+options:
+- name: options
+  opts:
+  - description: |-
+      The default error message generated for
+      a non-matching object.
+    name: ":message"
+    type:
+    - name: String
+  - description: |-
+      The default error message
+      generated for a matching object.
+    name: ":negated_message"
+    type:
+    - name: String
+  - description: |-
+      The type of the error generated for
+      a matching object.
+    name: ":negated_type"
+    type:
+    - name: String
+  - description: |-
+      The type of the error generated for a
+      non-matching object.
+    name: ":type"
+    type:
+    - name: String
+params:
+- description: |-
+    Configuration options for the
+    constraint. Defaults to an empty Hash.
+  name: options
+  type:
+  - name: Hash
+    items:
+    - name: Symbol
+    - name: Object
+returns:
+- description: a new instance of Base
+  type:
+  - name: Base
+version: '0.4'

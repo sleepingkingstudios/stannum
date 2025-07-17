@@ -1,0 +1,14 @@
+---
+name: Stannum::ParameterValidation::MethodValidations#initialize
+parent_path: stannum/parameter-validation/method-validations
+signature: initialize
+slug: initialize
+constructor: true
+data_path: stannum/parameter-validation/method-validations/i-initialize
+metadata:
+  api: private
+returns:
+- description: a new instance of MethodValidations
+  type:
+  - name: MethodValidations
+version: '0.4'

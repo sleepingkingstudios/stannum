@@ -1,0 +1,48 @@
+---
+name: Stannum::Contracts::Parameters::KeywordsContract#set_variadic_value_constraint
+parent_path: stannum/contracts/parameters/keywords-contract
+signature: 'set_variadic_value_constraint(value_type, as: nil)'
+slug: set-variadic-value-constraint
+constructor: false
+data_path: stannum/contracts/parameters/keywords-contract/i-set-variadic-value-constraint
+description: |-
+  The given type or constraint must individually match each value (if any)
+  in the variadic keywords. To constrain the variadic keywords as a whole,
+  use #set_variadic_constraint.
+metadata:
+  api: private
+  see:
+  - label: "#set_variadic_constraint"
+    path: stannum/contracts/parameters/keywords-contract#instance-method-set-variadic-constraint
+    text:
+    type: reference
+params:
+- description: |-
+    The type or
+    constraint to add. If the type is a Class or Module, then it is
+    converted to a Stannum::Constraints::Type. Each value in the variadic
+    keywords must match the given constraint.
+  name: value_type
+  type:
+  - name: Stannum::Constraints::Base
+    path: stannum/constraints/base
+  - name: Class
+  - name: Module
+- description: |-
+    A human-friendly reference for the additional
+    keywords. Used when generating errors. Should be the same name used in
+    the method definition.
+  name: as
+  type:
+  - name: Symbol
+  default: nil
+raises:
+- description: if the variadic keywords constraint is already set.
+  type:
+  - name: RuntimeError
+returns:
+- description: the contract.
+  type:
+  - name: self
+short_description: Sets a constraint for the variadic keyword values.
+version: '0.4'

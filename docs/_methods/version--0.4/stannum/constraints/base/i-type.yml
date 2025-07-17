@@ -1,0 +1,12 @@
+---
+name: Stannum::Constraints::Base#type
+parent_path: stannum/constraints/base
+signature: type
+slug: type
+constructor: false
+data_path: stannum/constraints/base/i-type
+returns:
+- description: the error type generated for a non-matching object.
+  type:
+  - name: String
+version: '0.4'

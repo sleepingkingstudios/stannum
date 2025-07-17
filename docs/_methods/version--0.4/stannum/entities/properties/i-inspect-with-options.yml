@@ -1,0 +1,32 @@
+---
+name: Stannum::Entities::Properties#inspect_with_options
+parent_path: stannum/entities/properties
+signature: inspect_with_options(**options)
+slug: inspect-with-options
+constructor: false
+data_path: stannum/entities/properties/i-inspect-with-options
+options:
+- name: options
+  opts:
+  - description: |-
+      if true, displays the memory
+      address of the object (as per Object#inspect). Defaults to false.
+    name: memory_address
+    type:
+    - name: Boolean
+  - description: |-
+      if true, displays the entity
+      properties. Defaults to true.
+    name: properties
+    type:
+    - name: Boolean
+params:
+- description: options for inspecting the entity.
+  name: options
+  type:
+  - name: Hash
+returns:
+- description: a string representation of the entity and its properties.
+  type:
+  - name: String
+version: '0.4'

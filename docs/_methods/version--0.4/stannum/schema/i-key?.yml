@@ -1,0 +1,21 @@
+---
+name: Stannum::Schema#key?
+parent_path: stannum/schema
+signature: key?(key)
+slug: key?
+aliases:
+- has_key?
+constructor: false
+data_path: stannum/schema/i-key?
+params:
+- description: the name of the property to check.
+  name: key
+  type:
+  - name: String
+  - name: Symbol
+returns:
+- description: true if the property is defined; otherwise false.
+  type:
+  - name: Boolean
+short_description: Checks if the given property is defined.
+version: '0.4'

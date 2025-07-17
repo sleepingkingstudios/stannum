@@ -1,0 +1,13 @@
+---
+name: Stannum::Messages.strategy=
+parent_path: stannum/messages
+signature: strategy=(strategy)
+slug: strategy=
+constructor: false
+data_path: stannum/messages/c-strategy=
+params:
+- description: The strategy to use to generate error messages.
+  name: strategy
+  type:
+  - name: "#call"
+version: '0.4'

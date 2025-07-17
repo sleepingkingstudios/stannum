@@ -1,0 +1,56 @@
+---
+name: Stannum::Contracts::TupleContract::Builder#item
+parent_path: stannum/contracts/tuple-contract/builder
+signature: item(constraint = nil, **options, &)
+slug: item
+constructor: false
+data_path: stannum/contracts/tuple-contract/builder/i-item
+description: |-
+  Each time an item constraint is defined, the constraint is tied to an
+  incrementing index, i.e. the first constraint is matched against the
+  item at index 0, the second at index 1, and so on. This can be overriden
+  by setting the :property option.
+metadata:
+  api: private
+overloads:
+- name: Stannum::Contracts::TupleContract::Builder#item
+  parent_path: stannum/contracts/tuple-contract/builder
+  signature: item(constraint, **options)
+  slug: item
+  constructor: false
+  params:
+  - description: The constraint to add.
+    name: constraint
+    type:
+    - name: Stannum::Constraint::Base
+  - description: Options for the constraint.
+    name: options
+    type:
+    - name: Hash
+      items:
+      - name: Symbol
+      - name: Object
+  short_description: Adds the given constraint to the contract for the next index.
+- name: Stannum::Contracts::TupleContract::Builder#item
+  parent_path: stannum/contracts/tuple-contract/builder
+  signature: item(**options) { |value| }
+  slug: item
+  constructor: false
+  params:
+  - description: Options for the constraint.
+    name: options
+    type:
+    - name: Hash
+      items:
+      - name: Symbol
+      - name: Object
+  short_description: |-
+    Creates a new Stannum::Constraint object with the given block, and
+    adds that constraint to the contract for the next index.
+  yield_params:
+  - description: The value of the property when called.
+    name: value
+    type:
+    - name: Object
+short_description: Defines an item constraint on the contract.
+version: '0.4'

@@ -1,0 +1,30 @@
+---
+name: Stannum::Messages
+slug: messages
+type: module
+files:
+- lib/stannum/messages.rb
+- lib/stannum/messages/default_loader.rb
+- lib/stannum/messages/default_strategy.rb
+parent_path: stannum
+short_description: Namespace for generating messages for Stannum::Errors.
+class_methods:
+- name: locales_path
+  path: stannum/messages/c-locales-path
+  slug: locales-path
+  inherited: false
+- name: strategy
+  path: stannum/messages/c-strategy
+  slug: strategy
+  inherited: false
+- name: strategy=
+  path: stannum/messages/c-strategy=
+  slug: strategy=
+  inherited: false
+defined_classes:
+- name: DefaultLoader
+  slug: default-loader
+- name: DefaultStrategy
+  slug: default-strategy
+data_path: stannum/messages
+version: '0.4'

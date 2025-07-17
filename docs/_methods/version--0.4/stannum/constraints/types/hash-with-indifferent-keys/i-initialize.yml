@@ -1,0 +1,33 @@
+---
+name: Stannum::Constraints::Types::HashWithIndifferentKeys#initialize
+parent_path: stannum/constraints/types/hash-with-indifferent-keys
+signature: 'initialize(value_type: nil, **options)'
+slug: initialize
+constructor: true
+data_path: stannum/constraints/types/hash-with-indifferent-keys/i-initialize
+params:
+- description: |-
+    If set, then
+    the constraint will check the types of each value in the Hash against
+    the expected type and will fail if any values do not match.
+  name: value_type
+  type:
+  - name: Stannum::Constraints::Base
+    path: stannum/constraints/base
+  - name: Class
+  - name: nil
+  default: nil
+- description: |-
+    Configuration options for the
+    constraint. Defaults to an empty Hash.
+  name: options
+  type:
+  - name: Hash
+    items:
+    - name: Symbol
+    - name: Object
+returns:
+- description: a new instance of HashWithIndifferentKeys
+  type:
+  - name: HashWithIndifferentKeys
+version: '0.4'

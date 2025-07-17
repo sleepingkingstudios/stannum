@@ -1,0 +1,13 @@
+---
+name: Stannum::Errors#summary
+parent_path: stannum/errors
+signature: summary
+slug: summary
+constructor: false
+data_path: stannum/errors/i-summary
+returns:
+- description: the text summary.
+  type:
+  - name: String
+short_description: Generates a text summary of the errors.
+version: '0.4'

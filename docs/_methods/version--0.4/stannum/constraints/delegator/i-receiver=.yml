@@ -1,0 +1,16 @@
+---
+name: Stannum::Constraints::Delegator#receiver=
+parent_path: stannum/constraints/delegator
+signature: receiver=(value)
+slug: receiver=
+constructor: false
+data_path: stannum/constraints/delegator/i-receiver=
+params:
+- description: |-
+    The constraint that methods
+    will be delegated to.
+  name: value
+  type:
+  - name: Stannum::Constraints::Base
+    path: stannum/constraints/base
+version: '0.4'

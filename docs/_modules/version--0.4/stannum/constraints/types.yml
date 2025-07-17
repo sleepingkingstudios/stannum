@@ -1,0 +1,56 @@
+---
+name: Stannum::Constraints::Types
+slug: types
+type: module
+files:
+- lib/stannum/constraints/types.rb
+- lib/stannum/constraints/types/nil_type.rb
+- lib/stannum/constraints/types/date_type.rb
+- lib/stannum/constraints/types/hash_type.rb
+- lib/stannum/constraints/types/proc_type.rb
+- lib/stannum/constraints/types/time_type.rb
+- lib/stannum/constraints/types/array_type.rb
+- lib/stannum/constraints/types/float_type.rb
+- lib/stannum/constraints/types/string_type.rb
+- lib/stannum/constraints/types/symbol_type.rb
+- lib/stannum/constraints/types/integer_type.rb
+- lib/stannum/constraints/types/date_time_type.rb
+- lib/stannum/constraints/types/big_decimal_type.rb
+- lib/stannum/constraints/types/hash_with_string_keys.rb
+- lib/stannum/constraints/types/hash_with_symbol_keys.rb
+- lib/stannum/constraints/types/hash_with_indifferent_keys.rb
+parent_path: stannum/constraints
+short_description: Namespace for type constraints.
+defined_classes:
+- name: ArrayType
+  slug: array-type
+- name: BigDecimalType
+  slug: big-decimal-type
+- name: DateTimeType
+  slug: date-time-type
+- name: DateType
+  slug: date-type
+- name: FloatType
+  slug: float-type
+- name: HashType
+  slug: hash-type
+- name: HashWithIndifferentKeys
+  slug: hash-with-indifferent-keys
+- name: HashWithStringKeys
+  slug: hash-with-string-keys
+- name: HashWithSymbolKeys
+  slug: hash-with-symbol-keys
+- name: IntegerType
+  slug: integer-type
+- name: NilType
+  slug: nil-type
+- name: ProcType
+  slug: proc-type
+- name: StringType
+  slug: string-type
+- name: SymbolType
+  slug: symbol-type
+- name: TimeType
+  slug: time-type
+data_path: stannum/constraints/types
+version: '0.4'

@@ -1,0 +1,12 @@
+---
+name: Stannum::Errors#initialize
+parent_path: stannum/errors
+signature: initialize
+slug: initialize
+constructor: true
+data_path: stannum/errors/i-initialize
+returns:
+- description: a new instance of Errors
+  type:
+  - name: Errors
+version: '0.4'

@@ -1,0 +1,12 @@
+---
+name: Stannum::Association#reader_name
+parent_path: stannum/association
+signature: reader_name
+slug: reader-name
+constructor: false
+data_path: stannum/association/i-reader-name
+returns:
+- description: the name of the reader method for the association.
+  type:
+  - name: Symbol
+version: '0.4'

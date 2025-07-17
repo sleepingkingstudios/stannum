@@ -1,0 +1,43 @@
+---
+name: Stannum::Version
+slug: version
+type: module
+files:
+- lib/stannum/version.rb
+parent_path: stannum
+short_description: The current version of the gem.
+class_methods:
+- name: to_gem_version
+  path: stannum/version/c-to-gem-version
+  slug: to-gem-version
+  inherited: false
+constants:
+- name: BUILD
+  path: stannum/version/build
+  slug: build
+  inherited: false
+- name: MAJOR
+  path: stannum/version/major
+  slug: major
+  inherited: false
+- name: MINOR
+  path: stannum/version/minor
+  slug: minor
+  inherited: false
+- name: PATCH
+  path: stannum/version/patch
+  slug: patch
+  inherited: false
+- name: PRERELEASE
+  path: stannum/version/prerelease
+  slug: prerelease
+  inherited: false
+data_path: stannum/version
+metadata:
+  api: private
+  see:
+  - label: http://semver.org/
+    path: http://semver.org/
+    text:
+    type: link
+version: '0.4'

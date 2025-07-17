@@ -1,0 +1,47 @@
+---
+name: Stannum::Entities::Attributes
+slug: attributes
+type: module
+files:
+- lib/stannum/entities/attributes.rb
+parent_path: stannum/entities
+short_description: Methods for defining and accessing entity attributes.
+class_methods:
+- name: apply
+  path: stannum/entities/attributes/c-apply
+  slug: apply
+  inherited: false
+defined_modules:
+- name: ClassMethods
+  slug: class-methods
+instance_methods:
+- name: assign_attributes
+  path: stannum/entities/attributes/i-assign-attributes
+  slug: assign-attributes
+  inherited: false
+- name: attributes
+  path: stannum/entities/attributes/i-attributes
+  slug: attributes
+  inherited: false
+- name: attributes=
+  path: stannum/entities/attributes/i-attributes=
+  slug: attributes=
+  inherited: false
+- name: initialize
+  path: stannum/entities/attributes/i-initialize
+  slug: initialize
+  inherited: false
+- name: properties
+  path: stannum/entities/attributes/i-properties
+  slug: properties
+  inherited: false
+- name: read_attribute
+  path: stannum/entities/attributes/i-read-attribute
+  slug: read-attribute
+  inherited: false
+- name: write_attribute
+  path: stannum/entities/attributes/i-write-attribute
+  slug: write-attribute
+  inherited: false
+data_path: stannum/entities/attributes
+version: '0.4'

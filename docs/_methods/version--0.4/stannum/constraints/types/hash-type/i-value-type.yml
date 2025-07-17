@@ -1,0 +1,16 @@
+---
+name: Stannum::Constraints::Types::HashType#value_type
+parent_path: stannum/constraints/types/hash-type
+signature: value_type
+slug: value-type
+constructor: false
+data_path: stannum/constraints/types/hash-type/i-value-type
+returns:
+- description: |-
+    the expected type for the values
+    in the hash.
+  type:
+  - name: Stannum::Constraints::Base
+    path: stannum/constraints/base
+  - name: nil
+version: '0.4'

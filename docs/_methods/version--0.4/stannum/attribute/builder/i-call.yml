@@ -1,0 +1,15 @@
+---
+name: Stannum::Attribute::Builder#call
+parent_path: stannum/attribute/builder
+signature: call(attribute)
+slug: call
+constructor: false
+data_path: stannum/attribute/builder/i-call
+params:
+- description: ''
+  name: attribute
+  type:
+  - name: Stannum::Attribute
+    path: stannum/attribute
+short_description: Defines the reader and writer methods for the attribute.
+version: '0.4'

@@ -1,0 +1,8 @@
+---
+name: Stannum::Constraints::Enum::TYPE
+parent_path: stannum/constraints/enum
+slug: type
+short_description: The :type of the error generated for a non-matching object.
+value: "'stannum.constraints.is_not_in_list'"
+data_path: stannum/constraints/enum/type
+version: '0.4'

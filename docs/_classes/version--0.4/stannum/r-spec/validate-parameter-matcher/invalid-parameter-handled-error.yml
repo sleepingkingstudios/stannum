@@ -1,0 +1,14 @@
+---
+name: Stannum::RSpec::ValidateParameterMatcher::InvalidParameterHandledError
+slug: invalid-parameter-handled-error
+type: class
+files:
+- lib/stannum/rspec/validate_parameter_matcher.rb
+parent_path: stannum/r-spec/validate-parameter-matcher
+short_description: ''
+data_path: stannum/r-spec/validate-parameter-matcher/invalid-parameter-handled-error
+constructor: false
+inherited_classes:
+- name: StandardError
+  slug: standard-error
+version: '0.4'

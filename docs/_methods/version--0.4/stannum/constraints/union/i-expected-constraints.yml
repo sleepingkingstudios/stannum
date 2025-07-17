@@ -1,0 +1,17 @@
+---
+name: Stannum::Constraints::Union#expected_constraints
+parent_path: stannum/constraints/union
+signature: expected_constraints
+slug: expected-constraints
+constructor: false
+data_path: stannum/constraints/union/i-expected-constraints
+returns:
+- description: |-
+    the possible values for the
+    object.
+  type:
+  - name: Array
+    items:
+    - name: Stannum::Constraints::Base
+      path: stannum/constraints/base
+version: '0.4'

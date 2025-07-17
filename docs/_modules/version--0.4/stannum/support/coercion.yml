@@ -1,0 +1,23 @@
+---
+name: Stannum::Support::Coercion
+slug: coercion
+type: module
+files:
+- lib/stannum/support/coercion.rb
+parent_path: stannum/support
+short_description: Shared functionality for coercing values to and from constraints.
+class_methods:
+- name: error_key
+  path: stannum/support/coercion/c-error-key
+  slug: error-key
+  inherited: false
+- name: presence_constraint
+  path: stannum/support/coercion/c-presence-constraint
+  slug: presence-constraint
+  inherited: false
+- name: type_constraint
+  path: stannum/support/coercion/c-type-constraint
+  slug: type-constraint
+  inherited: false
+data_path: stannum/support/coercion
+version: '0.4'

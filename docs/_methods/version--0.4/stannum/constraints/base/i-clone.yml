@@ -1,0 +1,25 @@
+---
+name: Stannum::Constraints::Base#clone
+parent_path: stannum/constraints/base
+signature: 'clone(freeze: nil)'
+slug: clone
+constructor: false
+data_path: stannum/constraints/base/i-clone
+params:
+- description: |-
+    If true or false, sets the frozen status
+    of the cloned constraint; otherwise, copies the frozen status of the
+    original. Defaults to nil.
+  name: freeze
+  type:
+  - name: 'true'
+  - name: 'false'
+  - name: nil
+  default: nil
+returns:
+- description: the cloned constraint.
+  type:
+  - name: Stannum::Constraints::Base
+    path: stannum/constraints/base
+short_description: Produces a shallow copy of the constraint.
+version: '0.4'

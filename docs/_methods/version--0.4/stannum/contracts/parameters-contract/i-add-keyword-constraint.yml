@@ -1,0 +1,42 @@
+---
+name: Stannum::Contracts::ParametersContract#add_keyword_constraint
+parent_path: stannum/contracts/parameters-contract
+signature: add_keyword_constraint(keyword, type, **options)
+slug: add-keyword-constraint
+constructor: false
+data_path: stannum/contracts/parameters-contract/i-add-keyword-constraint
+description: |-
+  Generates a keyword constraint based on the given type. If the type is
+  a constraint, then the given constraint will be copied with the given
+  options and added for the given keyword. If the type is a Class or a
+  Module, then a Stannum::Constraints::Type constraint will be created with
+  the given type and options and added for the keyword.
+params:
+- description: The keyword to constrain.
+  name: keyword
+  type:
+  - name: Symbol
+- description: |-
+    The expected type
+    of the argument.
+  name: type
+  type:
+  - name: Class
+  - name: Module
+  - name: Stannum::Constraints:Base
+- description: |-
+    Configuration options for the
+    constraint. Defaults to an empty Hash.
+  name: options
+  type:
+  - name: Hash
+    items:
+    - name: Symbol
+    - name: Object
+returns:
+- description: the contract.
+  type:
+  - name: Stannum::Contracts::ParametersContract
+    path: stannum/contracts/parameters-contract
+short_description: Adds a keyword constraint to the contract.
+version: '0.4'

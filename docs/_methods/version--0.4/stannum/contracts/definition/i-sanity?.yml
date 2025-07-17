@@ -1,0 +1,14 @@
+---
+name: Stannum::Contracts::Definition#sanity?
+parent_path: stannum/contracts/definition
+signature: sanity?
+slug: sanity?
+constructor: false
+data_path: stannum/contracts/definition/i-sanity?
+returns:
+- description: |-
+    true if options[:sanity] is set to a truthy value;
+    otherwise false.
+  type:
+  - name: Boolean
+version: '0.4'

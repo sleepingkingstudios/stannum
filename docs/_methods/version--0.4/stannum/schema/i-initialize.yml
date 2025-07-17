@@ -1,0 +1,24 @@
+---
+name: Stannum::Schema#initialize
+parent_path: stannum/schema
+signature: initialize(property_class:, property_name:)
+slug: initialize
+constructor: true
+data_path: stannum/schema/i-initialize
+params:
+- description: |-
+    the class representing the elements of the
+    schema.
+  name: property_class
+  type:
+  - name: Class
+- description: the name of the schema elements.
+  name: property_name
+  type:
+  - name: String
+  - name: Symbol
+returns:
+- description: a new instance of Schema
+  type:
+  - name: Schema
+version: '0.4'

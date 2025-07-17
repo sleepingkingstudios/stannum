@@ -1,0 +1,16 @@
+---
+name: Stannum::Constraints::Type#expected_type
+parent_path: stannum/constraints/type
+signature: expected_type
+slug: expected-type
+constructor: false
+data_path: stannum/constraints/type/i-expected-type
+returns:
+- description: |-
+    the type the object is expected to belong
+    to.
+  type:
+  - name: Class
+  - name: Module
+  - name: String
+version: '0.4'

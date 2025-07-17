@@ -1,0 +1,54 @@
+---
+name: Stannum::Entities::Properties
+slug: properties
+type: module
+files:
+- lib/stannum/entities/properties.rb
+parent_path: stannum/entities
+short_description: Abstract module for handling heterogenous entity properties.
+instance_methods:
+- name: "=="
+  path: stannum/entities/properties/i-==
+  slug: "=="
+  inherited: false
+- name: "[]"
+  path: stannum/entities/properties/i-[]
+  slug: "[]"
+  inherited: false
+- name: "[]="
+  path: stannum/entities/properties/i-[]=
+  slug: "[]="
+  inherited: false
+- name: assign_properties
+  path: stannum/entities/properties/i-assign-properties
+  slug: assign-properties
+  inherited: false
+- name: initialize
+  path: stannum/entities/properties/i-initialize
+  slug: initialize
+  inherited: false
+- name: inspect
+  path: stannum/entities/properties/i-inspect
+  slug: inspect
+  inherited: false
+- name: inspect_with_options
+  path: stannum/entities/properties/i-inspect-with-options
+  slug: inspect-with-options
+  inherited: false
+- name: properties
+  path: stannum/entities/properties/i-properties
+  slug: properties
+  inherited: false
+- name: properties=
+  path: stannum/entities/properties/i-properties=
+  slug: properties=
+  inherited: false
+- name: to_h
+  path: stannum/entities/properties/i-to-h
+  slug: to-h
+  inherited: false
+data_path: stannum/entities/properties
+description: |-
+  This module provides a base for accessing and mutating entity properties
+  such as attributes and associations.
+version: '0.4'

@@ -1,0 +1,12 @@
+---
+name: Stannum::Contracts::MapContract#with_options
+parent_path: stannum/contracts/map-contract
+signature: with_options(**options)
+slug: with-options
+constructor: false
+data_path: stannum/contracts/map-contract/i-with-options
+raises:
+- description: ''
+  type:
+  - name: ArgumentError
+version: '0.4'

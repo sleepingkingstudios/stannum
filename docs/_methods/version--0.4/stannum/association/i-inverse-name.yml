@@ -1,0 +1,12 @@
+---
+name: Stannum::Association#inverse_name
+parent_path: stannum/association
+signature: inverse_name
+slug: inverse-name
+constructor: false
+data_path: stannum/association/i-inverse-name
+returns:
+- description: the name of the inverse association, if any.
+  type:
+  - name: String
+version: '0.4'

@@ -1,0 +1,35 @@
+---
+name: Stannum::Messages::DefaultLoader
+slug: default-loader
+type: class
+files:
+- lib/stannum/messages/default_loader.rb
+parent_path: stannum/messages
+short_description: Loads and parses messages configuration files and merges configuration
+  data.
+instance_attributes:
+- name: file_paths
+  read: true
+  write: false
+  path: stannum/messages/default-loader/i-file-paths
+  slug: file-paths
+  inherited: false
+- name: locale
+  read: true
+  write: false
+  path: stannum/messages/default-loader/i-locale
+  slug: locale
+  inherited: false
+instance_methods:
+- name: call
+  path: stannum/messages/default-loader/i-call
+  slug: call
+  inherited: false
+- name: initialize
+  path: stannum/messages/default-loader/i-initialize
+  slug: initialize
+  inherited: false
+  constructor: true
+data_path: stannum/messages/default-loader
+constructor: true
+version: '0.4'

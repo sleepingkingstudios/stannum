@@ -1,0 +1,51 @@
+---
+name: Stannum::Contracts::MapContract#add_key_constraint
+parent_path: stannum/contracts/map-contract
+signature: 'add_key_constraint(key, constraint, sanity: false, **options)'
+slug: add-key-constraint
+constructor: false
+data_path: stannum/contracts/map-contract/i-add-key-constraint
+description: |-
+  When the contract is called, the contract will find the value of the
+  object for the given key.
+metadata:
+  see:
+  - label: Stannum::Contract#add_constraint
+    path: stannum/contract#instance-method-add-constraint
+    text:
+    type: reference
+params:
+- description: The key of the value to match.
+  name: key
+  type:
+  - name: Integer
+- description: The constraint to add.
+  name: constraint
+  type:
+  - name: Stannum::Constraints::Base
+    path: stannum/constraints/base
+- description: |-
+    Marks the constraint as a sanity constraint,
+    which is always matched first and will always short-circuit on a failed
+    match.
+  name: sanity
+  type:
+  - name: 'true'
+  - name: 'false'
+  default: 'false'
+- description: |-
+    Options for the constraint. These
+    can be used by subclasses to define the value and error mappings for the
+    constraint.
+  name: options
+  type:
+  - name: Hash
+    items:
+    - name: Symbol
+    - name: Object
+returns:
+- description: the contract.
+  type:
+  - name: self
+short_description: Adds a key constraint to the contract.
+version: '0.4'

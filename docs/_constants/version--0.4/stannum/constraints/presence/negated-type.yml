@@ -1,0 +1,8 @@
+---
+name: Stannum::Constraints::Presence::NEGATED_TYPE
+parent_path: stannum/constraints/presence
+slug: negated-type
+short_description: The :type of the error generated for a matching object.
+value: "'stannum.constraints.present'"
+data_path: stannum/constraints/presence/negated-type
+version: '0.4'

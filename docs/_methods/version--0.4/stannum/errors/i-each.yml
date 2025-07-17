@@ -1,0 +1,37 @@
+---
+name: Stannum::Errors#each
+parent_path: stannum/errors
+signature: each
+slug: each
+constructor: false
+data_path: stannum/errors/i-each
+overloads:
+- name: Stannum::Errors#each
+  parent_path: stannum/errors
+  signature: each
+  slug: each
+  constructor: false
+  returns:
+  - description: ''
+    type:
+    - name: Enumerator
+  short_description: Returns an Enumerator that iterates through the errors.
+- name: Stannum::Errors#each
+  parent_path: stannum/errors
+  signature: each
+  slug: each
+  constructor: false
+  short_description: Iterates through the errors, yielding each error to the provided
+    block.
+  yield_params:
+  - description: |-
+      The error object. Each error
+      is a hash containing the keys :data, :message, :path and :type.
+    name: error
+    type:
+    - name: Hash
+      keys:
+      - name: Symbol
+      values:
+      - name: Object
+version: '0.4'

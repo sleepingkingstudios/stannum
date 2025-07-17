@@ -1,0 +1,55 @@
+---
+name: Stannum::Constraints::Properties::Matching#initialize
+parent_path: stannum/constraints/properties/matching
+signature: initialize(reference_name, *property_names, **options)
+slug: initialize
+constructor: true
+data_path: stannum/constraints/properties/matching/i-initialize
+options:
+- name: options
+  opts:
+  - description: |-
+      if true, will match against an
+      object with empty property values, such as an empty string.
+    name: allow_empty
+    type:
+    - name: 'true'
+    - name: 'false'
+  - description: |-
+      if true, will match against an
+      object with nil property values.
+    name: allow_nil
+    type:
+    - name: 'true'
+    - name: 'false'
+params:
+- description: |-
+    the name of the reference property
+    to compare to.
+  name: reference_name
+  type:
+  - name: String
+  - name: Symbol
+- description: |-
+    the name or names of the
+    properties to compare.
+  name: property_names
+  type:
+  - name: Array
+    items:
+    - name: String
+    - name: Symbol
+- description: |-
+    configuration options for the
+    constraint. Defaults to an empty Hash.
+  name: options
+  type:
+  - name: Hash
+    items:
+    - name: Symbol
+    - name: Object
+returns:
+- description: a new instance of Matching
+  type:
+  - name: Matching
+version: '0.4'

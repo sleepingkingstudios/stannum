@@ -1,0 +1,13 @@
+---
+name: Stannum::Constraints::Properties::Matching#reference_name
+parent_path: stannum/constraints/properties/matching
+signature: reference_name
+slug: reference-name
+constructor: false
+data_path: stannum/constraints/properties/matching/i-reference-name
+returns:
+- description: the name of the reference property to compare to.
+  type:
+  - name: String
+  - name: Symbol
+version: '0.4'

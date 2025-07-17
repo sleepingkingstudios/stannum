@@ -1,0 +1,15 @@
+---
+name: Stannum::Contracts::MapContract#allow_extra_keys?
+parent_path: stannum/contracts/map-contract
+signature: allow_extra_keys?
+slug: allow-extra-keys?
+constructor: false
+data_path: stannum/contracts/map-contract/i-allow-extra-keys?
+returns:
+- description: |-
+    if true, the contract will match hashes with keys
+    that are not constrained by the contract.
+  type:
+  - name: 'true'
+  - name: 'false'
+version: '0.4'

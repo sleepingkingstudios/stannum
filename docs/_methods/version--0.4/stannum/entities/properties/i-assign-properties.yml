@@ -1,0 +1,35 @@
+---
+name: Stannum::Entities::Properties#assign_properties
+parent_path: stannum/entities/properties
+signature: assign_properties(properties)
+slug: assign-properties
+aliases:
+- assign
+constructor: false
+data_path: stannum/entities/properties/i-assign-properties
+description: |-
+  This method is used to update some (but not all) of the properties of the
+  struct. For each key in the hash, it calls the corresponding writer method
+  with the value for that property. If the value is nil, this will set the
+  property value to the default for that property.
+
+  Any properties that are not in the given hash are unchanged.
+
+  If the properties hash includes any keys that do not correspond to an
+  property, the struct will raise an error.
+metadata:
+  see:
+  - label: "#properties="
+    path: stannum/entities/properties#instance-method-properties=
+    text:
+    type: reference
+params:
+- description: The initial properties for the struct.
+  name: properties
+  type:
+  - name: Hash
+raises:
+- description: ArgumentError if the key is not a valid property.
+  type: []
+short_description: Updates the struct's properties with the given values.
+version: '0.4'

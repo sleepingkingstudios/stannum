@@ -1,0 +1,16 @@
+---
+name: Stannum::RSpec::ValidateParameterMatcher#expected_constraint
+parent_path: stannum/r-spec/validate-parameter-matcher
+signature: expected_constraint
+slug: expected-constraint
+constructor: false
+data_path: stannum/r-spec/validate-parameter-matcher/i-expected-constraint
+returns:
+- description: |-
+    the constraint used to generate
+    the expected error(s).
+  type:
+  - name: Stannum::Constraints::Base
+    path: stannum/constraints/base
+  - name: nil
+version: '0.4'

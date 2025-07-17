@@ -1,0 +1,20 @@
+---
+name: Stannum::Contracts::Definition#property
+parent_path: stannum/contracts/definition
+signature: property
+slug: property
+constructor: false
+data_path: stannum/contracts/definition/i-property
+returns:
+- description: |-
+    the property scope of
+    the constraint.
+  type:
+  - name: nil
+  - name: String
+  - name: Symbol
+  - name: Array
+    items:
+    - name: String
+    - name: Symbol
+version: '0.4'

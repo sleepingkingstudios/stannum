@@ -1,0 +1,41 @@
+---
+name: Stannum::Constraints::Base::Builder
+slug: builder
+type: class
+files:
+- lib/stannum/constraints/base.rb
+parent_path: stannum/constraints/base
+short_description: Builder class for defining constraints for a Contract.
+instance_attributes:
+- name: contract
+  read: true
+  write: false
+  path: stannum/contracts/builder/i-contract
+  slug: contract
+  inherited: true
+instance_methods:
+- name: concat
+  path: stannum/contracts/builder/i-concat
+  slug: concat
+  inherited: true
+- name: constraint
+  path: stannum/contracts/builder/i-constraint
+  slug: constraint
+  inherited: true
+- name: initialize
+  path: stannum/contracts/builder/i-initialize
+  slug: initialize
+  inherited: true
+  constructor: true
+data_path: stannum/constraints/base/builder
+description: |-
+  This class should not be invoked directly. Instead, pass a block to the
+  constructor for Contract.
+metadata:
+  api: private
+constructor: true
+inherited_classes:
+- name: Stannum::Contracts::Builder
+  slug: builder
+  path: stannum/contracts/builder
+version: '0.4'

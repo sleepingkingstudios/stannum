@@ -1,0 +1,20 @@
+---
+name: Stannum::Entities::PrimaryKey::ClassMethods#primary_key
+parent_path: stannum/entities/primary-key/class-methods
+signature: primary_key
+slug: primary-key
+constructor: false
+data_path: stannum/entities/primary-key/class-methods/i-primary-key
+raises:
+- description: |-
+    if the entity
+    does not define a primary key.
+  type:
+  - name: Stannum::Entities::PrimaryKey::PrimaryKeyMissing
+    path: stannum/entities/primary-key/primary-key-missing
+returns:
+- description: the primary key attribute.
+  type:
+  - name: Stannum::Attribute
+    path: stannum/attribute
+version: '0.4'

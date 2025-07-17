@@ -1,0 +1,8 @@
+---
+name: Stannum::Constraints::Uuid::TYPE
+parent_path: stannum/constraints/uuid
+slug: type
+short_description: The :type of the error generated for a non-matching object.
+value: "'stannum.constraints.is_not_a_uuid'"
+data_path: stannum/constraints/uuid/type
+version: '0.4'

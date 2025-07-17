@@ -1,0 +1,24 @@
+---
+name: Stannum::Contracts::Parameters::KeywordsContract#initialize
+parent_path: stannum/contracts/parameters/keywords-contract
+signature: initialize(**options)
+slug: initialize
+constructor: true
+data_path: stannum/contracts/parameters/keywords-contract/i-initialize
+metadata:
+  api: private
+params:
+- description: |-
+    Configuration options for the
+    contract. Defaults to an empty Hash.
+  name: options
+  type:
+  - name: Hash
+    items:
+    - name: Symbol
+    - name: Object
+returns:
+- description: a new instance of KeywordsContract
+  type:
+  - name: KeywordsContract
+version: '0.4'

@@ -1,0 +1,118 @@
+---
+name: Stannum::Contracts::ParametersContract::Builder#argument
+parent_path: stannum/contracts/parameters-contract/builder
+signature: 'argument(name, type = nil, index: nil, **options, &block)'
+slug: argument
+constructor: false
+data_path: stannum/contracts/parameters-contract/builder/i-argument
+description: |-
+  If the index is specified, then the constraint will be added for the
+  argument at the specified index. If the index is not given, then the
+  constraint will be applied to the next unconstrained argument. For
+  example, the first argument constraint will be added for the argument at
+  index 0, the second constraint for the argument at index 1, and so on.
+metadata:
+  api: private
+overloads:
+- name: Stannum::Contracts::ParametersContract::Builder#argument
+  parent_path: stannum/contracts/parameters-contract/builder
+  signature: 'argument(name, type, index: nil, **options)'
+  slug: argument
+  constructor: false
+  params:
+  - description: The name of the argument.
+    name: name
+    type:
+    - name: String
+    - name: Symbol
+  - description: |-
+      The expected
+      type of the argument.
+    name: type
+    type:
+    - name: Class
+    - name: Module
+    - name: Stannum::Constraints:Base
+  - description: |-
+      The index of the argument. If not given,
+      then the next argument will be constrained with the type.
+    name: index
+    type:
+    - name: Integer
+    - name: nil
+    default: nil
+  - description: |-
+      Configuration options for the
+      constraint. Defaults to an empty Hash.
+    name: options
+    type:
+    - name: Hash
+      items:
+      - name: Symbol
+      - name: Object
+  returns:
+  - description: the builder.
+    type:
+    - name: Stannum::Contracts::ParametersContract::Builder
+      path: stannum/contracts/parameters-contract/builder
+  short_description: |-
+    Generates an argument constraint based on the given type. If the type
+    is a constraint, then the given constraint will be copied with the
+    given options and added for the argument at the index. If the type is
+    a Class or a Module, then a Stannum::Constraints::Type constraint will
+    be created with the given type and options and added for the argument.
+- name: Stannum::Contracts::ParametersContract::Builder#argument
+  parent_path: stannum/contracts/parameters-contract/builder
+  signature: 'argument(name, index: nil, **options, &block)'
+  slug: argument
+  constructor: false
+  params:
+  - description: The name of the argument.
+    name: name
+    type:
+    - name: String
+    - name: Symbol
+  - description: |-
+      The index of the argument. If not given,
+      then the next argument will be constrained with the type.
+    name: index
+    type:
+    - name: Integer
+    - name: nil
+    default: nil
+  - description: |-
+      Configuration options for the
+      constraint. Defaults to an empty Hash.
+    name: options
+    type:
+    - name: Hash
+      items:
+      - name: Symbol
+      - name: Object
+  returns:
+  - description: the builder.
+    type:
+    - name: Stannum::Contracts::ParametersContract::Builder
+      path: stannum/contracts/parameters-contract/builder
+  short_description: Generates a new Stannum::Constraint using the block.
+  yield_params:
+  - description: |-
+      The object to check against the
+      constraint.
+    name: actual
+    type:
+    - name: Object
+  yield_returns:
+  - description: |-
+      true if the given object matches the
+      constraint, otherwise false.
+    type:
+    - name: 'true'
+    - name: 'false'
+  yields:
+  - description: |-
+      The definition for the constraint. Each time #matches? is
+      called for this constraint, the given object will be passed to this
+      block and the result of the block will be returned.
+short_description: Adds an argument constraint to the contract.
+version: '0.4'

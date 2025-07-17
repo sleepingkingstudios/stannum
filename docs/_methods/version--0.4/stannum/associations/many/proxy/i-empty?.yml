@@ -1,0 +1,15 @@
+---
+name: Stannum::Associations::Many::Proxy#empty?
+parent_path: stannum/associations/many/proxy
+signature: empty?
+slug: empty?
+constructor: false
+data_path: stannum/associations/many/proxy/i-empty?
+returns:
+- description: |-
+    true if the association has no items; otherwise
+    false.
+  type:
+  - name: 'true'
+  - name: 'false'
+version: '0.4'
