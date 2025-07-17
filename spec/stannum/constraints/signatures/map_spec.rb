@@ -81,7 +81,7 @@ RSpec.describe Stannum::Constraints::Signatures::Map do
       end
 
       example_class 'Spec::Locked' do |klass|
-        klass.define_method(:[]) { nil }
+        klass.define_method(:[]) { nil } # rubocop:disable Naming/MethodName
       end
 
       include_examples 'should not match the constraint'
@@ -125,7 +125,7 @@ RSpec.describe Stannum::Constraints::Signatures::Map do
       end
 
       example_class 'Spec::Locked' do |klass|
-        klass.define_method(:[]) { nil }
+        klass.define_method(:[]) { nil } # rubocop:disable Naming/MethodName
       end
 
       include_examples 'should not match the constraint'
