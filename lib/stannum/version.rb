@@ -12,7 +12,7 @@ module Stannum
     # Minor version.
     MINOR = 4
     # Patch version.
-    PATCH = 0
+    PATCH = 1
     # Prerelease version.
     PRERELEASE = nil
     # Build metadata.
