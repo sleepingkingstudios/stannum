@@ -12,7 +12,7 @@ group :development, :test do
   gem 'byebug', '~> 11.0'
 
   gem 'rspec', '~> 3.13'
-  gem 'rspec-sleeping_king_studios', '~> 2.8'
+  gem 'rspec-sleeping_king_studios', '~> 2.8', '>= 2.8.3'
   gem 'rubocop', '~> 1.82'
   gem 'rubocop-rspec', '~> 3.8'
   gem 'simplecov', '~> 0.22'
@@ -25,7 +25,7 @@ group :docs do
   # Use Kramdown to parse GFM-dialect Markdown.
   gem 'kramdown-parser-gfm', '~> 1.1'
 
-  gem 'sleeping_king_studios-docs', '~> 0.2'
+  gem 'sleeping_king_studios-docs', '~> 0.2', '>= 0.2.1'
 
   # Use Webrick as local content server.
   gem 'webrick', '~> 1.9'

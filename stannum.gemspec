@@ -1,8 +1,6 @@
 # frozen_string_literal: true
 
-$LOAD_PATH << './lib'
-
-require 'stannum/version'
+require_relative 'lib/stannum/version'
 
 Gem::Specification.new do |gem|
   gem.name        = 'stannum'
@@ -26,10 +24,10 @@ Gem::Specification.new do |gem|
     'rubygems_mfa_required' => 'true'
   }
 
-  gem.required_ruby_version = '>= 3.1'
+  gem.required_ruby_version = ['>= 3.1', '< 5']
   gem.require_path          = 'lib'
   gem.files                 =
     Dir['config/locales/*', 'lib/**/*.rb', 'LICENSE', '*.md']
 
-  gem.add_dependency 'sleeping_king_studios-tools', '~> 1.1'
+  gem.add_dependency 'sleeping_king_studios-tools', '~> 1.2', '>= 1.2.1'
 end
