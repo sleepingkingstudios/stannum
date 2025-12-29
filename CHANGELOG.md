@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.4.1
+
+Added support for Ruby 4.0.
+
 ## 0.4.0
 
 Published YARD documentation.
