@@ -81,7 +81,7 @@ RSpec.describe Stannum::Constraints::Signatures::Tuple do
       end
 
       example_class 'Spec::Uncountable' do |klass|
-        klass.define_method(:[]) { nil } # rubocop:disable Naming/MethodName
+        klass.define_method(:[]) { nil }
       end
 
       include_examples 'should not match the constraint'
@@ -125,7 +125,7 @@ RSpec.describe Stannum::Constraints::Signatures::Tuple do
       end
 
       example_class 'Spec::Uncountable' do |klass|
-        klass.define_method(:[]) { nil } # rubocop:disable Naming/MethodName
+        klass.define_method(:[]) { nil }
       end
 
       include_examples 'should not match the constraint'

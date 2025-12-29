@@ -334,12 +334,12 @@ RSpec.describe Stannum::Associations::Many do
     end
 
     describe '#inspect' do
-      let(:object_id) do
+      let(:expected_id) do
         Object.instance_method(:inspect).bind(proxy).call[39...55]
       end
       let(:expected_items) { '' }
       let(:expected) do
-        "#<#{described_class.name}:0x#{object_id} data=[#{expected_items}]>"
+        "#<#{described_class.name}:0x#{expected_id} data=[#{expected_items}]>"
       end
 
       it { expect(proxy.inspect).to be == expected }

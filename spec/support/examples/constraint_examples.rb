@@ -272,7 +272,7 @@ module Spec::Support::Examples
 
       it { expect(actual_errors).to match_errors wrapped_errors }
 
-      if instance_methods.include?(:expected_messages)
+      if method_defined?(:expected_messages)
         it 'should generate the error messages' do
           expect(actual_errors.with_messages).to match_errors wrapped_messages
         end
